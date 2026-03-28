@@ -1,0 +1,120 @@
+package web
+
+import (
+	"crypto/tls"
+	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/gbsto/daisy/util"
+	"github.com/gbsto/daisy/web/middleware"
+	"github.com/gbsto/daisy/web/routes"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/template/html/v2"
+
+	"golang.org/x/crypto/acme/autocert"
+)
+
+func StartServer() {
+
+	// Initialize GoFiber html template engine
+	engine := html.New("./views", ".html")
+
+	// Create GoFiber app
+	app := fiber.New(fiber.Config{
+		Views:              engine,
+		ServerHeader:       "Daisy",
+		AppName:            "Daisy App v2026.03.05",
+		EnableIPValidation: true,
+	})
+
+	// Allow images up to 5MBytes to be uploaded, default is normally 4MB
+	server := app.Server()
+	server.MaxRequestBodySize = 5 * 1024 * 1024
+
+	// Get the current directory's full path
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatalf("ERROR: Cannot find the current working directory")
+	}
+
+	// Give external access to the public folder
+	// where javascript, css, images,... are stored
+	// app.Static("/", dir+"/public")
+	app.Static("/", filepath.Join(dir, "public"))
+	app.Use(recover.New())
+	app.Use(middleware.AddHitCounter())
+	middleware.AddProtection(app)
+
+	// https: Certificate manager
+	m := &autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("daisy.hopto.org"),
+		Cache:      autocert.DirCache("./certs"),
+	}
+
+	// TLS Config
+	// Get Certificate from Let's Encrypt
+	cfg := &tls.Config{
+		GetCertificate: m.GetCertificate,
+		NextProtos: []string{
+			"http/1.1", "acme-tls/1",
+		},
+	}
+
+	// Middleware to enforce HTTPS
+	app.Use(middleware.SecureOnly())
+
+	// Register all your specific application routes
+	routes.Routes(app)
+
+	// ATTACKS: Adding the catch-all middleware AFTER routes.Routes()
+	// meaning if user asks for a page that does not exist, kick them out.
+	app.Use(func(c *fiber.Ctx) error {
+		// Determine the originator's IP address, even through multiple proxies
+		ip := c.IP()
+		ips := c.IPs() // If multiple IPs, use the first one
+		if len(ips) > 0 {
+			ip = ips[0]
+		}
+		log.Println(ip)
+		// Record the attack
+		//	db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
+		// Set the status code to 404 Not Found
+		c.Status(fiber.StatusNotFound)
+		return c.Render("404", fiber.Map{ // HTML template is named "404.html"
+			"Path": c.Path(),
+		})
+	})
+
+	//Set up error logging directory
+	util.CheckLogsDirectoryExists()
+	logFile, err := os.OpenFile(filepath.Join(dir, "logs", "daisy.log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("ERROR: Problem opening the file: %v", err.Error())
+	}
+	defer logFile.Close()
+
+	app.Use(logger.New(logger.Config{
+		Output: logFile,
+	}))
+
+	// libVersion, _, _ := sqlite3.Version()
+	// log.Println("SQLite Version:", libVersion)
+
+	// Start server on HTTPS port 443
+	// Remember to open ports 443 and 80 in the windows firewall
+	// And open ports 587 and 465 for sending email as well
+	// And set port forwarding up on your ISP modem/router/wifi
+	ln, err := tls.Listen("tcp", ":443", cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	// Start server
+	//	defer db.Conn.Close()
+	log.Fatal(app.Listener(ln))
+
+}

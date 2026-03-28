@@ -1,0 +1,8 @@
+.env
+db/daisy.db
+db/daisy.db-shm
+db/daisy.db-wal
+logs/
+__debug_bin.exe
+backup/
+certs/
