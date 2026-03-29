@@ -1,9 +1,13 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"time"
 
+	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/web/passkey"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/helmet/v2"
@@ -37,55 +41,55 @@ func AddProtection(app *fiber.App) {
 		if len(ips) > 0 {
 			ip = ips[0]
 		}
-		log.Println(ip)
-		// if db.IsBanned(ip) {
-		// 	log.Printf("The user at %v is banned\n", ip)
-		// 	return c.Status(fiber.StatusForbidden).Redirect("banned.html")
-		// }
+
+		if db.IsBanned(ip) {
+			log.Printf("The user at %v is banned\n", ip)
+			return c.Status(fiber.StatusForbidden).Redirect("banned.html")
+		}
 		return c.Next()
 	})
 }
 
-// // Check the JSON Web Token (JWT) to ensure it is valid
-// func CheckToken(c *fiber.Ctx) error {
-// 	// Get the cookie off the request
-// 	cookieName := os.Getenv("JWT")
-// 	tokenString := c.Cookies(cookieName)
-// 	if len(tokenString) == 0 {
-// 		log.Println("tokenString has zero length")
-// 		return c.Status(fiber.StatusOK).Redirect("index.html")
-// 	}
+// Check the JSON Web Token (JWT) to ensure it is valid
+func CheckToken(c *fiber.Ctx) error {
+	// Get the cookie off the request
+	cookieName := os.Getenv("JWT")
+	tokenString := c.Cookies(cookieName)
+	if len(tokenString) == 0 {
+		log.Println("tokenString has zero length")
+		return c.Status(fiber.StatusOK).Redirect("index.html")
+	}
 
-// 	jwtInfo, expired, err := passkey.DecodeJwtToken(tokenString)
-// 	if err != nil || expired {
-// 		log.Println("jwtInfo has expired or an error", err)
-// 		c.ClearCookie(cookieName)
-// 		return c.Status(fiber.StatusOK).Redirect("index.html")
-// 	}
+	jwtInfo, expired, err := passkey.DecodeJwtToken(tokenString)
+	if err != nil || expired {
+		log.Println("jwtInfo has expired or an error", err)
+		c.ClearCookie(cookieName)
+		return c.Status(fiber.StatusOK).Redirect("index.html")
+	}
 
-// 	if expired || jwtInfo.Uid < 1 || len(jwtInfo.Session) < 6 || len(jwtInfo.Ip) < 6 {
-// 		log.Println("jwtInfo has expired or userid=0 or session id to small, or ip to small")
-// 		c.ClearCookie(cookieName)
-// 		return c.Status(fiber.StatusOK).Redirect("index.html")
-// 	}
+	if expired || jwtInfo.Uid < 1 || len(jwtInfo.Session) < 6 || len(jwtInfo.Ip) < 6 {
+		log.Println("jwtInfo has expired or userid=0 or session id to small, or ip to small")
+		c.ClearCookie(cookieName)
+		return c.Status(fiber.StatusOK).Redirect("index.html")
+	}
 
-// 	oldSession, oldIP, err := db.GetLastSessionByUid(jwtInfo.Uid)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
+	oldSession, oldIP, err := db.GetLastSessionByUid(jwtInfo.Uid)
+	if err != nil {
+		log.Println(err)
+	}
 
-// 	if oldSession != jwtInfo.Session || oldIP != jwtInfo.Ip {
-// 		log.Println("Session terminated")
-// 		c.ClearCookie(cookieName)
-// 		return c.Status(fiber.StatusOK).Redirect("index.html")
-// 	}
+	if oldSession != jwtInfo.Session || oldIP != jwtInfo.Ip {
+		log.Println("Session terminated")
+		c.ClearCookie(cookieName)
+		return c.Status(fiber.StatusOK).Redirect("index.html")
+	}
 
-// 	// Attach to the request
-// 	c.Locals("curUid", fmt.Sprintf("%v", jwtInfo.Uid))
-// 	c.Locals("user", fmt.Sprintf("%v", jwtInfo.User))
-// 	c.Locals("fullname", fmt.Sprintf("%v", jwtInfo.Fullname))
-// 	c.Locals("permissions", fmt.Sprintf("%v", jwtInfo.Permissions))
-// 	c.Locals("timezone", fmt.Sprintf("%v", jwtInfo.Timezone))
-// 	c.Locals("tzoff", fmt.Sprintf("%v", jwtInfo.Tzoff))
-// 	return c.Next()
-// }
+	// Attach to the request
+	c.Locals("curUid", fmt.Sprintf("%v", jwtInfo.Uid))
+	c.Locals("user", fmt.Sprintf("%v", jwtInfo.User))
+	c.Locals("fullname", fmt.Sprintf("%v", jwtInfo.Fullname))
+	c.Locals("permissions", fmt.Sprintf("%v", jwtInfo.Permissions))
+	c.Locals("timezone", fmt.Sprintf("%v", jwtInfo.Timezone))
+	c.Locals("tzoff", fmt.Sprintf("%v", jwtInfo.Tzoff))
+	return c.Next()
+}

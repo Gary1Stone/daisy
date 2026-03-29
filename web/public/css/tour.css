@@ -1,0 +1,338 @@
+:root {
+    --color-fg: navy;
+    --color-bg: white;
+    --nav-bg: #1B3776;
+    --nav-fg: #A2AECB;
+    --slider-width: calc(100vw * 28); /* 28 pages */
+    --page-width: calc(100vw);
+    --content-width: 428px; /* iphone 12 pro screen size */
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+      --color-fg: white;
+      --color-bg: navy;
+      --nav-fg: #1B3776;
+      --nav-bg: #A2AECB;
+    }
+}
+* {
+    box-sizing: border-box; /* when specifying width/height, includes padding and border */
+}
+body {
+    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif; 
+    color: var(--color-fg);
+    background-color: var(--color-bg);
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+.screen {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.slider {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: var(--slider-width);
+    gap: 0;
+    transition: transform 0.5s ease;
+}
+.page {
+    background-color: var(--color-bg);
+    width: var(--page-width)
+}
+.page>section {
+    width: 100%;
+    max-width: var(--content-width);
+    min-width: 375px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.page>section>h3 {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 10px 10px 0 0;
+    font-size: 1rem;
+}
+.offscreen {
+    height: 50px;
+    overflow: hidden;
+}
+.img {
+    border: 1px solid silver;
+    width: 100%;
+}
+ul {
+    text-align: left;
+}
+/* navbar */
+.navbar {
+    background-color: var(--nav-bg);
+    color: var(--nav-fg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    width: 100%;
+    height: 65px;
+}
+.navbar i {
+    font-size: 2.5rem !important;
+}
+.navbar a, .dropdown .dropbtn {
+    color: var(--nav-fg);
+    padding: 10px 10px 0 10px;
+    text-decoration: none;
+    background-color: var(--nav-bg);
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+.navbar p {
+    font-weight: bolder;
+    text-align: center;
+    flex: 1;
+    color: var(--nav-fg);
+}
+/*
+    If not a touchscreen, allow hover highlighting
+*/
+@media (hover: hover) {
+    .navbar a:hover, .dropdown:hover .dropbtn, .dropdown-content a:hover {
+        background-color: var(--nav-fg);
+        color: var(--nav-bg);
+    }
+    .close:hover, .close:focus {
+      color: navy;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .calc_table button:hover {
+        background-color: white;
+        color: navy;
+    }
+}
+.dropdown {
+    position: relative;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 66px;
+    background-color: var(--nav-bg);
+    color: var(--nav-fg);
+    box-shadow: 0px 10px 10px 0px silver;
+    z-index: 1;
+}
+.dropdown-content a {
+    padding: 10px 10px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown-content.show {
+    display: block;
+}
+/* Calendar Table */
+.calendar {
+    width: 100%;
+    max-width: var(--content-width);
+    border-collapse: collapse;
+    table-layout: fixed;
+    border: 1px solid var(--color-bg);
+    background-color: var(--nav-bg);
+    color: var(--nav-fg);
+    text-align: center; 
+}
+.calendar th {
+  border: 1px solid silver;
+  padding: 1rem;
+  vertical-align: top;
+  position: relative;
+}
+.calendar td {
+  font-size: 11px;
+  border: 1px solid silver;
+  vertical-align: center;
+  height: 100px;
+  position: relative;
+  color: var(--color-fg);
+  background-color: var(--color-bg);
+}
+.calendar .date {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  font-weight: bold;
+}
+.calendar .clickable {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+.sign {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  border: 1px solid var(--color-fg);
+  text-align: center;
+  background-color: silver;
+}
+label {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+/* Calendar Icon */
+.datebox {
+    margin: 0 1rem 0 0;
+    background-color: var(--nav-bg);
+    color: var(--nav-fg);
+    width: 2rem;
+    font-size: 0.75rem;
+    text-align: center;
+    border-radius: 5px;
+}
+.dateboxMiddle {
+    display:block;
+    background-color: var(--nav-fg);
+    color: var(--nav-bg);
+    width: 2rem;
+    font-weight: bold;
+}
+/* info cards */
+.card {
+    border: 1px solid var(--color-fg);
+    margin: 2rem;
+    padding: 1rem;
+    box-shadow: 0 5px 10px 0 silver;
+    border-radius: 10px;
+}
+.card>h2 {
+    border: 1px solid silver;
+    border-radius: 10px;
+    background-color: var(--nav-bg);
+    color: var(--nav-fg);
+    padding: 6px;
+    text-align: center;
+}
+/*Search Table */
+#searchTable {
+    border-collapse: collapse; /* Collapse borders */
+    width: 100%; /* Full-width */
+    border: 1px solid silver; /* Add a grey border */
+    font-size: 1rem; /* Increase font-size */
+}
+#searchTable th, #searchTable td {
+    text-align: left; /* Left-align text */
+    padding: 0.75rem; /* Add padding */
+}
+#searchTable tr {
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+}
+#searchTable tr.header, #searchTable tr:hover {
+    background-color: #f1f1f1;
+}
+.searchBox {
+    position: relative;
+    display: inline-block;
+    width: 50%;
+}
+.searchBox input {
+    width: 100%;
+    padding: 10px 40px 10px 10px; /* Adjust the padding to make room for the icon */
+    box-sizing: border-box;
+    border-radius: 15px;
+}
+.searchBox .material-icons {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Prevents the icon from blocking input clicks */
+}
+
+/* Currency Converter */
+button {
+    touch-action: manipulation; /* Stops double-tap from zooming in */
+}
+.calc_table {
+    background: linear-gradient(331deg, black 0%, gainsboro 40%, gray 100%);
+    border: 1px solid black;
+    padding: 10px;
+    table-layout: fixed;
+    width: 100%;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 10px;
+    box-shadow: 5px 5px gainsboro;
+}
+.display {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 1.5rem;
+    text-align: right;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.big_btn {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.5rem;
+    color: var(--color-fg);
+    background-color: gainsboro;
+    border: 1px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.flag {
+  margin-right: 4px;
+  width: 25px;
+  height: 25px;
+}
+.flag_btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    color: var(--color-fg);
+    background-color: gainsboro;
+    border: 1px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.flag_square {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    color:  var(--color-fg);
+    border: none;
+    margin-bottom: 10px;
+    margin-left: 1rem;
+}
+#us, #vn, #kh, #ca, #la {
+  width: 100%;
+  margin-right: 5px; 
+  padding-right: 5px;
+  text-align: right;
+  font-size: 1.5rem;
+}
+.hide {
+  display: none;
+}

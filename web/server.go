@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/util"
 	"github.com/gbsto/daisy/web/middleware"
 	"github.com/gbsto/daisy/web/routes"
@@ -26,7 +27,7 @@ func StartServer() {
 	app := fiber.New(fiber.Config{
 		Views:              engine,
 		ServerHeader:       "Daisy",
-		AppName:            "Daisy App v2026.03.05",
+		AppName:            "Daisy App v2026.03.29",
 		EnableIPValidation: true,
 	})
 
@@ -52,7 +53,7 @@ func StartServer() {
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("daisy.hopto.org"),
-		Cache:      autocert.DirCache("./certs"),
+		Cache:      autocert.DirCache("./web/certs"),
 	}
 
 	// TLS Config
@@ -79,9 +80,8 @@ func StartServer() {
 		if len(ips) > 0 {
 			ip = ips[0]
 		}
-		log.Println(ip)
 		// Record the attack
-		//	db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
+		db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
 		// Set the status code to 404 Not Found
 		c.Status(fiber.StatusNotFound)
 		return c.Render("404", fiber.Map{ // HTML template is named "404.html"
@@ -101,8 +101,7 @@ func StartServer() {
 		Output: logFile,
 	}))
 
-	// libVersion, _, _ := sqlite3.Version()
-	// log.Println("SQLite Version:", libVersion)
+	log.Println("SQLite Version:", db.GetSqlVersion())
 
 	// Start server on HTTPS port 443
 	// Remember to open ports 443 and 80 in the windows firewall
@@ -114,7 +113,6 @@ func StartServer() {
 	}
 
 	// Start server
-	//	defer db.Conn.Close()
+	defer db.Conn.Close()
 	log.Fatal(app.Listener(ln))
-
 }
