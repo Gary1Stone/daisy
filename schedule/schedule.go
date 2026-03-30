@@ -28,7 +28,7 @@ func atStartUp() {
 }
 
 // This starts a scheduler that runs every 15 minutes.
-// and do the database backup every day at 2 AM or thereabouts
+// and does the database backup every day at 2 AM or thereabouts
 // It runs indefinitely until the program is stopped.
 func everyQuarterHour() {
 	ticker := time.NewTicker(15 * time.Minute)
