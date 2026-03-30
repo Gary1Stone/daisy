@@ -1,25 +1,5 @@
 // Control.js
 
-
-//const popup = document.getElementById('popup');
-//As user changes something turn on the Save button
-$(document).ready(function () {
-    // If User clicks on off-popup background, close the dialog
-    popup.addEventListener("click", e => {
-        const popupDimensions = popup.getBoundingClientRect()
-        if (
-            e.clientX < popupDimensions.left ||
-            e.clientX > popupDimensions.right ||
-            e.clientY < popupDimensions.top ||
-            e.clientY > popupDimensions.bottom
-        ) {
-            $("#popupContent").html("");
-            $("#popupTitle").html("");
-            Metro.dialog.close("#popup");
-        }
-    });
-});
-
 function showActiveUsers() {
     getActiveUsers();
     Metro.dialog.open("#popup");
@@ -28,7 +8,6 @@ function showActiveUsers() {
 function doPopupOkay(){
     $("#popupContent").html("");
     $("#popupTitle").html("");
-//    Metro.dialog.close("#popup");
 }
 
 function endSession(id) {
