@@ -7,27 +7,27 @@ import (
 	"path/filepath"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/util"
 	"github.com/gbsto/daisy/web/middleware"
 	"github.com/gbsto/daisy/web/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
+	"gopkg.in/natefinch/lumberjack.v2"
 
 	"golang.org/x/crypto/acme/autocert"
 )
 
-func StartServer() {
+func StartServer(daisyLogger *lumberjack.Logger) {
 
-	// Get the current directory's full path
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	// Get the current working directory
+	workingDir, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("ERROR: Cannot find the current working directory")
+		workingDir = "."
 	}
 
 	// Initialize GoFiber html template engine
-	viewsDir := filepath.Join(dir, "web", "views")
+	viewsDir := filepath.Join(workingDir, "web", "views")
 	engine := html.New(viewsDir, ".html")
 
 	// Create GoFiber app
@@ -42,17 +42,16 @@ func StartServer() {
 	server := app.Server()
 	server.MaxRequestBodySize = 5 * 1024 * 1024
 
-
 	// Give external access to the public folder
 	// where javascript, css, images,... are stored
 	// app.Static("/", dir+"/public")
-	app.Static("/", filepath.Join(dir, "web", "public"))
+	app.Static("/", filepath.Join(workingDir, "web", "public"))
 	app.Use(recover.New())
 	app.Use(middleware.AddHitCounter())
 	middleware.AddProtection(app)
 
 	// https: Certificate manager
-	certCacheDir := filepath.Join(dir, "web", "certs")
+	certCacheDir := filepath.Join(workingDir, "web", "certs")
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("daisy.hopto.org"),
@@ -92,12 +91,12 @@ func StartServer() {
 		})
 	})
 
-	//Set up error logging directory
-	logFile := util.CheckLogsDirectoryExists()
-	defer logFile.Close()
+	// Set up error logging directory
+	// logFile := util.CheckLogsDirectoryExists()
+	// defer logFile.Close()
 
 	app.Use(logger.New(logger.Config{
-		Output: logFile,
+		Output: daisyLogger,
 	}))
 
 	log.Println("SQLite Version:", db.GetSqlVersion())

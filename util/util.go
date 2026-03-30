@@ -1,43 +1,11 @@
 package util
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
-	"os"
-	"path/filepath"
 	"strconv"
 	"time"
 )
-
-// Create the logs directory if it does not exist
-func CheckLogsDirectoryExists() *os.File {
-	//Get the base file dir
-	workingDir, err := os.Getwd()
-	if err != nil {
-		workingDir = "."
-	}
-	//Set the logs path
-	logPath := filepath.Join(workingDir, "logs")
-	//Create directory if it does not exist
-	if stat, err := os.Stat(logPath); os.IsNotExist(err) {
-		os.Mkdir(logPath, 0755)
-	} else {
-		if !stat.IsDir() {
-			fmt.Printf("ERROR: Cannot begin due to a file named 'logs' in the home: [%v] directory. Remove it please.", logPath)
-			panic("Ending")
-		}
-	}
-
-	filePath := filepath.Join(workingDir, "logs","daisy.log")
-	
-	logFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("ERROR: Problem opening the file: %v", err.Error())
-	}
-
-	return logFile
-}
 
 // Return a substring
 func Substr(input string, start int, length int) string {

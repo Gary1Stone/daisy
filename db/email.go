@@ -92,16 +92,17 @@ func transmitEmail() {
 		//Configure to use email template file
 		var body bytes.Buffer
 
-		// Remove the leading dot, replace with ./web/views/templatename.html
-		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		// Get path to ./web/views/templatename.html
+		workingDir, err := os.Getwd()
 		if err != nil {
-			dir = "."
+			workingDir = "."
 		}
-		// BAD GARY - should not store directory seperators in databse emails table.
+
+		// BAD GARY - should not store directory seperators in database emails table.
 		// get everything after the last / in the template name
 		templateName := toSend.Template
 		templateName = templateName[strings.LastIndex(templateName, "/")+1:]
-		toSend.Template = filepath.Join(dir, "web", "views", templateName)
+		toSend.Template = filepath.Join(workingDir, "web", "views", templateName)
 
 		t, err := template.ParseFiles(toSend.Template)
 		if err != nil {

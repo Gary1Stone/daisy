@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"log"
 	"sync/atomic"
 	"time"
 
+	"github.com/gbsto/daisy/db"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -44,8 +44,7 @@ func startHitCounter() {
 // Atomically get the current count and reset it to 0 for the next interval
 func resetHits() {
 	count := atomic.SwapUint64(&hitCounter, 0)
-	log.Println(count)
-	//	db.LogHits(count)
+	db.LogHits(count)
 }
 
 // Ask GoFiber to use this hit counter

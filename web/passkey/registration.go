@@ -79,6 +79,11 @@ func BeginRegistration(c *fiber.Ctx) error {
 		UserVerification:        protocol.VerificationRequired,           // Require user verification (e.g., biometrics or PIN)
 	}
 
+	// Debug check: ensure the global webAuthn object is actually configured
+	if webAuthn == nil {
+		return handleError(c, fiber.StatusInternalServerError, "WebAuthn engine not initialized", nil)
+	}
+
 	options, session, err := webAuthn.BeginRegistration(
 		user,
 		webauthn.WithAuthenticatorSelection(authSelection),
