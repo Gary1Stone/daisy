@@ -10,7 +10,6 @@ import (
 
 func Routes(app *fiber.App) {
 	app.Get("/", cmd.GetIndex)
-	app.Get("/tour.html", cmd.GetTour)
 	app.Get("/index.html", cmd.GetIndex)
 	app.Get("/registration.html", cmd.GetRegistration)
 	app.Get("/login.html", cmd.GetLogin)

@@ -46,9 +46,3 @@ func GetCaptcha(c *fiber.Ctx) error {
 		"user": " ",
 	})
 }
-
-func GetTour(c *fiber.Ctx) error {
-	return c.Render("tour", fiber.Map{
-		"user": " ",
-	})
-}
