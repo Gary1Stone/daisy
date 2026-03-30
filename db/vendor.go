@@ -150,8 +150,17 @@ func macAPI(mac string) (string, error) {
 		return "", err
 	}
 
+	// Save Unknown entry into database to prevent subsequent searches.
 	if !recvd.Found {
-		return "", nil
+		recvd.Company = "Unknown"
+		if len(mac) > 8 {
+			recvd.MacPrefix = mac[0:8]
+		} else {
+			recvd.MacPrefix = mac
+		}
+		recvd.BlockType = "MA-L"
+		recvd.Updated = time.Now().Format("2006-01-02 15:04:05")
+		recvd.IsPrivate = false
 	}
 
 	err = addNewVendor(recvd.Company, recvd.MacPrefix, recvd.BlockType, recvd.Updated, recvd.IsPrivate)
