@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"database/sql"
 	"errors"
-	"html/template"
 	"log"
 	"net/mail"
 	"net/smtp"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
 
 	"github.com/gbsto/daisy/util"
@@ -90,6 +91,18 @@ func transmitEmail() {
 
 		//Configure to use email template file
 		var body bytes.Buffer
+
+		// Remove the leading dot, replace with ./web/views/templatename.html
+		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			dir = "."
+		}
+		// BAD GARY - should not store directory seperators in databse emails table.
+		// get everything after the last / in the template name
+		templateName := toSend.Template
+		templateName = templateName[strings.LastIndex(templateName, "/")+1:]
+		toSend.Template = filepath.Join(dir, "web", "views", templateName)
+
 		t, err := template.ParseFiles(toSend.Template)
 		if err != nil {
 			log.Println(err)

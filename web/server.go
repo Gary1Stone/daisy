@@ -27,7 +27,7 @@ func StartServer() {
 	}
 
 	// Initialize GoFiber html template engine
-	viewsDir :=filepath.Join(dir, "web", "views")
+	viewsDir := filepath.Join(dir, "web", "views")
 	engine := html.New(viewsDir, ".html")
 
 	// Create GoFiber app

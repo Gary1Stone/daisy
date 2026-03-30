@@ -6,3 +6,4 @@ logs/
 __debug_bin.exe
 backup/
 certs/
+errors.log
