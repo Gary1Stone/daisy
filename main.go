@@ -4,13 +4,27 @@ import (
 	"log"
 	"os"
 
+	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/schedule"
 	"github.com/gbsto/daisy/web"
 	"github.com/joho/godotenv"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// Load the environment variables
 func init() {
+	loadEnvVariables()
+	setupLogFiles()
+}
+
+func main() {
+	log.Println("Starting Daisy")
+	db.StartServer()
+	schedule.StartServer()
+	web.StartServer()
+}
+
+// Load the environment variables
+func loadEnvVariables() {
 	if err := godotenv.Load(); err != nil {
 		if os.IsNotExist(err) {
 			log.Fatal("FATAL: .env file not found. Please create one in the current working directory.")
@@ -20,18 +34,8 @@ func init() {
 	}
 }
 
-func main() {
-	webLogger := setupLogFiles()
-	defer webLogger.Close()
-
-	web.StartServer()
-
-	log.Println("Starting Daisy")
-
-}
-
 // Use lumberjack for automatic log rotation and truncation.
-func setupLogFiles() *lumberjack.Logger {
+func setupLogFiles() {
 	log.SetOutput(&lumberjack.Logger{
 		Filename:   "error.log",
 		MaxSize:    10, // megabytes
@@ -40,14 +44,4 @@ func setupLogFiles() *lumberjack.Logger {
 		Compress:   false,
 	})
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
-
-	// Configure a separate logger for web requests.
-	webLogger := &lumberjack.Logger{
-		Filename:   "web.log",
-		MaxSize:    10, // megabytes
-		MaxBackups: 3,
-		MaxAge:     28,
-		Compress:   false,
-	}
-	return webLogger
 }

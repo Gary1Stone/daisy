@@ -1,0 +1,159 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<div class="container">
+    <div class="grid">
+        <div class="row">
+            <div class="cell-12" id="tableData">
+                {{.affinityList}}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="dialog" data-role="dialog" id="helpDialog">
+    <div class="dialog-title">Online Device Overlap</div>
+    <div class="dialog-content">
+
+        <details>
+            <summary>Jaccard Similarity (0.0 to 1.0)</summary>
+            <p>
+                Jaccard measures online overlap relative to the combined online activity of both. 
+                A high value means both MACs appear online at the same times and neither 
+                appears much without the other. Jaccard is best for detecting randomized 
+                MACs from the same phone and devices that appear/disappear together 
+                such as carried-together devices, such as a phone and laptop.
+            </p>
+        </details>
+
+        <details>
+            <summary>Pearsons Correlation (-1.0 to 1.0)</summary>
+            <p>
+                Pearsons correlation measures the online overlap relative to the smaller 
+                set of MAC1 vs. MAC2 of online activity. A high value means almost all 
+                activity of the smaller set MAC overlaps the larger. Pearsons is best 
+                for detecting random MACs that appear for short bursts and secondary 
+                NICs in the same device. Negative correlation indicates an inverse 
+                relationship; when one is online, the other is offline.
+            </p>
+        </details>
+
+        <details open>
+            <summary>High Jaccard (≥ 0.65–0.80) &amp; High Pearsons (≥ 0.85-0.95)</summary>
+            <p>
+                High Jaccard indicates significant mutual overlap. High Pearsons indicates the 
+                shorter online time MAC almost always overlaps larger. MAC pairs with high 
+                percentage (>90%) overlap are likely to be seperate devices, 
+                unless it uses two network connections simulanously.
+            </p>
+            <p>
+                With Jaccard ≥ 0.70 and Pearsons ≥ 0.85 this combination is extremely 
+                reliable for identifying rotating/random phone MACs and devices with multiple NICs, 
+                while avoiding carried-together devices, such as a phone and laptop. 
+            </p>
+        </details>
+
+        <details>
+            <summary>Low Jaccard (≤ 0.10) &amp; High Pearsons (≥ 0.95)</summary>
+            <p>
+                Mobile phones often randomize/rotate their MAC addresses. Random MACs often have 
+                short lifetimes and are rotated in sequence. So when Jaccard is low and Pearsons 
+                is high it correctly indicates random MACs.
+            </p>
+        </details>
+
+        <details>
+            <summary>Low Jaccard (≤ 0.10) &amp; Low Pearsons (≤ 0.15)</summary>
+            <p>
+                When both Jaccard and Pearsons are low it means there is a very small intersection of online times. 
+                Each MAC appears online mostly without the other. This usually means different physical devices, 
+                possibly different users or possibly different daily schedules. So low/low is actually useful, 
+                it helps exclude correlations. 
+            </p>
+        </details>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close">Okay</button>
+    </div>
+</div>
+
+
+<div class="dialog" data-role="dialog" id="linkDialog">
+    <div class="dialog-title">Linking Devices</div>
+    <div class="dialog-content">
+        <p><b class="fg-red">WARNING: </b>You should have reviewed the chart and decided if these are the same device or different devices.</p>
+        <br><b id="linkText"></b><br><br>
+        <p>
+            <form id="linkForm" name="linkForm" action="#" method="post" autocomplete="off" data-role="validator" data-interactive-check="false">
+                <fieldset>
+                    <legend>Provide your determination:</legend>
+
+                    <input type="hidden" id="mac1" value="">
+                    <input type="hidden" id="mac2" value="">
+                    <input type="hidden" id="mid1" value="">
+                    <input type="hidden" id="mid2" value="">
+                    
+                    <input type="radio" id="device-same" name="device" value="same">
+                    <label for="device-same">These are the same device</label><br>
+
+                    <input type="radio" id="device-different" name="device" value="different">
+                    <label for="device-different">These are different devices</label><br>
+                    
+                    <input type="radio" id="device-ignore" name="device" value="ignore">
+                    <label for="device-ignore">Ignore these devices</label>
+                </fieldset>
+            </form>
+        </p>
+        <br>
+        <p class="fg-red">Please be <em>absolutly</em> sure you want to do this!</p>
+        <p class="fg-red">This cannot be undone.</p>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close" onclick="recordLink();">Apply</button>
+        <button class="button secondary js-dialog-close">Cancel</button>
+    </div>
+</div>
+
+
+<div class="dialog" data-role="dialog" id="searchDialog">
+    <div class="dialog-title">Jaccard &amp; Pearsons Correlation</div>
+    <div class="dialog-content">
+        <div><b>Presets</b><br>
+            <input type="radio" id="highhigh" name="compare" value="1" onclick="setHighHigh();">
+            <label for="highhigh">High/High (Online similarity)</label><br>
+            
+            <input type="radio" id="lowhigh" name="compare" value="0" onclick="setLowHigh();">
+            <label for="lowhigh">Low/High (Online similarity for random MACs)</label><br>
+        </div>
+        <div><b>Include</b><br>
+
+            <input type="radio" id="all" name="macfilter" value="0" checked="checked">
+            <label for="all" title="It is not very usefull comparing random MACs to Native MACs">All MAC Pairs</label><br>
+
+            <input type="radio" id="fixed" name="macfilter" value="1">
+            <label for="fixed">Native MAC Pairs Only</label><br>
+
+            <input type="radio" id="random" name="macfilter" value="2">
+            <label for="random">Randomized MAC Pairs Only</label><br>
+
+            <input type="checkbox" id="hostnames" name="hostnames" value="1">
+            <label for="hostnames">Matching Hostnames</label>
+        </div>
+        <div><br>
+            <label for="jaccard">Jaccard Coefficient</label> (<b><a href='#' onclick="jsign();" class="no-decor">
+                <span id="jsign" class="enlarge-3">&gt;</span></a></b> <span id="jaccardValue">0.70</span>)<br>
+            <input type="range" id="jaccard" name="jaccard" min="0" max="1" step="0.05" value="0.70" style="width: 100%;" />
+        </div>
+        <div>
+            <label for="pearson">Pearsons Coefficient</label> (<b><a href='#' onclick="psign();" class="no-decor" >
+                <span id="psign" class="enlarge-3">&gt;</span></a></b> <span id="pearsonValue">0.85</span>)<br>
+            <input type="range" id="pearson" name="pearson" min="-1" max="1" step="0.05" value="0.85" style="width: 100%;" >
+        </div>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close" onclick="reloadTable();">Apply</button>
+        <button class="button secondary js-dialog-close">Cancel</button>
+    </div>
+</div>
+
+<script src="js/correlation.js" defer></script>
+{{template "partials/bottom" .}}

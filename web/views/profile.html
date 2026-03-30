@@ -1,0 +1,112 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<form id="theForm" name="theForm" action="#" method="post" 
+  autocomplete="off"
+  data-role="validator" data-interactive-check="false"
+  data-on-before-submit="return saveRecord();" >
+  <div class="container">
+
+
+    <div class="myCards">
+
+      <div class="myCard">
+        <header>
+          <span class='mif-user'></span>&nbsp;User Profile
+          <input type="hidden" id="uid" name="uid" value="{{ .uid }}" >
+          <input type="hidden" id="color" name="color" value="{{ .color }}" >
+          <input type="hidden" id="curUid" name="curUid" value="{{ .curUid }}" >
+          <input type="hidden" id="pwd_reset" name="pwd_reset" value="{{ .pwd_reset }}" >
+        </header>
+        <section>
+          <div class="form-group">
+            <label for="user">User ID</label>
+            <input type="email" id="user" name="user" value="{{ .user }}"
+              autocomplete="off" placeholder="User ID" title="User Identifier"
+              required minlength="6" maxlength="100" autofocus
+              data-role="input" data-prepend="<span class='mif-user'></span>"
+              data-validate="required email minlength=6 maxlength=100"
+              {{if .Readonly }}readonly{{end}} >
+            <small id="userError" class="invalid_feedback">Mandatory unique email address</small>
+
+            <label for="first">First Name</label>
+            <input type="text" id="first" name="first" value="{{ .first }}"
+              placeholder="User's first name" title="User's first name"
+              required autocomplete="off" minlength="2" maxlength="50"
+              data-role="input" data-validate="mandatory minlength=2 maxlength=50"
+              {{if .Readonly }}readonly{{end}} >
+            <small id="firstError" class="invalid_feedback">Min 2 characters</small>
+
+            <label for="last">Last Name</label>
+            <input type="text" id="last" name="last" value="{{ .last }}"
+              placeholder="User's last name" title="User's last name"
+              required autocomplete="off" minlength="2" maxlength="50"
+              data-role="input" data-validate="mandatory minlength=2 maxlength=50"
+              {{if .Readonly }}readonly{{end}} >
+            <small id="lastError" class="invalid_feedback">Min 2 characters</small>
+
+            {{ .GroupOptions }}
+
+            {{ .FenceOptions }}
+
+            <label for="geo_radius">Fence Radius</label>
+            <select name="geo_radius" id="geo_radius" title="Geo Radius"
+              data-role="select" data-filter="false"
+              {{if .isDisabled }}disabled{{end}} >
+              {{ .RadiusOptions }}
+            </select>
+            <small class="invalid_feedback">Oh Oh</small>
+
+            <div style="width:100%; display: flex; justify-content:space-between;">
+              <span>{{ .chkNotify }}</span>
+              <span class="text-right">{{ .chkActive }}</span>
+            </div>
+          </div>
+        </section>
+        <footer>
+          {{ .banned }}
+        </footer>
+      </div>
+
+
+      <div class="myCard">
+        <header>
+          <span class='mif-devices'></span>&nbsp;Assigned Devices
+        </header>
+        <section>
+          {{ .assigned_devices }}
+        </section>
+        <footer>
+        </footer>
+      </div>
+
+      <div class="myCard">
+        <header>
+          <span class='mif-bell'></span>&nbsp;Alerts
+        </header>
+        <section>
+          {{ .userAlerts }}
+        </section>
+        <footer>
+        </footer>
+      </div>
+
+
+  </div>
+  <div class="myCard">
+    <header>
+      <span class='mif-user'></span>&nbsp;Login History (90 days)
+    </header>
+    <section>
+      {{ .loginHistory }}
+    </section>
+    <footer>
+    </footer>
+  </div>
+
+  <div class="row">
+    <div class="cell-12 text-right fg-grayBlue">
+      {{ .lastUpdated }} &nbsp;
+    </div>
+  </div>
+</form>
+<script src="js/profile.js" defer></script>
+{{template "partials/bottom" .}}

@@ -11,14 +11,14 @@ import (
 )
 
 // Create the logs directory if it does not exist
-func CheckLogsDirectoryExists() {
+func CheckLogsDirectoryExists() *os.File {
 	//Get the base file dir
-	path, err := os.Getwd()
+	workingDir, err := os.Getwd()
 	if err != nil {
-		log.Println(err)
+		workingDir = "."
 	}
 	//Set the logs path
-	logPath := filepath.Join(path, "logs")
+	logPath := filepath.Join(workingDir, "logs")
 	//Create directory if it does not exist
 	if stat, err := os.Stat(logPath); os.IsNotExist(err) {
 		os.Mkdir(logPath, 0755)
@@ -28,6 +28,15 @@ func CheckLogsDirectoryExists() {
 			panic("Ending")
 		}
 	}
+
+	filePath := filepath.Join(workingDir, "logs","daisy.log")
+	
+	logFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("ERROR: Problem opening the file: %v", err.Error())
+	}
+
+	return logFile
 }
 
 // Return a substring

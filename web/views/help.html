@@ -1,0 +1,24 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<h1>Help</h1>
+
+<article> 
+    <h2>Understanding Alerts and Tickets</h2>
+<p> SIGHTING --> CID y, SID n, UID y (who seen with it, becomes owner), INFORM Y (current Owner)
+</p><p> USING    --> CID y, SID n, UID n, INFORM n --> Closed on open
+</p><p> CLAIMING --> CID y, SID n, UID n, INFORM y (previous owner)
+</p><p> GIVING   --> CID y, SID n, UID n, INFORM y (new owner)
+</p><p> BROKEN   --> CID y, SID n, UID y (who will fix), INFORM y (current owner) -> NEEDS WORK LOG TO BE CLOSED!
+</p><p> LOST     --> CID y, SID n, UID y (who will fix), INFORM Y (current owner) -> NEEDS WORK LOG TO BE CLOSED!
+</p><p> DIED     --> CID y, SID n, UID y (who will fix), INFORM Y (current owner) -> NEEDS WORK LOG TO BE CLOSED!
+</p><p> CARE     --> CID y, SID n, UID y (who will fix), INFORM Y (current owner) -> NEEDS WORK LOG TO BE CLOSED!
+</p><p> BACKUP   --> CID y, SID n, UID n, INFORM n
+</p><p> INSTALL  --> CID y, SID y, UID n, INFORM y (device current owner)
+</p><p> REMOVE   --> CID y, SID y, UID n, INFORM y (device current owner)
+</p><p> REQUEST  --> CID y, SID y, UID y, INFORM y (device current owner)
+</p>
+</article>
+
+
+
+
+{{template "partials/bottom" .}}

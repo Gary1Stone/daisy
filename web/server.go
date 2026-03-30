@@ -20,8 +20,15 @@ import (
 
 func StartServer() {
 
+	// Get the current directory's full path
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatalf("ERROR: Cannot find the current working directory")
+	}
+
 	// Initialize GoFiber html template engine
-	engine := html.New("./views", ".html")
+	viewsDir :=filepath.Join(dir, "web", "views")
+	engine := html.New(viewsDir, ".html")
 
 	// Create GoFiber app
 	app := fiber.New(fiber.Config{
@@ -35,25 +42,21 @@ func StartServer() {
 	server := app.Server()
 	server.MaxRequestBodySize = 5 * 1024 * 1024
 
-	// Get the current directory's full path
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatalf("ERROR: Cannot find the current working directory")
-	}
 
 	// Give external access to the public folder
 	// where javascript, css, images,... are stored
 	// app.Static("/", dir+"/public")
-	app.Static("/", filepath.Join(dir, "public"))
+	app.Static("/", filepath.Join(dir, "web", "public"))
 	app.Use(recover.New())
 	app.Use(middleware.AddHitCounter())
 	middleware.AddProtection(app)
 
 	// https: Certificate manager
+	certCacheDir := filepath.Join(dir, "web", "certs")
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("daisy.hopto.org"),
-		Cache:      autocert.DirCache("./web/certs"),
+		Cache:      autocert.DirCache(certCacheDir),
 	}
 
 	// TLS Config
@@ -90,11 +93,7 @@ func StartServer() {
 	})
 
 	//Set up error logging directory
-	util.CheckLogsDirectoryExists()
-	logFile, err := os.OpenFile(filepath.Join(dir, "logs", "daisy.log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("ERROR: Problem opening the file: %v", err.Error())
-	}
+	logFile := util.CheckLogsDirectoryExists()
 	defer logFile.Close()
 
 	app.Use(logger.New(logger.Config{
@@ -102,6 +101,7 @@ func StartServer() {
 	}))
 
 	log.Println("SQLite Version:", db.GetSqlVersion())
+	log.Println("Daisy Web Server starting...")
 
 	// Start server on HTTPS port 443
 	// Remember to open ports 443 and 80 in the windows firewall

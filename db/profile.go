@@ -68,7 +68,7 @@ func (f *ProfileFilter) Init() {
 // SetSystemProfile
 // Initialize one user to be the Global system profile
 // then test database access and configuration
-func init() {
+func setupSystemProfile() {
 	sysUser := os.Getenv("SYS_USER")
 	if sysUser == "" {
 		log.Panic("FATAL: Environment variable SYS_USER not set in .env file")

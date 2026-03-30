@@ -1,0 +1,67 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<div class="container">
+    <div class="grid">
+        <div class="row">
+            <div class="cell-10">
+                {{.avoidSelect}}
+            </div>
+            <div class="cell-2">
+                 <br><button class="button" onclick="showLink();">I decided...</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="chart" style="width:1440px; margin: 0 auto;">{{.avoidChart}}</div>
+
+<div class="dialog" data-role="dialog" id="helpDialog">
+    <div class="dialog-title">Online Device Overlap</div>
+    <div class="dialog-content">
+        <p>Colors:</p>
+        <ul>
+            <li>Green indicates the device was online.</li>
+            <li>Gray indicates the device is offline.</li>
+            <li>Pink indicates the network probe was down.</li>
+        </ul>
+        <p>You should compare the two devices for when the dates are the same, and confirm that they don't have overlapping timeslots.(0%)</p>
+        <p>Device pairs with high percentage (>90%) overlap are likely to be seperate devices, unless it uses two network connections simulanously.</p>
+        <p>Device pairs with the same hostname, IP address and low percentage overlap are already combined automatically.</p>
+        <p>Once you determine two devices are really one device or seperate devices, link them together.</p>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close">Okay</button>
+    </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="linkDialog">
+    <div class="dialog-title">Linking Devices</div>
+    <div class="dialog-content">
+        <p><b class="fg-red">WARNING: </b>You should have reviewed the chart and decided if these are the same device or different devices.</p>
+        <br><b id="linkText"></b><br><br>
+        <p>
+            <form id="linkForm" name="linkForm" action="#" method="post" autocomplete="off" data-role="validator" data-interactive-check="false">
+                <fieldset>
+                    <legend>Provide your determination:</legend>
+                    
+                    <input type="radio" id="device-same" name="device" value="same">
+                    <label for="device-same">These are the same device</label><br>
+
+                    <input type="radio" id="device-different" name="device" value="different">
+                    <label for="device-different">These are different devices</label><br>
+                    
+                    <input type="radio" id="device-ignore" name="device" value="ignore">
+                    <label for="device-ignore">Ignore these devices</label>
+                </fieldset>
+            </form>
+        </p>
+        <br>
+        <p class="fg-red">Please be <em>absolutly</em> sure you want to do this!</p>
+        <p class="fg-red">This cannot be undone.</p>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close" onclick="recordLink();">Apply</button>
+        <button class="button secondary js-dialog-close">Cancel</button>
+    </div>
+</div>
+
+<script src="js/duplicates.js" defer></script>
+{{template "partials/bottom" .}}

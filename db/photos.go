@@ -7,7 +7,7 @@ import (
 )
 
 // remove photos in the images directory that are no longer in the database
-func RemoveOldPhotos() {
+func RemoveOldPhotos() error {
 	// Get all the photos in the images directory
 	existingPhotos := util.MapPhotos()
 	// Keep this application's photos
@@ -19,7 +19,7 @@ func RemoveOldPhotos() {
 	rows, err := Conn.Query(query)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -51,4 +51,5 @@ func RemoveOldPhotos() {
 			util.DeletePhoto(photo)
 		}
 	}
+	return nil
 }

@@ -1,0 +1,64 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+
+<div class="container">
+  <div class="miniCards" id="cards">{{ .cards }}</div>
+</div>
+
+<div class="dialog" data-role="dialog" id="searchDialog">
+  <div class="dialog-title">Device Search</div>
+  <div class="dialog-content">
+    <section>
+      {{.typeCtrl}}
+      {{.siteSearchCtrl}}
+      <div id="selectOffice">
+        {{.officeSearchCtrl}}
+      </div>
+      {{.groupSearchCtrl}}
+      <div id="selectSearchUser">
+        {{.userSearchCtrl}}
+      </div>
+      <label for="txtSearch">Find</label>
+      <div class="table-search-block">
+        <div class="input">
+            <input type="text" id="txtSearch" data-role-input="true" data-role="input">
+            <div class="button-group">
+                <button class="button input-clear-button" tabindex="-1" type="button" onclick="$('#txtSearch').val('');">
+                    <span class="default-icon-cross"></span>
+                </button>
+            </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="dialog-actions">
+    <button class="button primary js-dialog-close" onclick="search();"><span class='mif-search'></span>&nbsp;Search</button>
+    <button class="button secondary js-dialog-close">Cancel</button>
+    <small id="searchError" class="fg-red"></small>
+  </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="chooseWizard">
+  <div class="dialog-title">Report on <span id="deviceName"></span>
+  <input type="hidden" id="wizcid" value="">
+  </div>
+  <div class="dialog-content" style="overflow-y: scroll; height: 12rem; ">
+      <ul class="v-menu">
+          <li><a href="#" onclick="showWizard('SIGHTING');"><span class="mif-eye icon fg-green"></span>I saw...</a></li>
+          <li id="backupPick"><a href="#" onclick="showWizard('BACKUP');"><span class="mif-copy icon fg-darkBlue"></span>I backed up...</a></li>
+          <li><a href="#" onclick="showWizard('CARE');"><span class="mif-wrench icon fg-red"></span>It needs care...</a></li>
+          <li><a href="#" onclick="showWizard('BROKEN');"><span class="mif-heart-broken icon fg-red"></span>It broke...</a></li>
+          <li><a href="#" onclick="showWizard('DIED');"><span class="mif-stethoscope icon fg-red"></span>It died...</a></li>
+          <li><a href="#" onclick="showWizard('LOST');"><span class="mif-steps icon fg-red"></span>It's Lost...</a></li>
+          <li><a href="#" onclick="showWizard('USING');"><span class="mif-checkmark icon fg-green"></span>I used...</a></li>
+          <li><a href="#" onclick="showWizard('CLAIMING');"><span class="mif-tag icon fg-blue"></span>I claim...</a></li>
+          <li><a href="#" onclick="showWizard('GIVING');"><span class="mif-tag icon fg-blue"></span>I gave...</a></li>
+          <li id="removePick"><a href="#" onclick="showWizard('REQUEST');"><span class="mif-file-binary icon fg-darkBlue"></span>I need Software...</a></li>
+      </ul>
+  </div>
+  <div class="dialog-actions">
+      <button class="button js-dialog-close">Cancel</button>
+  </div>
+</div>
+<script src="js/devices.js" defer></script>
+<script src="js/ajax.js" defer></script>
+{{template "partials/bottom" .}}

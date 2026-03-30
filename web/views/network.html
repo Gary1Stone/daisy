@@ -1,0 +1,68 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<div class="container">
+
+ <div class="myCards">
+
+    <div class="myCard">
+      <header>
+        <span class='mif-devices'></span>&nbsp;Online Network Devices
+      </header>
+      <section>
+        <p>Online Devices (per day)</p>
+        <p>{{.onlineSpark}}</p>
+        <p>Max: {{.maxHitsMonth}} in the past 30 days</p><br>
+        <p>{{.onlineCount}} Currently Online</p>
+        <p>{{.offlineCount}} Offline</p>
+      </section>
+      <footer>
+        <button class="button primary js-dialog-close" onclick="goToOnline();">Show Online...</button>
+      </footer>
+    </div>
+    
+    <div class="myCard">
+      <header>
+        <span class='mif-devices'></span>&nbsp;Device History
+      </header>
+      <section>
+        {{.midCtrl}}
+      </section>
+      <footer>
+        <button class="button primary js-dialog-close" onclick="goToHistory();">Show History...</button>
+      </footer>
+    </div>
+
+    
+    <div class="myCard">
+      <header>
+        <span class='mif-devices'></span>&nbsp;Online Overlap (%)
+      </header>
+      <section>
+        <div style="overflow-y: scroll; height: 12rem; ">
+        {{.avoidanceList}}
+        </div>
+      </section>
+      <footer>
+        <button class="button primary js-dialog-close" onclick="goToDuplicates();">Show Duplicates...</button>
+        <button class="button secondary js-dialog-close" onclick="goToCorrealtion();">Show Correlation...</button>
+      </footer>
+    </div>
+    
+
+  </div>
+</div>
+<div style="width:1440px; margin: 0 auto;">
+  <img src="{{.networkImage}}" alt="Network Diagram" width="100%" height="100%">
+</div>
+
+<div class="dialog" data-role="dialog" id="helpDialog">
+    <div class="dialog-title">Network</div>
+    <div class="dialog-content">
+      <p>Network Diagram</p>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close">Okay</button>
+    </div>
+</div>
+
+<script src="js/network.js" defer></script>
+{{template "partials/bottom" .}}

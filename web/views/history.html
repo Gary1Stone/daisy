@@ -1,0 +1,29 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<div class="container">
+  <div class="grid">
+    <div class="row">
+      <div class="cell-12">{{.midCtrl}}</div>
+    </div>
+  </div>
+</div>
+
+<div style="width:1440px; margin: 0 auto;">{{.deviceHistory}}</div>
+
+
+<div class="dialog" data-role="dialog" id="helpDialog">
+    <div class="dialog-title">Online History</div>
+    <div class="dialog-content">
+      <p>Colors:</p>
+      <ul>
+        <li>Green indicates the device was online.</li>
+        <li>Grey indicates the device is offline.</li>
+        <li>Pink indicates the network probe was down.</li>
+      </ul>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close">Okay</button>
+    </div>
+</div>
+
+<script src="js/history.js" defer></script>
+{{template "partials/bottom" .}}

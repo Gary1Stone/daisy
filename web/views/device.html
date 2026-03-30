@@ -1,0 +1,265 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<form id="theForm" name="theForm" data-role="validator"
+  action="#" method="post" data-interactive-check="false"
+  autocomplete="off" data-on-before-submit="return saveRecord();" >
+<div class="container">
+  <div class="myCards">
+
+    <div class="myCard">
+      <header id="asset">
+        <span class='mif-devices'></span>&nbsp;{{ .name }} 
+      </header>
+      <section>
+        <input type="hidden" id="name" name="name" value="{{ .name }}" >
+        <input type="hidden" id="active" name="active" value="{{ .active }}" >
+        <div>{{ .imageCtrl }}</div>
+        <div class="form-group">
+          {{ .typeCtrl }}
+          
+          {{ .statusCtrl }}
+        </div>
+      </section>
+      <footer>
+      </footer>
+    </div>
+    
+    <div class="myCard">
+      <header> 
+        Device
+      </header>
+      <section>
+        <div class="form-group">
+          {{ .makeCtrl }}
+
+          <label for="model">Model</label>
+          <input type="text" id="model" name="model" title="Model"
+              maxlength="255" value="{{ .model }}" {{if .isReadonly }} readonly {{end}}
+              data-role="input" data-validate="maxlength=255" >
+          <span class="invalid_feedback">Maximum 255 characters</span>
+          
+          {{ .years }}
+
+          <label for="serial_number">Serial Number</label>
+          <input type="text" id="serial_number" name="serial_number" title="Serial Number"
+              maxlength="100" value="{{ .serial_number }}" {{if .isReadonly }} readonly {{end}}
+              data-role="input" data-validate="maxlength=100" >
+          <span class="invalid_feedback">Serial Number: Up to 100 characters</span>
+
+          <table>
+            <tr>
+              <td>
+                <span id="ethernetFlag">
+                  <input type="checkbox" id="ethernet" name="ethernet"
+                      {{if .isReadonly }} readonly {{end}} {{if (eq .ethernet 1) }} checked {{end}}
+                      data-role="checkbox" data-caption="Ethernet" >
+                </span>&nbsp;
+              </td>
+              <td>
+                <span id="wifiFlag">
+                  <input type="checkbox" id="wifi"  name="wifi"
+                      {{if .isReadonly }} readonly {{end}} {{if (eq .wifi 1) }} checked {{end}}
+                      data-role="checkbox" data-caption="Wi-Fi" >
+                </span>&nbsp;
+              </td>
+              <td>
+                <span id="usbFlag">
+                  <input type="checkbox" id="usb" name="usb"
+                      {{if .isReadonly }} readonly {{end}} {{if (eq .usb 1) }} checked {{end}}
+                      data-role="checkbox" data-caption="USB" >
+                </span>&nbsp;
+              </td>
+              <td>
+                <span id="cdFlag">
+                  <input type="checkbox" id="cd" name="cd"
+                      {{if .isReadonly }} readonly {{end}} {{if (eq .cd 1) }} checked {{end}}
+                      data-role="checkbox" data-caption="CD-Drive" >
+                </span>&nbsp;
+              </td>
+            </tr>
+            </table>
+        </div>
+      </section>
+      <footer>
+      </footer>
+    </div>
+    
+    <div class="myCard">
+      <header>
+        Assignment/Location
+      </header>
+      <section>
+
+        <div class="form-group">
+          
+          {{ .groupCtrl }}
+          
+          <span id="selectPerson">
+            {{ .uidCtrl }}
+          </span>
+        
+          {{ .siteCtrl }}
+
+          <span id="selectOffice">
+            {{ .officeCtrl }}
+          </span>
+
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location" maxlength="100" title="Location"
+          value="{{ .locationCtrl }}" {{if .isReadonly }} readonly {{end}}
+          data-role="input" data-validate="maxlength=100" >
+          <span class="invalid_feedback">Max 100 characters</span>
+        </div>
+      </section>
+      <footer>
+      </footer>
+    </div>
+    
+    <div class="myCard" id="computerOnly">
+      <header>
+        Computer Details
+      </header>
+      <section>
+        <div class="form-group">
+          {{ .osCtrl }}
+
+          <label for="ram">RAM (GB)</label>
+          <input type="number" id="ram" name="ram" title="Ram (in Gigabytes)" maxlength="10"
+            value="{{ .ramCtrl }}" {{if .isReadonly }} readonly {{end}}
+            data-role="input" data-validate="integer" >
+          <span class="invalid_feedback">Digits only please</span>
+
+          <label for="cpu">CPU</label>
+          <input type="text" id="cpu" name="cpu" title="CPU information"
+            maxlength="100" value="{{ .cpuCtrl }}"
+            {{if .isReadonly }} readonly {{end}}
+            data-role="input" data-validate="maxlength=100" >
+          <span class="invalid_feedback">Up to 100 letters</span>
+
+          {{ .coresCtrl }}
+
+          {{ .driveTypeCtrl }}
+
+          <label for="drivesize">Drive Size (GB)</label>
+          <input type="number" id="drivesize" name="drivesize" title="Drive Size (GB)"
+            maxlength="10" value="{{ .drivesizeCtrl }}"
+            {{if .isReadonly }} readonly {{end}}
+            data-role="input" data-validate="number maxlengh=10" >
+          <span class="invalid_feedback">Numbers only</span>
+
+          <label for="gpu">Graphics Card</label>
+          <input type="text" id="gpu" name="gpu" maxlength="100" value=" {{ .gpuCtrl }}"
+            title="General Processing Unit (GPU) information"
+            {{if .isReadonly }} readonly {{end}}
+            data-role="input" data-validate="maxlength=100" >
+          <span class="invalid_feedback">Up to 100 letters</span>
+
+        </div>
+      </section>
+      <footer>
+      </footer>
+    </div>
+
+    <div class="myCard" id="softwareOnly">
+      <header>
+        Installed Software
+      </header>
+      <section>
+        {{ .software }}
+      </section>
+      <footer>
+      </footer>
+    </div>
+
+  <div class="myCard">
+    <header>
+      Notes
+    </header>
+    <section>
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" maxlength="255" title="Notes" cols="40" rows="8"
+          {{if .isReadonly }} readonly {{end}} >{{ .notesCtrl }}</textarea>
+        <span class="invalid_feedback">Up to 255 characters</span>
+    </section>
+    <footer>
+    </footer>
+  </div>
+  
+  <div class="myCard">
+    <header>
+      Backups
+    </header>
+    <section>
+      <div>
+        {{ .backups }}
+      </div>
+    </section>
+    <footer>
+    </footer>
+  </div>
+
+</div>
+
+<div class="myCard">
+  <header>
+    <div class="text-right">
+      <input type="checkbox" data-role="switch" id="filter" data-caption="History" onchange="fetchLog()" >
+      <input type="hidden" id="speed" name="speed" value="{{ .speed }}" >
+      <input type="hidden" id="cid" name="cid" value="{{ .cid }}" >
+      <input type="hidden" id="active" name="active" value="{{ .active }}" >
+      <input type="hidden" id="color" name="color" value="{{ .color }}" >
+      <input type="hidden" id="curUid" name="curUid" value="{{ .curUid }}" >
+    </div>
+  </header>
+  <section>
+    <div id="actionLogDiv">{{ .actionLog }}</div>
+  </section>
+  <footer>
+    <div class="text-right fg-grayBlue">
+      <p title="Last Updated">Last Updated: {{ .fullname }} at {{ .last_updated_time }}</p>
+    </div>
+  </footer>
+</div>
+
+</form>
+
+<div class="dialog" data-role="dialog" id="NotesDialog">
+  <input type="hidden" id="actionID" value="" >
+  <input type="hidden" id="actionName" value="" >
+  <div class="dialog-title">Notes</div>
+  <div class="dialog-content">
+      <div id="pop">
+          <p>message contents</p>
+      </div>
+  </div>
+  <div class="dialog-actions">
+    <table>
+      <tr>
+        <td style="padding: 5px;"><button id="cmd" class="button primary js-dialog-close" onclick="acceptAction();">Accept</button></td>
+        <td style="padding: 5px;"><button id="details" class="button secondary js-dialog-close" onclick="goTicket();">Details...</button></td>
+        <td style="padding: 5px;"><button class="button js-dialog-close" >Cancel</button></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="uploadDialog">
+  <div class="dialog-title">Upload a device photo (.jpg)</div>
+  <div id="uploadMessage" class="dialog-content">
+      <p><input type="file" id="ajaxfile" name="ajaxfile" accept=".jpg" ></p>
+      <br>
+      <p>Do not upload copyrighted material. 
+          Any copyrights / permissions / claims you have on the photo are 
+          automatically forfeited when you upload the photo and are 
+          then owned by the author of this software. 
+          If you do not agree, do not upload your photo.</p>
+  </div>
+  <div class="dialog-actions">
+      <button class="button primary js-dialog-close" onclick="uploadFile();">Upload</button>
+      <button class="button js-dialog-close" onclick="cancelUpload();">Cancel</button>
+  </div>
+</div>
+
+<script src="js/device.js" defer></script>
+<script src="js/ajax.js" defer></script>
+{{template "partials/bottom" .}}

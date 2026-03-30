@@ -1,1 +1,41 @@
-Hi
+{{template "partials/top" .}}
+
+<main class="myCards">
+  <div class="myCard">
+  <header class='gradient_gray'><span class="mif-devices mif-2x"></span> Device Asset Information System</header>
+    <section>
+      <form onsubmit="event.preventDefault();"
+                id="theForm" name="theForm" autocomplete="off"
+                action="#" method="post"
+                data-role="validator"
+                data-interactive-check="false"
+                data-on-before-submit="return doAccept();">
+        <input type="hidden" id="nextpage" name="nextpage" value="{{.nextpage}}" >
+        <h3>
+          <span style="font-size:2rem">&#127809;</span>DAISY
+        </h3>
+        <p class="mt-5">Welcome {{ .username }}</p>
+        <p>
+          For access to this web application you agree to <a href="legal.html">Terms&nbsp;&amp;&nbsp;Conditions, Privacy Policy and Location Collection</a>.
+        </p>
+        <p>
+          <span id="msg"></span>
+        </p>
+      </form>
+    </section>
+    <footer>
+      <p>
+        <span id="btn" style="display: none;"><input type="submit" value="Accept" form="theForm" class="button"></span>
+      </p>
+    </footer>
+    <section>
+      <small class="fg-darkGray">
+          <p>All Rights reserved.</p>
+          <p>For further information contact: webmaster@wknc.ca</p>
+      </small>
+    </section>
+    </div> 
+
+</main>  
+<script src="js/index.js" defer></script>
+{{template "partials/bottom" .}}

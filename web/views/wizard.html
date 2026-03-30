@@ -1,0 +1,333 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<div class="container">
+
+  <div id="DeviceSelect"> <!-- need almost full screen for results, Search Dialog opens at this step -->
+    <p id="cidLabel">Please select a device.</p>
+    <div class="miniCards" id="cards">{{ .cards }}</div>
+  </div>
+
+  <div class="grid">
+
+    <div class="row">
+      <div class="cell"> <!-- Show the selected Device -->
+        <div id="SelectedDevice" class="wizPanel" style="text-align: center;">
+          <img id="pic" src="{{ .devPic }}" alt="" width='200px' height='150px' >
+          <p id="cidDetails">{{ .devDetails }}</p>
+          <input type="hidden" id="curUid" name="curUid" value="{{ .curUid }}" >
+          <input type="hidden" id="wizKey" name="wizKey" value="{{ .wizKey }}" >
+          <input type="hidden" id="cid" name="cid" value="{{ .cid }}" >
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="cell">
+        <div id="SiteSelect" class="wizPanel">
+          <p id="siteLabel">Which Site/Office is the device in?</p>
+          <div class="form-group">
+            <div id="selectSite">
+              {{.siteCtrl}}
+            </div> 
+            <div id="selectOffice">
+              {{.officeCtrl}}
+            </div>
+          </div>
+        </div>
+
+        <div id="LocationText" class="wizPanel">
+          <label for="location" id="locationLabel">Enter any additional location details.</label>
+          <div class="form-group" id="locationDiv">
+              {{.locationCtrl}}
+          </div>
+        </div>
+
+        <div id="UserSelect" class="wizPanel">
+          <div class="form-group">
+            <p id="uidLabel">Who should look at it?</p><br >
+            <div id="selectGroup">
+              {{ .groupCtrl }}
+            </div>
+            <div id="selectPerson">
+              {{ .userCtrl }}
+            </div>
+          </div>
+        </div>
+
+        <div id="TroubleSelect" class="wizPanel">
+          <label for="trouble" id="troubleLabel">Select the nearest description to the problem</label>
+          <div id="selectTrouble" class="form-group">
+            {{ .troubleCtrl }}
+            <span id="troubleError" class="invalid_feedback">Choose one</span>
+          </div>
+        </div>
+
+        <div id="NotesText" class="wizPanel">
+          <label for="notes" id="notesLabel">Provide details of what you need, or what the problem is.</label>
+          <div class="form-group">
+            <input
+              type="text" id="notes" name="notes" class=""
+              maxlength="255" value="" title="Notes"
+              data-role="input" data-validate="maxlength=255">
+            <span id="notesError" class="invalid_feedback">Details are needed.</span>
+          </div>
+        </div>
+
+        <div id="SoftwareSelect" class="wizPanel">
+          <label for="sid" id="sidLabel">Which software package was installed?</label>
+          <div id="selectSoftware" class="form-group">
+            {{ .softwareCtrl }}
+          </div>
+        </div>
+
+        <div id="DateChoose" class="wizPanel">
+          <p id="dateLabel">When did you install/remove the software?</p>
+          <div class="form-group">
+            <div id="cal"
+              data-role="calendar" data-picker-mode="true" data-buttons=""
+              data-on-day-click="saveDate" data-input-format="yyyy-mm-dd"></div>
+            <span id="dateError" class="invalid_feedback">Date must be between 01/01/2001 and now!</span>
+            <input type="hidden" id="installed" value="" >
+          </div>
+        </div>
+
+        <div id="ImpactSelect" class="wizPanel">
+          <label for="impact" id="impactLabel">What level of impact does this have?</label>
+          <div id="selectImpact" class="form-group">
+            {{ .impactCtrl }}
+          </div>
+        </div>
+
+        <div id="thankYou" class="wizPanel">
+          <p id="thanksLabel">Thank You</p>
+          <div class="form-group">
+            <p>The information you supplied was saved.</p>
+            <p>Thank you for helping to keep track of the electronics.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav pos-fixed bottom bg-lightGray">
+    <button class="button" onclick="showHelp();">
+      <span class="icon mif-help"></span>
+      <span class="label">Help</span>
+    </button>
+    <button id="btnPrev" class="button" onclick="nav.previous();">
+      <span class="mif-arrow-left mif-2x"></span>
+      <span class="label">Back</span>
+    </button>
+    <button id="btnNext" class="button" onclick="nav.next();">
+      <span class="icon mif-arrow-right"></span>
+      <span class="label">Next</span>
+    </button>
+    <button id="btnFinish" class="button" onclick="onFinish();">
+      <span class="icon mif-checkmark"></span>
+      <span class="label">Done</span>
+    </button>
+  </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="helpDialog">
+  <div class="dialog-title">Help</div>
+  <div class="dialog-content"><p id="helpMsg"></p></div>
+  <div class="dialog-actions">
+    <button class="button primary js-dialog-close">Okay</button>
+  </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="searchDialog">
+  <div class="dialog-title">Device Search</div>
+  <div class="dialog-content">
+    <section>
+      {{.typeCtrl}}
+      {{.siteSearchCtrl}}
+      <div id="selectSearchOffice">
+          {{.officeSearchCtrl}}
+      </div>
+      {{.groupSearchCtrl}}
+      <div id="selectSearchUser">
+        {{.userSearchCtrl}}
+      </div>
+      <label for="txtSearch">Find</label>
+      <div class="table-search-block">
+        <div class="input">
+            <input type="text" id="txtSearch" data-role-input="true" data-role="input">
+            <div class="button-group">
+                <button class="button input-clear-button" tabindex="-1" type="button" onclick="$('#txtSearch').val('');">
+                    <span class="default-icon-cross"></span>
+                </button>
+            </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="dialog-actions">
+    <button class="button primary js-dialog-close" onclick="search();"><span class='mif-search'></span>&nbsp;Search</button>
+    <button class="button secondary js-dialog-close">Cancel</button>
+    <small id="searchError" class="fg-red"></small>
+  </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="thanksDialog">
+  <div class="dialog-title">Thank You</div>
+  <div class="dialog-content">
+    <p>The information you supplied was saved.</p>
+    <p>Thank you for helping to keep track of the electronics.</p>
+  </div>
+  <div class="dialog-actions">
+    <button class="button primary js-dialog-close" onclick="GoHome();">
+      Okay
+    </button>
+  </div>
+</div>
+<div id="labels" style="display: none">
+  {
+  "SIGHTING": {
+  "DeviceSelect": "Which device did you see?",
+  "SiteSelect": "Where was it?",
+  "LocationText": "Enter location details.",
+  "UserSelect": "Did someone have it?",
+  "TroubleSelect": "",
+  "NotesText": "Any comments?",
+  "ImpactSelect": "",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "There is typically a white asset tag stuck to the computer/laptop that has the identifier on it. If there is no asset tag, log into the computer,click on the windows logo, type name, a suggestion will be displayed titled View your PC's name. Select that."
+  },
+  "USING": {
+  "DeviceSelect": "Which device are you using?",
+  "SiteSelect": "",
+  "LocationText": "",
+  "UserSelect": "",
+  "TroubleSelect": "",
+  "NotesText": "Any Comments?",
+  "ImpactSelect": "",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "There is typically a white asset tag stuck to the computer/laptop that has the identifier on it. If there is no asset tag, log into the computer,click on the windows logo, type name, a suggestion will be displayed titled View your PC's name. Select that."
+  },
+  "CLAIMING": {
+  "DeviceSelect": "Which device do you want to claim?",
+  "SiteSelect": "Which site/Office is the device in?",
+  "LocationText": "Enter any location details.",
+  "UserSelect": "",
+  "TroubleSelect": "",
+  "NotesText": "Any Comments?",
+  "ImpactSelect": "",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "There is typically a white asset tag stuck to the computer/laptop that has the identifier on it. If there is no asset tag, log into the computer, click on the windows logo, type name, a suggestion will be displayed titled View your PC's name. Select that."
+  },
+  "GIVING": {
+  "DeviceSelect": "Which device did you give to someone?",
+  "SiteSelect": "Where will it be placed?",
+  "LocationText": "Enter any location details.",
+  "UserSelect": "Did you give it to someone?",
+  "TroubleSelect": "",
+  "NotesText": "Any Comments?",
+  "ImpactSelect": "",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "When giving a device, you can specify a person you gave it to, or you can identify a location you put it."
+  },
+  "BROKEN": {
+  "DeviceSelect": "Please select the device that broke (maybe repairable).",
+  "SiteSelect": "Where is it?",
+  "LocationText": "Enter any location details (in cabinet, under desk...)",
+  "UserSelect": "Who should look at it?",
+  "TroubleSelect": "Pick the best description of the problem.",
+  "NotesText": "Describe what is broken on it.",
+  "ImpactSelect": "What level of impact does this have?",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "An item is to be considered broken when something is physically damaged, such as a cracked screen."
+  },
+  "LOST": {
+  "DeviceSelect": "Which device was lost?",
+  "SiteSelect": "",
+  "LocationText": "",
+  "UserSelect": "Who should know about this?",
+  "TroubleSelect": "Pick the best description of the problem.",
+  "NotesText": "Comments (mandatory)",
+  "ImpactSelect": "What impact does this have?",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "If a device can no longer be found, please report it as lost."
+  },
+  "DIED": {
+  "DeviceSelect": "Which device died (non-repairable)?",
+  "SiteSelect": "",
+  "LocationText": "",
+  "UserSelect": "Who should know about this?",
+  "TroubleSelect": "Pick the best description of the problem.",
+  "NotesText": "Comments (mandatory)",
+  "ImpactSelect": "What impact does this have?",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "If a device can no longer be repaired to make it operational, please report it as dead."
+  },
+  "CARE": {
+  "DeviceSelect": "What device type needs attention?",
+  "SiteSelect": "Where is it?",
+  "LocationText": "Enter any location details (in cabinet, under desk,...).",
+  "UserSelect": "Who should look at it?",
+  "TroubleSelect": "Pick the best description of the problem.",
+  "NotesText": "Provide exact details of what you need, or what the problem is (Mandatory).",
+  "ImpactSelect": "What level of impact does this have?",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "Provide information about what needs to be installed (software, printers, scanners, webcams,...). Provide details about your issue, such as Adobe Reader needs to be upgraded, or it's making funny sounds."
+  },
+  "BACKUP": {
+  "DeviceSelect": "Which device did you backup?",
+  "SiteSelect": "",
+  "LocationText": "",
+  "UserSelect": "",
+  "TroubleSelect": "",
+  "NotesText": "Where was the backup stored? (Mandatory)",
+  "ImpactSelect": "",
+  "SoftwareSelect": "",
+  "DateChoose": "",
+  "Help": "Backups are important in case of computer failure. Crashed computers can usually be restored to their previous operating condition, without the need to re-purchase the Operating System and applications. CAUTION: The backups are not a replacement for storing your files in a safe place, such as Google Drive because the backups are too infrequent."
+  },
+  "INSTALL": {
+  "DeviceSelect": "What device did you install software on?",
+  "SiteSelect": "",
+  "LocationText": "",
+  "UserSelect": "",
+  "TroubleSelect": "",
+  "NotesText": "Any Comments?",
+  "ImpactSelect": "",
+  "SoftwareSelect": "Which software package was installed?",
+  "DateChoose": "When did you install the software?",
+  "Help": "This helps track the software licenses used. If the software was installed on a non-listed computer,leave the computer selection blank, and fill in the details in the last step (comments)."
+  },
+  "REMOVE": {
+  "DeviceSelect": "What device did you remove software from?",
+  "SiteSelect": "",
+  "LocationText": "",
+  "UserSelect": "",
+  "TroubleSelect": "",
+  "NotesText": "Any Comments?",
+  "ImpactSelect": "",
+  "SoftwareSelect": "Which software package was removed?",
+  "DateChoose": "When did you remove the software?",
+  "Help": "This helps track the software licenses used. If the software was installed on a non-listed computer,leave the computer selection blank, and fill in the details in the last step (comments)."
+  },
+  "REQUEST": {
+  "DeviceSelect": "Which device do you want software installed on?",
+  "SiteSelect": "",
+  "LocationText": "",
+  "UserSelect": "Who should approve the installation?",
+  "TroubleSelect": "Pick the best description of the issue.",
+  "NotesText": "If it was not listed, specify the software. (Mandatory)",
+  "ImpactSelect": "",
+  "SoftwareSelect": "Is the software you want one of these?",
+  "DateChoose": "",
+  "Help": "This helps track the software licenses used."
+  }
+}
+</div>
+<script src="js/wizard.js" defer></script>
+{{template "partials/bottom" .}}

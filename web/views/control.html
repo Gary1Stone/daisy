@@ -1,0 +1,128 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<div class="container">
+    <div class="myCards">
+
+        <div class="myCard">
+          <header>
+            Attack Vectors (per &frac14; hour)
+          </header>
+          <section>
+            <p>Day (max: {{.maxAttacksDay}})</p>
+            <div><a href="#" onclick="getAttacks(1);">{{.attacksDay}}</a></div>
+            <p>Week (max: {{.maxAttacksWeek}})</p>
+            <div><a href="#" onclick="getAttacks(7);">{{.attacksWeek}}</a></div>
+            <p>Month (max: {{.maxAttacksMonth}})</p>
+            <div><a href="#" onclick="getAttacks(30);">{{.attacksMonth}}</a></div>
+          </section>
+          <footer>
+          </footer>
+        </div>
+        
+        <div class="myCard">
+            <header>
+                Active Users (per &frac14; hour)
+            </header>
+            <section>
+               
+                <p>Day (max: {{.maxLoginsDay}} Logins)</p>
+                <div><a href="#" onclick="showActiveUsers();">{{.loginsDay}}</a></div>
+
+                <p>Week (max: {{.maxLoginsWeek}} Logins)</p>
+                <div><a href="#" onclick="showActiveUsers();">{{.loginsWeek}}</a></div>
+                
+                <p>Month (max: {{.maxLoginsMonth}} Logins)</p>
+                <div><a href="#" onclick="showActiveUsers();">{{.loginsMonth}}</a></div>
+            </section>
+            <footer>
+            </footer>
+        </div>
+
+        <div class="myCard">
+            <header>
+                Server Load (per &frac14; hour)
+            </header>
+            <section>
+                <p>Day (max: {{.maxHitsDay}} hits)</p>
+                <div>{{.hitsDay}} </div>
+                <p>Week (max: {{.maxHitsWeek}} hits)</p>
+                <div>{{.hitsWeek}} </div>
+                <p>Month (max: {{.maxHitsMonth}} hits)</p>
+                <div>{{.hitsMonth}} </div>
+            </section>
+            <footer>
+            </footer>
+        </div>
+        
+        <div class="myCard">
+            <header>
+                Devices
+            </header>
+            <section>
+                {{.dashboard}}
+            </section>
+            <footer>
+            </footer>
+        </div>
+
+        <div class="myCard">
+            <header>
+                Reported Last Seen
+            </header>
+            <section style="overflow-y: scroll; height: 24rem;">
+                {{.LastSeenDevices}}
+            </section>
+            <footer>
+            </footer>
+        </div>
+        
+        <div class="myCard">
+            <header>
+                Software Audits
+            </header>
+            <section style="overflow-y: scroll; height: 24rem;">
+                {{.checkins}}
+            </section>
+            <footer>
+            </footer>
+        </div>
+
+        <div class="myCard">
+            <header>
+                Computer Backups
+            </header>
+            <section style="overflow-y: scroll; height: 24rem;" title="">
+                {{.backups}}
+            </section>
+            <footer>
+            </footer>
+        </div>
+
+        <div class="myCard">
+            <header>
+                Drive Space
+            </header>
+            <section style="overflow-y: scroll; height: 24rem;" title="">
+                {{.drivespace}}
+            </section>
+            <footer>
+            </footer>
+        </div>
+
+
+    </div>
+</div>
+
+<dialog id="popup" class="popup">
+    <form method="post">
+        <div class="popup-title" id="popupTitle">Active Users</div>
+        <div id="popupContent">
+        </div>
+        <div class="popup-actions">
+
+        <button class="button secondary">Cancel</button>
+        </div>
+    </form>
+</dialog>
+
+<script src="js/control.js" defer></script>
+{{template "partials/bottom" .}}

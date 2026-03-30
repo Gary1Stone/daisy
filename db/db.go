@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/joho/godotenv"
-	"github.com/mattn/go-sqlite3"
 	_ "modernc.org/sqlite"
 )
 
@@ -28,38 +26,27 @@ const (
 	ACTION_TABLE   int = 6
 )
 
-func init() {
-	loadEnvVariables()
+func StartServer() {
 	connectToDatabase()
 	buildAdminCache()
-}
-
-// Load the environment variables
-func loadEnvVariables() {
-	if err := godotenv.Load(); err != nil {
-		if os.IsNotExist(err) {
-			log.Fatal("FATAL: .env file not found. Please create one in the current working directory.")
-		} else {
-			log.Fatal("FATAL: Failed to load .env file. Error:", err.Error())
-		}
-	}
+	setupSystemProfile()
 }
 
 // Create connection to the database
 func connectToDatabase() {
-
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
-		log.Fatal("FATAL: DB_URL environment variable not set.")
+		log.Println("WARNING: DB_URL environment variable not set.")
+		dbURL = "daisy.db"
 	}
 
 	workDir, err := os.Getwd()
 	if err != nil {
 		workDir = "."
 	}
-	databaseFilePath := filepath.Join(workDir, dbURL)
+	databaseFilePath := filepath.Join(workDir, "db", dbURL)
 
-	Conn, err = sql.Open("sqlite3", databaseFilePath)
+	Conn, err = sql.Open("sqlite", databaseFilePath)
 	if err != nil {
 		// This error is unlikely here, but we handle it just in case.
 		log.Fatalf("FATAL: Error preparing database connection: %v", err)
@@ -102,6 +89,7 @@ func connectToDatabase() {
 		if err != nil {
 			return
 		}
+		log.Println("WARNING: Empty Database!")
 	}
 
 	// Only export the schema if we are in a development environment.
@@ -154,58 +142,58 @@ func foreignKey(value any) any {
 
 // TwoAmBackup schedules a backup of the database every day at 2 AM.
 // It uses VACUUM INTO to safely backup the database even in WAL mode.
-func TwoAmBackup() {
-	for {
-		now := time.Now()
-		// Calculate next 2:00 AM
-		next := time.Date(now.Year(), now.Month(), now.Day(), 2, 0, 0, 0, now.Location())
-		if now.After(next) {
-			next = next.Add(24 * time.Hour)
-		}
-
-		// Sleep until 2 AM
-		time.Sleep(next.Sub(now))
-
-		// Remove unused photos from the images directory
-		RemoveOldPhotos()
-
-		// Ensure backups directory exists
-		backupDir := os.Getenv("BACKUP_DIR")
-		if backupDir == "" {
-			backupDir = "./backups"
-		}
-		if _, err := os.Stat(backupDir); os.IsNotExist(err) {
-			err := os.Mkdir(backupDir, 0755)
-			if err != nil {
-				log.Println("Error creating backup directory:", err)
-				continue
-			}
-		}
-
-		// Define backup filename with timestamp
-		filename := fmt.Sprintf("daisy.%s", time.Now().Format("Mon"))
-		backupPath := filepath.Join(backupDir, filename)
-
-		// Check if a backup for today exists, if so, delete it
-		if _, err := os.Stat(backupPath); err == nil {
-			if err := os.Remove(backupPath); err != nil {
-				log.Println("Error deleting previous backup:", err)
-				continue
-			}
-		}
-		log.Println("Starting database backup...")
-
-		// VACUUM INTO creates a consistent backup without locking the DB for writes
-		_, err := Conn.Exec("VACUUM INTO ?", backupPath)
+func TwoAmBackup() error {
+	// Ensure backups directory exists
+	backupDir := os.Getenv("BACKUP_DIR")
+	if backupDir == "" {
+		// Get the base file dir
+		workingDir, err := os.Getwd()
 		if err != nil {
-			log.Printf("ERROR: Database backup failed: %v", err)
+			workingDir = "."
+		}
+		// Set the backup path
+		backupDir := filepath.Join(workingDir, "backups")
+		// Create directory if it does not exist
+		if stat, err := os.Stat(backupDir); os.IsNotExist(err) {
+			os.Mkdir(backupDir, 0755)
 		} else {
-			log.Printf("Database successfully backed up to: %s", backupPath)
+			if !stat.IsDir() {
+				log.Printf("ERROR: Cannot create backup directory")
+				return err
+			}
 		}
 	}
+
+	// Define backup filename with timestamp
+	filename := fmt.Sprintf("daisy.%s", time.Now().Format("Mon"))
+	backupPath := filepath.Join(backupDir, filename)
+
+	// Check if a backup for today exists, if so, delete it
+	if _, err := os.Stat(backupPath); err == nil {
+		if err := os.Remove(backupPath); err != nil {
+			log.Println("Error deleting previous backup:", err)
+			return err
+		}
+	}
+	log.Println("Starting database backup...")
+
+	// VACUUM INTO creates a consistent backup without locking the DB for writes
+	_, err := Conn.Exec("VACUUM INTO ?", backupPath)
+	if err != nil {
+		log.Printf("ERROR: Database backup failed: %v", err)
+		return err
+	} else {
+		log.Printf("Database successfully backed up to: %s", backupPath)
+	}
+
+	return nil
 }
 
 func GetSqlVersion() string {
-	version, _, _ := sqlite3.Version()
+	var version string
+	err := Conn.QueryRow("SELECT sqlite_version()").Scan(&version)
+	if err != nil {
+		return "unknown"
+	}
 	return version
 }

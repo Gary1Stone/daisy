@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=10.0, user-scalable=yes">
+        <meta name="author" content="StoneSoft">
+        <meta name="description" content="Device Asset Information SYstem DAISY">
+        <meta name="keywords" content="WKNC Weston King Neghbourhood Centre Device Asset Information SYstem DAISY">
+        <link rel="shortcut icon" HREF="favicon.ico" >
+        <link rel="stylesheet" href="css/metro-4.4.3.min.css">
+        <style>
+            canvas {
+                pointer-events:none;  /*prevent interaction with the canvas*/
+            }
+        </style>
+        <title>Daisy</title>
+    </head>
+    <body onload="createCaptcha()" class="h-vh-100 bg-light">
+        <div class="bg-lightGray p-6 mx-auto border bd-default win-shadow" style="width: 375px; margin: auto; height: 100vh;">
+        <form onsubmit="validateCaptcha()">           
+            <div class="form-group text-center">
+                <div id="captcha"></div>
+            </div>
+            <div class="form-group text-center">
+                <input type="text" placeholder="Captcha" id="cpatchaTextBox" >
+            </div>
+            <div class="form-group p-2 text-center">
+                <button type="submit" class="button primary ml-3">Okay</button>
+            </div>
+        </form>
+        </div>
+        <script>
+            let code;
+            function createCaptcha() {
+                document.getElementById('captcha').innerHTML = "";
+                let charsArray = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@!#$%^&*";
+                let lengthOtp = 6;
+                let captcha = [];
+                for (let i = 0; i < lengthOtp; i++) {
+                    let index = Math.floor(Math.random() * charsArray.length + 1);
+                    if (captcha.indexOf(charsArray[index]) === -1) {
+                        captcha.push(charsArray[index]);
+                    } else {
+                        i--;
+                    }
+                }
+                let canv = document.createElement("canvas");
+                canv.id = "captcha";
+                canv.width = 100;
+                canv.height = 50;
+                let ctx = canv.getContext("2d");
+                ctx.font = "25px Georgia";
+                ctx.strokeText(captcha.join(""), 0, 30);
+                code = captcha.join("");
+                document.getElementById("captcha").appendChild(canv);
+            }
+            function validateCaptcha() {
+                event.preventDefault();
+                if (document.getElementById("cpatchaTextBox").value === code) {
+                        window.location.href =  encodeURI("login.html");
+                } else {
+                    createCaptcha();
+                }
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,34 @@
+{{template "partials/top" .}}
+<main class="myCards">
+    <div class="myCard">
+        <header class='gradient_gray'><span class='mif-user mif-2x'></span> Login</header>
+        <section>
+            <form onsubmit="event.preventDefault();"
+                id="theForm" name="theForm" autocomplete="off"
+                action="#" method="post"
+                data-role="validator"
+                data-interactive-check="false"
+                data-on-before-submit="return okayClick();">
+                <h3>
+                    <span style="font-size:2rem">&#127809;</span>DAISY
+                </h3>
+                <p class="mt-5">Welcome</p>
+                <p>{{.fullname}}</p>
+                <input type="hidden" id="username" value="{{.user}}" >
+                <p id="message"></p>
+            </form>
+        </section>
+        <footer>
+            <input type="submit" value="Log In" form="theForm" class="button">
+        </footer>
+        <section>
+            <small class="fg-darkGray">
+                <p>All Rights reserved.</p>
+                <p>For further information contact: webmaster@wknc.ca</p>
+            </small>
+        </section>
+    </div>
+</main>
+<script src="js/index.es5.umd.min.js" defer></script>
+<script src="js/login.js" defer></script>
+{{template "partials/bottom" .}}

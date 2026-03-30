@@ -1,0 +1,16 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<div class="container">
+  <div class="grid">
+    <div class="row">
+      <div class="cell">
+        <button onclick="getReport('DASHBOARD_REPORT');">Dashboard</button>
+        <button onclick="getReport('USERS_REPORT');">Users</button>
+        <button onclick="getReport('TRACKED_SOFTWARE');">Tracked Software</button>
+        <button onclick="getReport('OTHER_SOFTWARE');">Other Software</button>
+        <button onclick="getReport('USERS_COMPUTERS');">Assigned Devices</button>
+        <button onclick="getReport('NETWORK_GAPS');">Network Gaps</button>
+      </div>
+    </div>
+  </div>
+<script src="js/reports.js" defer></script>
+{{template "partials/bottom" .}}

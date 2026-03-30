@@ -1,0 +1,308 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<form
+  id="theForm"
+  name="theForm"
+  data-role="validator"
+  action="#"
+  method="post"
+  data-interactive-check="false"
+  autocomplete="off"
+  data-on-before-submit="return saveRecord();">
+  <input type="hidden" id="gid" value="{{ .gid }}" >
+  <div class="container">
+    <div class="grid">
+      <div class="row">
+        <div class="cell-sm-6">
+
+          <div class="form-group w-100">
+            <label for="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value="{{ .name }}"
+              placeholder="Software package name"
+              title="Software package name"
+              required
+              autofocus
+              autocomplete="off"
+              minlength="6"
+              maxlength="100"
+              data-role="input"
+              data-prepend="<span class='mif-apps'></span>"
+              data-validate="mandatory minlength=6 maxlength=100"
+              {{if .isReadonly }} readonly {{end}} >
+            <span id="nameError" class="invalid_feedback">Required, Unique, 6-100 characters.</span>
+          </div>
+        </div>
+
+        <div class="cell-sm-6">
+          <div class="form-group">
+            <label for="purchased">Purchased</label><br>
+            <input id="purchased" name="purchased" data-role="datepicker" data-value="{{ .purchased }}" data-distance="1">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="cell-sm-6">
+            <div class="form-group w-100">
+                <label for="license_key">License Key</label>
+                <input type="text" 
+                id="license_key" 
+                name="license_key" 
+                value="{{ .license_key }}"
+                placeholder="Key" 
+                title="Activation Key" 
+                maxlength="100" 
+                class="" 
+                data-role="input" 
+                data-validate="maxlength=100" 
+                {{if .isReadonly }} readonly {{end}} > 
+                <span class="invalid_feedback">Max 100 charcaters</span>
+            </div>
+        </div>
+
+        <div class="cell-sm-6">
+            <div class="form-group w-100">
+                <label for="product">Product ID</label>
+                <input type="text" 
+                id="product" 
+                name="product" 
+                value="{{ .product }}"
+                placeholder="Product" 
+                title="Product ID"
+                maxlength="100"
+                class=""
+                data-role="input"
+                data-validate="maxlength=100"
+                {{if .isReadonly }} readonly {{end}} >
+                <span class="invalid_feedback">Max 100 characters</span>
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="cell-sm-4">
+          <div class="form-group w-100">
+              <label for="licenses">Purchased Licenses</label>
+              <input type="number" id="licenses" name="licenses" 
+              value="{{ .licenses }}" 
+              placeholder="#"
+              title="Number of licenses purchased"
+              minlength="1"
+              maxlength="10"
+              class=""
+              data-role="input"
+              data-validate="integer required minlength=1  maxlength=10"
+              {{if .isReadonly }} readonly {{end}} > 
+              <span class="invalid_feedback">Digits only</span>
+          </div>
+        </div>
+        
+        <input type="hidden" id="active" name="active" value="{{ .active }}" >
+
+        <div class="cell-sm-2">
+          <br>
+          <span>
+            <input type="checkbox"
+            id="reuseable" 
+            name="reuseable"
+            data-role="checkbox" 
+            data-caption="Can Reuse" 
+            {{if .reuseable }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+        </span>
+        </div>
+        <div class="cell-sm-4">
+          <div class="form-group w-100">
+              <label for="licenses">Pre-Installed Licenses</label>
+              <input type="number" id="pre_installed" name="pre_installed" 
+              value="{{ .pre_installed }}" 
+              placeholder="#"
+              title="Number of licenses that came with computers"
+              minlength="1"
+              maxlength="10"
+              class=""
+              data-role="input"
+              data-validate="integer required minlength=1  maxlength=10"
+              readonly > 
+              <span class="invalid_feedback">Digits only</span>
+          </div>
+        </div>
+        
+        <div class="cell-sm-2">
+          <br>
+          <span>
+            <input type="checkbox"
+            id="free" 
+            name="free"
+            data-role="checkbox" 
+            data-caption="Unlimited Installs" 
+            {{if .free }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+        </span>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="cell-sm-6">
+            <div class="form-group w-100">
+                <label for="source">Vendor</label>
+                <input type="text"
+                id="source"
+                name="source"
+                value="{{ .source }}"
+                placeholder="Entity"
+                title="Where the software was obtained"
+                maxlength="100"
+                class=""
+                data-role="input"
+                data-validate="maxlength=100"
+                {{if .isReadonly }} readonly {{end}} >
+                <span class="invalid_feedback">Max 100 characters</span>
+            </div>
+        </div>
+
+        <div class="cell-sm-6">
+            <div class="form-group w-100">
+                <label for="link">URL Link</label>
+                <input type="url" 
+                id="link" 
+                name="link"
+                value="{{ .link }}"
+                placeholder="http://www.example.com"
+                title="URL where to download this software"
+                minlength="3"
+                maxlength="100"
+                class=""
+                data-role="input"
+                data-validate="url"
+                {{if .isReadonly }} readonly {{end}} >
+                <span class="invalid_feedback">Invalid URL format</span>
+            </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="cell-12">
+            <div class="form-group w-100">
+                <label for="inv_name">{{ .edit }}</label>
+                <input type="text" 
+                id="inv_name" 
+                name="inv_name"
+                value="{{ .inv_name }}"
+                placeholder="Comment"
+                title="Matching phrase for software inventory"
+                maxlength="255"
+                class=""
+                data-role="input"
+                data-validate="maxlength=255"
+                readonly >
+                <span class="invalid_feedback">Name found in software inventory</span>
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="cell-12">
+            <div class="form-group w-100">
+                <label for="notes">Notes</label>
+                <input type="text" 
+                id="notes" 
+                name="notes"
+                value="{{ .notes }}"
+                placeholder="Comment"
+                title="General comments"
+                maxlength="255"
+                class=""
+                data-role="input"
+                data-validate="maxlength=255"
+                {{if .isReadonly }} readonly {{end}} > 
+                <span class="invalid_feedback">Up to 255 characters</span>
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="cell-md-2">
+        
+      </div>
+        <div class="cell-md-4"><span id="msg"></span></div>
+        <div class="cell-md-6">
+          <span class="text-right fg-grayBlue">{{ .lastupdated }}</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="cell-12">
+            <div class="form-group w-100">
+              {{ .installed_list }}
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="cell text-right">
+          <input
+            type="checkbox"
+            data-role="switch"
+            id="filter"
+            data-caption="History"
+            onchange="fetchLog()"
+          >
+        </div>
+      </div>
+      <div class="row">
+        <div class="cell-12" id="actionLogDiv">{{ .actionlog }}</div>
+      </div>
+    </div>
+  </div>
+  <input type="hidden" id="sid" name="sid" value="{{ .sid }}" >
+</form>
+
+<div class="dialog" data-role="dialog" id="NotesDialog">
+  <input type="hidden" id="actionID" value="" >
+  <input type="hidden" id="actionName" value="" >
+  <div class="dialog-title">Notes</div>
+  <div class="dialog-content">
+    <div id="pop">
+      <p>message contents</p>
+    </div>
+  </div>
+  <div class="dialog-actions">
+    <table>
+      <tr>
+        <td style="padding: 5px;"><button id="cmd" class="button primary js-dialog-close" onclick="acceptAction();">Accept</button></td>
+        <td style="padding: 5px;"><button class="button js-dialog-close" >Cancel</button></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- Popup Dialog for inventory name --> 
+<div class="dialog" data-role="dialog" id="matchDialog">
+  <div class="dialog-title">Find Best Match To Software Titles</div>
+  <div class="dialog-content">
+      <div class="table-search-block">
+          <div class="input">
+              <input type="text" id="search" onkeyup="filterList()" value="">
+              <div class="button-group">
+                  <button class="button input-clear-button" tabindex="-1" type="button" onclick="$('#search').val('');filterList();">
+                      <span class="default-icon-cross"></span>
+                  </button>
+              </div>
+              <div class="prepend">Match:</div>
+          </div>
+          <div class="fg-red" id="errorMsg"></div>
+      </div>
+  </div>
+  <div class="dialog-content" id="inv_list" style="overflow-y: scroll; height: 12rem; "></div>
+  <div class="dialog-content" id="matchCount">0 matches</div>
+  <div class="dialog-actions">
+      <button class="button primary" onclick="closeDialog();">Okay</button>
+      <button class="button js-dialog-close">Cancel</button>
+  </div>
+</div>
+
+<script src="js/software.js" defer></script>
+{{template "partials/bottom" .}}

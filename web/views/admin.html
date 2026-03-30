@@ -1,0 +1,135 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<div class="container-fluid">
+    <div class="grid">
+        <div class="row">
+            <div class="cell">
+                <form id="frmAdmin" name="frmAdmin" 
+                        data-role="validator" 
+                        method="post"
+                        action="javascript:"
+                        data-interactive-check="false">
+                    <div id="adminTable"></div>
+                    <input type="hidden" id="tableSelected" value="">
+                    <input type="hidden" id="deviceTypesJson" value="{{.deviceTypesJson}}">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dialog" data-role="dialog" id="helpDialog">
+    <div class="dialog-title">Select List Administration</div>
+    <div class="dialog-content">
+        <p>The Codes/Descriptions are used in the select lists for users to make a choice, such as the names of the offices.</p>
+        <ul>
+            <li>Code - Value stored in the database.</li>
+            <li>Description - What the user selects onscreen.</li>
+            <li>Active - Sets if it still can be used.</li>
+        </ul>
+        <p><i>To set the display order in the select list, use the Up/Down Arrows.</i></p>
+        <p class="mt-0"><i>When the code is not used in any records, a red X will allow you to remove it.</i></p>
+        <p>The Asset ID prefixes are prepended on the Asset ID when creating a device record.</p>
+        <p>These prefixes can be used to help identify the type of the device</p>
+        <p>For example, if the prefix is "LAPTOP", the Asset ID will be "LAPTOP-123456"</p>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close">Okay</button>
+    </div>
+</div>
+<div class="dialog" data-role="dialog" id="tableDialog">
+    <div class="dialog-title">Select a Table</div>
+    <div class="dialog-content" style="overflow-y: scroll; height: 12rem; ">
+        <ul class="v-menu">
+            <li><a href="#" onclick="showSelection('SITE');"><span class="mif-map2 icon"></span>Sites</a></li>
+            <li><a href="#" onclick="showSelection('OFFICE');"><span class="mif-room icon"></span>Offices</a></li>
+            <li><a href="#" onclick="showSelection('GROUP');"><span class="mif-users icon"></span>Groups</a></li>
+            <li><a href="#" onclick="showSelection('IMPACT');"><span class="mif-hammer icon"></span>Impact</a></li>
+            <li><a href="#" onclick="showSelection('STATUS');"><span class="mif-question icon"></span>Status</a></li>
+            <li><a href="#" onclick="showSelection('MAKE');"><span class="mif-location-city icon"></span>Make</a></li>
+            <li><a href="#" onclick="showSelection('CORES');"><span class="mif-calculator2 icon"></span>CPU Cores</a></li>
+            <li><a href="#" onclick="showSelection('DRIVETYPE');"><span class="mif-cabinet icon"></span>Drive Types</a></li>
+            <li><a href="#" onclick="showSelection('OS');"><span class="mif-windows icon"></span>Operating Systems</a></li>
+            <li><a href="#" onclick="showSelection('GEOFENCE');"><span class="mif-my-location icon"></span>GeoFence Locations</a></li>
+            <li><a href="#" onclick="showSelection('TROUBLE');"><span class="mif-news icon"></span>Trouble Types</a></li>
+            <li><a href="#" onclick="showSelection('TYPE');"><span class="mif-star-half icon"></span>Asset ID Prefix</a></li>
+            <li><a href="#" onclick="showSelection('KIND');"><span class="mif-display icon"></span>Kinds of Devices</a></li>
+        </ul>
+    </div>
+    <div class="dialog-actions">
+        <button class="button js-dialog-close">Cancel</button>
+    </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="permissionsDialog">
+    <div class="dialog-title"><span id="GroupName"></span> Permissions</div>
+    <div class="dialog-content">
+        <input type="hidden" id="permRowId" value="" >
+
+        <div class="sliderperms">
+            <p>
+                <strong>Profile: </strong>
+                <span id="profileSliderLabel">Create</span>
+            </p>
+            <p>
+                <input type="range" id="profileSlider" min="0" max="4" step="1" value="0"
+                onmouseup="setSlider('#profileSlider', this.value)" 
+                ontouchend="setSlider('#profileSlider', this.value)" 
+                style="width: 100%;">
+            </p>
+        </div>
+        <div class="sliderperms">
+            <p>
+                <strong>Device: </strong>
+                <span id="deviceSliderLabel">Create</span>
+            </p>
+            <p>
+                <input type="range" id="deviceSlider" min="0" max="4" step="1" value="0"
+                onmouseup="setSlider('#deviceSlider', this.value)" 
+                ontouchend="setSlider('#deviceSlider', this.value)" 
+                style="width: 100%;">
+            </p>
+
+        </div>
+        <div class="sliderperms">
+            <p>
+                <strong>Software: </strong>
+                <span id="softwareSliderLabel">Create</span>
+            </p>
+            <p>
+                <input type="range" id="softwareSlider" min="0" max="4" step="1" value="0"
+                onmouseup="setSlider('#softwareSlider', this.value)" 
+                ontouchend="setSlider('#softwareSlider', this.value)" 
+                style="width: 100%;">
+            </p>           
+        </div>
+        <div class="sliderperms">
+            <p>
+                <strong>Ticket: </strong>
+                <span id="ticketSliderLabel">Create</span>
+            </p>
+            <p>
+                <input type="range" id="ticketSlider" min="0" max="4" step="1" value="0"
+                onmouseup="setSlider('#ticketSlider', this.value)" 
+                ontouchend="setSlider('#ticketSlider', this.value)" 
+                style="width: 100%;">
+            </p>
+        </div>
+        <div class="sliderperms">
+            <p>
+                <strong>Administration</strong>
+                <span id="adminSliderLabel">Create</span>
+            </p>
+            <p>
+                <input type="range" id="adminSlider" min="0" max="4" step="1" value="0"
+                onmouseup="setSlider('#adminSlider', this.value)" 
+                ontouchend="setSlider('#adminSlider', this.value)" 
+                style="width: 100%;">
+            </p>
+        </div>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close" onclick="updatePermissions();">Okay</button>
+        <button class="button js-dialog-close">Cancel</button>
+    </div>
+</div>
+<script src="js/admin.js" defer></script>
+{{template "partials/bottom" .}}
