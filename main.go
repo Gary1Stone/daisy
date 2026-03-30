@@ -28,6 +28,7 @@ func main() {
 }
 
 // Load the environment variables
+// Note: The main init() is done after all the other init() functions in all the other directories
 func loadEnvVariables() {
 	if err := godotenv.Load(); err != nil {
 		if os.IsNotExist(err) {
