@@ -1,6 +1,7 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <div class="container">
   <div class="grid">
+
     <div class="row">
       <div class="cell">
         <button onclick="getReport('DASHBOARD_REPORT');">Dashboard</button>
@@ -11,6 +12,14 @@
         <button onclick="getReport('NETWORK_GAPS');">Network Gaps</button>
       </div>
     </div>
+    
+    <div class="row">
+      <div class="cell">
+        <div id="report"></div>
+      </div>
+    </div>
+
   </div>
+</div>
 <script src="js/reports.js" defer></script>
 {{template "partials/bottom" .}}
