@@ -108,21 +108,18 @@
             </footer>
         </div>
 
-
     </div>
+
+    <div class="dialog w-100" data-role="dialog" id="popup">
+    <div class="dialog-title" id="popupTitle">Active Users</div>
+    <div class="dialog-content">
+        <div class="w-100" style="overflow-y: scroll; height: 24rem;" id="popupContent" ></div>
+    </div>
+    <div class="dialog-actions">
+        <button class="button primary js-dialog-close" onclick="doPopupOkay()" >Cancel</button>
+    </div>
+    </div>
+
 </div>
-
-<dialog id="popup" class="popup">
-    <form method="post">
-        <div class="popup-title" id="popupTitle">Active Users</div>
-        <div id="popupContent">
-        </div>
-        <div class="popup-actions">
-
-        <button class="button secondary">Cancel</button>
-        </div>
-    </form>
-</dialog>
-
 <script src="js/control.js" defer></script>
 {{template "partials/bottom" .}}

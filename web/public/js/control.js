@@ -1,7 +1,7 @@
 // Control.js
 
 
-const popup = document.getElementById('popup');
+//const popup = document.getElementById('popup');
 //As user changes something turn on the Save button
 $(document).ready(function () {
     // If User clicks on off-popup background, close the dialog
@@ -15,20 +15,20 @@ $(document).ready(function () {
         ) {
             $("#popupContent").html("");
             $("#popupTitle").html("");
-            popup.close();
+            Metro.dialog.close("#popup");
         }
     });
 });
 
 function showActiveUsers() {
     getActiveUsers();
-    popup.showModal();
+    Metro.dialog.open("#popup");
 }
 
-function doPopupOkay(val){
+function doPopupOkay(){
     $("#popupContent").html("");
     $("#popupTitle").html("");
-    popup.close()
+//    Metro.dialog.close("#popup");
 }
 
 function endSession(id) {
@@ -60,7 +60,7 @@ function getAttacks(duration) {
     $.post("control", sendData).then(response => {
         $("#popupContent").html(response);
         $("#popupTitle").html(title);
-        popup.showModal();
+        Metro.dialog.open("#popup");
     });
 }
 
