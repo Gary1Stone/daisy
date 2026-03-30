@@ -15,7 +15,7 @@ func InitialPhotoUploadResizer(filename string) {
 	//Get directory paths to the files
 	picWidth := 1024
 	serverDir := getServerDir()
-	photo := filepath.Join(serverDir, "public", "images", filename)
+	photo := filepath.Join(serverDir, "web", "public", "images", filename)
 	// Open the image file
 	img, err := imaging.Open(photo, imaging.AutoOrientation(true))
 	if err != nil {
@@ -41,9 +41,9 @@ func resizePhoto(filename string) {
 	picWidth := 1024
 	thumbnailWidth := 200
 	serverDir := getServerDir()
-	photo := filepath.Join(serverDir, "public", "images", filename)
+	photo := filepath.Join(serverDir, "web", "public", "images", filename)
 	newName := AddSuffixBeforeExtension(filename, "-sm")
-	photoSmall := filepath.Join(serverDir, "public", "images", newName)
+	photoSmall := filepath.Join(serverDir, "web", "public", "images", newName)
 	// Open the image file
 	img, err := imaging.Open(photo, imaging.AutoOrientation(true))
 	if err != nil {
@@ -89,7 +89,7 @@ func AddSuffixBeforeExtension(fileName, suffix string) string {
 
 // Convert all photos in the images directory to 1024x760 resolution
 func ShrinkPhotos() {
-	dirPath := filepath.Join(getServerDir(), "public", "images")
+	dirPath := filepath.Join(getServerDir(), "web", "public", "images")
 	files, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Println(err)
@@ -124,7 +124,7 @@ func isSmallPhotoExisting(fnames []fs.DirEntry, target string) bool {
 // Return a MAP of all the file names in the images directory
 func MapPhotos() map[string]bool {
 	imageMap := make(map[string]bool)
-	dirPath := filepath.Join(getServerDir(), "public", "images")
+	dirPath := filepath.Join(getServerDir(), "web", "public", "images")
 	files, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Println("ERROR listing files ", err)
@@ -153,7 +153,7 @@ func GetThumbnail(img string) string {
 
 func DeletePhoto(filename string) {
 	serverDir := getServerDir()
-	photo := filepath.Join(serverDir, "public", "images", filename)
+	photo := filepath.Join(serverDir, "web", "public", "images", filename)
 	err := os.Remove(photo)
 	if err != nil {
 		log.Println("Error deleting file:", err)

@@ -20,7 +20,7 @@ func UploadImage(c *fiber.Ctx) error {
 		log.Println(err)
 	}
 	serverDir := filepath.Dir(executable)
-	fileLocation := filepath.Join(serverDir, "public", "images", file.Filename)
+	fileLocation := filepath.Join(serverDir, "web", "public", "images", file.Filename)
 	c.SaveFile(file, fileLocation)
 
 	util.InitialPhotoUploadResizer(file.Filename)
