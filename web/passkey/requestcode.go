@@ -58,8 +58,11 @@ func RequestCode(c *fiber.Ctx) error {
 	cookieName := os.Getenv("JWT")
 	tokenString := c.Cookies(cookieName) // the long lifespan (30 day) cookie
 	if tokenString != "" {
-		jwtInfo, _, err := DecodeJwtToken(tokenString) // Ignore token's expiry, its set to 7 days
+		jwtInfo, expired, err := DecodeJwtToken(tokenString) // Ignore token's expiry, its set to 7 days
 		isDirectlogin = err == nil && jwtInfo.User != "" && IsCredentials(jwtInfo.Credential_id)
+		if !expired && isDirectlogin {
+			reply.Msg = "goHome"
+		}
 	}
 
 	if !isDirectlogin {

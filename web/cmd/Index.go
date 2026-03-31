@@ -26,7 +26,7 @@ func GetIndex(c *fiber.Ctx) error {
 		}
 		// If no user, show register. if has creds and expired, show login
 		if len(jwtInfo.User) > 0 && passkey.IsCredentials(jwtInfo.Credential_id) {
-			if !expired {
+			if expired {
 				nextpage = "login.html"
 			} else {
 				nextpage = "home.html"

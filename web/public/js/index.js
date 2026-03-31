@@ -18,23 +18,38 @@ const msgs = {
   unknown: "An error occurred."
 };
 
-window.onload = () => {   
-  const geoString = sessionStorage.getItem('geo');
-  if (geoString) {
-      geo = JSON.parse(geoString);
-  }
+/**
+ * Use the 'load' event instead of 'DOMContentLoaded'.
+ * This ensures all external scripts (like pico.js which defines 'toast')
+ * are fully loaded and executed before initialize() runs, 
+ * preventing "ReferenceError: toast is not defined".
+ */
+window.addEventListener("load", initialize);
 
+/**
+ * Initialize the page logic. 
+ * Wrapped in a named function so it can be called safely regardless of load state.
+ */
+function initialize() {
   const btn = document.getElementById("btn");
+  if (btn) {
     btn.setAttribute("aria-busy", "false"); //Hide spinner
-
-  isWebAuthnAvailable().then(isAvailable => {
-    if (isAvailable) {
-      btn.disabled = false;
-    } else {
-      toast(msgs.device, "error"); //Give error message
-    } 
-  });
+    const geoString = sessionStorage.getItem('geo');
+    if (geoString) {
+        geo = JSON.parse(geoString);
+    }
+    isWebAuthnAvailable().then(isAvailable => {
+      if (isAvailable) {
+        btn.disabled = false;
+      } else {
+        if (typeof toast === 'function') {
+            toast(msgs.device, "error"); 
+        }
+      } 
+    });
+  }
 }
+
 
 // We store GEO in session storage so it can be used by the next few pages
 // which might be login or registration or home.
@@ -49,7 +64,6 @@ function doAccept() {
   } else {
     geoCheck();
   }
-  return false;
 }
 
 //Most accurate and must be this if user is geofenced

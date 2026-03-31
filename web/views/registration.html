@@ -1,54 +1,50 @@
-{{template "partials/top" .}}
-<main class="myCards">
-    <div class="myCard">
-        <header class='gradient_gray'><span class='mif-user mif-2x'></span> Registration</header>
-            <section>
-                <form onsubmit="event.preventDefault();"
-                    id="theForm" name="theForm" autocomplete="off"
-                    action="#" method="post"
-                    data-role="validator"
-                    data-interactive-check="false"
-                    data-on-before-submit="return okayClick();">
-                    <h3>
-                        <span style="font-size:2rem">&#127809;</span>DAISY
-                    </h3>
-                    <div class="form-group mt-5">
-                        <input type="hidden" id="apicode" name="apicode" value="{{.apicode}}">
-                        <label for="username">User ID</label>
-                        <input type="email" 
-                            id="username" name="username" placeholder="username" value="{{.user}}" title="User Identifier"
-                            autocomplete="email" 
-                            required minlength="6" maxlength="60"
-                            autofocus
-                            data-role="input" data-prepend="<span class='mif-user'></span>"
-                            data-validate="required email minlength=6 maxlength=60" >
-                        <small class="invalid_feedback">Required. Your assigned email address</small>
-                    </div>
-
-                    <div class="form-group"  id="enterPassscode" style="display:none">
-                        <label for="passcode">Passcode (valid for <span id="mins">15</span> minutes)</label>
-                        <input type="text" 
-                            id="passcode" name="passcode" disabled placeholder="passcode" value=""
-                            minlength="5" maxlength="20" required 
-                            data-role="input" data-prepend="<span class='mif-key'></span>"
-                            data-validate="required minlength=6 maxlength=100" >
-                        <small class="invalid_feedback">Enter the passcode emailed to you.</small>
-                    </div>
-                    <p id="message"></p>
-                </form>
-
-            </section>
-            <footer>
-                <input type="submit" value="Okay" form="theForm" class="button">
-            </footer>
+{{template "partials/top2" .}}
+<header class="container">
+    <nav>
+        <ul>
+            <li><span style="font-size:2rem">&#127809;</span> Device Asset Information System</li>
+        </ul>
+    </nav>
+</header>
+<main class="container">
+    <article>
+        <header>
+            <img src="/icons/user.svg" alt="user icon" width="48px" height="48px" />&nbsp;Registration
+        </header>
         <section>
-            <small class="fg-darkGray">
-                <p>All Rights reserved.</p>
-                <p>For further information contact: webmaster@wknc.ca</p>
-            </small>
+            <form onsubmit="event.preventDefault();" id="theForm" name="theForm" autocomplete="off" action="#" method="post">
+                <fieldset>
+                    <input type="hidden" id="apicode" name="apicode" value="{{.apicode}}">
+                    <label for="username">User ID</label>
+                    <input type="email"  id="username" name="username" placeholder="username" 
+                        value="{{.user}}" title="User Identifier" autocomplete="email" 
+                        required minlength="6" maxlength="60" autofocus
+                        aria-label="User Identifier" aria-describedby="username-helper" />
+                    <small id="username-helper">Required. Your assigned email address</small>
+                </fieldset>
+
+                <fieldset id="enterPassscode" style="display:none">
+                    <label for="passcode">Passcode (valid for <span id="mins">15</span> minutes)</label>
+                    <input type="text" 
+                        id="passcode" name="passcode" disabled placeholder="passcode" value=""
+                        minlength="5" maxlength="20" required 
+                        aria-label="passcode"
+                        aria-describedby="passcode-helper" >
+                    <small id="passcode-helper">Enter the passcode emailed to you.</small>
+                </fieldset>
+            </form>
         </section>
-    </div>
+        <footer>
+            <button onclick="okayClick();">Okay</button>
+        </footer>
+    </article>
 </main>
+<footer class="container">
+    <small>
+        <p>All Rights reserved.</p>
+        <p>For further information contact: webmaster@wknc.ca</p>
+    </small>
+</footer>
 <script src="js/index.es5.umd.min.js" defer></script>
 <script src="js/registration.js" defer></script>
-{{template "partials/bottom" .}}
+{{template "partials/bottom2" .}}

@@ -165,9 +165,24 @@ themeSwitcher.init();
  */
 
 const Snackbar = (() => {
-  const container = document.getElementById("snackbar-container");
+  let container = null;
   const queue = [];
   let active = false;
+
+  //<div id="snackbar-container" aria-live="polite" aria-atomic="true"></div>
+  function getContainer() {
+    if (!container) {
+      container = document.getElementById("snackbar-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "snackbar-container";
+        container.setAttribute("aria-live", "polite");
+        container.setAttribute("aria-atomic", "true");
+        document.body.appendChild(container); 
+      }
+    }
+    return container;
+  }
 
   function showNext() {
     if (queue.length === 0) {
@@ -228,7 +243,7 @@ const Snackbar = (() => {
     close.onclick = remove;
     el.appendChild(close);
 
-    container.appendChild(el);
+    getContainer().appendChild(el);
 
     // Animate in
     requestAnimationFrame(() => {
@@ -270,3 +285,11 @@ const Snackbar = (() => {
 
   return { push };
 })();
+
+// Simplified Snackbar
+function toast(msg, type = "info") {
+    Snackbar.push({
+      message: msg,
+      type: type
+    });
+}

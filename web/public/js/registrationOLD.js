@@ -7,7 +7,6 @@
  */
 
 const loginPage = "login.html";
-const homePage = "home.html";
 
 window.addEventListener('load', () => {
     const username = localStorage.getItem('username');
@@ -19,14 +18,13 @@ window.addEventListener('load', () => {
 
 function okayClick() {
     const div = document.getElementById('enterPassscode');
-    if (div) {
     // It's better to check for a class or data attribute than style, but this is a small improvement.
-        if (div.style.display === "block") {
-            register();
-        } else {
-            requestCode()
-        }
+    if (div.style.display === "block") {
+        register();
+    } else {
+        requestCode()
     }
+    return false;
 }
 
 // Verify the username is filled in properly
@@ -71,10 +69,8 @@ async function requestCode() {
             toast(reply.msg);
         } else {
             const reply = await response.json();
-            if (reply.msg === "goLogin") {
+            if (reply.msg === "doLogin") {
                 window.location.href =  encodeURI(loginPage);
-            } else if (reply.msg === "goHome") {
-                window.location.href =  encodeURI(homePage);
             } else {
                 showPasscodeForm();
                 startCountdown();
@@ -136,10 +132,10 @@ async function register() {
         });
 
         const reply = await verificationResponse.json();
-       // toast(reply.msg);
+        toast(reply.msg);
         console.log(reply.msg);
         if (verificationResponse.ok) {
-            window.location.href =  encodeURI(homePage);
+            window.location.href =  encodeURI(loginPage);
         }
     } catch (error) {
         toast(error);

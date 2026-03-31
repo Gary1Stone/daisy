@@ -5,13 +5,6 @@ function txt2Int(value) {
     return isNaN(result) ? 0 : result;
 }
 
-function toast(msg, type = "info") {
-    Snackbar.push({
-      message: msg,
-      type: type
-    });
-}
-
 /*
 Snackbar Usage:
 
