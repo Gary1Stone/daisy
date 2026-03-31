@@ -6,7 +6,7 @@ function txt2Int(value) {
     return isNaN(result) ? 0 : result;
 }
 
-// Colours are primary, secondary, success, alert, warning, yellow, info light
+// Colours are primary, secondary, success, alert, warning, yellow, info, light
 function toast(msg, colour) {
     let txt = "";
     if (typeof colour === 'undefined') {

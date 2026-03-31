@@ -56,7 +56,7 @@ function doAccept() {
 function tryGeoBrowser() {
     if (!navigator.geolocation) {
       geo.err = true;
-      toast(msgs.support);
+      toast(msgs.support, "error");
       console.error("Geolocation is not supported by this browser.");
       setTimeout(tryGeoSource2, 111); //Try alternative to getting location
       return;
@@ -118,9 +118,9 @@ function fetchGeoData(url, source, fallback) {
     });
 }
 
-//If a user reloads the page over and over, we don't want to do geofetch every time
-//Just store the last set of good long/lat
-//If user logs out, get a new set of long/lat when landing on this page
+// If a user reloads the page over and over, we don't want to do geofetch every time
+// Just store the last set of good long/lat
+// If user logs out, get a new set of long/lat when landing on this page
 function geoCheck() {
   if (!isValidCoordinates()) {
     return false;
@@ -177,19 +177,12 @@ function handleGeoError(error) {
       break;
   }
   geo.err = true;
-  toast(msg);
+  toast(msg, "error");
 }
 
-function toast(msg) {
-  showMsg(msg);
-}
-
-function showMsg(msg) {
-    const msgDiv = document.getElementById("msg");
-    if (msgDiv) {
-        msgDiv.innerHTML = msg;
-        setTimeout(() => {
-            msgDiv.innerHTML = "&nbsp;";
-        }, 10000);
-    }
+function toast(msg, type = "info") {
+    Snackbar.push({
+      message: msg,
+      type: type
+    });
 }

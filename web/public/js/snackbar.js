@@ -1,4 +1,10 @@
-// snackbar.js
+
+/*
+ * Snackbar
+ * An addon for Pico.css to have toast-like functionality
+ *
+ * Copyright 2026 - Licensed under MIT
+ */
 
 const Snackbar = (() => {
   const container = document.getElementById("snackbar-container");
@@ -109,7 +115,7 @@ const Snackbar = (() => {
 
 
 
-
+/*
 $(document).ready(function () {
 
     Snackbar.push({
@@ -148,3 +154,4 @@ $(document).ready(function () {
     duration: 6000
     });
 });
+*/
