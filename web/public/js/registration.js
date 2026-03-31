@@ -136,10 +136,9 @@ async function register() {
         });
 
         const reply = await verificationResponse.json();
-       // toast(reply.msg);
         console.log(reply.msg);
         if (verificationResponse.ok) {
-            window.location.href =  encodeURI(homePage);
+            window.location.href =  encodeURI(loginPage);
         }
     } catch (error) {
         toast(error);
