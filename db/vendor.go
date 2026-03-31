@@ -184,8 +184,8 @@ func addNewVendor(vendor, macPrefix, blockType, updated string, isPrivate bool) 
 		macPrefix = strings.ToUpper(res.String())
 	}
 
-	query := `INSERT INTO vendors (MacPrefix, vendor, BlockType, Updated, IsPrivate) VALUES (?, ?, ?, ?, ?)
-		ON CONFLICT(MacPrefix) DO UPDATE SET vendor=excluded.vendor, BlockType=excluded.BlockType, Updated=excluded.Updated, IsPrivate=excluded.IsPrivate`
+	query := `INSERT INTO vendors (MacPrefix, vendor, BlockType, LastUpdate, Private) VALUES (?, ?, ?, ?, ?)
+		ON CONFLICT(MacPrefix) DO UPDATE SET vendor=excluded.vendor, BlockType=excluded.BlockType, LastUpdate=excluded.LastUpdate, Private=excluded.Private`
 	_, err := Conn.Exec(query, macPrefix, vendor, blockType, updated, isPrivate)
 	if err != nil {
 		log.Printf("Error adding new vendor %s: %v", macPrefix, err)
