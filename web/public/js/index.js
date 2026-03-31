@@ -8,14 +8,14 @@ let geo = { task: "", tzoff: 0, lon: 0, lat: 0, ip: "", sec: 0, err: true, sourc
 const msgs = {
   support: "Access Denied! Browser must support geolocation.",
   latlon: "Access Denied! Latitude/Longitude invalid.",
-  device: "Sorry, this device/broswer is not supported.",
-  security: "Access Denied! Browser Settings > Privacy and Security > Location to allow access.",
+  device: "Access Denied! Passkey authentication is not supported.",
+  security: "Inaccurate Location! Please enable Geolocation in your Browser.",
   geoloc: "Ly9nZW9sb2NhdGlvbi1kYi5jb20vanNvbi83YTliMWI2MC02Y2Q2LTExZWQtYTVjNy0xMTA0Njg3NTYwYTk=",
   extreme: "Ly9leHRyZW1lLWlwLWxvb2t1cC5jb20vanNvbi8/a2V5PVE5Q0dnTFFNRnpkSlBqcTlwOWtV",
   denied: "User denied the request for geolocation.",
   unavailable: "Location information is unavailable.",
   timeout: "The request to get user location timed out.",
-  unknown: "An unknown error occurred."
+  unknown: "An error occurred."
 };
 
 window.onload = () => {   
@@ -24,13 +24,14 @@ window.onload = () => {
       geo = JSON.parse(geoString);
   }
 
+  const btn = document.getElementById("btn");
+    btn.setAttribute("aria-busy", "false"); //Hide spinner
+
   isWebAuthnAvailable().then(isAvailable => {
     if (isAvailable) {
-      //enable button
-      document.getElementById("btn").disabled = false;
-      document.getElementById("btn").style.display = "block"; // Show the accept button
+      btn.disabled = false;
     } else {
-      showMsg(msgs.device, true); //Give we are sorry message
+      toast(msgs.device, "error"); //Give error message
     } 
   });
 }
@@ -43,14 +44,13 @@ function doAccept() {
   document.getElementById("btn").disabled = true;
   document.getElementById("btn").setAttribute("aria-busy", "true"); //Show spinner
   const utcSec = Math.floor(new Date().getTime() / 1000);
-  if (utcSec - geo.sec > 900) {
+  if (utcSec - geo.sec > 900) {  // if more than 5 minutes, refresh the geo data
     tryGeoBrowser();
   } else {
     geoCheck();
   }
   return false;
 }
-
 
 //Most accurate and must be this if user is geofenced
 function tryGeoBrowser() {
@@ -79,8 +79,8 @@ function tryGeoBrowser() {
         },
         // Error callback
         (error) => { 
-          handleGeoError(error);
-            setTimeout(() => tryGeoSource2(), 111); 
+          handleGeoError(error); // user may have geolocation turned off in browser
+            setTimeout(() => tryGeoSource2(), 15000); 
         }
     );
 }
@@ -177,12 +177,9 @@ function handleGeoError(error) {
       break;
   }
   geo.err = true;
-  toast(msg, "error");
-}
-
-function toast(msg, type = "info") {
-    Snackbar.push({
+  Snackbar.push({
       message: msg,
-      type: type
-    });
+      type: "warning",
+      duration: 15000
+  });
 }

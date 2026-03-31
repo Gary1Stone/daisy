@@ -34,7 +34,7 @@ func GetIndex(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Render("index2", fiber.Map{
+	return c.Render("index", fiber.Map{
 		"username": jwtInfo.Fullname,
 		"nextpage": nextpage,
 	})

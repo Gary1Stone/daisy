@@ -4,17 +4,25 @@
  *  All rights Reserved
  */
 
-// Retrieve the username from the input field
-function okayClick() {
-    toast("");
+// If no username, proceed to new registartion
+document.addEventListener("DOMContentLoaded", function() {
     const username = checkEmailField();
-    if (username.length > 0) {
-        login(username);
+    if (username.length === 0) {
+        registerMe();
     }
-    return false;
+});
+
+// Retrieve the username from the input field
+function startLogin() {
+    const username = checkEmailField();
+    login(username);
 }
 
-//Verify the username is filled in properly
+function registerMe() {
+    window.location.href = encodeURI("registration.html");
+}
+
+// Verify the username is filled in properly
 function checkEmailField() {
     let isValid = true;
     const emailField = document.getElementById('username');
@@ -81,14 +89,14 @@ async function login(username) {
         });
 
         const reply = await verificationResponse.json();
-        toast(reply.msg);
+        toast(reply.msg, "success");
         if (verificationResponse.ok) {
             sessionStorage.removeItem("geo");
             window.location.href = encodeURI("home.html");
         }
     } catch (error) {
         console.error(error);
-        toast(error);
+        toast(error, "error");
     }
 }
 
