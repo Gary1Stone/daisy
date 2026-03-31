@@ -26,6 +26,8 @@ window.onload = () => {
 
   isWebAuthnAvailable().then(isAvailable => {
     if (isAvailable) {
+      //enable button
+      document.getElementById("btn").disabled = false;
       document.getElementById("btn").style.display = "block"; // Show the accept button
     } else {
       showMsg(msgs.device, true); //Give we are sorry message
@@ -38,9 +40,11 @@ window.onload = () => {
 // We may not have the user ID yet, so it cannot be stored in the DB yet
 // If last time we were here is within 15 mins, don't get the geo data again
 function doAccept() {
+  document.getElementById("btn").disabled = true;
+  document.getElementById("btn").setAttribute("aria-busy", "true"); //Show spinner
   const utcSec = Math.floor(new Date().getTime() / 1000);
   if (utcSec - geo.sec > 900) {
-      tryGeoBrowser();
+    tryGeoBrowser();
   } else {
     geoCheck();
   }
@@ -174,4 +178,18 @@ function handleGeoError(error) {
   }
   geo.err = true;
   toast(msg);
+}
+
+function toast(msg) {
+  showMsg(msg);
+}
+
+function showMsg(msg) {
+    const msgDiv = document.getElementById("msg");
+    if (msgDiv) {
+        msgDiv.innerHTML = msg;
+        setTimeout(() => {
+            msgDiv.innerHTML = "&nbsp;";
+        }, 10000);
+    }
 }

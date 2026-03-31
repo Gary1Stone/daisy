@@ -6,8 +6,9 @@
 // This prevents them from requesting data (new select) when the page is loaded.
 let pageLoading = true;
 
-$(document).ready(function () {
-    pageLoading = false;
+// When the page is finished loading
+document.addEventListener("DOMContentLoaded", function() {
+  pageLoading = false; 
 });
 
 /**
@@ -51,5 +52,83 @@ async function getCtrl(target, ctrlData) {
         }
         toast(userMessage, "alert");
         $targetElement.html(``);
+    }
+}
+
+
+
+
+//Ajax.js
+
+// postJSON: Send JSON, Receive JSON or string
+// response.status = true/false
+// response.statusText - JSON reply
+async function postJSON(url, data = {}, successCallback) {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+        
+        if (!response.ok) {
+            const errorText = response.statusText || `HTTP error ${response.status}`;
+            console.error("AJAX HTTP Error:", `Status: ${response.status}`, `Message: ${errorText}`);
+            throw new Error(`HTTPError ${response.status}: ${errorText}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+        let responseData;
+        if (contentType && contentType.includes("application/json")) {
+            responseData = await response.json();
+        } else {
+            responseData = await response.text();
+        }
+
+        if (typeof successCallback === 'function') {
+            successCallback(responseData);
+        }
+        return responseData;
+    } catch (error) {
+        if (error.message?.startsWith("HTTPError ")) {
+            console.debug("Fetch chain aborted due to HTTP error:", error.message);
+        } else {
+            console.error("AJAX Request Failed (Network/Other):", error);
+        }
+        throw error; // Let the caller handle it if needed
+    }
+}
+
+// fetch html and replace the contents of targetId
+async function htmx(url, formData, targetId) {
+    try {
+        await postJSON(url, formData, (htmlResponse) => {
+            const target = document.getElementById(targetId);
+            if (target) {
+                if (htmlResponse != "error") {
+                    target.innerHTML = htmlResponse;
+                } else {
+                    console.error("Failed to get HTML:")
+                    target.innerHTML = "";
+                }
+            } else {
+                console.warn("No container found for response");
+            }
+        });
+    } catch (error) {
+        console.error("Failed to get HTML:", error);
+    }
+}
+
+function showMsg(msg) {
+    const msgDiv = document.getElementById("msg");
+    if (msgDiv) {
+        msgDiv.innerHTML = msg;
+        setTimeout(() => {
+            msgDiv.innerHTML = "&nbsp;";
+        }, 10000);
     }
 }
