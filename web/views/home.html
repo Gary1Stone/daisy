@@ -19,7 +19,7 @@
       <header class="success">
         <img src="icons/eye.svg" alt="eye" />I saw...
       </header>
-      Record tucked away/moved items
+      Record a tucked away, moved, or stored device
       <footer>
         <a href="wizard.html?wizkey=SIGHTING" role="button" >I Saw...</a>
       </footer>
@@ -29,7 +29,7 @@
       <header class="success">
         <img src="icons/tag.svg" alt="tag" />I claim...
       </header>
-      Record your assigned device
+      Record a device assigned to me
       <footer>
         <a href="wizard.html?wizkey=CLAIMING" role="button" >I Claim...</a>
       </footer>
@@ -39,7 +39,7 @@
       <header class="success">
         <img src="icons/tag.svg" alt="tag" />I gave...
       </header>
-      Record an assigned device
+      Record a device assigned to someone else
       <footer>
         <a href="wizard.html?wizkey=GIVING" role="button" >I Gave...</a>
       </footer>
@@ -51,7 +51,7 @@
       <header class="alert">
         <img src="icons/tool.svg" alt="care" />It needs care...
       </header>
-      Should be looked at
+      A device that needs to be looked at
       <footer>
         <a href="wizard.html?wizkey=CARE" role="button" >Care...</a>
       </footer>
@@ -71,7 +71,7 @@
       <header class="alert">
         <img src="icons/binoculars.svg" alt="lost" />It's lost...
       </header>
-      Mark as lost/stolen
+      Mark a device as lost/stolen
       <footer>
         <a href="wizard.html?wizkey=LOST" role="button" >Lost...</a>
       </footer>
@@ -82,7 +82,7 @@
     <article>
       <header class="alert">
         <img src="icons/stethoscope.svg" alt="died" />It died...
-      </header>Mark as dead
+      </header>Mark device as dead
       <footer>
         <a href="wizard.html?wizkey=DIED" role="button" >Died...</a>
       </footer>
@@ -92,7 +92,7 @@
       <header class="info">
         <img src="icons/copy-check.svg" alt="backup" />I backed up...
       </header>
-      Record a backup
+      Record a backup performed
       <footer>
         <a href="wizard.html?wizkey=BACKUP" role="button" >Backup...</a>
       </footer>
@@ -112,8 +112,8 @@
   <div class="grid">
 
     <article class="alert">
-      <header><img src="icons/ticket.svg" alt="ticket" />{{ .btnLabel }} Needs Investigation</header>
-      Look into the problem I am having
+      <header><img src="icons/ticket.svg" alt="ticket" />{{ .btnLabel }}</header>
+      Please look into the problem I am having
       <footer>
         <a href="tickets.html" {{ .btnColour }}  role="button" >Investigate...</a>
       </footer>

@@ -60,7 +60,7 @@ func GetHome(c *fiber.Ctx) error {
 	}
 
 	return c.Render("home", fiber.Map{
-		"title":        template.HTML("<img src='home/user.svg' alt='home' />&nbsp;Home"),
+		"title":        template.HTML("<img src='icons/home.svg' alt='home' />&nbsp;Home"),
 		"fullName":     user.Fullname,
 		"isAdmin":      user.IsAdmin,
 		"lastLoginMsg": template.HTML(msg),
