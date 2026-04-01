@@ -75,3 +75,46 @@
     background: color-mix(in srgb, var(--pico-primary) 15%, var(--pico-card-background-color));
     border-left: 4px solid var(--pico-primary);
 }
+
+/* Custom sidebar */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px; /* Initial width */
+  height: 100vh;
+  transform: translateX(-100%); /* Hide off-screen to the left */
+  transition: transform 0.3s ease;
+  z-index: 999; /* Ensure it's above other content */
+  padding: 1rem;
+  background-color: var(--card-background-color); /* Use Pico variable for consistency */
+}
+
+#sidebar.is-active {
+  transform: translateX(0); /* Slide in */
+}
+
+#content {
+  transition: margin-left 0.3s ease;
+  padding: 1rem;
+}
+
+body.menu-open #content {
+  margin-left: 250px; /* Push content to the right when menu is open */
+}
+
+/* Optional: Overlay on mobile or as a backdrop */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 998;
+}
+
+body.menu-open .overlay {
+  display: block;
+}

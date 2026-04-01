@@ -1,0 +1,58 @@
+
+<header class="container">
+  <nav>
+    <ul>
+      <li><a href="#" aria-label="Open menu" onclick="toggleMenu()" onclick="document.body.scrollTop = document.documentElement.scrollTop = 0;">☰ Menu</a></li>
+      <li><span style="font-size:2rem">&#127809;</span>&nbsp;<b>Daisy</b></li>
+    </ul>
+    <ul>
+      <li>{{ .title }}</li>
+      <li>{{ .cmd_one }}</li>
+      <li>{{ .cmd_two }}</li>
+      <li>{{ .cmd_three }}</li>
+      <li>
+            <details class="dropdown">
+            <summary>Theme</summary>
+            <ul>
+                <li><a href="#" data-theme-switcher="auto">Auto</a></li>
+                <li><a href="#" data-theme-switcher="light">Light</a></li>
+                <li><a href="#" data-theme-switcher="dark">Dark</a></li>
+            </ul>
+            </details>
+        </li>
+        <li>
+            <details class="dropdown">
+            <summary><img src="icons/user.svg" alt="user icon" />&nbsp;<span id="userName">{{ .fullName }}</span></summary>
+            <ul dir="rtl">
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Security</a></li>
+            <li><li><a href="logout.html"><span class="mif-exit"></span>&nbsp;Log Out</a></li>
+            </ul>
+        </details>
+        </li>
+  </nav>
+</header>
+
+<aside id="sidebar">
+  <nav>
+    <ul>
+        <li><a href="#" aria-label="Close menu" onclick="toggleMenu()">✕ Close</a></li>
+        <li><a href="home.html"><span class="mif-home icon"></span>Home</a></li>
+        <li><a href="tickets.html"><span class="mif-news icon"></span>Tickets</a></li>
+        <li class="divider"></li>
+        <li><a href="devices.html"><span class="mif-devices icon"></span>Devices</a></li>
+        <li><a href="softwares.html"><span class="mif-apps icon"></span>Software</a></li>
+        {{if .isAdmin }}
+        <li class="divider"></li>
+        <li><a href="profiles.html"><span class="mif-profile icon"></span>Profiles</a></li>
+        <li><a href="reports.html"><span class="mif-dashboard icon"></span>Reports</a></li>
+        <li><a href="control.html"><span class="mif-traff icon"></span>Control</a></li>
+        <li><a href="network.html"><span class="mif-lamp icon"></span>Network</a></li>
+        <li><a href="admin.html"><span class="mif-tools icon"></span>Admin</a></li>
+        {{end}}
+        <li class="divider"></li>
+        <li><a href="about.html"><span class="mif-info icon"></span>About</a></li>
+    </ul>
+  </nav>
+</aside>

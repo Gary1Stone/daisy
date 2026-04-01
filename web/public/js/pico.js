@@ -293,3 +293,13 @@ function toast(msg, type = "info") {
       type: type
     });
 }
+
+// Custom Sidebar menu
+function toggleMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const content = document.getElementById('content');
+  const body = document.body;
+
+  sidebar.classList.toggle('is-active');
+  body.classList.toggle('menu-open');
+}
