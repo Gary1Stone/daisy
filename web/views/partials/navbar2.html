@@ -2,11 +2,11 @@
 <header class="container">
   <nav>
     <ul>
-      <li><a href="#" aria-label="Open menu" onclick="toggleMenu()" onclick="document.body.scrollTop = document.documentElement.scrollTop = 0;">☰ Menu</a></li>
+      <li><a href="#" class="sidebar-toggle" aria-label="Open menu" onclick="toggleMenu(); document.body.scrollTop = 0; document.documentElement.scrollTop = 0;">☰</a></li>
       <li><span style="font-size:2rem">&#127809;</span>&nbsp;<b>Daisy</b></li>
     </ul>
     <ul>
-      <li>{{ .title }}</li>
+      <li class="top-title">{{ .title }}</li>
       <li>{{ .cmd_one }}</li>
       <li>{{ .cmd_two }}</li>
       <li>{{ .cmd_three }}</li>
@@ -27,17 +27,18 @@
             <li><a href="#">Profile</a></li>
             <li><a href="#">Settings</a></li>
             <li><a href="#">Security</a></li>
-            <li><li><a href="logout.html"><span class="mif-exit"></span>&nbsp;Log Out</a></li>
+            <li><a href="logout.html"><span class="mif-exit"></span>&nbsp;Log Out</a></li>
             </ul>
         </details>
         </li>
+    </ul>
   </nav>
 </header>
 
 <aside id="sidebar">
   <nav>
     <ul>
-        <li><a href="#" aria-label="Close menu" onclick="toggleMenu()">✕ Close</a></li>
+        <li class="close-item"><a href="#" aria-label="Close menu" onclick="toggleMenu()">✕ Close</a></li>
         <li><a href="home.html"><span class="mif-home icon"></span>Home</a></li>
         <li><a href="tickets.html"><span class="mif-news icon"></span>Tickets</a></li>
         <li class="divider"></li>

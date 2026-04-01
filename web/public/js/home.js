@@ -1,6 +1,7 @@
 // home.js
+window.addEventListener("load", initialize);
 
-$(document).ready(function () {
+function initialize() {
     const hrs = new Date().getHours();
     let greeting = "Good evening";
     if (hrs < 10) {
@@ -21,7 +22,7 @@ $(document).ready(function () {
             }
         });
     }
-});
+}
 
 function ackAlert(aid = 0) {
     let sendData = {
