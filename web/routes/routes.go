@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gbsto/daisy/api"
-	"github.com/gbsto/daisy/web/cmd"
+	"github.com/gbsto/daisy/cmd"
 	"github.com/gbsto/daisy/web/middleware"
 	"github.com/gbsto/daisy/web/passkey"
 	"github.com/gofiber/fiber/v2"

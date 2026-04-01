@@ -94,6 +94,8 @@
     overflow-y: auto;
 }
 
+
+
 #sidebar.is-active {
   left: 0;
 }
@@ -116,11 +118,13 @@
     text-decoration: none;
     border-radius: var(--pico-border-radius);
     transition: background-color var(--pico-transition);
+    color: var(--pico-code-color);
 }
 
 #sidebar nav ul li a:hover,
 #sidebar nav ul li a[aria-current]:not([aria-current=false]) {
     background-color: var(--pico-dropdown-hover-background-color);
+    color: var(--pico-code-color);
 }
 
 #sidebar .divider {
@@ -130,8 +134,8 @@
     list-style: none;
 }
 
-#sidebar .close-item {
-    text-align: right;
+#sidebar .close-item a {
+    justify-content: flex-end;
 }
 
 body.menu-open {
@@ -160,4 +164,6 @@ body.menu-open::after {
 .info {
     background: color-mix(in srgb, var(--pico-primary) 15%, var(--pico-card-background-color));
 }
-
+.sidebar-toggle {
+    color: var(--pico-code-color);
+}
