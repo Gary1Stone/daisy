@@ -1,8 +1,11 @@
 package passkey
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
+	"os"
+	"time"
 
 	"github.com/gbsto/daisy/db"
 
@@ -29,9 +32,13 @@ func BeginRegistration(c *fiber.Ctx) error {
 
 	// Get username and passcode information from JSON sent here
 	usrInfo := struct {
-		Username string `json:"username"`
-		Passcode string `json:"passcode"`
-		Apicode  string `json:"apicode"`
+		Username string  `json:"username"`
+		Passcode string  `json:"passcode"`
+		Apicode  string  `json:"apicode"`
+		Tzoff    int     `json:"tzoff"`
+		Lon      float64 `json:"lon"`
+		Lat      float64 `json:"lat"`
+		Timezone string  `json:"timezone"`
 	}{}
 
 	if err := c.BodyParser(&usrInfo); err != nil {
@@ -51,6 +58,12 @@ func BeginRegistration(c *fiber.Ctx) error {
 	var cInfo credentialInfo
 	cInfo.username = usrInfo.Username
 	cInfo.passcode = usrInfo.Passcode
+
+	uid, fullname, _, err := cInfo.getUid()
+	if err != nil || uid == 0 {
+		return handleError(c, fiber.StatusUnauthorized, "User details not found", err)
+	}
+
 	if !cInfo.isValidUser() {
 		// Log the failed attempt without leaking the passcode.
 		log.Printf("Invalid user or passcode for user: %s", usrInfo.Username)
@@ -104,10 +117,35 @@ func BeginRegistration(c *fiber.Ctx) error {
 		return handleError(c, fiber.StatusInternalServerError, "Could not save session", err)
 	}
 
+	// Session values to be carried over to the Finish step
+	sidValue := struct {
+		Sessionid string  `json:"sessionid"`
+		Username  string  `json:"username"`
+		Fullname  string  `json:"fullname"`
+		Uid       int     `json:"uid"`
+		Tzinfo    int     `json:"tzinfo"`
+		Lon       float64 `json:"lon"`
+		Lat       float64 `json:"lat"`
+		Timezone  string  `json:"timezone"`
+	}{
+		Sessionid: sessionID,
+		Username:  usrInfo.Username,
+		Fullname:  fullname,
+		Uid:       uid,
+		Tzinfo:    usrInfo.Tzoff,
+		Lon:       usrInfo.Lon,
+		Lat:       usrInfo.Lat,
+		Timezone:  usrInfo.Timezone,
+	}
+	jsonByteSid, err := json.Marshal(sidValue)
+	if err != nil {
+		return handleError(c, fiber.StatusInternalServerError, "Could not create session cookie", err)
+	}
+
 	// Set the cookie
 	c.Cookie(&fiber.Cookie{
 		Name:     "sid",
-		Value:    sessionID,
+		Value:    string(jsonByteSid),
 		Path:     "/api/passkey",
 		MaxAge:   900, // 15 mins to register between requesting code, and getting the email
 		Secure:   true,
@@ -125,17 +163,27 @@ func BeginRegistration(c *fiber.Ctx) error {
 // **********************************************************************
 
 func FinishRegistration(c *fiber.Ctx) error {
+	usr := struct {
+		Sessionid string  `json:"sessionid"`
+		Username  string  `json:"username"`
+		Fullname  string  `json:"fullname"`
+		Uid       int     `json:"uid"`
+		Tzinfo    int     `json:"tzinfo"`
+		Lon       float64 `json:"lon"`
+		Lat       float64 `json:"lat"`
+		Timezone  string  `json:"timezone"`
+	}{}
 
-	// Get the session ID from cookie
-	sid := c.Cookies("sid")
+	// Get the session info from cookie
+	jsonStr := c.Cookies("sid")
 	c.ClearCookie("sid")
-	if len(sid) == 0 {
-		return handleError(c, fiber.StatusBadRequest, "Missing session ID", nil)
+	if err := json.Unmarshal([]byte(jsonStr), &usr); err != nil || len(usr.Sessionid) == 0 {
+		return handleError(c, fiber.StatusBadRequest, "Missing or invalid session ID", err)
 	}
 
 	// Get the session data stored from the function above
 	var sInfo sessionInfo
-	sInfo.sessionID = sid
+	sInfo.sessionID = usr.Sessionid
 	session, err := sInfo.getSession()
 	if err != nil {
 		return handleError(c, fiber.StatusBadRequest, "Invalid or expired session", err)
@@ -174,6 +222,43 @@ func FinishRegistration(c *fiber.Ctx) error {
 
 	// The credential has been successfully saved, now we can clean up the session.
 	sInfo.deleteSession()
+
+	// Create JWT cookie for automatic login
+	ip := c.IP()
+	if ips := c.IPs(); len(ips) > 0 {
+		ip = ips[0]
+	}
+	var loginInfo db.Logins
+	loginInfo.Uid = usr.Uid
+	loginInfo.User = usr.Username
+	loginInfo.Fullname = usr.Fullname
+	loginInfo.Tzoff = usr.Tzinfo
+	loginInfo.Longitude = usr.Lon
+	loginInfo.Latitude = usr.Lat
+	loginInfo.Ip = ip
+	loginInfo.Session, _ = genID(32)
+	loginInfo.Success = 1
+	loginInfo.Timezone = usr.Timezone
+	loginInfo.Credential_id = bytesToBase64String(credential.ID)
+
+	token, _, err := CreateJWTToken(loginInfo)
+	if err != nil {
+		return handleError(c, fiber.StatusInternalServerError, "Could not create authentication token", err)
+	}
+
+	cookieName := os.Getenv("JWT")
+	c.Cookie(&fiber.Cookie{
+		Name:     cookieName,
+		Value:    token,
+		Path:     "/",
+		Expires:  time.Now().Add(time.Hour * 24 * 60), // 60 day JWT expiry
+		Secure:   true,
+		HTTPOnly: true,
+		SameSite: fiber.CookieSameSiteStrictMode,
+	})
+
+	// Record the login
+	_ = db.SaveLogin(&loginInfo)
 
 	cid := bytesToBase64String(credential.ID)
 	c.Cookie(&fiber.Cookie{

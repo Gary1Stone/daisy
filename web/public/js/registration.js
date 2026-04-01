@@ -106,11 +106,22 @@ async function register() {
         return;
     }
     try {
+        // Send geo/tz data to be saved in the session for automatic login
+        let toSend = {username: username, passcode: passcode, apicode: apicode, tzoff: 0, lon: 0.0, lat: 0.0, timezone: ""};
+        const geoString = sessionStorage.getItem('geo');
+        if (geoString) {
+            let geo = JSON.parse(geoString);
+            toSend.tzoff = geo.tzoff;
+            toSend.lon = geo.lon;
+            toSend.lat = geo.lat;
+            toSend.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        }
+
         // Get registration options from your server. Here, we also receive the challenge.
         const response = await fetch('/api/passkey/registerStart', {
             method: 'POST', 
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username: username, passcode: passcode, apicode: apicode})
+            body: JSON.stringify(toSend)
         });
 
         // Check if the registration options are ok.
@@ -138,7 +149,8 @@ async function register() {
         const reply = await verificationResponse.json();
         console.log(reply.msg);
         if (verificationResponse.ok) {
-            window.location.href =  encodeURI(loginPage);
+            sessionStorage.removeItem("geo");
+            window.location.href =  encodeURI(homePage);
         }
     } catch (error) {
         toast(error);
