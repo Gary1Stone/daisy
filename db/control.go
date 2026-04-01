@@ -55,10 +55,33 @@ func GetActiveUsers(curUid int) ([]ActiveUsers, error) {
 // If the JWT's (JSON Web Token) session ID does not match
 // the session ID in the database the JWT cookie is deleted
 // and the user needs to log in again
-func EndSession(id int) {
-	query := "UPDATE logins SET session='' WHERE id=?"
-	_, err := Conn.Exec(query, id)
+func EndSession(uid int) {
+	tx, err := Conn.Begin()
 	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer tx.Rollback()
+
+	// 1. Clear session in logins table
+	if _, err := tx.Exec("UPDATE logins SET session='' WHERE uid=?", uid); err != nil {
+		log.Println(err)
+		return
+	}
+
+	// 2. Remove user's passkeys using a subquery to find the auth_id mapping
+	if _, err := tx.Exec("DELETE FROM credentials WHERE auth_id = (SELECT auth_id FROM profiles WHERE uid=?)", uid); err != nil {
+		log.Println(err)
+		return
+	}
+
+	// 3. Clear the auth_id in the profiles table
+	if _, err := tx.Exec("UPDATE profiles SET auth_id=null WHERE uid=?", uid); err != nil {
+		log.Println(err)
+		return
+	}
+
+	if err := tx.Commit(); err != nil {
 		log.Println(err)
 	}
 }
