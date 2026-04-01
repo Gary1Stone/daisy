@@ -147,20 +147,17 @@ body.menu-open::after {
     z-index: 1999;
 }
 
-
-
-/*
-
-#content {
-  transition: margin-left 0.3s ease;
-  padding: 1rem;
+/* colors */
+.success {
+    background: color-mix(in srgb, var(--pico-ins-color) 15%, var(--pico-card-background-color));
+}
+.warning {
+    background: color-mix(in srgb, orange 15%, var(--pico-card-background-color));
+}
+.alert {
+    background: color-mix(in srgb, var(--pico-del-color) 15%, var(--pico-card-background-color));
+}
+.info {
+    background: color-mix(in srgb, var(--pico-primary) 15%, var(--pico-card-background-color));
 }
 
-body.menu-open #content {
-  margin-left: 250px;
-}
-
-body.menu-open .overlay {
-  display: block;
-}
-*/

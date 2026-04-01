@@ -2,20 +2,21 @@
 <main class="container">
 
   <div class="grid">
-    <div>
-      <h3><span id="greeting"></span> {{ .firstName }}</h3>
+    <article>
+      <header><span id="greeting"></span> {{ .firstName }}</header>
       {{ .lastLoginMsg }}
-    </div>
-    <div>
-      <h3>Assigned Devices</h3>
+    </article>
+    
+    <article>
+      <header>Assigned Devices</header>
       {{ .assigned }}
-    </div>
+    </article>
   </div>
 
   <!-- WIZARDS -->
-
+  <div class="grid">
     <article>
-      <header>
+      <header class="success">
         <img src="icons/eye.svg" alt="eye" />I saw...
       </header>
       Record tucked away/moved items
@@ -25,7 +26,7 @@
     </article>
 
     <article>
-      <header>
+      <header class="success">
         <img src="icons/tag.svg" alt="tag" />I claim...
       </header>
       Record your assigned device
@@ -35,7 +36,7 @@
     </article>
 
     <article>
-      <header>
+      <header class="success">
         <img src="icons/tag.svg" alt="tag" />I gave...
       </header>
       Record an assigned device
@@ -43,9 +44,11 @@
         <a href="wizard.html?wizkey=GIVING" role="button" >I Gave...</a>
       </footer>
     </article>
+  </div>
 
+  <div class="grid">
     <article>
-      <header>
+      <header class="alert">
         <img src="icons/tool.svg" alt="care" />It needs care...
       </header>
       Should be looked at
@@ -55,7 +58,7 @@
     </article>
 
     <article>
-      <header>
+      <header class="alert">
         <img src="icons/heart-broken.svg" alt="broken" />It broke...
       </header>
       Report a damaged device
@@ -65,15 +68,19 @@
     </article>
 
     <article>
-      <header><img src="icons/binoculars.svg" alt="lost" />It's lost...</header>
+      <header class="alert">
+        <img src="icons/binoculars.svg" alt="lost" />It's lost...
+      </header>
       Mark as lost/stolen
       <footer>
         <a href="wizard.html?wizkey=LOST" role="button" >Lost...</a>
       </footer>
     </article>
+  </div>
 
+  <div class="grid">
     <article>
-      <header>
+      <header class="alert">
         <img src="icons/stethoscope.svg" alt="died" />It died...
       </header>Mark as dead
       <footer>
@@ -82,7 +89,7 @@
     </article>
 
     <article>
-      <header>
+      <header class="info">
         <img src="icons/copy-check.svg" alt="backup" />I backed up...
       </header>
       Record a backup
@@ -92,7 +99,7 @@
     </article>
 
     <article>
-      <header>
+      <header class="warning">
         <img src="icons/binary.svg" alt="software" />I need...
       </header>
       I need a software package installed
@@ -100,15 +107,18 @@
         <a href="wizard.html?wizkey=REQUEST" role="button" >Software...</a>
       </footer>
     </article>
+    </div>
 
-    <article>
+  <div class="grid">
+
+    <article class="alert">
       <header><img src="icons/ticket.svg" alt="ticket" />{{ .btnLabel }} Needs Investigation</header>
       Look into the problem I am having
       <footer>
         <a href="tickets.html" {{ .btnColour }}  role="button" >Investigate...</a>
       </footer>
     </article>
-
+</div>
 </main>
 <footer class="container">
   <section id="alerts">

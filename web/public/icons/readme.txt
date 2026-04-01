@@ -3,7 +3,7 @@ https://tabler.io/icons
 
 When you find one, COPY it from icons_ALL into icons folder
 
-Link to it with: <img src="icons/user.svg" alt="user icon" />
+Link to it with: <img src="icons/user.svg" alt="user" />
 
 OR
 
