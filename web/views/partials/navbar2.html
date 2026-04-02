@@ -3,27 +3,19 @@
   <nav>
     <ul>
       <li><a href="#" class="sidebar-toggle" aria-label="Open menu" onclick="toggleMenu(); document.body.scrollTop = 0; document.documentElement.scrollTop = 0;">☰</a></li>
-      <li><span style="font-size:2rem">&#127809;</span>&nbsp;<b>Daisy</b></li>
+      <li><span style="font-size:2rem">&#127809;</span>&nbsp;<b title="Device Asset Information SYstem">Daisy</b></li>
     </ul>
     <ul>
-      <li>{{ .title }}</li>
       <li>{{ .cmd_one }}</li>
       <li>{{ .cmd_two }}</li>
       <li>{{ .cmd_three }}</li>
-      <li>
-            <details class="dropdown">
-            <summary>Theme</summary>
-            <ul>
-                <li><a href="#" data-theme-switcher="auto">Auto</a></li>
-                <li><a href="#" data-theme-switcher="light">Light</a></li>
-                <li><a href="#" data-theme-switcher="dark">Dark</a></li>
-            </ul>
-            </details>
-        </li>
         <li>
           <details class="dropdown">
             <summary>{{.userIcon}}&nbsp;<span id="userName">{{ .fullName }}</span></summary>
             <ul dir="rtl">
+                <li><a href="#" data-theme-switcher="auto">Theme Auto</a></li>
+                <li><a href="#" data-theme-switcher="light">Theme Light</a></li>
+                <li><a href="#" data-theme-switcher="dark">Theme Dark</a></li>
               <li><a href="logout.html">{{.exitIcon}}&nbsp;Log Out</a></li>
             </ul>
           </details>
