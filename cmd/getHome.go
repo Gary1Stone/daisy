@@ -81,6 +81,7 @@ func GetHome(c *fiber.Ctx) error {
 		"adminIcon":     template.HTML(util.GetIcon("settings.svg")),
 		"aboutIcon":     template.HTML(util.GetIcon("info-hexagon.svg")),
 		"exitIcon":      template.HTML(util.GetIcon("door-exit.svg")),
+		"wizardIcon":    template.HTML(util.GetIcon("wand.svg")),
 	})
 }
 
