@@ -9,27 +9,51 @@ function initialize() {
     } else if (hrs < 20) {
         greeting = "Good day";
     }
-    $("#greeting").html(greeting);
+    const greetingEl = document.getElementById("greeting");
+    if (greetingEl) {
+        greetingEl.innerHTML = greeting;
+    }
+
     //Send long/lat to be saved
     const geoString = sessionStorage.getItem('geo');
-    if (geoString !== null) {
+    if (geoString) {
         let geo = JSON.parse(geoString);
         sessionStorage.removeItem("geo");
         geo.task = "save_lon_lat";
-        $.post("home", geo).then(response => {
+
+        fetch("home", {
+            method: "POST",
+            body: new URLSearchParams(geo)
+        }).then(response => response.text()).then(response => {
             if (response !== "ok") {
-                console.log(response);
+                toast(response);
             }
         });
     }
 }
 
 function ackAlert(aid = 0) {
-    let sendData = {
+    const sendData = {
         task: "get_alerts", 
         aid: aid
     };
-    $.post("home", sendData).then(response => {
-        $("#alerts").html(response);
+    fetch("home", {
+        method: "POST",
+        body: new URLSearchParams(sendData)
+    }).then(response => response.text()).then(response => {
+        const alertsEl = document.getElementById("alerts");
+        if (alertsEl) {
+            alertsEl.innerHTML = response;
+        }
     });
+}
+
+function startWizard() {
+    const wizkey = document.getElementById("wizkey");
+    if (wizkey) {
+        const selected = wizkey.options[wizkey.selectedIndex].value;
+        if (selected) {
+            window.location.href = encodeURI("wizard.html?wizkey=" + selected);
+        }
+    }
 }
