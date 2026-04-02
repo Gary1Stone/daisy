@@ -13,112 +13,28 @@
     </article>
   </div>
 
-  <!-- WIZARDS -->
-  <div class="grid">
     <article>
-      <header class="success">
-        <img src="icons/eye.svg" alt="eye" />I saw...
+      <header>
+        {{.wizardIcon}}&nbsp;Wizards
       </header>
-      Record a tucked away, moved, or stored device
+      <select id="wizkey" name="wizkey">
+        <option value="SIGHTING" selected="selected" class="success"><img src="icons/eye.svg" alt="">I saw...</option>
+        <option value="USING" class="success">I used...</option>
+        <option value="CLAIMING" class="success">I claim...</option>
+        <option value="GIVING" class="success">I gave...</option>
+        <option value="CARE" class="alert">It needs care...</option>
+        <option value="BROKEN" class="alert">It broke...</option>
+        <option value="DIED" class="alert">It died...</option>
+        <option value="LOST" class="alert">It's lost...</option>
+        <option value="BACKUP" class="info">I backed up...</option>
+        <option value="INSTALL" class="info">I installed software...</option>
+        <option value="REQUEST" class="warning">I need software...</option>
+      </select>
       <footer>
-        <a href="wizard.html?wizkey=SIGHTING" role="button" >I Saw...</a>
+        <button onclick="startWizard()">Wizard...</button>
       </footer>
     </article>
 
-    <article>
-      <header class="success">
-        <img src="icons/tag.svg" alt="tag" />I claim...
-      </header>
-      Record a device assigned to me
-      <footer>
-        <a href="wizard.html?wizkey=CLAIMING" role="button" >I Claim...</a>
-      </footer>
-    </article>
-
-    <article>
-      <header class="success">
-        <img src="icons/tag.svg" alt="tag" />I gave...
-      </header>
-      Record a device assigned to someone else
-      <footer>
-        <a href="wizard.html?wizkey=GIVING" role="button" >I Gave...</a>
-      </footer>
-    </article>
-  </div>
-
-  <div class="grid">
-    <article>
-      <header class="alert">
-        <img src="icons/tool.svg" alt="care" />It needs care...
-      </header>
-      A device that needs to be looked at
-      <footer>
-        <a href="wizard.html?wizkey=CARE" role="button" >Care...</a>
-      </footer>
-    </article>
-
-    <article>
-      <header class="alert">
-        <img src="icons/heart-broken.svg" alt="broken" />It broke...
-      </header>
-      Report a damaged device
-      <footer>
-      <a href="wizard.html?wizkey=BROKEN" role="button" >Broken...</a>
-      </footer>
-    </article>
-
-    <article>
-      <header class="alert">
-        <img src="icons/binoculars.svg" alt="lost" />It's lost...
-      </header>
-      Mark a device as lost/stolen
-      <footer>
-        <a href="wizard.html?wizkey=LOST" role="button" >Lost...</a>
-      </footer>
-    </article>
-  </div>
-
-  <div class="grid">
-    <article>
-      <header class="alert">
-        <img src="icons/stethoscope.svg" alt="died" />It died...
-      </header>Mark device as dead
-      <footer>
-        <a href="wizard.html?wizkey=DIED" role="button" >Died...</a>
-      </footer>
-    </article>
-
-    <article>
-      <header class="info">
-        <img src="icons/copy-check.svg" alt="backup" />I backed up...
-      </header>
-      Record a backup performed
-      <footer>
-        <a href="wizard.html?wizkey=BACKUP" role="button" >Backup...</a>
-      </footer>
-    </article>
-
-    <article>
-      <header class="warning">
-        <img src="icons/binary.svg" alt="software" />I need...
-      </header>
-      I need a software package installed
-      <footer>
-        <a href="wizard.html?wizkey=REQUEST" role="button" >Software...</a>
-      </footer>
-    </article>
-    </div>
-
-  <div class="grid">
-
-    <article class="alert">
-      <header><img src="icons/ticket.svg" alt="ticket" />{{ .btnLabel }}</header>
-      Please look into the problem I am having
-      <footer>
-        <a href="tickets.html" {{ .btnColour }}  role="button" >Investigate...</a>
-      </footer>
-    </article>
-</div>
 </main>
 <footer class="container">
   <section id="alerts">
