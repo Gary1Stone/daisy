@@ -63,3 +63,7 @@ function tableChangeWatcher() {
     const config = { childList: true, subtree: true };
     observer.observe(targetNode, config);
 }
+
+function addRecord() {
+  location.href='ticket.html?aid=0';
+}
