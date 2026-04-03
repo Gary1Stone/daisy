@@ -13,12 +13,13 @@
     </article>
   </div>
 
+  <div class="grid">
     <article>
       <header>
         {{.wizardIcon}}&nbsp;Wizards
       </header>
       <select id="wizkey" name="wizkey">
-        <option value="SIGHTING" selected="selected" class="success"><img src="icons/eye.svg" alt="">I saw...</option>
+        <option value="SIGHTING" selected="selected" class="success">I saw...</option>
         <option value="USING" class="success">I used...</option>
         <option value="CLAIMING" class="success">I claim...</option>
         <option value="GIVING" class="success">I gave...</option>
@@ -34,12 +35,25 @@
         <button onclick="startWizard()">Wizard...</button>
       </footer>
     </article>
+    
+    <article>
+      <header class="{{ .btnColour }}">
+        {{.alertIcon}}&nbsp;Alerts
+      </header>
+      <section id="alerts">
+        {{ .myAlerts }}
+      </section>
+      <footer>
+        <a href="tickets.html" role="button" class="secondary" >{{ .ticketIcon }} {{ .btnLabel }}</a>
+        <button onclick="gotoTickets()" data-tooltip="assigned to you" >{{ .ticketIcon }} {{ .btnLabel }}</button>
+      </footer>
+    </article>
+  </div>
+
 
 </main>
 <footer class="container">
-  <section id="alerts">
-    {{ .myAlerts }}
-  </section>
+
 </footer>
 
 <script src="js/home.js" defer></script>
