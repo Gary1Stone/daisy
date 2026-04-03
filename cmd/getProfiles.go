@@ -4,6 +4,7 @@ import (
 	"html/template"
 
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/util"
 
 	"github.com/gbsto/daisy/db"
 
@@ -27,10 +28,25 @@ func GetProfiles(c *fiber.Ctx) error {
 	}
 
 	return c.Render("profiles", fiber.Map{
-		"title":         template.HTML("<span class='mif-profile icon'></span>&nbsp;Profiles"),
+		"title":         template.HTML(util.GetIcon("user.svg") + "&nbsp;Profiles"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"cmd_one":       template.HTML(ctrls.MakeAddButton(user.Permissions.Profile.Create)),
+		"cmd_two":       template.HTML(ctrls.MakeSearchBtn()),
 		"profilesTable": template.HTML(ctrls.ProfilesTable(user.Uid, filter)),
+		"userIcon":      template.HTML(util.GetIcon("user.svg")),
+		"homeIcon":      template.HTML(util.GetIcon("home.svg")),
+		"ticketsIcon":   template.HTML(util.GetIcon("ticket.svg")),
+		"devicesIcon":   template.HTML(util.GetIcon("devices-pc.svg")),
+		"softwaresIcon": template.HTML(util.GetIcon("binary.svg")),
+		"profilesIcon":  template.HTML(util.GetIcon("id.svg")),
+		"reportsIcon":   template.HTML(util.GetIcon("report.svg")),
+		"controlIcon":   template.HTML(util.GetIcon("steering-wheel.svg")),
+		"networkIcon":   template.HTML(util.GetIcon("tournament.svg")),
+		"adminIcon":     template.HTML(util.GetIcon("settings.svg")),
+		"aboutIcon":     template.HTML(util.GetIcon("info-hexagon.svg")),
+		"exitIcon":      template.HTML(util.GetIcon("door-exit.svg")),
+		"wizardIcon":    template.HTML(util.GetIcon("wand.svg")),
+		"alertIcon":     template.HTML(util.GetIcon("bell.svg")),
 	})
 }

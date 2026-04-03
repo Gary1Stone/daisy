@@ -14,7 +14,7 @@ func MakeSaveButton(update bool) string {
 // Add button
 func MakeAddButton(create bool) string {
 	if create {
-		return `<button id='btnNew' title='Create Record' onclick='addRecord();' style='border: none; outline: none; background: none; cursor: pointer;'><span class='mif-plus fg-white'></span></button><input type='hidden' id='canNew' value='1' >`
+		return `<button id='btnNew' title='Create Record' onclick='addRecord();' style='border: none; outline: none; background: none; cursor: pointer;'><img src="/icons/hexagon-plus.svg" alt="user" width="24px" height="24px" /></button><input type='hidden' id='canNew' value='1' >`
 	}
 	return `<span id='btnNew'></span><input type='hidden' id='canNew' value='0' >`
 }
@@ -33,7 +33,7 @@ func MakeSeeButton() string {
 }
 
 func MakeSearchBtn() string {
-	return `<button id='btnFilter' title='Filter' onclick='popFilters();'; document.body.scrollTop = document.documentElement.scrollTop = 0;' style='border: none; outline: none; background: none; cursor: pointer;'><span class='mif-search fg-white'></span></button>`
+	return `<button id='btnFilter' title='Filter' onclick='popFilters();'; document.body.scrollTop = document.documentElement.scrollTop = 0;' style='border: none; outline: none; background: none; cursor: pointer;'><img src="/icons/zoom.svg" alt="user" width="24px" height="24px" /></button>`
 }
 
 // ACRUD = Admin (Create, Read, Update, Delete)

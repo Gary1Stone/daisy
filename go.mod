@@ -10,6 +10,7 @@ require (
 	github.com/gofiber/template/html/v2 v2.1.3
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/joho/godotenv v1.5.1
+	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/logocomune/maclookup-go v1.0.4
 	github.com/mattn/go-sqlite3 v1.14.37
 	golang.org/x/crypto v0.49.0

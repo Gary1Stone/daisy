@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/util"
 )
 
 // Generate profile table for wide screens
@@ -52,9 +53,9 @@ func buildProfileTableRow(item *db.Profile) string {
 	var row strings.Builder
 	row.WriteString("<tr><td>")
 	row.WriteString(strconv.Itoa(item.Uid))
-	row.WriteString("</td><td>profile.html?uid=")
+	row.WriteString("</td><td><a href='profile.html?uid=")
 	row.WriteString(strconv.Itoa(item.Uid))
-	row.WriteString(">")
+	row.WriteString("'>")
 	row.WriteString(item.User)
 	row.WriteString("</a></td><td>")
 	row.WriteString(mxl25(item.Fullname))
@@ -78,12 +79,12 @@ func buildProfileTableRow(item *db.Profile) string {
 
 // Helper function to build the alert icon
 func buildAlertIcon(color string, alerts int) string {
-	return "<span class='" + color + "'>" + db.GetIcon("bell.svg") + "</span> (" + strconv.Itoa(alerts) + ")&nbsp;"
+	return "<span class='" + color + "'>" + util.GetIcon("bell.svg") + "</span> (" + strconv.Itoa(alerts) + ")&nbsp;"
 }
 
 // Helper function to build the ticket icon
 func buildTicketIcon(color string, tickets int) string {
-	return "<span class='" + color + "'>" + db.GetIcon("ticket.svg") + "</span> (" + strconv.Itoa(tickets) + ")&nbsp;"
+	return "<span class='" + color + "'>" + util.GetIcon("ticket.svg") + "</span> (" + strconv.Itoa(tickets) + ")&nbsp;"
 }
 
 // set string to max length of 25 characters
