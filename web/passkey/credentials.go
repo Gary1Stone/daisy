@@ -268,8 +268,9 @@ func (c *credentialInfo) getCredentials(isNew bool) (PasskeyUser, error) {
 	if isNew {
 		return user, nil
 	}
+
+	// creds is now created inside the loop to avoid pointer issues.
 	var (
-		// creds is now created inside the loop to avoid pointer issues.
 		webAuthID         string // string to []byte
 		webAuthnName      string
 		webAuthnDispName  string
@@ -299,7 +300,11 @@ func (c *credentialInfo) getCredentials(isNew bool) (PasskeyUser, error) {
 		FROM credentials WHERE auth_id=?
 	`
 	rows, err := db.Conn.Query(query, c.authID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Printf("%s Has no credentials with authID %s: %v", user.DisplayName, c.authID, err)
+			return user, nil
+		}
 		log.Printf("Error querying for credentials with authID %s: %v", c.authID, err)
 		return user, err
 	}

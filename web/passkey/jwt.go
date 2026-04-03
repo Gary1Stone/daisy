@@ -47,6 +47,7 @@ func DecodeJwtToken(tokenString string) (db.Logins, bool, error) {
 	expired := true
 	jwtInfo.Uid = 0
 	if len(tokenString) == 0 {
+		log.Println("no cookie")
 		return jwtInfo, expired, errors.New("no cookie")
 	}
 
@@ -54,6 +55,7 @@ func DecodeJwtToken(tokenString string) (db.Logins, bool, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		//Check ALGorithm
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			log.Println("invalid jwt signing algorithm")
 			return nil, errors.New("invalid jwt signing algorithm")
 		}
 		return getSecret(), nil
@@ -64,10 +66,12 @@ func DecodeJwtToken(tokenString string) (db.Logins, bool, error) {
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if len(claims) < 9 {
+			log.Println("invalid jwt claims")
 			return jwtInfo, expired, err
 		}
 		//Check the expiration
 		if float64(time.Now().UTC().Unix()) > claims["exp"].(float64) {
+			log.Println("session expired")
 			return jwtInfo, expired, errors.New("session expired")
 		}
 		expired = false
@@ -82,6 +86,7 @@ func DecodeJwtToken(tokenString string) (db.Logins, bool, error) {
 		jwtInfo.Timezone = claims["timezone"].(string)
 		jwtInfo.Tzoff = int(claims["tzoff"].(float64))
 	}
+	log.Println("jwt good")
 	return jwtInfo, expired, nil
 }
 
