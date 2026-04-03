@@ -3,6 +3,7 @@ package passkey
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/gbsto/daisy/db"
 
@@ -43,9 +44,13 @@ func RequestCode(c *fiber.Ctx) error {
 	var cInfo credentialInfo
 	cInfo.username = usr.Username
 	uid, _, mins, err := cInfo.getUid() // mins = minutes since last updated
-	if err != nil || uid == 0 || mins < 15 {
+	howOften, err := strconv.Atoi(os.Getenv("EMAILFREQUENCY"))
+	if err != nil {
+		howOften = 15
+	}
+	if err != nil || uid == 0 || mins < howOften {
 		reply.Msg = "Unknown user"
-		if mins < 15 && uid > 0 {
+		if mins < howOften && uid > 0 {
 			reply.Msg = "Only one request every 15 minutes please"
 		}
 		log.Println(reply.Msg, usr.Username, err)
