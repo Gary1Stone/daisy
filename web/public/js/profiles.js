@@ -1,9 +1,11 @@
-/* global Metro */
+// Profiles.js
 
-$(document).ready(function () {
+window.addEventListener("load", initialize);
+
+function initialize() {
   tableChangeWatcher();
   addRowClick();
-});
+}
 
 // Select the table and all rows
 // Loop through each row and add a click event listener
@@ -28,7 +30,7 @@ function handleRowClick(event) {
   if (row.cells.length < 3) {
       return;
   }
-  const uid = txt2Int(row.cells[2].innerText); // 
+  const uid = txt2Int(row.cells[0].innerText); // 
   window.location.href =  encodeURI("profile.html?uid=" + uid);
 }
 

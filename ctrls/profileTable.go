@@ -34,21 +34,14 @@ func ProfilesTable(curUid int, filter db.ProfileFilter) string {
 
 // Helper function to build the table header
 func buildProfileTableHeader() string {
-	return `<table data-role="table" id="profiletable" 
-    data-rows="50" data-show-rows-steps="false" 
-    data-show-search="true" 
-    data-table-search-title="<span class='mif-search'></span>" 
-    data-show-pagination="true" 
-    data-show-table-info="true" 
-    data-horizontal-scroll="true" 
-    class="table striped table-border row-border row-hover">
+	return `<table id="profileTable">
     <thead>
     <tr>
-        <th data-sortable="true" data-show="false">UID</th>
-        <th data-sortable="true">User ID</th>
-        <th data-sortable="true">Name</th>
-        <th data-sortable="true">Queue</th>
-        <th data-sortable="true">Alerts&sol;Tickets</th>
+        <th>UID</th>
+        <th>User ID</th>
+        <th>Name</th>
+        <th>Queue</th>
+        <th>Alerts&sol;Tickets</th>
     </tr>
     </thead>
     <tbody>`
@@ -57,11 +50,13 @@ func buildProfileTableHeader() string {
 // Helper function to build a single table row
 func buildProfileTableRow(item *db.Profile) string {
 	var row strings.Builder
-	row.WriteString("<tr class='row-hover'><td data-label='UID'>")
+	row.WriteString("<tr><td>")
 	row.WriteString(strconv.Itoa(item.Uid))
-	row.WriteString("</td><td><span class='mif-user icon'></span> ")
+	row.WriteString("</td><td>profile.html?uid=")
+	row.WriteString(strconv.Itoa(item.Uid))
+	row.WriteString(">")
 	row.WriteString(item.User)
-	row.WriteString("</td><td>")
+	row.WriteString("</a></td><td>")
 	row.WriteString(mxl25(item.Fullname))
 	row.WriteString("</td><td>")
 	row.WriteString(mxl25(item.Group))
@@ -83,12 +78,12 @@ func buildProfileTableRow(item *db.Profile) string {
 
 // Helper function to build the alert icon
 func buildAlertIcon(color string, alerts int) string {
-	return `<span class='mif-bell icon mif-1x ` + color + `'></span> (` + strconv.Itoa(alerts) + `)&nbsp;`
+	return "<span class='" + color + "'>" + db.GetIcon("bell.svg") + "</span> (" + strconv.Itoa(alerts) + ")&nbsp;"
 }
 
 // Helper function to build the ticket icon
 func buildTicketIcon(color string, tickets int) string {
-	return `<span class='mif-news icon mif-1x ` + color + `'></span> (` + strconv.Itoa(tickets) + `)`
+	return "<span class='" + color + "'>" + db.GetIcon("ticket.svg") + "</span> (" + strconv.Itoa(tickets) + ")&nbsp;"
 }
 
 // set string to max length of 25 characters
