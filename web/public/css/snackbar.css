@@ -165,5 +165,6 @@ body.menu-open::after {
     background: color-mix(in srgb, var(--pico-primary) 15%, var(--pico-card-background-color));
 }
 .sidebar-toggle {
+    text-decoration: none;
     color: var(--pico-code-color);
 }
