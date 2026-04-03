@@ -3,6 +3,7 @@
 window.addEventListener("load", initialize);
 
 function initialize() {
+  buildTable('profileTable');
   tableChangeWatcher();
   addRowClick();
 }
@@ -10,7 +11,7 @@ function initialize() {
 // Select the table and all rows
 // Loop through each row and add a click event listener
 function addRowClick() {
-  const table = document.getElementById('profiletable');
+  const table = document.getElementById('profileTable');
   const rows = table.getElementsByTagName('tr');
   Array.from(rows).forEach(row => {
     if (row.parentNode.tagName.toLowerCase() === 'thead') {
@@ -37,7 +38,7 @@ function handleRowClick(event) {
 // Add a mutation observer to watch for any table changes
 // Start observing the target node for configured mutations
 function tableChangeWatcher() {
-  const targetNode = document.getElementById('profiletable');
+  const targetNode = document.getElementById('profileTable');
   const observer = new MutationObserver((mutationsList, observer) => {
       for (let mutation of mutationsList) {
           if (mutation.type === 'childList') {
