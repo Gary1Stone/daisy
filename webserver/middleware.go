@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync/atomic"
 	"time"
 
 	"github.com/gbsto/daisy/db"
@@ -13,7 +14,7 @@ import (
 	"github.com/gofiber/helmet/v2"
 )
 
-func AddProtection(app *fiber.App) {
+func addProtection(app *fiber.App) {
 	app.Use(helmet.New()) // Set some security headers on all responses
 
 	// Prevent frequent pings (DoS attacks)
@@ -51,7 +52,7 @@ func AddProtection(app *fiber.App) {
 }
 
 // Check the JSON Web Token (JWT) to ensure it is valid
-func CheckToken(c *fiber.Ctx) error {
+func checkToken(c *fiber.Ctx) error {
 	// Get the cookie off the request
 	cookieName := os.Getenv("JWT")
 	tokenString := c.Cookies(cookieName)
@@ -92,4 +93,38 @@ func CheckToken(c *fiber.Ctx) error {
 	c.Locals("timezone", fmt.Sprintf("%v", jwtInfo.Timezone))
 	c.Locals("tzoff", fmt.Sprintf("%v", jwtInfo.Tzoff))
 	return c.Next()
+}
+
+// Count the number of requests (hits) the web server recieves within 15-minute intervals
+// Global atomic counter for requests in the current 15-minute interval
+var hitCounter uint64 = 0
+
+// Atomically get the current count and reset it to 0 for the next interval
+func ResetHits() {
+	count := atomic.SwapUint64(&hitCounter, 0)
+	db.LogHits(count)
+}
+
+// Ask GoFiber to use this hit counter
+// Counts requests: activate after recovery but before protection logic!
+// app.Use(middleware.AddHitCounter())
+// This Increments the hit counter for each incoming request.
+func addHitCounter() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		atomic.AddUint64(&hitCounter, 1)
+		return c.Next()
+	}
+}
+
+// This function redirects all http traffic to https
+// Check if the request is over HTTPS
+// Redirect HTTP requests to HTTPS
+func secureOnly() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		if c.Protocol() == "https" {
+			return c.Next()
+		}
+		targetURL := "https://" + c.Hostname() + c.OriginalURL()
+		return c.Redirect(targetURL, fiber.StatusMovedPermanently)
+	}
 }

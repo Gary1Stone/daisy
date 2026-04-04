@@ -45,8 +45,8 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	// app.Static("/", dir+"/public")
 	app.Static("/", filepath.Join(workingDir, "web", "public"))
 	app.Use(recover.New())
-	app.Use(AddHitCounter())
-	AddProtection(app)
+	app.Use(addHitCounter())
+	addProtection(app)
 
 	// https: Certificate manager
 	certCacheDir := filepath.Join(workingDir, "webserver", "certs")
@@ -66,10 +66,10 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	}
 
 	// Middleware to enforce HTTPS
-	app.Use(SecureOnly())
+	app.Use(secureOnly())
 
 	// Register all your specific application routes
-	Routes(app)
+	routes(app)
 
 	// ATTACKS: Adding the catch-all middleware AFTER routes.Routes()
 	// meaning if user asks for a page that does not exist, kick them out.
