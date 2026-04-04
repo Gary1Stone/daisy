@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/gbsto/daisy/web/passkey"
+	"github.com/gbsto/daisy/passkey"
 
 	"github.com/gbsto/daisy/db"
 

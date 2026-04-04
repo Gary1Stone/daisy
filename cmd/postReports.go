@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/gbsto/daisy/web/reports"
+	"github.com/gbsto/daisy/reports"
 
 	"github.com/gofiber/fiber/v2"
 )

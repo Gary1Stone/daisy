@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/schedule"
 	"github.com/gbsto/daisy/web"
-	"github.com/gbsto/daisy/web/passkey"
 	"github.com/joho/godotenv"
 	"gopkg.in/natefinch/lumberjack.v2"
 )

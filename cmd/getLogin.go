@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/gbsto/daisy/web/passkey"
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/passkey"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -11,8 +11,8 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/util"
-	"github.com/gbsto/daisy/web/passkey"
 
 	"github.com/gbsto/daisy/db"
 
