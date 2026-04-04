@@ -48,8 +48,16 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	app.Use(addHitCounter())
 	addProtection(app)
 
-	// https: Certificate manager
+	// Check if cache directory exists and if not, create it
 	certCacheDir := filepath.Join(workingDir, "webserver", "certs")
+	if _, err := os.Stat(certCacheDir); os.IsNotExist(err) {
+		err = os.MkdirAll(certCacheDir, 0700)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	// https: Certificate manager
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("daisy.hopto.org"),
