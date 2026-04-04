@@ -57,7 +57,7 @@ func PopulateVendors() error {
 
 	// if none found, return
 	if len(macsToUpdate) == 0 {
-		log.Println("No MACs found requiring vendor updates.")
+		//log.Println("No MACs found requiring vendor updates.")
 		return nil
 	}
 
@@ -99,7 +99,7 @@ func PopulateVendors() error {
 		log.Println("Error committing vendor update transaction:", err)
 		return err
 	}
-	log.Printf("Successfully updated vendors for %d MACs.", len(macsToUpdate))
+	// log.Printf("Successfully updated vendors for %d MACs.", len(macsToUpdate))
 	return nil
 }
 

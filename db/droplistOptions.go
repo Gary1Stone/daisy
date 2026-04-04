@@ -121,7 +121,7 @@ func GetUserList(field string, selected, parentCode string, withBlank bool) []Dr
 	isSearch := strings.Contains(field, "SEARCH")
 	field = strings.TrimSuffix(field, "SEARCH")
 	field = strings.TrimSuffix(field, "INFORM")
-	icon := GetIcon(field)
+	icon := FindIconNameByName(field)
 	uid, gid := toInt(selected, parentCode)
 	if uid > 0 {
 		var item DroplistOption
@@ -187,7 +187,7 @@ func GetSoftwareList(withBlank bool) []DroplistOption {
 		var option DroplistOption
 		options = append(options, option)
 	}
-	icon := GetIcon("SOFTWARE")
+	icon := FindIconNameByName("SOFTWARE")
 	var query strings.Builder
 	query.WriteString("SELECT sid, name FROM software WHERE active=1 ORDER BY name")
 	rows, err := Conn.Query(query.String())

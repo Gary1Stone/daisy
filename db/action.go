@@ -235,7 +235,7 @@ func readActionTable(curUid, page int, whereClause string, params ...any) ([]*Ac
 		if err != nil {
 			log.Println(err)
 		} else {
-			act.DeviceIcon = GetIcon(act.Devicetype)
+			act.DeviceIcon = FindIconNameByName(act.Devicetype)
 			acts = append(acts, &act)
 		}
 	}

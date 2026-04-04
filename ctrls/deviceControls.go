@@ -9,6 +9,7 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 func MakeImageCtrl(dev *db.Device, isUpdatePerm bool) string {
@@ -123,7 +124,8 @@ func BuildYearsSelect(selected int) string {
 		if item.Selected {
 			ctrl.WriteString(`selected `)
 		}
-		item.Icon = db.GetIcon("YEARS")
+		item.Icon = svg.GetIcon(db.FindIconNameByName("YEARS"))
+		//item.Icon = svg.LookupIcon("YEARS")
 		ctrl.WriteString(`data-template="<span class='`)
 		ctrl.WriteString(item.Icon)
 		ctrl.WriteString(` icon'></span> $1 " >`)

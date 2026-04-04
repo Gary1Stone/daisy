@@ -34,7 +34,7 @@ func (i *iconMap) loadIcons() {
 	// Lock the mutex so reads cannot happen while it is being loaded
 	i.Lock()
 	defer i.Unlock()
-	
+
 	// Clear the map before loading new icons
 	i.theMap = make(map[string]string)
 
@@ -53,8 +53,7 @@ func (i *iconMap) loadIcons() {
 	}
 }
 
-// Return the mif-icon from the cache for speed
-func GetIcon(name string) string {
+func FindIconNameByName(name string) string {
 	if len(icons.theMap) == 0 {
 		icons.loadIcons()
 	}

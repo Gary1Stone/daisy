@@ -86,7 +86,7 @@ func DecodeJwtToken(tokenString string) (db.Logins, bool, error) {
 		jwtInfo.Timezone = claims["timezone"].(string)
 		jwtInfo.Tzoff = int(claims["tzoff"].(float64))
 	}
-	log.Println("jwt good")
+	//	log.Println("jwt good")
 	return jwtInfo, expired, nil
 }
 

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 	"github.com/gbsto/daisy/util"
 )
 
@@ -280,7 +281,7 @@ func getButtonCtrl(cid, days int, devType, name string) string {
 	ctrl.WriteString("' href='device.html?cid=")
 	ctrl.WriteString(strconv.Itoa(cid))
 	ctrl.WriteString("' role='button' ><span class='")
-	ctrl.WriteString(db.GetIcon(devType))
+	ctrl.WriteString(svg.GetIcon(db.FindIconNameByName(devType)))
 	ctrl.WriteString(" icon'></span>&nbsp;")
 	ctrl.WriteString(name)
 	ctrl.WriteString("</a>")

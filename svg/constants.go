@@ -6,7 +6,7 @@ const (
 	NameWithDate   = "nameWithDate" // name and date
 	barHeight      = 40             // includes 10px spacer
 	chartWidth     = 1440           // Number of minutes in a day
-	slotsPerDay    = 96             // Number of 15-minute timeslots in a day
+//	slotsPerDay    = 96             // Number of 15-minute timeslots in a day
 	slotPixelWidth = 15             // 1440 minutes/96 slots
 	headerHeight   = 50             // Some room for the title & time markers
 	timeLabelY     = 25             // How far down should the time label be

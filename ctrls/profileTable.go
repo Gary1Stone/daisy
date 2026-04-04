@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/util"
+	"github.com/gbsto/daisy/svg"
 )
 
 // Generate profile table for wide screens
@@ -79,12 +79,12 @@ func buildProfileTableRow(item *db.Profile) string {
 
 // Helper function to build the alert icon
 func buildAlertIcon(color string, alerts int) string {
-	return "<span class='" + color + "'>" + util.GetIcon("bell.svg") + "</span> (" + strconv.Itoa(alerts) + ")&nbsp;"
+	return "<span class='" + color + "'>" + svg.GetIcon("bell.svg") + "</span> (" + strconv.Itoa(alerts) + ")&nbsp;"
 }
 
 // Helper function to build the ticket icon
 func buildTicketIcon(color string, tickets int) string {
-	return "<span class='" + color + "'>" + util.GetIcon("ticket.svg") + "</span> (" + strconv.Itoa(tickets) + ")&nbsp;"
+	return "<span class='" + color + "'>" + svg.GetIcon("ticket.svg") + "</span> (" + strconv.Itoa(tickets) + ")&nbsp;"
 }
 
 // set string to max length of 25 characters

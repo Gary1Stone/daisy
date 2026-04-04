@@ -12,6 +12,7 @@ import (
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/passkey"
+	"github.com/gbsto/daisy/svg"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gbsto/daisy/db"
@@ -61,7 +62,7 @@ func GetHome(c *fiber.Ctx) error {
 	}
 
 	return c.Render("home", fiber.Map{
-		"title":         template.HTML(util.GetIcon("home.svg") + "&nbsp;Home"),
+		"title":         template.HTML(svg.GetIcon("home.svg") + "&nbsp;Home"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"lastLoginMsg":  template.HTML(msg),
@@ -70,20 +71,20 @@ func GetHome(c *fiber.Ctx) error {
 		"btnColour":     btnColour,
 		"btnLabel":      btnLabel,
 		"myAlerts":      template.HTML(ctrls.GetAlertButtons(user.Uid)),
-		"userIcon":      template.HTML(util.GetIcon("user.svg")),
-		"homeIcon":      template.HTML(util.GetIcon("home.svg")),
-		"ticketsIcon":   template.HTML(util.GetIcon("ticket.svg")),
-		"devicesIcon":   template.HTML(util.GetIcon("devices-pc.svg")),
-		"softwaresIcon": template.HTML(util.GetIcon("binary.svg")),
-		"profilesIcon":  template.HTML(util.GetIcon("id.svg")),
-		"reportsIcon":   template.HTML(util.GetIcon("report.svg")),
-		"controlIcon":   template.HTML(util.GetIcon("steering-wheel.svg")),
-		"networkIcon":   template.HTML(util.GetIcon("tournament.svg")),
-		"adminIcon":     template.HTML(util.GetIcon("settings.svg")),
-		"aboutIcon":     template.HTML(util.GetIcon("info-hexagon.svg")),
-		"exitIcon":      template.HTML(util.GetIcon("door-exit.svg")),
-		"wizardIcon":    template.HTML(util.GetIcon("wand.svg")),
-		"alertIcon":     template.HTML(util.GetIcon("bell.svg")),
+		"userIcon":      template.HTML(svg.GetIcon("user.svg")),
+		"homeIcon":      template.HTML(svg.GetIcon("home.svg")),
+		"ticketsIcon":   template.HTML(svg.GetIcon("ticket.svg")),
+		"devicesIcon":   template.HTML(svg.GetIcon("devices-pc.svg")),
+		"softwaresIcon": template.HTML(svg.GetIcon("binary.svg")),
+		"profilesIcon":  template.HTML(svg.GetIcon("id.svg")),
+		"reportsIcon":   template.HTML(svg.GetIcon("report.svg")),
+		"controlIcon":   template.HTML(svg.GetIcon("steering-wheel.svg")),
+		"networkIcon":   template.HTML(svg.GetIcon("tournament.svg")),
+		"adminIcon":     template.HTML(svg.GetIcon("settings.svg")),
+		"aboutIcon":     template.HTML(svg.GetIcon("info-hexagon.svg")),
+		"exitIcon":      template.HTML(svg.GetIcon("door-exit.svg")),
+		"wizardIcon":    template.HTML(svg.GetIcon("wand.svg")),
+		"alertIcon":     template.HTML(svg.GetIcon("bell.svg")),
 	})
 }
 
