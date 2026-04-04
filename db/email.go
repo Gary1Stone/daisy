@@ -9,12 +9,12 @@ import (
 	"net/smtp"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"text/template"
 	"time"
 
 	"github.com/gbsto/daisy/util"
+	"github.com/jordan-wright/email"
 )
 
 type Emails struct {
@@ -54,7 +54,7 @@ func SendOneTimePassword(uid int) error {
 	mail.User = usr.User
 	mail.Body = ""
 	mail.Subject = "DAISY One Time Password"
-	mail.Template = "./views/email.html"
+	mail.Template = "email.html"
 	mail.Param1 = usr.First
 	mail.Param2 = usr.Otp
 	mail.Status = "2SEND" //Waiting to be sent
@@ -85,7 +85,6 @@ func transmitEmail() {
 	}
 
 	for stillMore2Go {
-		toAddress := toSend.User
 		info.Param1 = toSend.Param1
 		info.Param2 = toSend.Param2
 
@@ -97,31 +96,19 @@ func transmitEmail() {
 		if err != nil {
 			workingDir = "."
 		}
-
-		// BAD GARY - should not store directory seperators in database emails table.
-		// get everything after the last / in the template name
-		templateName := toSend.Template
-		templateName = templateName[strings.LastIndex(templateName, "/")+1:]
-		toSend.Template = filepath.Join(workingDir, "web", "views", templateName)
-
-		t, err := template.ParseFiles(toSend.Template)
+		templateFile := filepath.Join(workingDir, "web", "views", toSend.Template)
+		if _, err := os.Stat(templateFile); os.IsNotExist(err) {
+			log.Println(err)
+			return
+		}
+		t, err := template.ParseFiles(templateFile)
 		if err != nil {
 			log.Println(err)
 		}
 		t.Execute(&body, info)
 
-		//Build the sendmail information
-		emailFrom := os.Getenv("EMAIL")
-		emailServer := os.Getenv("EMAILSERVER")
-		emailPort := os.Getenv("EMAILPORT") //port 465 is SSL, port 587 is TLS. 465 worked in Java. 587 works in Go.
-		emailPassword := os.Getenv("EMAILPWD")
-		auth := smtp.PlainAuth("", emailFrom, emailPassword, emailServer)
-		header := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";"
-		msg := "Subject: " + toSend.Subject + "\n" + header + "\n\n" + body.String()
-		emailServer += ":" + emailPort
-
 		//Send the email
-		err = smtp.SendMail(emailServer, auth, emailFrom, []string{toAddress}, []byte(msg))
+		err = SendAnEmail(toSend.User, os.Getenv("EMAIL"), toSend.Subject, body.String())
 		if err != nil {
 			log.Println(err)
 			toSend.Status = "ERROR"
@@ -146,6 +133,19 @@ func transmitEmail() {
 	}
 }
 
+// port 465 is SSL, port 587 is TLS. 465 worked in Java. 587 works in Go.
+// How to ensure the connection is open: from PowerShell or VScode terminal run:
+// Test-NetConnection smtp.gmail.com -Port 587
+// Real-NetConnection smtp.gmail.com -Port 465
+func SendAnEmail(to, from, subject, body string) error {
+	e := email.NewEmail()
+	e.From = from
+	e.To = []string{to}
+	e.Subject = from
+	e.HTML = []byte(body)
+	return e.Send(os.Getenv("EMAILSERVER")+":"+os.Getenv("EMAILPORT"), smtp.PlainAuth("", os.Getenv("EMAIL"), os.Getenv("EMAILPWD"), os.Getenv("EMAILSERVER")))
+}
+
 // Insert email request into queue
 func queueEmail(email Emails) error {
 	// Check email address is valid
@@ -166,11 +166,12 @@ func queueEmail(email Emails) error {
 	// 	return errors.New("email notifications are off")
 	// }
 	// Save email request to database table (queue)
-	var query strings.Builder
-	query.WriteString("INSERT INTO emails (function, uid, user, subject, body, ")
-	query.WriteString("template, param1, param2, status, sent) ")
-	query.WriteString("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	_, err = Conn.Exec(query.String(), email.Function, email.Uid, email.User, email.Subject,
+	query := `
+		INSERT INTO emails (
+		function, uid, user, subject, body, template, param1, param2, status, sent
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`
+	_, err = Conn.Exec(query, email.Function, email.Uid, email.User, email.Subject,
 		email.Body, email.Template, email.Param1, email.Param2, email.Status, email.Sent)
 	if err != nil {
 		log.Println(err)
@@ -181,17 +182,23 @@ func queueEmail(email Emails) error {
 
 // Return first email not sent from queue
 // Will only try sending an email three times
+// Skip One-Time-Passwords (OTP) that have expired (15 minutes old)
 func getEmailFromQueue(curUid int) (Emails, error) {
 	var email Emails
 	tzoff := GetTzoff(curUid)
-	var query strings.Builder
-	query.WriteString("SELECT id, function, uid, user, subject, body, status, sent, ")
-	query.WriteString("strftime('%Y-%m-%d %H:%M', timestamp - ")
-	query.WriteString(strconv.Itoa(tzoff))
-	query.WriteString(", 'unixepoch') AS timestamp, ")
-	query.WriteString("template, param1, param2 ")
-	query.WriteString("FROM emails WHERE sent<3 ORDER BY sent ASC LIMIT 1")
-	err := Conn.QueryRow(query.String()).Scan(&email.ID, &email.Function, &email.Uid,
+	query := `
+		SELECT id, function, uid, user, subject, body, status, sent, 
+		strftime('%Y-%m-%d %H:%M', timestamp-0, 'unixepoch') AS timestamp, template, param1, param2 
+		FROM emails 
+		WHERE sent<3 AND (
+			(function = 'OTP' AND timestamp > CAST(strftime('%s', 'now', '-15 minutes') AS INTEGER))
+			OR
+			(function != 'OTP' OR function IS NULL) -- Keeps other functions without time check
+		)
+		ORDER BY sent ASC 
+		LIMIT 1
+	`
+	err := Conn.QueryRow(query, tzoff).Scan(&email.ID, &email.Function, &email.Uid,
 		&email.User, &email.Subject, &email.Body, &email.Status, &email.Sent,
 		&email.Timestamp, &email.Template, &email.Param1, &email.Param2)
 	if err != nil {
@@ -204,13 +211,12 @@ func getEmailFromQueue(curUid int) (Emails, error) {
 
 // Update email queue
 func updateEmailInQueue(email Emails) error {
-	var query strings.Builder
-	query.WriteString("UPDATE emails SET ")
-	query.WriteString("function=?, uid=?, user=?, ")
-	query.WriteString("subject=?, body=?, status=?, sent=?, ")
-	query.WriteString("template=?, param1=?, param2=? ")
-	query.WriteString("WHERE ID=?")
-	_, err := Conn.Exec(query.String(), email.Function, email.Uid, email.User, email.Subject,
+	query := `
+		UPDATE emails SET 
+		function=?, uid=?, user=?, subject=?, body=?, status=?, sent=?, template=?, param1=?, param2=? 
+		WHERE ID=?
+	`
+	_, err := Conn.Exec(query, email.Function, email.Uid, email.User, email.Subject,
 		email.Body, email.Status, email.Sent, email.Template, email.Param1,
 		email.Param2, email.ID)
 	if err != nil {
@@ -226,7 +232,7 @@ func emailNewSoftwareList(hostname string, swlist []string) error {
 	mail.User = SYS_PROFILE.User
 	mail.Body = ""
 	mail.Subject = "DAISY Software Installation Notifiction"
-	mail.Template = "./views/emailsoftware.html"
+	mail.Template = "emailsoftware.html"
 	mail.Param1 = hostname
 	mail.Param2 = strings.Join(swlist, ", ")
 	mail.Status = "2SEND" //Waiting to be sent
@@ -265,7 +271,7 @@ func EmailNewPin(emailAddr, pin string) error {
 	mail.User = emailAddr
 	mail.Body = ""
 	mail.Subject = "iSAW PIN Reset Request"
-	mail.Template = "./views/emailpin.html"
+	mail.Template = "emailpin.html"
 	mail.Param1 = usr.First
 	mail.Param2 = pin
 	mail.Status = "2SEND" //Waiting to be sent
