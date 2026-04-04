@@ -1,4 +1,4 @@
-package middleware
+package webserver
 
 import "github.com/gofiber/fiber/v2"
 

@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/reports"
-	"github.com/gbsto/daisy/web/svg"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/ctrls"
 

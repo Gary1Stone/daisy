@@ -1,4 +1,4 @@
-package web
+package webserver
 
 import (
 	"crypto/tls"
@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/web/middleware"
-	"github.com/gbsto/daisy/web/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -34,7 +32,7 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	app := fiber.New(fiber.Config{
 		Views:              engine,
 		ServerHeader:       "Daisy",
-		AppName:            "Daisy App v2026.03.29",
+		AppName:            "Daisy App v2026.04.04",
 		EnableIPValidation: true,
 	})
 
@@ -47,11 +45,11 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	// app.Static("/", dir+"/public")
 	app.Static("/", filepath.Join(workingDir, "web", "public"))
 	app.Use(recover.New())
-	app.Use(middleware.AddHitCounter())
-	middleware.AddProtection(app)
+	app.Use(AddHitCounter())
+	AddProtection(app)
 
 	// https: Certificate manager
-	certCacheDir := filepath.Join(workingDir, "web", "certs")
+	certCacheDir := filepath.Join(workingDir, "webserver", "certs")
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("daisy.hopto.org"),
@@ -68,10 +66,10 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	}
 
 	// Middleware to enforce HTTPS
-	app.Use(middleware.SecureOnly())
+	app.Use(SecureOnly())
 
 	// Register all your specific application routes
-	routes.Routes(app)
+	Routes(app)
 
 	// ATTACKS: Adding the catch-all middleware AFTER routes.Routes()
 	// meaning if user asks for a page that does not exist, kick them out.

@@ -3,7 +3,7 @@ package cmd
 import (
 	"html/template"
 
-	"github.com/gbsto/daisy/web/svg"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/ctrls"
 

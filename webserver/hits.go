@@ -1,4 +1,4 @@
-package middleware
+package webserver
 
 import (
 	"sync/atomic"

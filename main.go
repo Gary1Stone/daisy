@@ -8,7 +8,7 @@ import (
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/schedule"
-	"github.com/gbsto/daisy/web"
+	"github.com/gbsto/daisy/webserver"
 	"github.com/joho/godotenv"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -21,10 +21,10 @@ func main() {
 	daisyLogger := setupLogFiles()
 	defer daisyLogger.Close()
 	log.Println("Starting Daisy...")
-	db.StartServer()             // Start the database server
-	schedule.StartServer()       // Schedule 2 am backups and photos directory cleanups
-	passkey.StartWebAuthn()      // Configure Passkey for use
-	web.StartServer(daisyLogger) // Start the webserver. This is a blocking never-ending loop
+	db.StartServer()                   // Start the database server
+	schedule.StartServer()             // Schedule 2 am backups and photos directory cleanups
+	passkey.StartWebAuthn()            // Configure Passkey for use
+	webserver.StartServer(daisyLogger) // Start the webserver. This is a blocking never-ending loop
 }
 
 // Load the environment variables

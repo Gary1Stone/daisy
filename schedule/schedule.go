@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/web/middleware"
+	"github.com/gbsto/daisy/webserver"
 )
 
 func StartServer() {
-	go atStartUp()        // Run at startup
+	go atStartUp() // Run at startup
 }
 
 // Calculate the end time of the current 15-minute interval for the first log.
@@ -23,7 +23,7 @@ func atStartUp() {
 	time.Sleep(initialDelay)
 
 	// Perform the first log operation
-	middleware.ResetHits()
+	webserver.ResetHits()
 	go everyQuarterHour() // Run every 15 minutes forever
 }
 
@@ -36,7 +36,7 @@ func everyQuarterHour() {
 	lastRunDate := ""
 
 	for now := range ticker.C {
-		middleware.ResetHits()
+		webserver.ResetHits()
 
 		// Check if it's currently the 2 AM hour
 		if now.Hour() == 2 {

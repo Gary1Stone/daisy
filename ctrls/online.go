@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/web/svg"
+	"github.com/gbsto/daisy/svg"
 )
 
 func GetOnlineDevices(tzoff int, theDay string) string {
