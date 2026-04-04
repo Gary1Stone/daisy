@@ -9,10 +9,9 @@
       <li>{{ .cmd_one }}</li>
       <li>{{ .cmd_two }}</li>
       <li>{{ .cmd_three }}</li>
-        <li>
           <details class="dropdown">
             <summary>{{.userIcon}}&nbsp;<span id="userName">{{ .fullName }}</span></summary>
-            <ul dir="rtl">
+            <ul>
                 <li><a href="#" data-theme-switcher="auto">Theme Auto</a></li>
                 <li><a href="#" data-theme-switcher="light">Theme Light</a></li>
                 <li><a href="#" data-theme-switcher="dark">Theme Dark</a></li>
@@ -28,6 +27,7 @@
   <nav>
     <ul>
         <li class="close-item"><a href="#" aria-label="Close menu" onclick="toggleMenu()">✕</a></li>
+        <li class="divider"></li>
         <li><a href="home.html">{{.homeIcon}}&nbsp;Home</a></li>
         <li><a href="tickets.html">{{.ticketsIcon}}&nbsp;Tickets</a></li>
         <li class="divider"></li>
