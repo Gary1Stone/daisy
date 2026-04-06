@@ -62,7 +62,7 @@ func GetHome(c *fiber.Ctx) error {
 	}
 
 	return c.Render("home", fiber.Map{
-		"title":         template.HTML(svg.GetIcon("home.svg") + "&nbsp;Home"),
+		"title":         template.HTML(svg.GetIcon("home") + "&nbsp;Home"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"lastLoginMsg":  template.HTML(msg),
@@ -71,20 +71,20 @@ func GetHome(c *fiber.Ctx) error {
 		"btnColour":     btnColour,
 		"btnLabel":      btnLabel,
 		"myAlerts":      template.HTML(ctrls.GetAlertButtons(user.Uid)),
-		"userIcon":      template.HTML(svg.GetIcon("user.svg")),
-		"homeIcon":      template.HTML(svg.GetIcon("home.svg")),
-		"ticketsIcon":   template.HTML(svg.GetIcon("ticket.svg")),
-		"devicesIcon":   template.HTML(svg.GetIcon("devices-pc.svg")),
-		"softwaresIcon": template.HTML(svg.GetIcon("binary.svg")),
-		"profilesIcon":  template.HTML(svg.GetIcon("id.svg")),
-		"reportsIcon":   template.HTML(svg.GetIcon("report.svg")),
-		"controlIcon":   template.HTML(svg.GetIcon("steering-wheel.svg")),
-		"networkIcon":   template.HTML(svg.GetIcon("tournament.svg")),
-		"adminIcon":     template.HTML(svg.GetIcon("settings.svg")),
-		"aboutIcon":     template.HTML(svg.GetIcon("info-hexagon.svg")),
-		"exitIcon":      template.HTML(svg.GetIcon("door-exit.svg")),
-		"wizardIcon":    template.HTML(svg.GetIcon("wand.svg")),
-		"alertIcon":     template.HTML(svg.GetIcon("bell.svg")),
+		"userIcon":      template.HTML(svg.GetIcon("user")),
+		"homeIcon":      template.HTML(svg.GetIcon("home")),
+		"ticketsIcon":   template.HTML(svg.GetIcon("ticket")),
+		"devicesIcon":   template.HTML(svg.GetIcon("devices-pc")),
+		"softwaresIcon": template.HTML(svg.GetIcon("binary")),
+		"profilesIcon":  template.HTML(svg.GetIcon("id")),
+		"reportsIcon":   template.HTML(svg.GetIcon("report")),
+		"controlIcon":   template.HTML(svg.GetIcon("steering-wheel")),
+		"networkIcon":   template.HTML(svg.GetIcon("tournament")),
+		"adminIcon":     template.HTML(svg.GetIcon("settings")),
+		"aboutIcon":     template.HTML(svg.GetIcon("info-hexagon")),
+		"exitIcon":      template.HTML(svg.GetIcon("door-exit")),
+		"wizardIcon":    template.HTML(svg.GetIcon("wand")),
+		"alertIcon":     template.HTML(svg.GetIcon("bell")),
 	})
 }
 
