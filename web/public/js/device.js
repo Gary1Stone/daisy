@@ -65,6 +65,11 @@ $(document).ready(function () {
     });
     //Turn off the div that relates to computers only, if it is another type of device 
     showHideItemsByType();
+    // Get device name if #name blank
+    if ($("#name").val().length < 1) {
+        // trigger onchange on type select list to get a name
+        $("#type").trigger("change");
+    }  
 });
 
 
