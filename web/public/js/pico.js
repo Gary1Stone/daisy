@@ -294,32 +294,32 @@ function toast(msg, type = "info") {
     });
 }
 
-// Custom Sidebar menu
-function toggleMenu() {
-  const sidebar = document.getElementById('sidebar');
-  const body = document.body;
-  sidebar.classList.toggle('is-active');
-  body.classList.toggle('menu-open');
-}
+// // Custom Sidebar menu
+// function toggleMenu() {
+//   const sidebar = document.getElementById('sidebar');
+//   const body = document.body;
+//   sidebar.classList.toggle('is-active');
+//   body.classList.toggle('menu-open');
+// }
 
-document.addEventListener("click", (event) => {
-    const sidebar = document.getElementById("sidebar");
+// document.addEventListener("click", (event) => {
+//     const sidebar = document.getElementById("sidebar");
 
-    if (sidebar && sidebar.classList.contains("is-active")) {
-        const isClickInsideSidebar = sidebar.contains(event.target);
-        const isToggleClick = event.target.closest(".sidebar-toggle");
+//     if (sidebar && sidebar.classList.contains("is-active")) {
+//         const isClickInsideSidebar = sidebar.contains(event.target);
+//         const isToggleClick = event.target.closest(".sidebar-toggle");
 
-        if (!isClickInsideSidebar && !isToggleClick) {
-            sidebar.classList.remove("is-active");
-            document.body.classList.remove("menu-open");
-        }
-    }
-});
+//         if (!isClickInsideSidebar && !isToggleClick) {
+//             sidebar.classList.remove("is-active");
+//             document.body.classList.remove("menu-open");
+//         }
+//     }
+// });
 
-document.addEventListener("keydown", (event) => {
-    const sidebar = document.getElementById("sidebar");
-    if (event.key === "Escape" && sidebar && sidebar.classList.contains("is-active")) {
-        sidebar.classList.remove("is-active");
-        document.body.classList.remove("menu-open");
-    }
-});
+// document.addEventListener("keydown", (event) => {
+//     const sidebar = document.getElementById("sidebar");
+//     if (event.key === "Escape" && sidebar && sidebar.classList.contains("is-active")) {
+//         sidebar.classList.remove("is-active");
+//         document.body.classList.remove("menu-open");
+//     }
+// });
