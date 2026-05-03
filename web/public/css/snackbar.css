@@ -1,3 +1,4 @@
+/* Toast popup implementation */
 #snackbar-container {
   position: fixed;
   bottom: var(--pico-spacing);
