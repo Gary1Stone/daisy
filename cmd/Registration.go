@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"html/template"
+
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +20,8 @@ func GetRegistration(c *fiber.Ctx) error {
 	db.SetApiCode(apicode, ip)
 
 	return c.Render("registration", fiber.Map{
-		"user":    "",
-		"apicode": apicode,
+		"user":     "",
+		"apicode":  apicode,
+		"userIcon": template.HTML(svg.GetIcon("user")),
 	})
 }

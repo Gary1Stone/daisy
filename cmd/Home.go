@@ -61,6 +61,9 @@ func GetHome(c *fiber.Ctx) error {
 		}
 	}
 
+	/*
+	in func GetHome() To use svg icons, I am passing the svgs to the page generation template. Unfortuneatly this will need to be done for almost every html page displayed for the navigation icons. Is there a way to make the icons be created in a bundle with one call and passed to the template?
+	*/
 	return c.Render("home", fiber.Map{
 		"title":         template.HTML(svg.GetIcon("home") + "&nbsp;Home"),
 		"fullName":      user.Fullname,
@@ -72,17 +75,17 @@ func GetHome(c *fiber.Ctx) error {
 		"btnLabel":      btnLabel,
 		"myAlerts":      template.HTML(ctrls.GetAlertButtons(user.Uid)),
 		"userIcon":      template.HTML(svg.GetIcon("user")),
-		"homeIcon":      template.HTML(svg.GetIcon("home")),
+		"homeIcon":      template.HTML(svg.GetIcon("house")),
 		"ticketsIcon":   template.HTML(svg.GetIcon("ticket")),
-		"devicesIcon":   template.HTML(svg.GetIcon("devices-pc")),
+		"devicesIcon":   template.HTML(svg.GetIcon("monitor-smartphone")),
 		"softwaresIcon": template.HTML(svg.GetIcon("binary")),
-		"profilesIcon":  template.HTML(svg.GetIcon("id")),
-		"reportsIcon":   template.HTML(svg.GetIcon("report")),
-		"controlIcon":   template.HTML(svg.GetIcon("steering-wheel")),
-		"networkIcon":   template.HTML(svg.GetIcon("tournament")),
+		"profilesIcon":  template.HTML(svg.GetIcon("id-card")),
+		"reportsIcon":   template.HTML(svg.GetIcon("newspaper")),
+		"controlIcon":   template.HTML(svg.GetIcon("spotlight")),
+		"networkIcon":   template.HTML(svg.GetIcon("network")),
 		"adminIcon":     template.HTML(svg.GetIcon("settings")),
-		"aboutIcon":     template.HTML(svg.GetIcon("info-hexagon")),
-		"exitIcon":      template.HTML(svg.GetIcon("door-exit")),
+		"aboutIcon":     template.HTML(svg.GetIcon("info")),
+		"exitIcon":      template.HTML(svg.GetIcon("door-open")),
 		"wizardIcon":    template.HTML(svg.GetIcon("wand")),
 		"alertIcon":     template.HTML(svg.GetIcon("bell")),
 	})
