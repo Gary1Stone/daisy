@@ -3,20 +3,20 @@
     <ul>
       <li>
         <details class="dropdown">
-          <summary title="Device Asset Information SYstem">&#127809;&nbsp;Daisy</summary>
+          <summary>{{.menu}}</summary>
           <ul>
-            <li><a href="home.html"><span class="icons">home</span>Home</a></li>
-            <li><a href="tickets.html"><span class="icons">local_activity</span>Tickets</a></li>
-            <li><a href="devices.html"><span class="icons">devices</span>Devices</a></li>
-            <li><a href="softwares.html"><span class="icons">apps</span>Software</a></li>
+            <li><a href="home.html">{{.home}} Home</a></li>
+            <li><a href="tickets.html">{{.local_activity}} Tickets</a></li>
+            <li><a href="devices.html">{{.devices}} Devices</a></li>
+            <li><a href="softwares.html">{{.apps}} Software</a></li>
             {{if .isAdmin }}
-            <li><a href="profiles.html"><span class="icons">contacts</span>Profiles</a></li>
-            <li><a href="reports.html"><span class="icons">analytics</span>Reports</a></li>
-            <li><a href="control.html"><span class="icons">traffic</span>Control</a></li>
-            <li><a href="network.html"><span class="icons">account_tree</span>Network</a></li>
-            <li><a href="admin.html"><span class="icons">settings</span>Admin</a></li>
+            <li><a href="profiles.html">{{.contacts}} Profiles</a></li>
+            <li><a href="reports.html">{{.analytics}} Reports</a></li>
+            <li><a href="control.html">{{.traffic}} Control</a></li>
+            <li><a href="network.html">{{.lan}} Network</a></li>
+            <li><a href="admin.html">{{.settings}} Admin</a></li>
             {{end}}  
-            <li><a href="about.html"><span class="icons">info</span>About</a></li>
+            <li><a href="about.html">{{.info}} About</a></li>
           </ul>
         </details>
       </li>
@@ -25,14 +25,17 @@
       <li>{{ .cmd_three }}</li>
     </ul>
     <ul>
+      <li title="Device Asset Information SYstem">&#127809;&nbsp;Daisy</li>
+    </ul>
+    <ul>
       <li>
         <details class="dropdown">
-          <summary><span class="icons">person</span><span id="userName">{{ .fullName }}</span></summary>
+          <summary>{{.person}}<span id="userName">{{.fullName}}</span></summary>
           <ul>
             <li><a href="#" data-theme-switcher="auto">Theme Auto</a></li>
             <li><a href="#" data-theme-switcher="light">Theme Light</a></li>
             <li><a href="#" data-theme-switcher="dark">Theme Dark</a></li>
-            <li><a href="logout.html"><span class="icons">exit_to_app</span>Log Out</a></li>
+            <li><a href="logout.html">{{.exit_to_app}} Log Out</a></li>
           </ul>
         </details>
       </li>
