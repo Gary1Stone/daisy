@@ -61,10 +61,7 @@ func GetHome(c *fiber.Ctx) error {
 		}
 	}
 
-	/*
-	in func GetHome() To use svg icons, I am passing the svgs to the page generation template. Unfortuneatly this will need to be done for almost every html page displayed for the navigation icons. Is there a way to make the icons be created in a bundle with one call and passed to the template?
-	*/
-	return c.Render("home", fiber.Map{
+		return c.Render("home", fiber.Map{
 		"title":         template.HTML(svg.GetIcon("home") + "&nbsp;Home"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
