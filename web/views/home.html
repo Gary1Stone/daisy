@@ -7,7 +7,7 @@
     </article>
     
     <article>
-      <header><span class="icons">devices</span>Assigned Devices</header>
+      <header>{{.devices}} Assigned Devices</header>
       {{ .assigned }}
     </article>
   </div>
@@ -15,7 +15,7 @@
   <div class="grid">
     <article>
       <header>
-        <span class="icons">wand_stars</span>Wizards
+        {{.wizard}} Wizards
       </header>
       <select id="wizkey" name="wizkey" class="icon-select">
         <option value="SIGHTING" selected="selected" class="success">I saw...</option>
@@ -37,13 +37,13 @@
     
     <article>
       <header class="{{ .btnColour }}">
-        <span class="icons">notifications</span>Alerts
+        {{.bell}} Alerts
       </header>
       <section id="alerts">
         {{ .myAlerts }}
       </section>
       <footer>
-        <a href="tickets.html" role="button"><span class="icons">local_activity</span>{{ .btnLabel }}</a>
+        <a href="tickets.html" role="button">{{.ticket}} {{ .btnLabel }}</a>
       </footer>
     </article>
   </div>

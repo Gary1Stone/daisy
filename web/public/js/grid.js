@@ -32,6 +32,10 @@ function buildTable(tableID) {
             const isAsc = th.getAttribute('data-sort') === 'asc';
             const direction = isAsc ? -1 : 1;
 
+            //modify aria-sort="none" for all columns, then set aria-sort="ascending" or aria-sort="decending" for the sorted column
+            headers.forEach(h => h.setAttribute('aria-sort', 'none'));
+            th.setAttribute('aria-sort', isAsc ? 'ascending' : 'descending');
+
             rows.sort((a, b) => {
                 const aCol = a.cells[index].textContent.trim();
                 const bCol = b.cells[index].textContent.trim();

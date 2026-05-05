@@ -3,6 +3,7 @@ package svg
 import (
 	"bytes"
 	"encoding/xml"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,7 +15,7 @@ var (
 	iconMu  sync.RWMutex
 )
 
-const defaultIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-unknown"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M12 17v.01" /><path d="M12 14a1.5 1.5 0 1 0 -1.14 -2.474" /></svg>`
+const defaultIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M12 17v.01" /><path d="M12 14a1.5 1.5 0 1 0 -1.14 -2.474" /></svg>`
 
 // GetIcon returns the svg content from the iconMap or a default icon if not found
 // while populating the cache with only the used icons
@@ -42,28 +43,32 @@ func GetIcon(iconName string) string {
 		return defaultIcon
 	}
 
-	//Clean out embeded comments
-	cleanSvg, err := removeComments(data)
+	// Clean comments and set currentColor for theme support
+	processedSvg, err := processSvg(data)
 	if err != nil {
+		log.Println("Error processing SVG:", filename, err)
 		return string(data)
 	}
-	icon := string(cleanSvg)
+	icon := string(processedSvg)
 
+	// Save the icon and then return it
 	iconMu.Lock()
 	iconMap[iconName] = icon
 	iconMu.Unlock()
-
 	return icon
 }
 
-// Remove html comments embeded in the data between "<!--" and "-->"
-func removeComments(data []byte) ([]byte, error) {
+// processSvg cleans comments and sets color to currentColor in a single pass
+func processSvg(data []byte) ([]byte, error) {
 	decoder := xml.NewDecoder(bytes.NewReader(data))
 	var buf bytes.Buffer
 	encoder := xml.NewEncoder(&buf)
 
 	for {
 		token, err := decoder.Token()
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			break
 		}
@@ -72,10 +77,27 @@ func removeComments(data []byte) ([]byte, error) {
 		case xml.Comment:
 			// Skip comments
 			continue
-		default:
-			if err := encoder.EncodeToken(t); err != nil {
-				return nil, err
+		case xml.StartElement:
+			hasColorAttr := false
+			for i, attr := range t.Attr {
+				if attr.Name.Local == "fill" || attr.Name.Local == "stroke" {
+					hasColorAttr = true // Found a color attribute, regardless of value
+					if attr.Value != "none" {
+						t.Attr[i].Value = "currentColor"
+					}
+				}
 			}
+
+			// If it's the root <svg> tag and absolutely no color info was found,
+			// add fill="currentColor" so it respects the Pico theme.
+			if t.Name.Local == "svg" && !hasColorAttr {
+				t.Attr = append(t.Attr, xml.Attr{Name: xml.Name{Local: "fill"}, Value: "currentColor"})
+			}
+			token = t
+		}
+
+		if err := encoder.EncodeToken(token); err != nil {
+			return nil, err
 		}
 	}
 

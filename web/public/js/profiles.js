@@ -54,3 +54,14 @@ function tableChangeWatcher() {
 function addRecord() {
   location.href='profile.html?uid=0';
 }
+
+function popFilters() {
+  const searchInput = document.getElementById("txtSearch")
+  if (searchInput.style.display === "none") {
+    searchInput.style.display = "block";
+    searchInput.focus();
+  } else {
+    searchInput.style.display = "none";
+    searchInput.value = "";
+  }
+}

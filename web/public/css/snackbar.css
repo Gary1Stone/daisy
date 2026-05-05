@@ -77,80 +77,6 @@
     border-left: 4px solid var(--pico-primary);
 }
 
-/* Sidebar Slideout - Pico.css addition */
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: -250px; /* Hidden off-screen */
-    width: 250px;
-    max-width: 85vw;
-    height: 100vh;
-    height: 100dvh;
-    background-color: var(--pico-background-color);
-    border-right: var(--pico-border-width) solid var(--pico-border-color);
-    box-shadow: var(--pico-card-box-shadow);
-    z-index: 2000;
-    transition: left 0.3s ease-in-out;
-    padding: var(--pico-block-spacing-vertical) var(--pico-block-spacing-horizontal);
-    overflow-y: auto;
-}
-
-
-
-#sidebar.is-active {
-  left: 0;
-}
-
-#sidebar nav ul {
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-#sidebar nav ul li {
-    width: 100%;
-    padding: 0;
-}
-
-#sidebar nav ul li a {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: calc(var(--pico-spacing) * 0.5) 1rem;
-    text-decoration: none;
-    border-radius: var(--pico-border-radius);
-    transition: background-color var(--pico-transition);
-    color: var(--pico-code-color);
-}
-
-#sidebar nav ul li a:hover,
-#sidebar nav ul li a[aria-current]:not([aria-current=false]) {
-    background-color: var(--pico-dropdown-hover-background-color);
-    color: var(--pico-code-color);
-}
-
-#sidebar .divider {
-    height: 1px;
-    margin: var(--pico-spacing) 0;
-    background-color: var(--pico-border-color);
-    list-style: none;
-}
-
-#sidebar .close-item a {
-    justify-content: flex-end;
-}
-
-body.menu-open {
-    overflow: hidden;
-}
-
-body.menu-open::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(2px);
-    z-index: 1999;
-}
 
 /* colors */
 .success {
@@ -168,4 +94,23 @@ body.menu-open::after {
 .sidebar-toggle {
     text-decoration: none;
     color: var(--pico-code-color);
+}
+
+/* table sorting */
+/* Base state (unsorted) */
+.sortable::after {
+  content: '  ';
+  opacity: 0.3;
+}
+
+/* Ascending state */
+th[data-sort="asc"]::after {
+  content: ' ⏶';
+  opacity: 1;
+}
+
+/* Descending state */
+th[data-sort="desc"]::after {
+  content: ' ⏷';
+  opacity: 1;
 }

@@ -1,6 +1,7 @@
 package ctrls
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -26,65 +27,49 @@ func ProfilesTable(curUid int, filter db.ProfileFilter) string {
 
 	// Build table rows
 	for _, item := range items {
-		table.WriteString(buildProfileTableRow(&item))
+		alert := "" // Add alerts if present
+		if item.Alerts > 0 {
+			alert = buildAlertIcon(item.Alerts)
+		}
+		ticket := "" // Add tickets if present
+		if item.Tickets > 0 {
+			ticket = buildTicketIcon(item.Tickets)
+		}
+		fmt.Fprintf(&table, "<tr><td><a href='profile.html?uid=%d'>%s</a></td><td>%s</td><td>%s</td><td> %s %s</td></tr>", item.Uid, item.User, mxl25(item.Fullname), mxl25(item.Group), alert, ticket)
 	}
 
 	table.WriteString("</tbody></table>")
 	return table.String()
 }
 
+/*
+   ⏶ &#9206; &#x23f6; Alphabetic sort
+   ⏷ &#9207; &#x23f7; Reverse Alphabetic Sort
+	⏴
+	⏵
+*/
 // Helper function to build the table header
 func buildProfileTableHeader() string {
 	return `<table id="profileTable">
     <thead>
     <tr>
-        <th>UID</th>
-        <th>User ID</th>
-        <th>Name</th>
-        <th>Queue</th>
-        <th>Alerts&sol;Tickets</th>
+        <th aria-sort="ascending" data-sort="asc">User ID</th>
+        <th aria-sort="none">Name</th>
+        <th aria-sort="none">Group</th>
+        <th aria-sort="none">Alerts&sol;Tickets</th>
     </tr>
     </thead>
     <tbody>`
 }
 
-// Helper function to build a single table row
-func buildProfileTableRow(item *db.Profile) string {
-	var row strings.Builder
-	row.WriteString("<tr><td>")
-	row.WriteString(strconv.Itoa(item.Uid))
-	row.WriteString("</td><td><a href='profile.html?uid=")
-	row.WriteString(strconv.Itoa(item.Uid))
-	row.WriteString("'>")
-	row.WriteString(item.User)
-	row.WriteString("</a></td><td>")
-	row.WriteString(mxl25(item.Fullname))
-	row.WriteString("</td><td>")
-	row.WriteString(mxl25(item.Group))
-	row.WriteString("</td><td>&nbsp;")
-
-	// Add alerts if present
-	if item.Alerts > 0 {
-		row.WriteString(buildAlertIcon(item.Color, item.Alerts))
-	}
-
-	// Add tickets if present
-	if item.Tickets > 0 {
-		row.WriteString(buildTicketIcon(item.Color, item.Tickets))
-	}
-
-	row.WriteString("</td></tr>")
-	return row.String()
-}
-
 // Helper function to build the alert icon
-func buildAlertIcon(color string, alerts int) string {
-	return "<span class='" + color + "'>" + svg.GetIcon("bell.svg") + "</span> (" + strconv.Itoa(alerts) + ")&nbsp;"
+func buildAlertIcon(alerts int) string {
+	return svg.GetIcon("bell") + " (" + strconv.Itoa(alerts) + ") "
 }
 
 // Helper function to build the ticket icon
-func buildTicketIcon(color string, tickets int) string {
-	return "<span class='" + color + "'>" + svg.GetIcon("ticket.svg") + "</span> (" + strconv.Itoa(tickets) + ")&nbsp;"
+func buildTicketIcon(tickets int) string {
+	return svg.GetIcon("ticket") + " (" + strconv.Itoa(tickets) + ") "
 }
 
 // set string to max length of 25 characters
