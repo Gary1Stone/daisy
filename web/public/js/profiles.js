@@ -61,7 +61,14 @@ function popFilters() {
     searchInput.style.display = "block";
     searchInput.focus();
   } else {
-    searchInput.style.display = "none";
+    // Clear searchInput 
     searchInput.value = "";
+  // Create and dispatch an 'input' event
+    const inputEvent = new Event('input', {
+      bubbles: true, // Allows the event to bubble up the DOM tree
+      cancelable: true // Allows the event to be cancelled
+    });
+    searchInput.dispatchEvent(inputEvent);
+    searchInput.style.display = "none";
   }
 }

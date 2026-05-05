@@ -38,7 +38,7 @@ func MakeSeeButton() string {
 }
 
 func MakeSearchBtn() string {
-	return `<button class='outline secondary' title='Search' onclick='onclick='popFilters();'>` + svg.GetIcon("search") + `</a>`
+	return `<button class='outline secondary' title='Search' onclick='popFilters();'>` + svg.GetIcon("search") + `</a>`
 }
 
 // ACRUD = Admin (Create, Read, Update, Delete)
