@@ -14,7 +14,7 @@ function initialize() {
         greetingEl.innerHTML = greeting;
     }
 
-    //Send long/lat to be saved
+    // Send long/lat to be saved
     const geoString = sessionStorage.getItem('geo');
     if (geoString) {
         let geo = JSON.parse(geoString);
@@ -57,3 +57,36 @@ function startWizard() {
         }
     }
 }
+
+/******************************************************
+ * Theme Switcher
+ ******************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+    const themeBtn = document.getElementById('theme_switcher');
+    if (!themeBtn) return;
+
+    const THEME_MAP = {
+        auto:  { icon: '🌓', next: 'dark' },
+        dark:  { icon: '🌙', next: 'light' },
+        light: { icon: '☀️', next: 'auto' }
+    };
+    const STORAGE_KEY = "picoPreferredColorScheme";
+
+    let curTheme = window.localStorage?.getItem(STORAGE_KEY) ?? 'auto';
+    themeBtn.innerHTML = THEME_MAP[curTheme].icon;
+
+    themeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        curTheme = THEME_MAP[curTheme].next;
+        window.localStorage?.setItem(STORAGE_KEY, curTheme);
+        
+        themeBtn.innerHTML = THEME_MAP[curTheme].icon;
+
+        const effectiveTheme = curTheme === 'auto'
+            ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+            : curTheme;
+
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+    });
+});
