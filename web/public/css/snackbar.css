@@ -96,6 +96,24 @@
     color: var(--pico-code-color);
 }
 
+/*
+.fg-red {
+  color: red !important;
+}
+.fg-green {
+  color: green;
+}
+.fg-blue {
+  color: blue;
+}
+.fg-yellow {
+  color: yellow;
+}
+.fg-white {
+  color: white;
+}
+*/
+
 /* table sorting */
 /* Base state (unsorted) */
 .sortable::after {
@@ -113,4 +131,74 @@ th[data-sort="asc"]::after {
 th[data-sort="desc"]::after {
   content: ' ⏷';
   opacity: 1;
+}
+
+/***************************************************************
+ * Select Lists with icons
+ * Embed the select list within a <div class="custom-select">
+ ***************************************************************/
+
+  /* The container must be positioned relative: */
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element: */
+}
+
+.select-selected {
+  background-color: var(--pico-card-background-color); 
+}
+
+/* Style the arrow inside the select element: */
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: var(--pico-color) transparent transparent transparent;
+}
+
+/* Point the arrow upwards when the select box is open (active): */
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent var(--pico-color) transparent;
+  top: 7px;
+}
+
+/* style the items (options), including the selected item: */
+.select-items div,.select-selected {
+  color: var(--pico-color);
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent var(--pico-muted-border-color) transparent;
+  cursor: pointer;
+}
+
+/* Style items (options): */
+.select-items {
+  position: absolute;
+  background-color: var(--pico-card-background-color);
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  max-height: 300px;        /* Fix the height */
+  overflow-y: auto;     /* Show vertical scrollbar only when needed */
+  overflow-x: hidden;   /* Hide any horizontal overflow */
+  border: 1px solid var(--pico-border-color); /* Just so you can see the box boundaries */
+
+}
+
+/* Hide the items when the select box is closed: */
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: var(--pico-secondary-hover-background);
 }

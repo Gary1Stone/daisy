@@ -156,12 +156,27 @@ const themeSwitcher = {
 themeSwitcher.init();
 
 
-/*!
+/******************************************************
  * Snackbar
  * An addon for Pico.css to have toast-like functionality
  *
  * Gary Stone
  * Copyright 2026 - Licensed under MIT
+ *
+ *
+ *
+Snackbar Usage:
+  Snackbar.push({
+      message: "Saved successfully!", // mandatory: message
+      type: "success",            // optional: "success", "error", "warning", or "info"
+      duration: 6000              // optional: milliseconds, default is 3 seconds
+      actionText: "Undo",         // optional: provide button for user to click, and onAction runs when they click it
+      onAction: () => {
+          console.log("Undo clicked");
+      }
+  });
+ *
+ *
  */
 
 const Snackbar = (() => {
@@ -323,3 +338,97 @@ function toast(msg, type = "info") {
 //         document.body.classList.remove("menu-open");
 //     }
 // });
+
+// *********************************************************************
+// Custom select list with icons and pico formatting
+// Mostly from https://www.w3schools.com/howto/howto_custom_select.asp
+// *********************************************************************
+function initCustomSelects() {
+  let x, i, j, l, ll, selElmnt, a, b, c;
+/* Look for any elements with the class "custom-select": */
+x = document.getElementsByClassName("custom-select");
+l = x.length;
+for (i = 0; i < l; i++) {
+  selElmnt = x[i].getElementsByTagName("select")[0];
+  if (!selElmnt) continue;
+  ll = selElmnt.length;
+  /* For each element, create a new DIV that will act as the selected item: */
+  a = document.createElement("DIV");
+  a.classList.add("select-selected");
+  if (selElmnt.selectedIndex !== -1) {
+    a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+  }
+  x[i].appendChild(a);
+  /* For each element, create a new DIV that will contain the option list: */
+  b = document.createElement("DIV");
+  b.classList.add("select-items", "select-hide");
+  for (j = 0; j < ll; j++) {
+    /* For each option in the original select element,
+    create a new DIV that will act as an option item: */
+    c = document.createElement("DIV");
+    c.innerHTML = selElmnt.options[j].innerHTML;
+    // Store the index to avoid brittle innerHTML comparison
+    c.setAttribute("data-index", j);
+    c.addEventListener("click", function() {
+        /* When an item is clicked, update the original select box,
+        and the selected item: */
+        let y, k, s, h, yl, idx;
+        s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+        h = this.parentNode.previousSibling;
+        idx = parseInt(this.getAttribute("data-index"));
+
+        s.selectedIndex = idx;
+        h.innerHTML = this.innerHTML;
+        y = this.parentNode.getElementsByClassName("same-as-selected");
+        yl = y.length;
+        for (k = 0; k < yl; k++) {
+            y[k].classList.remove("same-as-selected");
+        }
+        this.classList.add("same-as-selected");
+        
+        // Dispatch a change event so other scripts know the value changed
+        s.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        h.click();
+    });
+    b.appendChild(c);
+  }
+  x[i].appendChild(b);
+  a.addEventListener("click", function(e) {
+    /* When the select box is clicked, close any other select boxes,
+    and open/close the current select box: */
+    e.stopPropagation();
+    closeAllSelect(this);
+    this.nextSibling.classList.toggle("select-hide");
+    this.classList.toggle("select-arrow-active");
+  });
+}
+}
+
+document.addEventListener("DOMContentLoaded", initCustomSelects);
+
+function closeAllSelect(elmnt) {
+  /* A function that will close all select boxes in the document,
+  except the current select box: */
+  var x, y, i, xl, yl, arrNo = [];
+  x = document.getElementsByClassName("select-items");
+  y = document.getElementsByClassName("select-selected");
+  xl = x.length;
+  yl = y.length;
+  for (i = 0; i < yl; i++) {
+    if (elmnt == y[i]) {
+      arrNo.push(i)
+    } else {
+      y[i].classList.remove("select-arrow-active");
+    }
+  }
+  for (i = 0; i < xl; i++) {
+    if (arrNo.indexOf(i) === -1) {
+      x[i].classList.add("select-hide");
+    }
+  }
+}
+
+/* If the user clicks anywhere outside the select box,
+then close all select boxes: */
+document.addEventListener("click", closeAllSelect);

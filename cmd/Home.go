@@ -86,6 +86,14 @@ func GetHome(c *fiber.Ctx) error {
 		"user":         template.HTML(svg.GetIcon("user")),
 		"wizard":       template.HTML(svg.GetIcon("wizard")),
 		"bell":         template.HTML(svg.GetIcon("bell")),
+		"eye":          template.HTML(svg.GetIcon("eye")),
+		"check":        template.HTML(svg.GetIcon("check")),
+		"tag":          template.HTML(svg.GetIcon("tag")),
+		"wrench":       template.HTML(svg.GetIcon("wrench")),
+		"broken":       template.HTML(svg.GetIcon("broken")),
+		"stethoscope":  template.HTML(svg.GetIcon("stethoscope")),
+		"footprint":    template.HTML(svg.GetIcon("footprint")),
+		"copy":         template.HTML(svg.GetIcon("copy")),
 	})
 }
 

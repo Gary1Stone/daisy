@@ -17,19 +17,21 @@
       <header>
         {{.wizard}} Wizards
       </header>
-      <select id="wizkey" name="wizkey" class="icon-select">
-        <option value="SIGHTING" selected="selected" class="success">I saw...</option>
-        <option value="USING" class="success">I used...</option>
-        <option value="CLAIMING" class="success">I claim...</option>
-        <option value="GIVING" class="success">I gave...</option>
-        <option value="CARE" class="alert">It needs care...</option>
-        <option value="BROKEN" class="alert">It broke...</option>
-        <option value="DIED" class="alert">It died...</option>
-        <option value="LOST" class="alert">It's lost...</option>
-        <option value="BACKUP" class="info">I backed up...</option>
-        <option value="INSTALL" class="info">I installed software...</option>
-        <option value="REQUEST" class="warning">I need software...</option>
-      </select>
+      <div class="custom-select">
+        <select id="wizkey" name="wizkey">
+          <option value="SIGHTING" selected="selected">{{.eye}} I saw...</option>
+          <option value="USING">{{.ticket}} I used...</option>
+          <option value="CLAIMING">{{.tag}} I claim...</option>
+          <option value="GIVING">{{.tag}} I gave...</option>
+          <option value="CARE">{{.wrench}} It needs care...</option>
+          <option value="BROKEN">{{.broken}} It broke...</option>
+          <option value="DIED">{{.stethoscope}} It died...</option>
+          <option value="LOST">{{.footprint}} It's lost...</option>
+          <option value="BACKUP">{{.copy}} I backed up...</option>
+          <option value="INSTALL">{{.software}} I installed software...</option>
+          <option value="REQUEST">{{.software}} I need software...</option>
+        </select>
+      </div>
       <footer>
         <button onclick="startWizard()">Wizard...</button>
       </footer>
