@@ -2,11 +2,10 @@
 <main class="container">
   <div class="grid">
     <article>
-      <header><span id="greeting"></span> {{ .firstName }}</header>
+      <header>
+        <a href="#" id="theme_switcher" style="text-decoration: none;" data-tooltip="Themes: System (🌓), Dark (🌙), Light (☀️)"></a> <span id="greeting"></span> {{ .firstName }}
+      </header>
       {{ .lastLoginMsg }}
-
-      <a href="#" id="theme_switcher" style="text-decoration: none;" title="Theme: System (🌓), Dark (🌙), Light (☀️)"></a>
-
     </article>  
     
     <article>
