@@ -47,7 +47,7 @@ func GetProfiles(c *fiber.Ctx) error {
 		"about":         template.HTML(svg.GetIcon("about")),
 		"logout":        template.HTML(svg.GetIcon("logout")),
 		"user":          template.HTML(svg.GetIcon("user")),
-		"person_add":        template.HTML(svg.GetIcon("person_add")),
+		"person_add":    template.HTML(svg.GetIcon("person_add")),
 		"bell":          template.HTML(svg.GetIcon("bell")),
 	})
 }
