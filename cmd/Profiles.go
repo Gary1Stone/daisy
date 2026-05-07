@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"html/template"
+	"log"
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/svg"
@@ -50,4 +51,19 @@ func GetProfiles(c *fiber.Ctx) error {
 		"person_add":    template.HTML(svg.GetIcon("person_add")),
 		"bell":          template.HTML(svg.GetIcon("bell")),
 	})
+}
+
+func PostProfiles(c *fiber.Ctx) error {
+	user, err := extractUserInfo(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
+	}
+
+	var filter db.ProfileFilter
+	if err := c.BodyParser(&filter); err != nil {
+		log.Println(err)
+		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
+	}
+
+	return c.Status(fiber.StatusOK).SendString(ctrls.ProfilesTable(user.Uid, filter))
 }
