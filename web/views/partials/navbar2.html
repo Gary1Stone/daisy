@@ -3,20 +3,20 @@
     <ul>
       <li>
         <details class="dropdown">
-          <summary>{{.menu}}</summary>
+          <summary>{{.menuIcon}}</summary>
           <ul>
-            <li><a href="home.html">{{.home}} Home</a></li>
-            <li><a href="tickets.html">{{.ticket}} Tickets</a></li>
-            <li><a href="devices.html">{{.devices}} Devices</a></li>
-            <li><a href="softwares.html">{{.software}} Software</a></li>
+            <li><a href="home.html">{{.homeIcon}} Home</a></li>
+            <li><a href="tickets.html">{{.ticketIcon}} Tickets</a></li>
+            <li><a href="devices.html">{{.devicesIcon}} Devices</a></li>
+            <li><a href="softwares.html">{{.softwareIcon}} Software</a></li>
             {{if .isAdmin }}
-            <li><a href="profiles.html">{{.profiles}} Profiles</a></li>
-            <li><a href="reports.html">{{.reports}} Reports</a></li>
-            <li><a href="control.html">{{.control}} Control</a></li>
-            <li><a href="network.html">{{.network}} Network</a></li>
-            <li><a href="admin.html">{{.settings}} Settings</a></li>
+            <li><a href="profiles.html">{{.profilesIcon}} Profiles</a></li>
+            <li><a href="reports.html">{{.reportsIcon}} Reports</a></li>
+            <li><a href="control.html">{{.controlIcon}} Control</a></li>
+            <li><a href="network.html">{{.networkIcon}} Network</a></li>
+            <li><a href="admin.html">{{.settingsIcon}} Settings</a></li>
             {{end}} 
-            <li><a href="about.html">{{.about}} About</a></li>
+            <li><a href="about.html">{{.aboutIcon}} About</a></li>
           </ul>
         </details>
       </li>
@@ -30,9 +30,9 @@
     <ul>
       <li>
         <details class="dropdown">
-          <summary>{{.user}}<span id="userName">{{.fullName}}</span></summary>
+          <summary>{{.userIcon}}<span id="userName">{{.fullName}}</span></summary>
           <ul>
-            <li><a href="#" data-target="logout-dialog" onclick="toggleModal(event)">{{.logout}} Log Out</a></li>
+            <li><a href="#" data-target="logout-dialog" onclick="toggleModal(event)">{{.logoutIcon}} Log Out</a></li>
           </ul>
         </details>
       </li>
@@ -49,7 +49,7 @@
     <p>Are you sure you want to continue?</p>
     <footer>
       <button class="secondary" data-target="logout-dialog" onclick="toggleModal(event)">Cancel</button>
-      <a href="logout.html" autofocus role="button" >{{.logout}} Confirm</a>
+      <a href="logout.html" autofocus role="button" >{{.logoutIcon}} Confirm</a>
     </footer>
   </article>
 </dialog>

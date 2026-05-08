@@ -1,11 +1,63 @@
 package ctrls
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
+
+// // New for Pico, removing label, small, icons and colors
+// func BuildGroupSelect(selected string, readOnly bool) string {
+// 	droplist := db.GetDroplistInfo("GROUP")
+// 	options := db.GetOptions("GROUP", selected, "", readOnly)
+// 	var ctrl strings.Builder
+// 	disabled := ""
+// 	if readOnly {
+// 		disabled = "disabled"
+// 	}
+// 	onchange := ""
+// 	if len(droplist.Action) > 0 {
+// 		onchange = "onchange=\"" + droplist.Action + "\""
+// 	}
+// 	fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s>`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange)
+// 	for _, option := range options {
+// 		selected := ""
+// 		if option.Selected {
+// 			selected = "selected"
+// 		}
+// 		fmt.Fprintf(&ctrl, `<option value="%s" %s>%s</option>`, option.Value, selected, option.Description)
+// 	}
+// 	ctrl.WriteString("</select>")
+// 	return ctrl.String()
+// }
+
+// // New for Pico, removing label, small, icons and colors
+// func BuildFenceSelect(selected string, readOnly bool) string {
+// 	droplist := db.GetDroplistInfo("GEOFENCE")
+// 	options := db.GetOptions("GEOFENCE", selected, "", readOnly)
+// 	var ctrl strings.Builder
+// 	disabled := ""
+// 	if readOnly {
+// 		disabled = "disabled"
+// 	}
+// 	onchange := ""
+// 	if len(droplist.Action) > 0 {
+// 		onchange = "onchange=\"" + droplist.Action + "\""
+// 	}
+// 	fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s>`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange)
+// 	for _, option := range options {
+// 		selected := ""
+// 		if option.Selected {
+// 			selected = "selected"
+// 		}
+// 		fmt.Fprintf(&ctrl, `<option value="%s" %s>%s</option>`, option.Value, selected, option.Description)
+// 	}
+// 	ctrl.WriteString("</select>")
+// 	return ctrl.String()
+// }
 
 func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool) string {
 	var options []db.DroplistOption
@@ -28,62 +80,76 @@ func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool)
 
 func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) string {
 	droplist := db.GetDroplistInfo(field)
-	droplist.ReadOnly = readOnly
+	addIcons := false
+	for option := range options {
+		if len(options[option].Icon) > 0 {
+			addIcons = true
+			break
+		}
+	}
 	var ctrl strings.Builder
-	ctrl.WriteString("<label for=\"")
-	ctrl.WriteString(droplist.Id)
-	ctrl.WriteString("\">")
-	ctrl.WriteString(droplist.Label)
-	ctrl.WriteString("</label>")
-	ctrl.WriteString("<select name=\"")
-	ctrl.WriteString(droplist.Name)
-	ctrl.WriteString("\" id=\"")
-	ctrl.WriteString(droplist.Id)
-	ctrl.WriteString("\" title=\"")
-	ctrl.WriteString(droplist.Title)
-	ctrl.WriteString("\" data-role=\"select\" ")
-	if droplist.ReadOnly {
-		ctrl.WriteString("disabled ")
+
+	// Add old Labels for Metro as converting, but not for Pico
+	addMetro := true
+	if field != "GROUP" && field != "GEOFENCE" {
+		addMetro = false
+		fmt.Fprintf(&ctrl, `<label for="%s">%s</label>`, droplist.Id, droplist.Label)
 	}
-	if len(options) > 30 {
-		ctrl.WriteString("data-filter=\"true\" ")
-	} else {
-		ctrl.WriteString("data-filter=\"false\" ")
+
+	disabled := ""
+	if readOnly {
+		disabled = "disabled"
 	}
+	onchange := ""
 	if len(droplist.Action) > 0 {
-		ctrl.WriteString("onchange=\"")
-		ctrl.WriteString(droplist.Action)
-		ctrl.WriteString("\" ")
+		onchange = `onchange="` + droplist.Action + `"`
 	}
-	ctrl.WriteString(">")
+	if addMetro {
+		filter := "false"
+		if len(options) > 30 {
+			filter = "true"
+		}
+		fmt.Fprintf(&ctrl, `<select name="%s" id="%s" title="%s" %s %s data-role="select" data-filter="%s">`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange, filter)
+	} else {
+		if addIcons {
+			fmt.Fprintf(&ctrl, `<div class="custom-select">`)
+		}
+		fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s>`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange)
+	}
 
 	for _, option := range options {
-		ctrl.WriteString("<option value=\"")
-		ctrl.WriteString(option.Value)
-		ctrl.WriteString("\" ")
+		selected := ""
 		if option.Selected {
-			ctrl.WriteString("selected ")
+			selected = "selected"
 		}
-		if len(option.Icon) > 0 {
-			ctrl.WriteString("data-template=\"<span class='")
-			ctrl.WriteString(option.Icon)
-			ctrl.WriteString(" icon'></span> $1 \" ")
+
+		if addMetro {
+			icon := ""
+			if len(option.Icon) > 0 {
+				icon = fmt.Sprintf(`data-template="<span class='%s icon'></span> $1 " `, option.Icon)
+			}
+			color := ""
+			if len(option.Colour) > 0 {
+				color = fmt.Sprintf(`class="%s" `, xlateColor(option.Colour))
+			}
+			fmt.Fprintf(&ctrl, `<option value="%s" %s %s %s>%s</option>`, option.Value, selected, color, icon, option.Description)
+		} else {
+			icon := ""
+			if len(option.Icon) > 0 {
+				icon = svg.GetIcon(option.Icon) + " "
+			}
+			fmt.Fprintf(&ctrl, `<option value="%s" %s>%s%s</option>`, option.Value, selected, icon, option.Description)
 		}
-		if len(option.Colour) > 0 {
-			ctrl.WriteString("class=\"")
-			ctrl.WriteString(xlateColor(option.Colour))
-			ctrl.WriteString("\" ")
-		}
-		ctrl.WriteString(">")
-		ctrl.WriteString(option.Description)
-		ctrl.WriteString("</option>")
 	}
 	ctrl.WriteString("</select>")
-	ctrl.WriteString("<small id=\"")
-	ctrl.WriteString(droplist.Id)
-	ctrl.WriteString("Error\" class=\"invalid_feedback\">")
-	ctrl.WriteString(droplist.ErrMsg)
-	ctrl.WriteString("</small>")
+
+	if addIcons {
+		fmt.Fprintf(&ctrl, `</div>`)
+	}
+
+	if addMetro {
+		fmt.Fprintf(&ctrl, `<small id="%sError" class="invalid_feedback">%s</small>`, droplist.Id, droplist.ErrMsg)
+	}
 	return ctrl.String()
 }
 

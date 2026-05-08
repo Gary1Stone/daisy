@@ -61,40 +61,27 @@ func GetHome(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Render("home", fiber.Map{
-		"title":        template.HTML("&#127809; Daisy"),
-		"fullName":     user.Fullname,
-		"isAdmin":      user.IsAdmin,
-		"lastLoginMsg": template.HTML(msg),
-		"firstName":    user.Fullname[:strings.Index(user.Fullname, " ")],
-		"assigned":     template.HTML(assigned),
-		"btnColour":    btnColour,
-		"btnLabel":     btnLabel,
-		"myAlerts":     template.HTML(ctrls.GetAlertButtons(user.Uid)),
-		"menu":         template.HTML(svg.GetIcon("menu")),
-		"home":         template.HTML(svg.GetIcon("home")),
-		"ticket":       template.HTML(svg.GetIcon("ticket")),
-		"devices":      template.HTML(svg.GetIcon("devices")),
-		"software":     template.HTML(svg.GetIcon("software")),
-		"profiles":     template.HTML(svg.GetIcon("profiles")),
-		"reports":      template.HTML(svg.GetIcon("reports")),
-		"control":      template.HTML(svg.GetIcon("control")),
-		"network":      template.HTML(svg.GetIcon("network")),
-		"settings":     template.HTML(svg.GetIcon("settings")),
-		"about":        template.HTML(svg.GetIcon("about")),
-		"logout":       template.HTML(svg.GetIcon("logout")),
-		"user":         template.HTML(svg.GetIcon("user")),
-		"wizard":       template.HTML(svg.GetIcon("wizard")),
-		"bell":         template.HTML(svg.GetIcon("bell")),
-		"eye":          template.HTML(svg.GetIcon("eye")),
-		"check":        template.HTML(svg.GetIcon("check")),
-		"tag":          template.HTML(svg.GetIcon("tag")),
-		"wrench":       template.HTML(svg.GetIcon("wrench")),
-		"broken":       template.HTML(svg.GetIcon("broken")),
-		"stethoscope":  template.HTML(svg.GetIcon("stethoscope")),
-		"footprint":    template.HTML(svg.GetIcon("footprint")),
-		"copy":         template.HTML(svg.GetIcon("copy")),
-	})
+	return c.Render("home", addNavigationIcons(fiber.Map{
+		"title":           template.HTML("&#127809; Daisy"),
+		"fullName":        user.Fullname,
+		"isAdmin":         user.IsAdmin,
+		"lastLoginMsg":    template.HTML(msg),
+		"firstName":       user.Fullname[:strings.Index(user.Fullname, " ")],
+		"assigned":        template.HTML(assigned),
+		"btnColour":       btnColour,
+		"btnLabel":        btnLabel,
+		"myAlerts":        template.HTML(ctrls.GetAlertButtons(user.Uid)),
+		"wizardIcon":      template.HTML(svg.GetIcon("wizard")),
+		"eyeIcon":         template.HTML(svg.GetIcon("eye")),
+		"checkIcon":       template.HTML(svg.GetIcon("check")),
+		"tagIcon":         template.HTML(svg.GetIcon("tag")),
+		"wrenchIcon":      template.HTML(svg.GetIcon("wrench")),
+		"brokenIcon":      template.HTML(svg.GetIcon("broken")),
+		"stethoscopeIcon": template.HTML(svg.GetIcon("stethoscope")),
+		"footprintIcon":   template.HTML(svg.GetIcon("footprint")),
+		"copyIcon":        template.HTML(svg.GetIcon("copy")),
+		"bellIcon":        template.HTML(svg.GetIcon("bell")),
+	}))
 }
 
 // Return a list of devices this person is assigned
@@ -223,6 +210,24 @@ func extractUserInfo(c *fiber.Ctx) (userInfo, error) {
 	}
 
 	return user, nil
+}
+
+// addNavigationIcons populates a fiber.Map with navigation icons.
+func addNavigationIcons(m fiber.Map) fiber.Map {
+	m["menuIcon"] = template.HTML(svg.GetIcon("menu"))
+	m["homeIcon"] = template.HTML(svg.GetIcon("home"))
+	m["ticketIcon"] = template.HTML(svg.GetIcon("ticket"))
+	m["devicesIcon"] = template.HTML(svg.GetIcon("devices"))
+	m["softwareIcon"] = template.HTML(svg.GetIcon("software"))
+	m["profilesIcon"] = template.HTML(svg.GetIcon("profiles"))
+	m["reportsIcon"] = template.HTML(svg.GetIcon("reports"))
+	m["controlIcon"] = template.HTML(svg.GetIcon("control"))
+	m["networkIcon"] = template.HTML(svg.GetIcon("network"))
+	m["settingsIcon"] = template.HTML(svg.GetIcon("settings"))
+	m["aboutIcon"] = template.HTML(svg.GetIcon("about"))
+	m["logoutIcon"] = template.HTML(svg.GetIcon("logout"))
+	m["userIcon"] = template.HTML(svg.GetIcon("user"))
+	return m
 }
 
 func PostHome(c *fiber.Ctx) error {

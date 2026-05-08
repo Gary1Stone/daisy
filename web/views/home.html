@@ -9,7 +9,7 @@
     </article>  
     
     <article>
-      <header>{{.devices}} Assigned Devices</header>
+      <header>{{.devicesIcon}} Assigned Devices</header>
       {{ .assigned }}
     </article>
   </div>
@@ -17,21 +17,21 @@
   <div class="grid">
     <article>
       <header>
-        {{.wizard}} Wizards
+        {{.wizardIcon}} Wizards
       </header>
       <div class="custom-select">
         <select id="wizkey" name="wizkey">
-          <option value="SIGHTING" selected="selected">{{.eye}} I saw...</option>
-          <option value="USING">{{.ticket}} I used...</option>
-          <option value="CLAIMING">{{.tag}} I claim...</option>
-          <option value="GIVING">{{.tag}} I gave...</option>
-          <option value="CARE">{{.wrench}} It needs care...</option>
-          <option value="BROKEN">{{.broken}} It broke...</option>
-          <option value="DIED">{{.stethoscope}} It died...</option>
-          <option value="LOST">{{.footprint}} It's lost...</option>
-          <option value="BACKUP">{{.copy}} I backed up...</option>
-          <option value="INSTALL">{{.software}} I installed software...</option>
-          <option value="REQUEST">{{.software}} I need software...</option>
+          <option value="SIGHTING" selected="selected">{{.eyeIcon}} I saw...</option>
+          <option value="USING">{{.ticketIcon}} I used...</option>
+          <option value="CLAIMING">{{.tagIcon}} I claim...</option>
+          <option value="GIVING">{{.tagIcon}} I gave...</option>
+          <option value="CARE">{{.wrenchIcon}} It needs care...</option>
+          <option value="BROKEN">{{.brokenIcon}} It broke...</option>
+          <option value="DIED">{{.stethoscopeIcon}} It died...</option>
+          <option value="LOST">{{.footprintIcon}} It's lost...</option>
+          <option value="BACKUP">{{.copyIcon}} I backed up...</option>
+          <option value="INSTALL">{{.softwareIcon}} I installed software...</option>
+          <option value="REQUEST">{{.softwareIcon}} I need software...</option>
         </select>
       </div>
       <footer>
@@ -41,13 +41,13 @@
     
     <article>
       <header class="{{ .btnColour }}">
-        {{.bell}} Alerts
+        {{.bellIcon}} Alerts
       </header>
       <section id="alerts">
         {{ .myAlerts }}
       </section>
       <footer>
-        <a href="tickets.html" role="button">{{.ticket}} {{ .btnLabel }}</a>
+        <a href="tickets.html" role="button">{{.ticketIcon}} {{ .btnLabel }}</a>
       </footer>
     </article>
   </div>

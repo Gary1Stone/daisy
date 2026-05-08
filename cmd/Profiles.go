@@ -28,29 +28,15 @@ func GetProfiles(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
-	return c.Render("profiles", fiber.Map{
+	return c.Render("profiles", addNavigationIcons(fiber.Map{
 		"title":         template.HTML(svg.GetIcon("profiles") + " Profiles"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"cmd_one":       template.HTML(ctrls.MakeAddButton(user.Permissions.Profile.Create)),
 		"cmd_two":       template.HTML(ctrls.MakeSearchBtn()),
 		"profilesTable": template.HTML(ctrls.ProfilesTable(user.Uid, filter)),
-		"menu":          template.HTML(svg.GetIcon("menu")),
-		"home":          template.HTML(svg.GetIcon("home")),
-		"ticket":        template.HTML(svg.GetIcon("ticket")),
-		"devices":       template.HTML(svg.GetIcon("devices")),
-		"software":      template.HTML(svg.GetIcon("software")),
-		"profiles":      template.HTML(svg.GetIcon("profiles")),
-		"reports":       template.HTML(svg.GetIcon("reports")),
-		"control":       template.HTML(svg.GetIcon("control")),
-		"network":       template.HTML(svg.GetIcon("network")),
-		"settings":      template.HTML(svg.GetIcon("settings")),
-		"about":         template.HTML(svg.GetIcon("about")),
-		"logout":        template.HTML(svg.GetIcon("logout")),
-		"user":          template.HTML(svg.GetIcon("user")),
-		"person_add":    template.HTML(svg.GetIcon("person_add")),
-		"bell":          template.HTML(svg.GetIcon("bell")),
-	})
+		"bellIcon":      template.HTML(svg.GetIcon("bell")),
+	}))
 }
 
 func PostProfiles(c *fiber.Ctx) error {
