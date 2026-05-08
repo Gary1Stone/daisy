@@ -9,56 +9,6 @@ import (
 	"github.com/gbsto/daisy/svg"
 )
 
-// // New for Pico, removing label, small, icons and colors
-// func BuildGroupSelect(selected string, readOnly bool) string {
-// 	droplist := db.GetDroplistInfo("GROUP")
-// 	options := db.GetOptions("GROUP", selected, "", readOnly)
-// 	var ctrl strings.Builder
-// 	disabled := ""
-// 	if readOnly {
-// 		disabled = "disabled"
-// 	}
-// 	onchange := ""
-// 	if len(droplist.Action) > 0 {
-// 		onchange = "onchange=\"" + droplist.Action + "\""
-// 	}
-// 	fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s>`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange)
-// 	for _, option := range options {
-// 		selected := ""
-// 		if option.Selected {
-// 			selected = "selected"
-// 		}
-// 		fmt.Fprintf(&ctrl, `<option value="%s" %s>%s</option>`, option.Value, selected, option.Description)
-// 	}
-// 	ctrl.WriteString("</select>")
-// 	return ctrl.String()
-// }
-
-// // New for Pico, removing label, small, icons and colors
-// func BuildFenceSelect(selected string, readOnly bool) string {
-// 	droplist := db.GetDroplistInfo("GEOFENCE")
-// 	options := db.GetOptions("GEOFENCE", selected, "", readOnly)
-// 	var ctrl strings.Builder
-// 	disabled := ""
-// 	if readOnly {
-// 		disabled = "disabled"
-// 	}
-// 	onchange := ""
-// 	if len(droplist.Action) > 0 {
-// 		onchange = "onchange=\"" + droplist.Action + "\""
-// 	}
-// 	fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s>`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange)
-// 	for _, option := range options {
-// 		selected := ""
-// 		if option.Selected {
-// 			selected = "selected"
-// 		}
-// 		fmt.Fprintf(&ctrl, `<option value="%s" %s>%s</option>`, option.Value, selected, option.Description)
-// 	}
-// 	ctrl.WriteString("</select>")
-// 	return ctrl.String()
-// }
-
 func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool) string {
 	var options []db.DroplistOption
 	switch field {
@@ -138,7 +88,11 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 			if len(option.Icon) > 0 {
 				icon = svg.GetIcon(option.Icon) + " "
 			}
-			fmt.Fprintf(&ctrl, `<option value="%s" %s>%s%s</option>`, option.Value, selected, icon, option.Description)
+			color := ""
+			if len(option.Colour) > 0 {
+				color = fmt.Sprintf(`data-color="%s" `, xlateColor(option.Colour))
+			}
+			fmt.Fprintf(&ctrl, `<option value="%s" %s %s>%s%s</option>`, option.Value, selected, color, icon, option.Description)
 		}
 	}
 	ctrl.WriteString("</select>")
@@ -154,7 +108,7 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 }
 
 func xlateColor(colour string) string {
-	fgColor := "" //foreground color
+	fgColor := colour //foreground color
 	switch colour {
 	case (colors.Success):
 		fgColor = "fg-green"
