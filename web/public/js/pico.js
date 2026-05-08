@@ -75,7 +75,7 @@ const isScrollbarVisible = () => {
 };
 
 /******************************************************
- * Theme Switcher
+ * Theme Setter
  ******************************************************/
 document.addEventListener('DOMContentLoaded', () => {
   const themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -262,21 +262,24 @@ for (i = 0; i < l; i++) {
   a.classList.add("select-selected");
   if (selElmnt.selectedIndex !== -1) {
     a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+    const initialColor = selElmnt.options[selElmnt.selectedIndex].getAttribute("data-color");
+    if (initialColor) a.style.color = initialColor;
   }
   x[i].appendChild(a);
   /* For each element, create a new DIV that will contain the option list: */
   b = document.createElement("DIV");
   b.classList.add("select-items", "select-hide");
   for (j = 0; j < ll; j++) {
-    /* For each option in the original select element,
-    create a new DIV that will act as an option item: */
+    /* For each option in the original select element, create a new DIV that will act as an option item: */
     c = document.createElement("DIV");
     c.innerHTML = selElmnt.options[j].innerHTML;
     // Store the index to avoid brittle innerHTML comparison
     c.setAttribute("data-index", j);
+    const itemColor = selElmnt.options[j].getAttribute("data-color");
+    if (itemColor) c.style.color = itemColor;
+
     c.addEventListener("click", function() {
-        /* When an item is clicked, update the original select box,
-        and the selected item: */
+        /* When an item is clicked, update the original select box, and the selected item: */
         let y, k, s, h, yl, idx;
         s = this.parentNode.parentNode.getElementsByTagName("select")[0];
         h = this.parentNode.previousSibling;
@@ -284,6 +287,7 @@ for (i = 0; i < l; i++) {
 
         s.selectedIndex = idx;
         h.innerHTML = this.innerHTML;
+        h.style.color = this.style.color;
         y = this.parentNode.getElementsByClassName("same-as-selected");
         yl = y.length;
         for (k = 0; k < yl; k++) {
@@ -300,8 +304,7 @@ for (i = 0; i < l; i++) {
   }
   x[i].appendChild(b);
   a.addEventListener("click", function(e) {
-    /* When the select box is clicked, close any other select boxes,
-    and open/close the current select box: */
+    /* When the select box is clicked, close any other select boxes, and open/close the current select box: */
     e.stopPropagation();
     closeAllSelect(this);
     this.nextSibling.classList.toggle("select-hide");
@@ -313,8 +316,7 @@ for (i = 0; i < l; i++) {
 document.addEventListener("DOMContentLoaded", initCustomSelects);
 
 function closeAllSelect(elmnt) {
-  /* A function that will close all select boxes in the document,
-  except the current select box: */
+  /* A function that will close all select boxes in the document, except the current select box: */
   var x, y, i, xl, yl, arrNo = [];
   x = document.getElementsByClassName("select-items");
   y = document.getElementsByClassName("select-selected");
@@ -334,6 +336,5 @@ function closeAllSelect(elmnt) {
   }
 }
 
-/* If the user clicks anywhere outside the select box,
-then close all select boxes: */
+/* If the user clicks anywhere outside the select box, then close all select boxes: */
 document.addEventListener("click", closeAllSelect);
