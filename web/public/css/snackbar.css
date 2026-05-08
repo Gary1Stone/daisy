@@ -77,8 +77,7 @@
     border-left: 4px solid var(--pico-primary);
 }
 
-
-/* colors */
+/* snackbar, toast colors */
 .success {
     background: color-mix(in srgb, var(--pico-ins-color) 15%, var(--pico-card-background-color));
 }
@@ -96,15 +95,30 @@
     color: var(--pico-code-color);
 }
 
-/*
-.fg-red {
-  color: red !important;
+/* foreground colors */
+.fg-gray, .secondary {
+  color: var(--pico-secondary)
+}
+.fg-dark, .dark {
+  color: var(--pico-contrast);
+}
+.fg-light, .light {
+  color: var(--pico-contrast-inverse);
+}
+.fg-blue, .primary {
+  color:  var(--pico-primary);
 }
 .fg-green {
   color: green;
 }
-.fg-blue {
-  color: blue;
+.fg-cyan {
+  color: cyan;
+}
+.fg-orange {
+  color: orange;
+}
+.fg-red {
+  color: red;
 }
 .fg-yellow {
   color: yellow;
@@ -112,7 +126,6 @@
 .fg-white {
   color: white;
 }
-*/
 
 /* table sorting */
 /* Base state (unsorted) */
