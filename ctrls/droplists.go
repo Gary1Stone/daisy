@@ -29,6 +29,7 @@ func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool)
 }
 
 func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) string {
+	var ctrl strings.Builder
 	droplist := db.GetDroplistInfo(field)
 	addIcons := false
 	for option := range options {
@@ -37,12 +38,11 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 			break
 		}
 	}
-	var ctrl strings.Builder
 
 	// Add old Labels for Metro as converting, but not for Pico
-	addMetro := true
+	isMetro := false
 	if field != "GROUP" && field != "GEOFENCE" {
-		addMetro = false
+		isMetro = true
 		fmt.Fprintf(&ctrl, `<label for="%s">%s</label>`, droplist.Id, droplist.Label)
 	}
 
@@ -54,7 +54,7 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 	if len(droplist.Action) > 0 {
 		onchange = `onchange="` + droplist.Action + `"`
 	}
-	if addMetro {
+	if isMetro {
 		filter := "false"
 		if len(options) > 30 {
 			filter = "true"
@@ -73,7 +73,7 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 			selected = "selected"
 		}
 
-		if addMetro {
+		if isMetro {
 			icon := ""
 			if len(option.Icon) > 0 {
 				icon = fmt.Sprintf(`data-template="<span class='%s icon'></span> $1 " `, option.Icon)
@@ -101,7 +101,7 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 		fmt.Fprintf(&ctrl, `</div>`)
 	}
 
-	if addMetro {
+	if isMetro {
 		fmt.Fprintf(&ctrl, `<small id="%sError" class="invalid_feedback">%s</small>`, droplist.Id, droplist.ErrMsg)
 	}
 	return ctrl.String()

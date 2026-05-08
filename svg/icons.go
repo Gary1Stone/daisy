@@ -74,25 +74,43 @@ func processSvg(data []byte) ([]byte, error) {
 		}
 
 		switch t := token.(type) {
-		case xml.Comment:
-			// Skip comments
+		case xml.Comment, xml.ProcInst, xml.Directive:
+			// Skip comments, processing instructions, and directives
 			continue
 		case xml.StartElement:
+			// Clear the namespace to prevent the encoder from automatically adding an xmlns attribute.
+			t.Name.Space = ""
+
 			hasColorAttr := false
-			for i, attr := range t.Attr {
+			// Filter attributes to remove existing xmlns declarations and update theme colors.
+			newAttrs := make([]xml.Attr, 0, len(t.Attr))
+			for _, attr := range t.Attr {
+				// Skip default and prefixed xmlns attributes
+				if attr.Name.Local == "xmlns" || attr.Name.Space == "xmlns" {
+					continue
+				}
+				// Clear the attribute namespace
+				attr.Name.Space = ""
+
 				if attr.Name.Local == "fill" || attr.Name.Local == "stroke" {
 					hasColorAttr = true // Found a color attribute, regardless of value
 					if attr.Value != "none" {
-						t.Attr[i].Value = "currentColor"
+						attr.Value = "currentColor"
 					}
 				}
+				newAttrs = append(newAttrs, attr)
 			}
+			t.Attr = newAttrs
 
 			// If it's the root <svg> tag and absolutely no color info was found,
 			// add fill="currentColor" so it respects the Pico theme.
 			if t.Name.Local == "svg" && !hasColorAttr {
 				t.Attr = append(t.Attr, xml.Attr{Name: xml.Name{Local: "fill"}, Value: "currentColor"})
 			}
+			token = t
+		case xml.EndElement:
+			// Clear the namespace for end elements to maintain consistency
+			t.Name.Space = ""
 			token = t
 		}
 

@@ -31,7 +31,7 @@ func BeginLogin(c *fiber.Ctx) error {
 
 	// Ensure user is in the database
 	var cInfo credentialInfo
-	cInfo.purgeCredentials() // Remove old unwanted credetials (30 day limit, last 5)
+	cInfo.purgeCredentials() // Remove old unwanted credentials (30 day limit, last 5)
 	cInfo.username = usr.Username
 	var err error
 	uid, fullname, _, err := cInfo.getUid()

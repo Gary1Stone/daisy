@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 /**
- * Asynchronously fetches html 'controls (select, input, button...)' data using $.post and updates a target element's HTML.
+ * Asynchronously fetches html 'controls (select, input, button...)' data using post and updates a target element's HTML.
  *
  * @param {string} target - The ID of the HTML element to update (without the '#').
  * @param {object} ctrlData - The data object to send with the POST request.

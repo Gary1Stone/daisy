@@ -45,13 +45,19 @@ func ProfilesTable(curUid int, filter db.ProfileFilter) string {
 /*
    ⏶ &#9206; &#x23f6; Alphabetic sort
    ⏷ &#9207; &#x23f7; Reverse Alphabetic Sort
-	⏴
-	⏵
+	⏴	⏵
 */
 // Helper function to build the table header
 func buildProfileTableHeader() string {
 	return `<table id="profileTable">
     <thead>
+	<tr>
+		<td colspan="4" style="text-align: right; border-bottom: none;">
+			<div style="display: inline-block; width: 10rem; margin-bottom: 0;">
+				<input type="search" id="txtSearch" name="txtSearch" placeholder="Search..." aria-label="Search" style="display: none; margin-bottom: 0;">
+			</div
+		</td>
+	</tr>
     <tr>
         <th aria-sort="ascending" data-sort="asc">User ID</th>
         <th aria-sort="none">Name</th>

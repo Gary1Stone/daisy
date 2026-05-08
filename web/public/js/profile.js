@@ -1,9 +1,37 @@
-/* global Metro */
-const isEmailValid = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-let pageLoading = true;
+/* global Metro, txt2Int, toast, postJSON, htmx */
+const isEmailValid = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-$(document).ready(function () {
-    const uid = $("#uid").val();
+// Cache DOM elements using getters to ensure they are retrieved when needed
+const UI = {
+    form: () => document.getElementById('theForm'),
+    uid: () => document.getElementById("uid"),
+    user: () => document.getElementById("user"),
+    userError: () => document.getElementById("userError"),
+    canSave: () => document.getElementById("canSave"),
+    canNew: () => document.getElementById("canNew"),
+    canDelete: () => document.getElementById("canDelete"),
+    btnSave: () => document.getElementById("btnSave"),
+    btnNew: () => document.getElementById("btnNew"),
+    btnDelete: () => document.getElementById("btnDelete"),
+    curUid: () => document.getElementById("curUid"),
+    userName: () => document.getElementById("userName"),
+    alerts: () => document.getElementById("alerts")
+};
+
+const setDisplay = (el, show) => { if (el) el.style.display = show ? "block" : "none"; };
+const isDigits = (value) => typeof value === "string" && value.length > 0 ? /^\d+$/.test(value) : true;
+
+// Page loaded event
+document.addEventListener('DOMContentLoaded', function() {
+    const form = UI.form();
+    if (form) {
+        form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        saveRecord(event);
+    });
+    }
+
+    const uid = UI.uid().value;
     //Set initial button state depending if a record is displayed or not
     if (isDigits(uid) && txt2Int(uid) === 0) {
         btnSave.on();  //No record, cannot save, but if they fill it out, we want to save
@@ -14,129 +42,103 @@ $(document).ready(function () {
         btnNew.on(); //Record displayed, can create new
         btnDelete.on(); //record displayed, can delete it
     }
+
     //if any of the 'input' elements are modified, change the save/add/delete states   
-    $("input").on("input", function () {
-        btnSave.on(); //As user changes something turn on the Save button
-        btnNew.off(); //As user changes something turn off the New button
-        btnDelete.off(); //As user changes something turn off the delete button
+    document.querySelectorAll("input").forEach(el => {
+        el.addEventListener("input", () => { btnSave.on(); btnNew.off(); btnDelete.off(); });
     });
 
-    //if any of the 'select' droplists are modified, change the save/add/delete states
-    $("select").change(function () {
-        btnSave.on(); //As user changes something turn on the Save button
-        btnNew.off(); //As user changes something turn off the New button
-        btnDelete.off(); //As user changes something turn off the delete button
+    // if any of the 'select' droplists are modified, change the save/add/delete states
+    document.querySelectorAll("select").forEach(el => {
+        el.addEventListener("change", () => { btnSave.on(); btnNew.off(); btnDelete.off(); });
     });
     
-    //when user changes the email of the user, check if the email is not already in use
-    $("#user").blur(function () {
-        let sendData = getFormData();
-        sendData.task = "unique";
-        if (!isEmailValid.test(sendData.user)) {
-            $("#userError").val("ERROR: User ID must be an email address");
-            $("#userError").show();
-            return;
-        }
-        $.post("profile", sendData).then(response => {
-            reply = JSON.parse(response);
-            if (reply.success) {
-                $("#userError").hide(); 
-            } else {
-                $("#userError").val(reply.msg);
-                $("#userError").show();
- //               $("#purge").html(sendData.user)
-            }
-        });
-    });
-   pageLoading = false; 
+    // when user changes the email of the user, check if the email is not already in use
+    const userEl = UI.user();
+    if (userEl) userEl.addEventListener("blur", handleUserBlur);
 });
 
-function getPersonCtrl() {
-    return;
+async function handleUserBlur() {
+    const sendData = getFormData();
+    sendData.task = "unique";
+    const userEl = UI.user();
+    const errorEl = UI.userError();
+
+    if (!userEl.checkValidity() || !isEmailValid.test(sendData.user)) {
+        errorEl.value = "ERROR: User ID must be an email address";
+        setDisplay(errorEl, true);
+        return;
+    }
+
+    try {
+        await postJSON("profile", sendData, (reply) => {
+            if (reply.success) {
+                setDisplay(errorEl, false);
+            } else {
+                errorEl.value = reply.msg;
+                setDisplay(errorEl, true);
+            }
+        });
+    } catch (error) {
+        console.error("Uniqueness check failed:", error);
+    }
 }
 
-let btnSave = {
-    id: "btnSave",
+function getPersonCtrl() { return; }
+
+const btnSave = {
     state: "on",
-    on: function () {
-        if ($("#canSave").val() === "1") {
-            $("#btnSave").show(); 
-            this.state = "on";
-        }
+    on() {
+        if (UI.canSave().value === "1") { setDisplay(UI.btnSave(), true); this.state = "on"; }
     },
-    off: function () {
-        $("#btnSave").hide();
-        this.state = "off";
-    }
+    off() { setDisplay(UI.btnSave(), false); this.state = "off"; }
 };
 
-let btnNew = {
-    id: "btnNew",
+const btnNew = {
     state: "on",
-    on: function () {
-        if ($("#canNew").val() === "1") {
-            $("#btnNew").show();
-            this.state = "on";
-        }
+    on() {
+        if (UI.canNew().value === "1") { setDisplay(UI.btnNew(), true); this.state = "on"; }
     },
-    off: function () {
-        $("#btnNew").hide();
-        this.state = "off";
-    }
+    off() { setDisplay(UI.btnNew(), false); this.state = "off"; }
 };
 
-let btnDelete = {
-    id: "btnDelete",
+const btnDelete = {
     state: "on",
-    on: function () {
-        if ($("#canDelete").val() === "1") {
-            $("#btnDelete").show();
-            this.state = "on";
-        } else {
-            this.off();
-        }
+    on() {
+        if (UI.canDelete().value === "1") { setDisplay(UI.btnDelete(), true); this.state = "on"; }
+        else { this.off(); }
     },
-    off: function () {
-        $("#btnDelete").hide();
-        this.state = "off";
-    }
+    off() { setDisplay(UI.btnDelete(), false); this.state = "off"; }
 };
 
-// Deleting a record is simply setting the active flag = 0 and move its user ID to another column
-// its still in the database but never used again.
-function deleteRecord() {
+function deleteRecord(event) {
     if (btnDelete.state !== "on") return;
-    Metro.dialog.create({
-        title: "Deleting profile record!",
-        content: "<div><p>Deleting a profile is permanent.</p><p>Are you sure you want to delete the " + $("#user").val() + " profile?</p></div>",
-        actions: [{
-                caption: "Delete",
-                cls: "js-dialog-close alert",
-                onclick: function () {
-                    let sendData = getFormData();
-                    sendData.task = "delete";
-                    $.post("profile", sendData).then(response => {
-                        reply = JSON.parse(response);
-                        if (reply.success) {
-                            addRecord();  //clears the displayed record
-                        } else {
-                            console.log(reply.msg);
-                        }
-                    });
-                }
-            },
-            {
-                caption: "Cancel",
-                cls: "js-dialog-close",
-                onclick: function () {}
-            }]
-    });
+    toggleModal(event);
+    const userValue = UI.user().value;
+    document.getElementById("displayName").value = userValue;
 }
 
-//Adding a record is a two step process
-//Display this screen with a uid=0 (user ID = UID)
-//when user presses save, in the servlet, detect if record id (UID) is 0, then insert record.
-//then send the uid to be used inside this form
+async function deleteProfile() {
+    const sendData = getFormData();
+    sendData.task = "delete";
+    try {
+        await postJSON("profile", sendData, (reply) => {
+            if (reply.success) {
+                addRecord(); // clears the displayed record
+            } else {
+                console.error(reply.msg);
+                toast(reply.msg, "alert");
+            }
+        });
+    } catch (error) {
+        console.error("Delete failed:", error);
+    }
+}
+
+// Adding a record is a two step process
+// Display this screen with a uid=0 (user ID = UID)
+// when user presses save, in the servlet, detect if record id (UID) is 0, then insert record.
+// then send the uid to be used inside this form
 function addRecord() {
     if (btnNew.state !== "on") return;
     let url = window.location.href;
@@ -149,45 +151,94 @@ function addRecord() {
     window.location.href =  encodeURI(url);
 }
 
-function isDigits(value) {
-    if (typeof value === "string" && value.length > 0) {
-        digitsOnly = /^\d+$/;  // d=[0-9] 
-        return digitsOnly.test(value);
-    }
-    return true;
-}
-
 function validateForm(sendData) {
     if (!isDigits(sendData.uid)) return false;
-    if (!$("#user")[0].checkValidity()) return false;
-    if (!$("#first")[0].checkValidity()) return false;
-    if (!$("#last")[0].checkValidity()) return false;
-    //Check if the user id is unique (onBlur sets if error message visible or not)
-    if ($("#userError").is(':visible')) {
-        $("#user").focus();
+    if (!UI.user().checkValidity()) return false;
+    if (!document.getElementById("first").checkValidity()) return false;
+    if (!document.getElementById("last").checkValidity()) return false;
+    // Check if the user id is unique (onBlur sets if error message visible or not)
+    if (UI.userError().style.display !== "none") {
+        UI.user().focus();
         return false;
     }
-    return $("#theForm")[0].checkValidity();
+    return UI.form().checkValidity();
 }
 
-function saveRecord() {
-    if (btnSave.state !== "on") return false;
-    let sendData = getFormData();
-    if (!validateForm(sendData)) return false;
-    if (sendData.uid === 0) {
-        sendData.task = "add";
-    }
+function getFormData() {
+    return {
+        task: "save", 
+        uid: txt2Int(UI.uid().value), 
+        user: UI.user().value, 
+        first: document.getElementById("first").value, 
+        last: document.getElementById("last").value, 
+        gid: txt2Int(document.getElementById("gid").value),
+        geo_fence: document.getElementById("geo_fence").value, 
+        geo_radius: txt2Int(document.getElementById("geo_radius").value),
+        pwd_reset: document.getElementById("pwd_reset").value, 
+        color: document.getElementById("color").value, 
+        active: document.getElementById("active").checked ? 1 : 0,
+        notify: document.getElementById("notify").checked ? 1 : 0
+    };
+}
 
-    //If the user changed their own name, update the Menubar label
-    if ($("#curUid").val() === sendData.uid) {
-        $("#userName").val(sendData.first + " " + sendData.last);
-    }    
-    
-    $.post("profile", sendData).then(response => {
-        reply = JSON.parse(response);
+async function resetBanned(UID) {
+    const sendData = getFormData();
+    sendData.task = "unban";
+    sendData.uid = UID;
+    try {
+        await postJSON("profile", sendData, (reply) => {
         if (!reply.success) {
-            console.log(reply.msg);
-        } else {    //Refresh the page
+            toast(reply.msg);
+        } else {
+            document.getElementById("bttn").innerHTML = "";
+        }
+        });
+    } catch (error) {
+        console.error("Unban failed:", error);
+    }
+}
+
+async function ackAlert(aid = 0) {
+    const sendData = {
+        task: "get_alerts", 
+        aid: aid, 
+        uid: UI.uid().value
+    };
+    try {
+        await htmx("home", sendData, "alerts");
+    } catch (error) {
+        console.error("Alert acknowledgment failed:", error);
+    }
+}
+
+async function saveRecord(event) {
+    if (btnSave.state !== "on") return;
+    const sendData = getFormData();
+    if (!validateForm(sendData)) return;
+
+    if (sendData.uid === 0) { sendData.task = "add"; }
+
+    // Get the button that triggered the submit event.
+    const submitButton = event.submitter;
+
+    // --- Show loading state on the submit button ---
+    submitButton.setAttribute('aria-busy', 'true');
+    submitButton.disabled = true;
+    
+    // If the user changed their own name, update the Menubar label
+    if (UI.curUid().value === String(sendData.uid)) {
+        UI.userName().value = `${sendData.first} ${sendData.last}`;
+    }    
+
+    try {
+        await postJSON("profile", sendData, (reply) => {
+            submitButton.setAttribute('aria-busy', 'false');
+            submitButton.disabled = false;
+
+        if (!reply.success) {
+                console.error(reply.msg);
+            toast(reply.msg);
+        } else {    // Refresh the page
             let url = window.location.href;
             const i = url.indexOf("?");
             if (i < 0) {
@@ -197,50 +248,10 @@ function saveRecord() {
             }
             window.location.href =  encodeURI(url);
         }
-    });
-    return false;
-}
-
-function getFormData() {
-    let sendData = {task: "", uid: 0, user: "", first: "", last: "", 
-        gid: 0, active: 0, geo_fence: "", geo_radius: 10, pwd_reset: 0, 
-        color: "", notify: 0 };
-    sendData.task = "save";
-    sendData.uid = txt2Int($("#uid").val());
-    sendData.user = $("#user").val();
-    sendData.first = $("#first").val();
-    sendData.last = $("#last").val();
-    sendData.gid = txt2Int($("#gid").val());
-    sendData.geo_fence = $("#geo_fence").val();
-    sendData.geo_radius = txt2Int($("#geo_radius").val());
-    sendData.pwd_reset = $("#pwd_reset").val();
-    sendData.active = ($("#active").prop("checked")) ? 1 : 0;
-    sendData.color = $("#color").val();
-    sendData.notify = ($("#notify").prop("checked")) ? 1 : 0;
-    return sendData;
-}
-
-function resetBanned(UID) {
-    let sendData = getFormData();
-    sendData.task = "unban";
-    sendData.uid = UID;
-    $.post("profile", sendData).then(response => {
-        reply = JSON.parse(response);
-        if (!reply.success) {
-            toast(reply.msg);
-        } else {
-            $("#bttn").html("");
-        }
-    });
-}
-
-function ackAlert(aid = 0) {
-    let sendData = {
-        task: "get_alerts", 
-        aid: aid, 
-        uid:  $("#uid").val()
-    };
-    $.post("home", sendData).then(response => {
-        $("#alerts").html(response);
-    });
+        });
+    } catch (error) {
+        console.error("Save failed:", error);
+        submitButton.setAttribute('aria-busy', 'false');
+        submitButton.disabled = false;
+    }
 }

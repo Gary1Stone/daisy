@@ -1,6 +1,6 @@
 {{template "partials/top2" .}} {{template "partials/navbar2" .}}
+<form id="theForm" name="theForm" action="#" method="post" autocomplete="off">
 <main class="container">
-  <form id="theForm" name="theForm" action="#" method="post" autocomplete="off">
     <div class="grid">
 
       <article>
@@ -35,11 +35,11 @@
             {{if .Readonly }}readonly{{end}} >
           <small id="lastError">Min 2 characters</small>
 
-          <label for="group">{{.groupIcon}} Group</label>
+          <label for="gid">{{.groupIcon}} Group</label>
             {{ .GroupOptions }}
           <small id="groupError">Select a Group</small>
 
-          <label for="fence">{{.locationIcon}} Geo-Fence Site</label>
+          <label for="geo_fence">{{.locationIcon}} User's Base Site</label>
             {{ .FenceOptions }}
           <small id="fenceError">Select a geo-fence site</small>
 
@@ -101,8 +101,23 @@
         {{ .lastUpdated }} &nbsp;
       </article>
     </div>
-  </form>
 </main>
+</form>
+
+<dialog id="delete-dialog">
+  <article>
+    <header>
+        <button aria-label="Close" rel="prev" data-target="delete-dialog" onclick="toggleModal(event)"></button>
+        <h3>Deleting profile record!</h3>
+    </header>
+    <p><b>Warning:</b> Deleting a profile is permanent.</p> 
+    <p>Are you sure you want to delete <span id="displayName">this</span> profile?</p>
+    <footer>
+      <button class="secondary" data-target="delete-dialog" onclick="toggleModal(event)">Cancel</button>
+      <button autofocus data-target="delete-dialog" onclick="toggleModal(event);deleteProfile(); ">Confirm</button>
+    </footer>
+  </article>
+</dialog>
 <footer class="container">
 </footer>
 
