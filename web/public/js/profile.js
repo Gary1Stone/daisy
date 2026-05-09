@@ -1,12 +1,12 @@
-/* global Metro, txt2Int, toast, postJSON, htmx */
+/* uses txt2Int, toast, postJSON, htmx */
 const isEmailValid = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-// Cache DOM elements using getters to ensure they are retrieved when needed
+// Cache DOM elements using getters to ensure they are available when needed
 const UI = {
     form: () => document.getElementById('theForm'),
     uid: () => document.getElementById("uid"),
     user: () => document.getElementById("user"),
-    userError: () => document.getElementById("userError"),
+    userError: () => document.getElementById("userErr"),
     canSave: () => document.getElementById("canSave"),
     canNew: () => document.getElementById("canNew"),
     canDelete: () => document.getElementById("canDelete"),
@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = UI.form();
     if (form) {
         form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        saveRecord(event);
-    });
+            event.preventDefault();
+            saveRecord(event);
+        });
     }
 
     const uid = UI.uid().value;
@@ -43,43 +43,68 @@ document.addEventListener('DOMContentLoaded', function() {
         btnDelete.on(); //record displayed, can delete it
     }
 
-    //if any of the 'input' elements are modified, change the save/add/delete states   
+    //if any of the 'input' elements are modified, change the save/add/delete states and validate
     document.querySelectorAll("input").forEach(el => {
-        el.addEventListener("input", () => { btnSave.on(); btnNew.off(); btnDelete.off(); });
+        el.addEventListener("blur", () => { checkValid(el); });
     });
 
     // if any of the 'select' droplists are modified, change the save/add/delete states
     document.querySelectorAll("select").forEach(el => {
         el.addEventListener("change", () => { btnSave.on(); btnNew.off(); btnDelete.off(); });
     });
-    
-    // when user changes the email of the user, check if the email is not already in use
-    const userEl = UI.user();
-    if (userEl) userEl.addEventListener("blur", handleUserBlur);
 });
 
-async function handleUserBlur() {
-    const sendData = getFormData();
-    sendData.task = "unique";
-    const userEl = UI.user();
-    const errorEl = UI.userError();
-
-    if (!userEl.checkValidity() || !isEmailValid.test(sendData.user)) {
-        errorEl.value = "ERROR: User ID must be an email address";
-        setDisplay(errorEl, true);
+function checkValid(el) {
+    btnNew.off(); 
+    btnDelete.off();
+    // If user has spaces before or after value, reject
+    if (el.value !== el.value.trim()) {
+        btnSave.off();
+        el.setAttribute("aria-invalid", "true");
+        toast("Please remove leading and trailing spaces", "warning");
         return;
     }
+
+    // Clear any previous custom errors
+    if (el.validity.customError) {
+        el.setCustomValidity("");
+    } 
+    
+    // If fails validation, set to off/invalid
+    if (!el.checkValidity()) {
+        btnSave.off();
+        el.setAttribute("aria-invalid", "true");
+        return;
+    } else if (el.id !== "user") {
+        btnSave.on();
+        el.setAttribute("aria-invalid", "false");
+        return;
+    }
+
+    // Now have user input, check if it changed.
+    if (el.value !== el.defaultValue) {
+        checkUnique(el);
+    }
+}
+
+async function checkUnique(el) {
+    const sendData = getFormData();
+    sendData.task = "unique";
 
     try {
         await postJSON("profile", sendData, (reply) => {
             if (reply.success) {
-                setDisplay(errorEl, false);
+                el.setAttribute("aria-invalid", "false");
+                btnSave.on();
             } else {
-                errorEl.value = reply.msg;
-                setDisplay(errorEl, true);
+                el.setAttribute("aria-invalid", "true");
+                el.setCustomValidity("User ID must unique"); // This is how to set the input field to invalid
+                btnSave.off();
             }
+            el.defaultValue = el.value;
         });
     } catch (error) {
+        toast(error, "error");
         console.error("Uniqueness check failed:", error);
     }
 }
@@ -126,11 +151,12 @@ async function deleteProfile() {
             if (reply.success) {
                 addRecord(); // clears the displayed record
             } else {
+                toast(reply.msg, "error");
                 console.error(reply.msg);
-                toast(reply.msg, "alert");
             }
         });
     } catch (error) {
+        toast("Delete failed:" + error, "error");
         console.error("Delete failed:", error);
     }
 }
@@ -168,13 +194,13 @@ function getFormData() {
     return {
         task: "save", 
         uid: txt2Int(UI.uid().value), 
-        user: UI.user().value, 
-        first: document.getElementById("first").value, 
-        last: document.getElementById("last").value, 
+        user: UI.user().value.trim(), 
+        first: document.getElementById("first").value.trim(), 
+        last: document.getElementById("last").value.trim(),
         gid: txt2Int(document.getElementById("gid").value),
         geo_fence: document.getElementById("geo_fence").value, 
         geo_radius: txt2Int(document.getElementById("geo_radius").value),
-        pwd_reset: document.getElementById("pwd_reset").value, 
+        pwd_reset: txt2Int(document.getElementById("pwd_reset").value), 
         color: document.getElementById("color").value, 
         active: document.getElementById("active").checked ? 1 : 0,
         notify: document.getElementById("notify").checked ? 1 : 0
@@ -194,6 +220,7 @@ async function resetBanned(UID) {
         }
         });
     } catch (error) {
+        toast("Unban failed:" + error, "error");
         console.error("Unban failed:", error);
     }
 }
@@ -207,6 +234,7 @@ async function ackAlert(aid = 0) {
     try {
         await htmx("home", sendData, "alerts");
     } catch (error) {
+        toast("Alert acknowledgment failed:" + error, "error");
         console.error("Alert acknowledgment failed:", error);
     }
 }
@@ -236,8 +264,8 @@ async function saveRecord(event) {
             submitButton.disabled = false;
 
         if (!reply.success) {
-                console.error(reply.msg);
-            toast(reply.msg);
+            toast(reply.msg, "alert");
+            console.error(reply.msg);
         } else {    // Refresh the page
             let url = window.location.href;
             const i = url.indexOf("?");
@@ -250,6 +278,7 @@ async function saveRecord(event) {
         }
         });
     } catch (error) {
+        toast("Save failed:" + error, "error");
         console.error("Save failed:", error);
         submitButton.setAttribute('aria-busy', 'false');
         submitButton.disabled = false;

@@ -118,6 +118,7 @@ func PostProfile(c *fiber.Ctx) error {
 	}
 
 	if err := c.BodyParser(recvd); err != nil {
+		log.Println(err)
 		return c.Status(fiber.StatusOK).JSON(reply)
 	}
 	recvd.Fullname = recvd.First + " " + recvd.Last

@@ -15,33 +15,33 @@
         <fieldset>
 
           <label for="user">{{.userIcon}} User ID</label>
-            <input type="email" id="user" name="user" value="{{ .userid }}"
-              autocomplete="off" placeholder="User ID" title="User Identifier"
-              required minlength="6" maxlength="100" autofocus
-              {{if .Readonly }}readonly{{end}} >
-          <small id="userError">Mandatory unique email address</small>
+          <input type="email" id="user" name="user" value="{{ .userid }}"
+            autocomplete="email" placeholder="User's Email Address...'" data-tooltip="User Identifier"
+            minlength="6" maxlength="100" autofocus
+            {{if .Readonly }}readonly{{end}} aria-invalid="false" aria-describedby="userErr">
+          <small id="userErr" class="err">Mandatory: Must be a unique email address</small>
 
           <label for="first">First Name</label>
           <input type="text" id="first" name="first" value="{{ .first }}"
-            placeholder="User's first name" title="User's first name"
-            required autocomplete="off" minlength="1" maxlength="50"
-            {{if .Readonly }}readonly{{end}} >
-          <small id="firstError" class="invalid_feedback">Min 1 character</small>
+            autocomplete="off" placeholder="User's first name" data-tooltip="User's first name"
+            minlength="2" maxlength="50"
+            {{if .Readonly }}readonly{{end}} aria-invalid="false" aria-describedby="firstErr">
+          <small id="firstErr" class="err">Required</small>
 
           <label for="last">Last Name</label>
-          <input type="text" id="last" name="last" value="{{ .last }}"
-            placeholder="User's last name" title="User's last name"
-            required autocomplete="off" minlength="2" maxlength="50"
-            {{if .Readonly }}readonly{{end}} >
-          <small id="lastError">Min 2 characters</small>
+          <input type="text" id="last" name="last" value="{{ .last }}" 
+            autocomplete="off" placeholder="User's last name" data-tooltip="User's last name"
+            minlength="2" maxlength="50"
+            {{if .Readonly }}readonly{{end}}  aria-invalid="false" aria-describedby="lastErr">
+          <small id="lastErr" class="err">Required</small>
 
           <label for="gid">{{.groupIcon}} Group</label>
             {{ .GroupOptions }}
-          <small id="groupError">Select a Group</small>
+          <small id="groupError" class="err">Select a Group</small>
 
           <label for="geo_fence">{{.locationIcon}} User's Base Site</label>
             {{ .FenceOptions }}
-          <small id="fenceError">Select a geo-fence site</small>
+          <small id="fenceError" class="err">Select a geo-fence site</small>
 
           <label for="geo_radius">Fence Radius</label>
           <select name="geo_radius" id="geo_radius" title="Geo Radius"
@@ -49,10 +49,10 @@
             {{if .isDisabled }}disabled{{end}} >
             {{ .RadiusOptions }}
           </select>
-          <small class="invalid_feedback">Oh Oh</small>
+          <small  class="err"></small>
 
             
-          <span>{{ .chkNotify }} {{ .chkActive }}</span>
+          <span>{{ .chkNotify }} Notify {{ .chkActive }} Active</span>
 
         </fieldset>
         <footer>
