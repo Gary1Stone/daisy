@@ -1,13 +1,14 @@
 /* Toast popup implementation */
 #snackbar-container {
   position: fixed;
-  bottom: var(--pico-spacing);
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   gap: calc(var(--pico-spacing) * 0.5);
   z-index: 9999;
+  pointer-events: none;
 }
 
 .snackbar {
@@ -221,4 +222,13 @@ th[data-sort="desc"]::after {
 
 .select-items div:hover, .same-as-selected {
   background-color: var(--pico-dropdown-hover-background-color);
+}
+
+small.err {
+  display: none;
+}
+
+/* Show error whenever the JS marks the field as invalid */
+input[aria-invalid="true"] + small.err {
+  display: block;
 }

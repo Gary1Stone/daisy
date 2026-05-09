@@ -146,6 +146,7 @@ const Snackbar = (() => {
     const type = validTypes.includes(rawType) ? rawType : "info";
     const el = document.createElement("article");
     el.className = `snackbar ${type}`;
+    el.style.pointerEvents = "auto";
     el.setAttribute("role", "status");
     
     const icons = {
