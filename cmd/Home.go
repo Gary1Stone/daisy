@@ -62,15 +62,16 @@ func GetHome(c *fiber.Ctx) error {
 	}
 
 	return c.Render("home", addNavigationIcons(fiber.Map{
-		"title":           template.HTML("&#127809; Daisy"),
-		"fullName":        user.Fullname,
-		"isAdmin":         user.IsAdmin,
-		"lastLoginMsg":    template.HTML(msg),
-		"firstName":       user.Fullname[:strings.Index(user.Fullname, " ")],
-		"assigned":        template.HTML(assigned),
-		"btnColour":       btnColour,
-		"btnLabel":        btnLabel,
-		"myAlerts":        template.HTML(ctrls.GetAlertButtons(user.Uid)),
+		"title":        template.HTML("&#127809; Daisy"),
+		"fullName":     user.Fullname,
+		"isAdmin":      user.IsAdmin,
+		"lastLoginMsg": template.HTML(msg),
+		"firstName":    user.Fullname[:strings.Index(user.Fullname, " ")],
+		"assigned":     template.HTML(assigned),
+		"btnColour":    btnColour,
+		"btnLabel":     btnLabel,
+		"myAlerts":     template.HTML(ctrls.GetAlertTable(user.Uid)),
+		//	"myAlerts":        template.HTML(ctrls.GetAlertButtons(user.Uid)),
 		"wizardIcon":      template.HTML(svg.GetIcon("wizard")),
 		"eyeIcon":         template.HTML(svg.GetIcon("eye")),
 		"checkIcon":       template.HTML(svg.GetIcon("check")),
@@ -264,7 +265,7 @@ func PostHome(c *fiber.Ctx) error {
 			db.AckAlert(user.Uid, recvd.Uid, recvd.Aid, true, true, true)
 			db.AckAction(user.Uid, recvd.Aid, true, true, true)
 		}
-		response = ctrls.GetAlertButtons(recvd.Uid)
+		response = ctrls.GetAlertTable(recvd.Uid)
 	case "save_lon_lat":
 		ip := c.IP()
 		ips := c.IPs()

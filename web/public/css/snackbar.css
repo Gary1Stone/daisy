@@ -235,7 +235,7 @@ input[aria-invalid="true"] + small.err {
 
 .scrollarea {
   width: 100%;
-  max-height: 17rem;
+  max-height: 30rem;
   white-space: nowrap;
   overflow-x: hidden;
   overflow-y: scroll; 
