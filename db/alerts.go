@@ -92,7 +92,7 @@ func GetAlerts(filter Alert) ([]*AlertDetails, error) {
 	query := `
 		SELECT A.id, coalesce(A.aid, 0), coalesce(A.Uid, 0), A.gid, coalesce(A.ack, 0), A.wait,
 		B.action, coalesce(B.Cid, 0), coalesce(B.notes, ''), coalesce(B.sid, 0), coalesce(S.name, ''),
-		D.name, D.type, I.icon, coalesce(B.uid_ack, 0), J.icon, P.fullname
+		D.name, D.type, I.icon2, coalesce(B.uid_ack, 0), J.icon2, P.fullname
 		FROM alerts A
 		LEFT JOIN action_log B on A.aid=B.aid
 		LEFT JOIN devices D on D.cid=B.cid

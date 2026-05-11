@@ -3,6 +3,7 @@
 <main class="container">
     <div class="grid">
 
+      <div>
       <article>
         <header>
           {{.profilesIcon}} User Profile
@@ -50,16 +51,21 @@
             {{ .RadiusOptions }}
           </select>
           <small  class="err"></small>
-
-            
-          <span>{{ .chkNotify }} Notify {{ .chkActive }} Active</span>
-
+          
+          {{ .chkNotify }}
+          <label for="notify">Notify</label>
+          {{ .chkActive }}
+          <label for="active">Active</label>
+          
         </fieldset>
         <footer>
           {{ .banned }}
         </footer>
       </article>
 
+      </div>
+      <div>
+      
       <article>
         <header>
           <span class='mif-devices'></span>&nbsp;Assigned Devices
@@ -81,6 +87,8 @@
         <footer>
         </footer>
       </article>
+      
+      </div>
     </div>
 
     <div class="grid">

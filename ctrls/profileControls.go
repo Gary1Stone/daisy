@@ -1,11 +1,13 @@
 package ctrls
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 /*
@@ -91,27 +93,17 @@ func BuildAssignedDevices(curUid, uid int) string {
 	if len(devices) == 0 {
 		return ""
 	}
-	var table strings.Builder
-	table.WriteString("<ul data-role='listview' id='devlist'>")
+	var ctrl strings.Builder
 	for _, item := range devices {
-		table.WriteString("<a href='device.html?cid=")
-		table.WriteString(strconv.Itoa(item.Cid))
-		table.WriteString("'>")
-		table.WriteString("<li data-icon=\"<span class='")
-		table.WriteString(item.Icon)
-		table.WriteString("'>\" data-caption='")
-		table.WriteString(item.Name + " " + item.Model)
-		table.WriteString("'></li>")
-		table.WriteString("</a>")
+		fmt.Fprintf(&ctrl, `<p><a href='device.html?cid=%d'>%s %s %s</a></p>`, item.Cid, svg.GetIcon(item.Icon), item.Name, item.Model)
 	}
-	table.WriteString("</ul>")
-	return table.String()
+	return ctrl.String()
 }
 
 // PCRUD: - Profile (Read), (Create), (U)pdate, (D)elete
 func BuildActiveCheckbox(isActive int, isDisabled bool) string {
 	var ctrl strings.Builder
-	ctrl.WriteString("<input type='checkbox' id='active' name='active' data-role='checkbox' data-caption='Active' data-caption-position='left' ")
+	ctrl.WriteString("<input type='checkbox' id='active' name='active' ")
 	if isDisabled {
 		ctrl.WriteString("disabled ")
 	}
@@ -124,7 +116,7 @@ func BuildActiveCheckbox(isActive int, isDisabled bool) string {
 
 func BuildNotifyCheckbox(isActive int, isDisabled bool) string {
 	var ctrl strings.Builder
-	ctrl.WriteString("<input type='checkbox' id='notify' name='notify' data-role='checkbox' data-caption='Notify' data-caption-position='left' ")
+	ctrl.WriteString("<input type='checkbox' id='notify' name='notify' ")
 	if isDisabled {
 		ctrl.WriteString("disabled ")
 	}

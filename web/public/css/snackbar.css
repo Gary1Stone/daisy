@@ -232,3 +232,21 @@ small.err {
 input[aria-invalid="true"] + small.err {
   display: block;
 }
+
+.scrollarea {
+  width: 100%;
+  max-height: 17rem;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: scroll; 
+}
+
+.scrollarea a {
+  display: block;
+  text-decoration: none;
+}
+
+.scrollarea a:hover {
+  color: var(--pico-color);
+  background-color: var(--pico-dropdown-hover-background-color);
+}

@@ -1,15 +1,18 @@
 package ctrls
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 	"github.com/gbsto/daisy/web/wizards"
 )
 
 func GetAlertTable(uid int) string {
+	var table strings.Builder
 	filter := db.Alert{
 		Aid:  -1,  // Get Any ticket
 		Gid:  -1,  // Get Any group
@@ -24,66 +27,19 @@ func GetAlertTable(uid int) string {
 		return ""
 	}
 
-	var table strings.Builder
-	table.WriteString(buildAlertTableHeader())
-	// table.WriteString("<table class='table striped hover'>")
-	// table.WriteString("<thead><tr>")
-	// table.WriteString("<th>Device</th>")
-	// table.WriteString("<th>Action</th>")
-	// table.WriteString("<th>Dismiss</th>")
-	// table.WriteString("</tr>")
-	// table.WriteString("</thead>")
-	// table.WriteString("<tbody>")
+	table.WriteString(`<table id="alerttable"><thead><tr><th>Device</th><th>Action</th><th>Dismiss</th></tr></thead><tbody>`)
 
 	for _, item := range items {
 		deviceName := item.DeviceName
 		if len(deviceName) > 10 {
 			deviceName = deviceName[:10]
 		}
-		table.WriteString("<tr>")
-		table.WriteString("<td>")
-		table.WriteString("<span class='")
-		table.WriteString(item.DeviceIcon)
-		table.WriteString(" icon'></span>&nbsp;<span class='caption'>")
-		table.WriteString(deviceName)
-		table.WriteString("</td>")
-		table.WriteString("<td>")
-		table.WriteString("<span class='")
-		table.WriteString(item.ActionIcon)
-		table.WriteString(" icon'></span>&nbsp;")
-		table.WriteString(xlateAction(item.Action, item.Uid_ack))
-		table.WriteString("</td>")
-		table.WriteString("<td>")
-		table.WriteString(`<button class="button primary" onclick="ackAlert('`)
-		table.WriteString(strconv.Itoa(item.Alert.Aid))
-		table.WriteString(`');">`)
-		table.WriteString("Okay</button>")
-		table.WriteString("</td>")
-		table.WriteString("</tr>")
+		fmt.Fprintf(&table, `<tr><td>%s %s</td>`, svg.GetIcon(item.DeviceIcon), deviceName)
+		fmt.Fprintf(&table, `<td>%s %s</td>`, svg.GetIcon(item.ActionIcon), xlateAction(item.Action, item.Uid_ack))
+		fmt.Fprintf(&table, `<td><button onclick="ackAlert('%d');">Okay</button></td></tr>`, item.Alert.Aid)
 	}
-	table.WriteString("</tbody>")
-	table.WriteString("</table>")
+	table.WriteString("</tbody></table>")
 	return table.String()
-}
-
-// Helper function to build the table header
-func buildAlertTableHeader() string {
-	return `<table data-role="table" id="alerttable" 
-    data-rows="-1" data-show-rows-steps="false" 
-    data-show-search="false" 
-    data-table-search-title="<span class='mif-search'></span>" 
-    data-show-pagination="false" 
-    data-show-table-info="false" 
-    data-horizontal-scroll="true" 
-    class="table striped table-border row-border row-hover">
-    <thead>
-    <tr>
-        <th>Device</th>
-        <th>Action</th>
-        <th>Dismiss</th>
-    </tr>
-    </thead>
-    <tbody>`
 }
 
 func GetAlertButtons(uid int) string {
