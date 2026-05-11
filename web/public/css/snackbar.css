@@ -97,16 +97,16 @@
 }
 
 /* foreground colors */
-.fg-gray, .secondary {
+.fg-gray {
   color: var(--pico-secondary)
 }
-.fg-dark, .dark {
+.fg-dark {
   color: var(--pico-contrast);
 }
-.fg-light, .light {
+.fg-light {
   color: var(--pico-contrast-inverse);
 }
-.fg-blue, .primary {
+.fg-blue {
   color:  var(--pico-primary);
 }
 .fg-green {
@@ -249,4 +249,26 @@ input[aria-invalid="true"] + small.err {
 .scrollarea a:hover {
   color: var(--pico-color);
   background-color: var(--pico-dropdown-hover-background-color);
+}
+
+/* Sticky Footer Logic */
+.sticky-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 99;
+  background-color: var(--background-color);
+  border-top: 1px solid var(--muted-border-color);
+  padding: var(--spacing) 0;
+  /* Soft shadow to separate from content */
+  box-shadow: 0 -10px 20px -10px rgba(0,0,0,0.1);
+}
+
+/* Reset Pico's default footer margin if needed */
+footer.sticky-footer {
+  margin-top: 0;
+}
+
+/* Ensure buttons don't have bottom margin in the nav */
+.sticky-footer button {
+  margin-bottom: 0;
 }

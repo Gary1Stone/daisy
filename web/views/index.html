@@ -20,7 +20,7 @@
     <p>
         <span id="msg"></span>
     </p>
-    <button id="btn" onclick="doAccept()" aria-busy="false">Accept</button>
+    <button type='button' id="btn" onclick="doAccept()" aria-busy="false">Accept</button>
 </main>
 <footer class="container">
     <small>
@@ -32,7 +32,7 @@
 <dialog id="Terms">
   <article>
     <header>
-        <button aria-label="Close" rel="prev" data-target="Terms" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="Terms" onclick="toggleModal(event)"></button>
         <h3>Terms&nbsp;&amp;&nbsp;Conditions</h3>
     </header>
     <p>Please read these Terms and Conditions carefully before using this website.</p>
@@ -153,7 +153,7 @@
     </p>
     </details>
     <footer>
-      <button autofocus data-target="Terms" onclick="toggleModal(event)">Confirm</button>
+      <button type='button' autofocus data-target="Terms" onclick="toggleModal(event)">Confirm</button>
     </footer>
   </article>
 </dialog>
@@ -161,7 +161,7 @@
 <dialog id="Privacy">
   <article>
     <header>
-        <button aria-label="Close" rel="prev" data-target="Privacy" onclick="toggleModal(event)"></button>
+        type='button' aria-label="Close" rel="prev" data-target="Privacy" onclick="toggleModal(event)"></button>
         <h3>Privacy Policy</h3>
     </header>
     <p>
@@ -278,7 +278,7 @@
         </p>
     </details>
     <footer>
-      <button autofocus data-target="Privacy" onclick="toggleModal(event)">Confirm</button>
+      <button type='button' autofocus data-target="Privacy" onclick="toggleModal(event)">Confirm</button>
     </footer>
   </article>
 </dialog>
@@ -286,14 +286,14 @@
 <dialog id="Location">
   <article>
     <header>
-        <button aria-label="Close" rel="prev" data-target="Location" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="Location" onclick="toggleModal(event)"></button>
         <h3>Location Collection</h3>
     </header>
     <p>Your current location is essential for application security and Geo-fencing.</p>
     <p>It is collected every time you start to use this website application.</p>
     <p>If you deny permission to collect your location, you will not be permitted to access this web application.</p>
     <footer>
-      <button autofocus data-target="Location" onclick="toggleModal(event)">Confirm</button>
+      <button type='button' autofocus data-target="Location" onclick="toggleModal(event)">Confirm</button>
     </footer>
   </article>
 </dialog>

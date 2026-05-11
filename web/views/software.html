@@ -271,8 +271,8 @@
   <div class="dialog-actions">
     <table>
       <tr>
-        <td style="padding: 5px;"><button id="cmd" class="button primary js-dialog-close" onclick="acceptAction();">Accept</button></td>
-        <td style="padding: 5px;"><button class="button js-dialog-close" >Cancel</button></td>
+        <td style="padding: 5px;"><button type='button' id="cmd" class="button primary js-dialog-close" onclick="acceptAction();">Accept</button></td>
+        <td style="padding: 5px;"><button type='button' class="button js-dialog-close" >Cancel</button></td>
       </tr>
     </table>
   </div>
@@ -287,7 +287,7 @@
           <div class="input">
               <input type="text" id="search" onkeyup="filterList()" value="">
               <div class="button-group">
-                  <button class="button input-clear-button" tabindex="-1" type="button" onclick="$('#search').val('');filterList();">
+                  <button type='button' class="button input-clear-button" tabindex="-1" type="button" onclick="$('#search').val('');filterList();">
                       <span class="default-icon-cross"></span>
                   </button>
               </div>
@@ -299,8 +299,8 @@
   <div class="dialog-content" id="inv_list" style="overflow-y: scroll; height: 12rem; "></div>
   <div class="dialog-content" id="matchCount">0 matches</div>
   <div class="dialog-actions">
-      <button class="button primary" onclick="closeDialog();">Okay</button>
-      <button class="button js-dialog-close">Cancel</button>
+      <button type='button' class="button primary" onclick="closeDialog();">Okay</button>
+      <button type='button' class="button js-dialog-close">Cancel</button>
   </div>
 </div>
 

@@ -36,7 +36,7 @@ func BuildActiveUsersTable(curUid int) string {
 		table.WriteString(item.Community)
 		table.WriteString("</p></td><td>")
 		// boot off
-		table.WriteString(`<button onclick="endSession('`)
+		table.WriteString(`<button type='button' onclick="endSession('`)
 		table.WriteString(strconv.Itoa(item.Id))
 		table.WriteString(`');"><span class='mif-settings-power mif-4x fg-red'></span></button>`)
 		table.WriteString("</td></tr>")

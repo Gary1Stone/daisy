@@ -94,9 +94,12 @@ func BuildAssignedDevices(curUid, uid int) string {
 		return ""
 	}
 	var ctrl strings.Builder
+	ctrl.WriteString(`<div class="scrollarea">`)
 	for _, item := range devices {
-		fmt.Fprintf(&ctrl, `<p><a href='device.html?cid=%d'>%s %s %s</a></p>`, item.Cid, svg.GetIcon(item.Icon), item.Name, item.Model)
+		fmt.Fprintf(&ctrl, `<p style="text-decoration: none;"><a href='device.html?cid=%d'>%s %s %s</a></p>`, item.Cid, svg.GetIcon(item.Icon), item.Name, item.Model)
 	}
+	ctrl.WriteString(`</div>`)
+
 	return ctrl.String()
 }
 

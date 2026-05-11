@@ -35,7 +35,7 @@ function initialize() {
 function ackAlert(aid = 0) {
     const sendData = {
         task: "get_alerts", 
-        aid: aid
+        aid: txt2int(aid)
     };
     fetch("home", {
         method: "POST",

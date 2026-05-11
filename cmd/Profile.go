@@ -57,16 +57,16 @@ func GetProfile(c *fiber.Ctx) error {
 		profile.Color = colors.Light
 	}
 
-	// Create the delete button
-	deleteButton := ""
-	if profile.Deleteable {
-		deleteButton = ctrls.MakeDeleteButton(user.Permissions.Profile.Delete)
+	// Can the record be deleted?
+	isDeleteable := false
+	if profile.Deleteable && user.Permissions.Profile.Delete {
+		isDeleteable = true
 	}
 
 	ipBanned := ""
 	// Check if user was banned by their IP address
 	if db.CheckUsersLastIpBanned(profile.Uid) {
-		ipBanned = "<span id='bttn'><button class='button alert' onclick='resetBanned(" + strconv.Itoa(profile.Uid) + ");'>Reset Banned</button></span>"
+		ipBanned = "<span id='bttn'><button type='button' class='button alert' onclick='resetBanned(" + strconv.Itoa(profile.Uid) + ");'>Reset Banned</button></span>"
 	}
 
 	return c.Render("profile", addNavigationIcons(fiber.Map{
@@ -85,9 +85,10 @@ func GetProfile(c *fiber.Ctx) error {
 		"FenceOptions":     template.HTML(ctrls.BuildDropList("GEOFENCE", profile.Geo_fence, "", true, false)),
 		"RadiusOptions":    template.HTML(ctrls.BuildRadiusOptions(profile.Geo_radius)),
 		"lastUpdated":      template.HTML(lun),
-		"cmd_one":          template.HTML(ctrls.MakeSaveButton(user.Permissions.Profile.Update)),
-		"cmd_two":          template.HTML(ctrls.MakeAddButton(user.Permissions.Profile.Create)),
-		"cmd_three":        template.HTML(deleteButton),
+		"save_button":      template.HTML(ctrls.MakeSaveButton(user.Permissions.Profile.Update)),
+		"add_button":       template.HTML(ctrls.MakeAddButton(user.Permissions.Profile.Create)),
+		"delete_button":    template.HTML(ctrls.MakeDeleteButton(isDeleteable)),
+		"cancel_button":    template.HTML(ctrls.MakeCancelButton(user.Permissions.Profile.Read)),
 		"curUid":           user.Uid,
 		"assigned_devices": template.HTML(ctrls.BuildAssignedDevices(user.Uid, uid)),
 		"banned":           template.HTML(ipBanned),
@@ -97,6 +98,7 @@ func GetProfile(c *fiber.Ctx) error {
 		"loginHistory":     template.HTML(ctrls.GetProfileLogins(user.Uid, uid)),
 		"groupIcon":        template.HTML(svg.GetIcon("group")),
 		"locationIcon":     template.HTML(svg.GetIcon("location")),
+		"bellIcon":         template.HTML(svg.GetIcon("bell")),
 	}))
 }
 

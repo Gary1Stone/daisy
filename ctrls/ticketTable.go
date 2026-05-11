@@ -117,7 +117,7 @@ func buildAckCell(curUid int, item *db.Action, profile *db.Profile, filter *db.A
 	var cell strings.Builder
 	cell.WriteString("<td data-label='ACK'>")
 	if isInformAck(curUid, item, profile, filter) || isAssignedAck(curUid, item, profile, filter) {
-		cell.WriteString("<button id='cmd' class='button primary' onclick='acceptAction(\"")
+		cell.WriteString("<button type='button' id='cmd' class='button primary' onclick='acceptAction(\"")
 		cell.WriteString(strconv.Itoa(item.Aid))
 		cell.WriteString("\");'>Accept</button>")
 	}

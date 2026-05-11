@@ -283,7 +283,7 @@ function buildTroubleParentControl(txt, rowId) {
 
 function buildGroupPermissionsControl(rowId) {
     return `
-        <button class='button info' onclick="popPermissions('${rowId}');">Edit...</button>
+        <button type='button' class='button info' onclick="popPermissions('${rowId}');">Edit...</button>
     `;
 }
 

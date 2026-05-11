@@ -165,17 +165,22 @@ async function deleteProfile() {
 // Display this screen with a uid=0 (user ID = UID)
 // when user presses save, in the servlet, detect if record id (UID) is 0, then insert record.
 // then send the uid to be used inside this form
+
+
 function addRecord() {
-    if (btnNew.state !== "on") return;
-    let url = window.location.href;
-    const i = url.indexOf("?");
-    if (i < 0) {
-        url = url + "?uid=" + encodeURIComponent("0");
-    } else {
-        url = url.substring(0, i) + "?uid=" + encodeURIComponent("0");
-    }
-    window.location.href =  encodeURI(url);
+  location.href='profile.html?uid=0';
 }
+// function addRecord() {
+//     if (btnNew.state !== "on") return;
+//     let url = window.location.href;
+//     const i = url.indexOf("?");
+//     if (i < 0) {
+//         url = url + "?uid=" + encodeURIComponent("0");
+//     } else {
+//         url = url.substring(0, i) + "?uid=" + encodeURIComponent("0");
+//     }
+//     window.location.href =  encodeURI(url);
+// }
 
 function validateForm(sendData) {
     if (!isDigits(sendData.uid)) return false;
@@ -228,8 +233,8 @@ async function resetBanned(UID) {
 async function ackAlert(aid = 0) {
     const sendData = {
         task: "get_alerts", 
-        aid: aid, 
-        uid: UI.uid().value
+        aid: txt2Int(aid), 
+        uid: txt2Int(UI.uid().value)
     };
     try {
         await htmx("home", sendData, "alerts");

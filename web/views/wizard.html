@@ -109,19 +109,19 @@
   </div>
 
   <div class="bottom-nav pos-fixed bottom bg-lightGray">
-    <button class="button" onclick="showHelp();">
+    <button type='button' class="button" onclick="showHelp();">
       <span class="icon mif-help"></span>
       <span class="label">Help</span>
     </button>
-    <button id="btnPrev" class="button" onclick="nav.previous();">
+    <button type='button' id="btnPrev" class="button" onclick="nav.previous();">
       <span class="mif-arrow-left mif-2x"></span>
       <span class="label">Back</span>
     </button>
-    <button id="btnNext" class="button" onclick="nav.next();">
+    <button type='button' id="btnNext" class="button" onclick="nav.next();">
       <span class="icon mif-arrow-right"></span>
       <span class="label">Next</span>
     </button>
-    <button id="btnFinish" class="button" onclick="onFinish();">
+    <button type='button' id="btnFinish" class="button" onclick="onFinish();">
       <span class="icon mif-checkmark"></span>
       <span class="label">Done</span>
     </button>
@@ -132,7 +132,7 @@
   <div class="dialog-title">Help</div>
   <div class="dialog-content"><p id="helpMsg"></p></div>
   <div class="dialog-actions">
-    <button class="button primary js-dialog-close">Okay</button>
+    <button type='button' class="button primary js-dialog-close">Okay</button>
   </div>
 </div>
 
@@ -154,7 +154,7 @@
         <div class="input">
             <input type="text" id="txtSearch" data-role-input="true" data-role="input">
             <div class="button-group">
-                <button class="button input-clear-button" tabindex="-1" type="button" onclick="$('#txtSearch').val('');">
+                <button type='button' class="button input-clear-button" tabindex="-1" type="button" onclick="$('#txtSearch').val('');">
                     <span class="default-icon-cross"></span>
                 </button>
             </div>
@@ -163,8 +163,8 @@
     </section>
   </div>
   <div class="dialog-actions">
-    <button class="button primary js-dialog-close" onclick="search();"><span class='mif-search'></span>&nbsp;Search</button>
-    <button class="button secondary js-dialog-close">Cancel</button>
+    <button type='button' class="button primary js-dialog-close" onclick="search();"><span class='mif-search'></span>&nbsp;Search</button>
+    <button type='button' class="button secondary js-dialog-close">Cancel</button>
     <small id="searchError" class="fg-red"></small>
   </div>
 </div>
@@ -176,7 +176,7 @@
     <p>Thank you for helping to keep track of the electronics.</p>
   </div>
   <div class="dialog-actions">
-    <button class="button primary js-dialog-close" onclick="GoHome();">
+    <button type='button' class="button primary js-dialog-close" onclick="GoHome();">
       Okay
     </button>
   </div>

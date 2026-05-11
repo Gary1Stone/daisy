@@ -79,9 +79,9 @@
 
       <article>
         <header>
-          <span class='mif-bell'></span>&nbsp;Alerts
+          {{.bellIcon}} Alerts
         </header>
-        <section>
+        <section id="alerts">
           {{ .userAlerts }}
         </section>
         <footer>
@@ -110,24 +110,41 @@
       </article>
     </div>
 </main>
+
+<!-- The Sticky Footer -->
+  <footer class="container sticky-footer">
+    <nav class="container">
+      <ul>
+        <li>
+          {{.add_button}}
+          {{.delete_button}}
+        </li>
+      </ul>
+      <ul>
+        <li>
+          {{.save_button}}
+        </li>
+      </ul>
+    </nav>
+  </footer>
+
+
 </form>
 
 <dialog id="delete-dialog">
   <article>
     <header>
-        <button aria-label="Close" rel="prev" data-target="delete-dialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="delete-dialog" onclick="toggleModal(event)"></button>
         <h3>Deleting profile record!</h3>
     </header>
     <p><b>Warning:</b> Deleting a profile is permanent.</p> 
     <p>Are you sure you want to delete <span id="displayName">this</span> profile?</p>
     <footer>
-      <button class="secondary" data-target="delete-dialog" onclick="toggleModal(event)">Cancel</button>
-      <button autofocus data-target="delete-dialog" onclick="toggleModal(event);deleteProfile(); ">Confirm</button>
+      <button type='button' class="secondary" data-target="delete-dialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' autofocus data-target="delete-dialog" onclick="toggleModal(event);deleteProfile(); ">Confirm</button>
     </footer>
   </article>
 </dialog>
-<footer class="container">
-</footer>
 
 <script src="js/profile.js" defer></script>
 {{template "partials/bottom2" .}}

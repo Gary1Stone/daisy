@@ -42,13 +42,13 @@
 <dialog id="logout-dialog">
   <article>
     <header>
-        <button aria-label="Close" rel="prev" data-target="logout-dialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="logout-dialog" onclick="toggleModal(event)"></button>
         <h3>Logout</h3>
     </header>
     <p><b>Warning:</b> You will be logged out on all devices.</p> 
     <p>Are you sure you want to continue?</p>
     <footer>
-      <button class="secondary" data-target="logout-dialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="secondary" data-target="logout-dialog" onclick="toggleModal(event)">Cancel</button>
       <a href="logout.html" autofocus role="button" >{{.logoutIcon}} Confirm</a>
     </footer>
   </article>

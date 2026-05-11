@@ -34,67 +34,11 @@ func GetAlertTable(uid int) string {
 		}
 		fmt.Fprintf(&table, `<tr><td>%s %s</td>`, svg.GetIcon(item.DeviceIcon), deviceName)
 		fmt.Fprintf(&table, `<td>%s %s</td>`, svg.GetIcon(item.ActionIcon), xlateAction(item.Action, item.Uid_ack))
-		fmt.Fprintf(&table, `<td><button onclick="ackAlert('%d');">Dismiss</button></td></tr>`, item.Alert.Aid)
+		fmt.Fprintf(&table, `<td><button type="button" onclick="ackAlert('%d');">Dismiss</button></td></tr>`, item.Alert.Aid)
 	}
 	table.WriteString("</tbody></table>")
 	return table.String()
 }
-
-// func GetAlertButtons(uid int) string {
-// 	filter := db.Alert{
-// 		Aid:  -1,  // Get Any ticket
-// 		Gid:  -1,  // Get Any group
-// 		Uid:  uid, // Just this user
-// 		Ack:  0,   // Not Acknowledged
-// 		Wait: 0,   // Not waiting
-// 	}
-
-// 	// Fetch alerts and handle errors
-// 	items, err := db.GetAlerts(filter)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return ""
-// 	}
-
-// 	var card strings.Builder
-// 	card.WriteString("<div class='row'>")
-
-// 	// Build alert buttons
-// 	for i, item := range items {
-// 		if i%12 == 0 && i != 0 {
-// 			card.WriteString("</div><div class='row'>")
-// 		}
-// 		card.WriteString(buildAlertButton(item))
-// 	}
-
-// 	card.WriteString("</div>")
-// 	return card.String()
-// }
-
-// Helper function to build a single alert button
-// func buildAlertButton(item *db.AlertDetails) string {
-// 	var button strings.Builder
-
-// 	// Truncate device name if necessary
-// 	deviceName := item.DeviceName
-// 	if len(deviceName) > 10 {
-// 		deviceName = deviceName[:10]
-// 	}
-
-// 	button.WriteString("<div class='cell'><button class='command-button bg-lightRed fg-white rounded m-3' style='width: 200px;' onclick='ackAlert(")
-// 	button.WriteString(strconv.Itoa(item.Alert.Aid))
-// 	button.WriteString(");'><span class='")
-// 	button.WriteString(item.DeviceIcon)
-// 	button.WriteString(" icon'></span>&nbsp;<span class='caption'>")
-// 	button.WriteString(deviceName)
-// 	button.WriteString("<small><span class='")
-// 	button.WriteString(item.ActionIcon)
-// 	button.WriteString("'></span>&nbsp;")
-// 	button.WriteString(xlateAction(item.Action, item.Uid_ack))
-// 	button.WriteString("</small></span></button></div>")
-
-// 	return button.String()
-// }
 
 func xlateAction(action string, uid_ack int) string {
 	msg := ""

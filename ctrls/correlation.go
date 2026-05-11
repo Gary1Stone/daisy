@@ -120,7 +120,7 @@ func BuildMacCorrelationTable(filter db.MacCorrelationFilter) string {
 			pearson = "-"
 		}
 		fmt.Fprintf(&ctrl, "<tr><td>%s <br>(%s)</td><td>%s <br>(%s)</td><td>%s</td><td>%s</td>", item.Name1, item.Hostname1, item.Name2, item.Hostname2, jaccard, pearson)
-		fmt.Fprintf(&ctrl, `<td><button onclick="showLink('%s', '%s', '%s', '%s', '%s', '%s');">Decide...</button></td></tr>`, item.Mac1, name1, host1, item.Mac2, name2, host2)
+		fmt.Fprintf(&ctrl, `<td><button type='button' onclick="showLink('%s', '%s', '%s', '%s', '%s', '%s');">Decide...</button></td></tr>`, item.Mac1, name1, host1, item.Mac2, name2, host2)
 	}
 	ctrl.WriteString(`</tbody></table>`)
 	return ctrl.String()

@@ -34,7 +34,7 @@ func BuildDeviceCtrl(dev db.Device) string {
 // permissions = TCRUD = Ticket: Create, Read, Update, Delete
 func BuildRouteButton(canUpdate bool) string {
 	if canUpdate {
-		return `<button onclick="showRouteDialog();" id="btnSave" title="Save Record" style="border: none; outline: none; background: none; cursor: pointer;"><span class="mif-floppy-disk fg-white"></span></button><input type="hidden" id="canSave" value="1" >`
+		return `<button type='button' onclick="showRouteDialog();" id="btnSave" title="Save Record" style="border: none; outline: none; background: none; cursor: pointer;"><span class="mif-floppy-disk fg-white"></span></button><input type="hidden" id="canSave" value="1" >`
 	}
 	return `<span id="btnSave"></span><input type="hidden" id="canSave" value="0" >`
 }
