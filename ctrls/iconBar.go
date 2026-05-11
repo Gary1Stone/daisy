@@ -29,14 +29,6 @@ func MakeDeleteButton(delete bool) string {
 	return `<span id='btnDelete'></span><input type='hidden' id='canDelete' value='0' >`
 }
 
-// // Delete button
-// func MakeCancelButton(read bool) string {
-// 	if read {
-// 		return `<buttontype='button' id='btnCancel' data-tooltip='cancel changes' class='secondary' onclick='window.location.href=window.location.href;'>` + svg.GetIcon("cancel") + ` Cancel</button><input type='hidden' id='canCancel' value='1' >`
-// 	}
-// 	return `<span id='btnCancel'></span><input type='hidden' id='canCancel' value='0' >`
-// }
-
 // Seen and missing buttons are combined
 func MakeSeeButton() string {
 	ico := `<button type='button' id='btnSee' onclick='seeIconClick();' data-tooltip='Not seen in 90+ days' style='color:red;'>` + svg.GetIcon("eye") + `</button> `
