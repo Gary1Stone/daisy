@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //if any of the 'input' elements are modified, change the save/add/delete states and validate
     document.querySelectorAll("input").forEach(el => {
-        el.addEventListener("blur", () => { checkValid(el); });
+        el.addEventListener("change", () => { checkValid(el); });
     });
 
     // if any of the 'select' droplists are modified, change the save/add/delete states

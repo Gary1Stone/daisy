@@ -18,23 +18,23 @@
           <label for="user">{{.userIcon}} User ID</label>
           <input type="email" id="user" name="user" value="{{ .userid }}"
             autocomplete="email" placeholder="User's Email Address...'" data-tooltip="User Identifier"
-            minlength="6" maxlength="100" autofocus
+            required minlength="6" maxlength="100" autofocus
             {{if .Readonly }}readonly{{end}} aria-invalid="false" aria-describedby="userErr">
           <small id="userErr" class="err">Mandatory: Must be a unique email address</small>
 
           <label for="first">First Name</label>
           <input type="text" id="first" name="first" value="{{ .first }}"
             autocomplete="off" placeholder="User's first name" data-tooltip="User's first name"
-            minlength="2" maxlength="50"
+            required minlength="2" maxlength="50"
             {{if .Readonly }}readonly{{end}} aria-invalid="false" aria-describedby="firstErr">
-          <small id="firstErr" class="err">Required</small>
+          <small id="firstErr" class="err">Required: Minimum 2, Maximum 50</small>
 
           <label for="last">Last Name</label>
           <input type="text" id="last" name="last" value="{{ .last }}" 
             autocomplete="off" placeholder="User's last name" data-tooltip="User's last name"
-            minlength="2" maxlength="50"
+            required minlength="2" maxlength="50"
             {{if .Readonly }}readonly{{end}}  aria-invalid="false" aria-describedby="lastErr">
-          <small id="lastErr" class="err">Required</small>
+          <small id="lastErr" class="err">Required: Minimum 2, Maximum 50</small>
 
           <label for="gid">{{.groupIcon}} Group</label>
             {{ .GroupOptions }}
@@ -113,22 +113,12 @@
 
 <!-- The Sticky Footer -->
   <footer class="container sticky-footer">
-    <nav class="container">
-      <ul>
-        <li>
+    <div role="group">
           {{.add_button}}
           {{.delete_button}}
-        </li>
-      </ul>
-      <ul>
-        <li>
           {{.save_button}}
-        </li>
-      </ul>
-    </nav>
+    </div>
   </footer>
-
-
 </form>
 
 <dialog id="delete-dialog">
