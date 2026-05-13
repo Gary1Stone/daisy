@@ -14,7 +14,7 @@ var SYS_PROFILE Profile
 
 type Profile struct {
 	Task              string `json:"task"`
-	Uid               int    `json:"id" db:"uid"`                              // User ID
+	Uid               int    `json:"uid" db:"uid"`                             // User ID
 	User              string `json:"user" db:"user"`                           // User unique identifier (email address)
 	Pwd               string `json:"-" db:"pwd"`                               // Password, Using - to prevent convertion to JSON. prevents sending out to users
 	Gid               int    `json:"gid" db:"gid"`                             // Group ID

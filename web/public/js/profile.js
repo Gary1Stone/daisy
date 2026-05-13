@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const uid = UI.uid().value;
     //Set initial button state depending if a record is displayed or not
     if (isDigits(uid) && txt2Int(uid) === 0) {
-        btnSave.on(); btnNew.off(); btnDelete.off();
+        btnSave.off(); btnNew.off(); btnDelete.off();
     } else {
         btnSave.off(); btnNew.on(); btnDelete.on();
     }
@@ -142,7 +142,7 @@ async function deleteProfile() {
     try {
         await postJSON("profile", sendData, (reply) => {
             if (reply.success) {
-                addRecord(); // clears the displayed record
+                location.href='profile.html?uid=0'; // clears the displayed record
             } else {
                 toast(reply.msg, "error");
                 console.error(reply.msg);
@@ -164,13 +164,30 @@ function addRecord() {
 
 function validateForm(sendData) {
     if (!isDigits(sendData.uid)) return false;
-    if (!UI.user().checkValidity()) return false;
-    if (!document.getElementById("first").checkValidity()) return false;
-    if (!document.getElementById("last").checkValidity()) return false;
-    if (UI.user().getAttribute("aria-invalid") === "true") {
-        UI.user().focus();
+
+    const userField = UI.user();
+    if (!userField.checkValidity()) {
+        !userField.setAttribute("aria-invalid", "true");
         return false;
     }
+
+    if (userField.getAttribute("aria-invalid") === "true") {
+        userField.focus();
+        return false;
+    }
+
+    const firstField = UI.first();
+    if (!firstField.checkValidity())  {
+        firstField.setAttribute("aria-invalid", "true");
+        return false;
+    }
+
+    const lastField = UI.last();
+    if (!lastField.checkValidity())  {
+        lastField.setAttribute("aria-invalid", "true");
+        return false;
+    }
+    
     return UI.form().checkValidity();
 }
 

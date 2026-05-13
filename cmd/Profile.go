@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"math"
@@ -11,7 +10,6 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/svg"
-	"github.com/gbsto/daisy/util"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -107,7 +105,6 @@ func PostProfile(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	recvd := new(db.Profile) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
 	reply := struct {
 		Success bool   `json:"success"`
 		Uid     int    `json:"uid"`
@@ -118,6 +115,7 @@ func PostProfile(c *fiber.Ctx) error {
 		Msg:     "ERROR: Processing Error",
 	}
 
+	recvd := new(db.Profile) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
 	if err := c.BodyParser(recvd); err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).JSON(reply)
@@ -125,10 +123,7 @@ func PostProfile(c *fiber.Ctx) error {
 	recvd.Fullname = recvd.First + " " + recvd.Last
 
 	// Check user permissions
-	var perm util.Permissions
-	perm.GetPermissions(fmt.Sprint(c.Locals("permissions")))
-
-	if !perm.Profile.Read {
+	if !user.Permissions.Profile.Read {
 		reply.Success = false
 		reply.Msg = "ERROR: You do not have permission to view profile records."
 		return c.Status(fiber.StatusOK).JSON(reply)
@@ -146,7 +141,7 @@ func PostProfile(c *fiber.Ctx) error {
 	case "delete":
 		reply.Success = false
 		reply.Msg = "ERROR: You do not have permission to delete a profile."
-		if perm.Profile.Delete {
+		if user.Permissions.Profile.Delete {
 			reply.Success = recvd.DeleteRecord(user.Uid)
 			reply.Uid = recvd.Uid
 			reply.Msg = "The User ID " + recvd.User + " was deleted."
@@ -157,8 +152,8 @@ func PostProfile(c *fiber.Ctx) error {
 	case "save":
 		reply.Success = false
 		reply.Msg = "ERROR: You do not have permission to save a profile."
-		if perm.Profile.Update {
-			reply.Success = false
+		if user.Permissions.Profile.Update {
+			//reply.Success = false
 			reply.Msg = "ERROR: The profile was NOT saved."
 			usr, err := db.GetProfile(user.Uid, recvd.Uid)
 			if err == nil {
@@ -190,7 +185,7 @@ func PostProfile(c *fiber.Ctx) error {
 	case "add":
 		reply.Success = false
 		reply.Msg = "ERROR: You do not have permission to create a profile."
-		if perm.Profile.Create {
+		if user.Permissions.Profile.Create {
 			recvd.Active = 1
 			recvd.Last_updated_by = user.Uid
 			reply.Success = recvd.AddRecord(user.Uid)
