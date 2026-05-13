@@ -8,7 +8,7 @@ import "github.com/gbsto/daisy/svg"
 // The hidden input 'canSave' reflects the value of 'update' (1 for true, 0 for false).
 func MakeSaveButton(update bool) string {
 	if update {
-		return `<button id='btnSave' type='submit' aria-busy='false' form='theForm' data-tooltip='Save Record'>` + svg.GetIcon("save") + ` Save</button><input type='hidden' id='canSave' value='1'>`
+		return `<button type='button' class='outline secondary' id='btnSave' data-tooltip='Save Record' onclick='saveRecord();'>` + svg.GetIcon("save") + `</button><input type='hidden' id='canSave' value='1' >`
 	}
 	return `<span id='btnSave'></span><input type='hidden' id='canSave' value='0'>`
 }
@@ -16,7 +16,7 @@ func MakeSaveButton(update bool) string {
 // Add button
 func MakeAddButton(create bool) string {
 	if create {
-		return `<button type='button' class='secondary' id='btnNew' data-tooltip='Create Record' onclick='addRecord();'>` + svg.GetIcon("add") + ` New</button><input type='hidden' id='canNew' value='1' >`
+		return `<button type='button' class='outline secondary' id='btnNew' data-tooltip='Create Record' onclick='addRecord();'>` + svg.GetIcon("add") + `</button><input type='hidden' id='canNew' value='1' >`
 	}
 	return `<span id='btnNew'></span><input type='hidden' id='canNew' value='0' >`
 }
@@ -24,7 +24,7 @@ func MakeAddButton(create bool) string {
 // Delete button
 func MakeDeleteButton(delete bool) string {
 	if delete {
-		return `<button type='button' id='btnDelete' data-tooltip='Delete Record' class='outline secondary' data-target="delete-dialog" onclick='deleteRecord(event);'>` + svg.GetIcon("delete") + ` Delete</button><input type='hidden' id='canDelete' value='1' >`
+		return `<button type='button' class='outline secondary' id='btnDelete' data-tooltip='Delete Record' data-target="delete-dialog" onclick='deleteRecord(event);'>` + svg.GetIcon("delete") + `</button><input type='hidden' id='canDelete' value='1' >`
 	}
 	return `<span id='btnDelete'></span><input type='hidden' id='canDelete' value='0' >`
 }
