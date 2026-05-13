@@ -1,33 +1,30 @@
 {{template "partials/top2" .}}
-<header class="container">
-    <nav>
-        <ul>
-            <li><span style="font-size:2rem">&#127809;</span> Device Asset Information System</li>
-        </ul>
-    </nav>
-</header>
 <main class="container">
-    <input type="hidden" id="nextpage" name="nextpage" value="{{.nextpage}}">
-    <p class="mt-5">Welcome {{ .username }}</p>
-    <p>
-        For access to this web application you agree to the following:
-        <ul>
-            <li><a href="#" data-target="Terms" onclick="toggleModal(event)">Terms&nbsp;&amp;&nbsp;Conditions</a></li>
-            <li><a href="#" data-target="Privacy" onclick="toggleModal(event)">Privacy Policy</a></li>
-            <li><a href="#" data-target="Location" onclick="toggleModal(event)">Location Collection</a></li>
-        </ul> 
-    </p>
-    <p>
-        <span id="msg"></span>
-    </p>
-    <button type='button' id="btn" onclick="doAccept()" aria-busy="false">Accept</button>
-</main>
-<footer class="container">
-    <small>
+    <article>
+    <header>
+        <span style="font-size:2rem">&#127809;</span> Device Asset Information System
+    </header>
+    <section>
+        <input type="hidden" id="nextpage" name="nextpage" value="{{.nextpage}}">
+        <p class="mt-5">Welcome {{ .username }}</p>
+        <p>For access to this web application you agree to the following:
+            <ul>
+                <li><a href="#" data-target="Terms" onclick="toggleModal(event)">Terms&nbsp;&amp;&nbsp;Conditions</a></li>
+                <li><a href="#" data-target="Privacy" onclick="toggleModal(event)">Privacy Policy</a></li>
+                <li><a href="#" data-target="Location" onclick="toggleModal(event)">Location Collection</a></li>
+            </ul> 
+        </p>
+        <p>
+            <span id="msg"></span>
+        </p>
         <p>All Rights reserved.</p>
         <p>For further information contact: webmaster@wknc.ca</p>
-    </small>
-</footer>
+    </section>
+    <footer>
+        <button type='button' id="btn" onclick="doAccept()" aria-busy="false">Accept</button>
+    </footer>
+    </article>
+</main>
 
 <dialog id="Terms">
   <article>
@@ -161,7 +158,7 @@
 <dialog id="Privacy">
   <article>
     <header>
-        type='button' aria-label="Close" rel="prev" data-target="Privacy" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="Privacy" onclick="toggleModal(event)"></button>
         <h3>Privacy Policy</h3>
     </header>
     <p>
