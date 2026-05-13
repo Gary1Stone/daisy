@@ -1,12 +1,10 @@
-/* uses txt2Int, toast, postJSON, htmx */
-const isEmailValid = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+/* Profile.js */
 
 // Cache DOM elements using getters to ensure they are available when needed
 const UI = {
     form: () => document.getElementById('theForm'),
     uid: () => document.getElementById("uid"),
     user: () => document.getElementById("user"),
-    userError: () => document.getElementById("userErr"),
     canSave: () => document.getElementById("canSave"),
     canNew: () => document.getElementById("canNew"),
     canDelete: () => document.getElementById("canDelete"),
@@ -27,20 +25,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', (event) => {
             event.preventDefault();
-            saveRecord(event);
         });
     }
 
     const uid = UI.uid().value;
     //Set initial button state depending if a record is displayed or not
     if (isDigits(uid) && txt2Int(uid) === 0) {
-        btnSave.on();  //No record, cannot save, but if they fill it out, we want to save
-        btnNew.off(); //No point in showing the same screen again
-        btnDelete.off(); //No record, nothing to delete
+        btnSave.on(); btnNew.off(); btnDelete.off();
     } else {
-        btnSave.off(); //Record just displayed, nothing to save, user has to make changes first
-        btnNew.on(); //Record displayed, can create new
-        btnDelete.on(); //record displayed, can delete it
+        btnSave.off(); btnNew.on(); btnDelete.on();
     }
 
     //if any of the 'input' elements are modified, change the save/add/delete states and validate
@@ -174,8 +167,7 @@ function validateForm(sendData) {
     if (!UI.user().checkValidity()) return false;
     if (!document.getElementById("first").checkValidity()) return false;
     if (!document.getElementById("last").checkValidity()) return false;
-    // Check if the user id is unique (onBlur sets if error message visible or not)
-    if (UI.userError().style.display !== "none") {
+    if (UI.user().getAttribute("aria-invalid") === "true") {
         UI.user().focus();
         return false;
     }
@@ -231,48 +223,36 @@ async function ackAlert(aid = 0) {
     }
 }
 
-async function saveRecord(event) {
+async function saveRecord() {
     if (btnSave.state !== "on") return;
     const sendData = getFormData();
     if (!validateForm(sendData)) return;
-
     if (sendData.uid === 0) { sendData.task = "add"; }
-
-    // Get the button that triggered the submit event.
-    const submitButton = event.submitter;
-
-    // --- Show loading state on the submit button ---
-    submitButton.setAttribute('aria-busy', 'true');
-    submitButton.disabled = true;
-    
+    UI.btnSave().disabled = true;
     // If the user changed their own name, update the Menubar label
     if (UI.curUid().value === String(sendData.uid)) {
         UI.userName().value = `${sendData.first} ${sendData.last}`;
-    }    
-
+    }
     try {
         await postJSON("profile", sendData, (reply) => {
-            submitButton.setAttribute('aria-busy', 'false');
-            submitButton.disabled = false;
-
-        if (!reply.success) {
-            toast(reply.msg, "alert");
-            console.error(reply.msg);
-        } else {    // Refresh the page
-            let url = window.location.href;
-            const i = url.indexOf("?");
-            if (i < 0) {
-                url = url + "?uid=" + encodeURIComponent(reply.uid);
-            } else {
-                url = url.substring(0, i) + "?uid=" + encodeURIComponent(reply.uid);
+            UI.btnSave().disabled = false;
+            if (!reply.success) {
+                toast(reply.msg, "error");
+                console.error(reply.msg);
+            } else {    // Refresh the page
+                let url = window.location.href;
+                const i = url.indexOf("?");
+                if (i < 0) {
+                    url = url + "?uid=" + encodeURIComponent(reply.uid);
+                } else {
+                    url = url.substring(0, i) + "?uid=" + encodeURIComponent(reply.uid);
+                }
+                window.location.href =  encodeURI(url);
             }
-            window.location.href =  encodeURI(url);
-        }
         });
     } catch (error) {
         toast("Save failed:" + error, "error");
         console.error("Save failed:", error);
-        submitButton.setAttribute('aria-busy', 'false');
-        submitButton.disabled = false;
+        UI.btnSave().disabled = false;
     }
 }
