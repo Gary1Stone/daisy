@@ -265,6 +265,11 @@ for (i = 0; i < l; i++) {
     a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
     const initialColor = selElmnt.options[selElmnt.selectedIndex].getAttribute("data-color");
     if (initialColor) a.style.color = initialColor;
+  } else if (selElmnt.options.length > 0) {
+    // If no item is selected, but there are options, display the first option's innerHTML
+    a.innerHTML = selElmnt.options[0].innerHTML;
+    const initialColor = selElmnt.options[0].getAttribute("data-color");
+    if (initialColor) a.style.color = initialColor;
   }
   x[i].appendChild(a);
   /* For each element, create a new DIV that will contain the option list: */

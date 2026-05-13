@@ -178,6 +178,7 @@ th[data-sort="desc"]::after {
   line-height: var(--pico-line-height);
   cursor: pointer;
   user-select: none;
+  height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 + var(--pico-border-width) * 2);
   transition: background-color var(--pico-transition), border-color var(--pico-transition), color var(--pico-transition), box-shadow var(--pico-transition);
 }
 
@@ -214,6 +215,7 @@ th[data-sort="desc"]::after {
   padding: calc(var(--pico-form-element-spacing-vertical) * 0.5) var(--pico-form-element-spacing-horizontal);
   color: var(--pico-dropdown-color);
   cursor: pointer;
+  height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 + var(--pico-border-width) * 2);
 }
 
 .select-hide {
