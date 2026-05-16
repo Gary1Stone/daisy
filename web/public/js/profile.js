@@ -1,26 +1,36 @@
 /* Profile.js */
+'use strict';
 
 // Cache DOM elements using getters to ensure they are available when needed
 const UI = {
     form: () => document.getElementById('theForm'),
     uid: () => document.getElementById("uid"),
     user: () => document.getElementById("user"),
-    canSave: () => document.getElementById("canSave"),
-    canNew: () => document.getElementById("canNew"),
-    canDelete: () => document.getElementById("canDelete"),
-    btnSave: () => document.getElementById("btnSave"),
-    btnNew: () => document.getElementById("btnNew"),
-    btnDelete: () => document.getElementById("btnDelete"),
+    first: () => document.getElementById("first"),
+    last: () => document.getElementById("last"),
+    gid: () => document.getElementById("gid"),
+    geo_fence: () => document.getElementById("geo_fence"),
+    geo_radius: () => document.getElementById("geo_radius"),
+    pwd_reset: () => document.getElementById("pwd_reset"),
+    color: () => document.getElementById("color"),
+    active: () => document.getElementById("active"),
+    notify: () => document.getElementById("notify"),
     curUid: () => document.getElementById("curUid"),
     userName: () => document.getElementById("userName"),
     alerts: () => document.getElementById("alerts")
 };
 
-const setDisplay = (el, show) => { if (el) el.style.display = show ? "block" : "none"; };
-const isDigits = (value) => typeof value === "string" && value.length > 0 ? /^\d+$/.test(value) : true;
+// Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
+let btnSave, btnNew, btnDelete;
 
 // Page loaded event
 document.addEventListener('DOMContentLoaded', function() {
+
+    // Initialize the iconbar button instances once the scripts and DOM are ready
+    btnSave = new Button("btnSave");
+    btnNew = new Button("btnNew");
+    btnDelete = new Button("btnDelete", true); // true for forceOffIfNotAllowed
+
     const form = UI.form();
     if (form) {
         form.addEventListener('submit', (event) => {
@@ -45,7 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll("select").forEach(el => {
         el.addEventListener("change", () => { btnSave.on(); btnNew.off(); btnDelete.off(); });
     });
+    
 });
+
 
 function checkValid(el) {
     btnNew.off(); 
@@ -54,6 +66,7 @@ function checkValid(el) {
     if (el.value !== el.value.trim()) {
         btnSave.off();
         el.setAttribute("aria-invalid", "true");
+        el.setCustomValidity("Leading and trailing spaces are not allowed");
         toast("Please remove leading and trailing spaces", "warning");
         return;
     }
@@ -104,31 +117,6 @@ async function checkUnique(el) {
 
 function getPersonCtrl() { return; }
 
-const btnSave = {
-    state: "on",
-    on() {
-        if (UI.canSave().value === "1") { setDisplay(UI.btnSave(), true); this.state = "on"; }
-    },
-    off() { setDisplay(UI.btnSave(), false); this.state = "off"; }
-};
-
-const btnNew = {
-    state: "on",
-    on() {
-        if (UI.canNew().value === "1") { setDisplay(UI.btnNew(), true); this.state = "on"; }
-    },
-    off() { setDisplay(UI.btnNew(), false); this.state = "off"; }
-};
-
-const btnDelete = {
-    state: "on",
-    on() {
-        if (UI.canDelete().value === "1") { setDisplay(UI.btnDelete(), true); this.state = "on"; }
-        else { this.off(); }
-    },
-    off() { setDisplay(UI.btnDelete(), false); this.state = "off"; }
-};
-
 function deleteRecord(event) {
     if (btnDelete.state !== "on") return;
     toggleModal(event);
@@ -158,7 +146,7 @@ async function deleteProfile() {
 // Display this screen with a uid=0 (user ID = UID)
 // when user presses save, in the servlet, detect if record id (UID) is 0, then insert record.
 // then send the uid to be used inside this form
-function addRecord() {
+function addRecord(event) {
   location.href='profile.html?uid=0';
 }
 
@@ -167,7 +155,7 @@ function validateForm(sendData) {
 
     const userField = UI.user();
     if (!userField.checkValidity()) {
-        !userField.setAttribute("aria-invalid", "true");
+        userField.setAttribute("aria-invalid", "true");
         return false;
     }
 
@@ -196,15 +184,15 @@ function getFormData() {
         task: "save", 
         uid: txt2Int(UI.uid().value), 
         user: UI.user().value.trim(), 
-        first: document.getElementById("first").value.trim(), 
-        last: document.getElementById("last").value.trim(),
-        gid: txt2Int(document.getElementById("gid").value),
-        geo_fence: document.getElementById("geo_fence").value, 
-        geo_radius: txt2Int(document.getElementById("geo_radius").value),
-        pwd_reset: txt2Int(document.getElementById("pwd_reset").value), 
-        color: document.getElementById("color").value, 
-        active: document.getElementById("active").checked ? 1 : 0,
-        notify: document.getElementById("notify").checked ? 1 : 0
+        first: UI.first().value.trim(), 
+        last: UI.last().value.trim(),
+        gid: txt2Int(UI.gid().value),
+        geo_fence: UI.geo_fence().value, 
+        geo_radius: txt2Int(UI.geo_radius().value),
+        pwd_reset: txt2Int(UI.pwd_reset().value), 
+        color: UI.color().value, 
+        active: UI.active().checked ? 1 : 0,
+        notify: UI.notify().checked ? 1 : 0
     };
 }
 
@@ -240,19 +228,18 @@ async function ackAlert(aid = 0) {
     }
 }
 
-async function saveRecord() {
+async function saveRecord(event) {
     if (btnSave.state !== "on") return;
+    btnSave.off();
     const sendData = getFormData();
     if (!validateForm(sendData)) return;
     if (sendData.uid === 0) { sendData.task = "add"; }
-    UI.btnSave().disabled = true;
     // If the user changed their own name, update the Menubar label
     if (UI.curUid().value === String(sendData.uid)) {
-        UI.userName().value = `${sendData.first} ${sendData.last}`;
+        UI.userName().innerText = `${sendData.first} ${sendData.last}`;
     }
     try {
         await postJSON("profile", sendData, (reply) => {
-            UI.btnSave().disabled = false;
             if (!reply.success) {
                 toast(reply.msg, "error");
                 console.error(reply.msg);
@@ -270,6 +257,5 @@ async function saveRecord() {
     } catch (error) {
         toast("Save failed:" + error, "error");
         console.error("Save failed:", error);
-        UI.btnSave().disabled = false;
     }
 }
