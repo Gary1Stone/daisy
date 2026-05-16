@@ -35,7 +35,7 @@ func ProfilesTable(curUid int, filter db.ProfileFilter) string {
 		if item.Tickets > 0 {
 			ticket = buildTicketIcon(item.Tickets)
 		}
-		fmt.Fprintf(&table, "<tr><td><a href='profile.html?uid=%d'>%s</a></td><td>%s</td><td>%s</td><td> %s %s</td></tr>", item.Uid, item.User, mxl25(item.Fullname), mxl25(item.Group), alert, ticket)
+		fmt.Fprintf(&table, "<tr data-uid='%d'><td><a href='profile.html?uid=%d'>%s</a></td><td>%s</td><td>%s</td><td> %s %s</td></tr>", item.Uid, item.Uid, item.User, mxl25(item.Fullname), mxl25(item.Group), alert, ticket)
 	}
 
 	table.WriteString("</tbody></table>")
