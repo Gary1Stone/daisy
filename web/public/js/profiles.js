@@ -1,12 +1,13 @@
 // Profiles.js
 
-window.addEventListener("load", initialize);
+let btnNew;
 
-function initialize() {
+document.addEventListener('DOMContentLoaded', function() {
+  btnNew = new Button("btnNew");
   buildTable('profileTable');
   tableChangeWatcher();
   addRowClick();
-}
+});
 
 // Select the table and all rows
 // Loop through each row and add a click event listener
@@ -23,16 +24,12 @@ function addRowClick() {
 }
 
 // Add a onclick event to each row of the table
-// To navigate to the ticket
-// First cell is rownum, second is checkbox, third cell has the AID
+// To navigate to the profile
 function handleRowClick(event) {
   const row = event.currentTarget;
-  // Check if the row has a second cell (last row does not)
-  if (row.cells.length < 3) {
-      return;
-  }
-  const uid = txt2Int(row.cells[0].innerText); // 
-  window.location.href =  encodeURI("profile.html?uid=" + uid);
+  const uid = row.dataset.uid;
+  if (!uid) return;
+  window.location.href = encodeURI("profile.html?uid=" + uid);
 }
 
 // Add a mutation observer to watch for any table changes
@@ -50,14 +47,13 @@ function tableChangeWatcher() {
   observer.observe(targetNode, config);
 }
 
-
 function addRecord() {
   location.href='profile.html?uid=0';
 }
 
-function popFilters() {
+function popSearch() {
   const searchInput = document.getElementById("txtSearch")
-  if (searchInput.style.display === "none") {
+  if (window.getComputedStyle(searchInput).display === "none") {
     searchInput.style.display = "block";
     searchInput.focus();
   } else {
