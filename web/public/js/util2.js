@@ -9,7 +9,7 @@ const isDigits = (value) => typeof value === "string" && value.length > 0 ? /^\d
 
 const setDisplay = (el, show) => { if (el) el.style.display = show ? "block" : "none"; };
 
-// Define a Button class to encapsulate button behavior
+// Define an Icon Button class to encapsulate button behavior
 // This allows for easy addition of more buttons in the future
 class Button {
     constructor(btnId, forceOffIfNotAllowed = false) {
