@@ -55,11 +55,11 @@ func GetProfile(c *fiber.Ctx) error {
 		profile.Color = colors.Light
 	}
 
-	// Can the record be deleted?
-	isDeleteable := false
-	if profile.Deleteable && user.Permissions.Profile.Delete {
-		isDeleteable = true
-	}
+	// // Can the record be deleted?
+	// isDeleteable := false
+	// if profile.Deleteable && user.Permissions.Profile.Delete {
+	// 	isDeleteable = true
+	// }
 
 	ipBanned := ""
 	// Check if user was banned by their IP address
@@ -71,9 +71,9 @@ func GetProfile(c *fiber.Ctx) error {
 		"title":            template.HTML(svg.GetIcon("profiles") + " Profile"),
 		"fullName":         user.Fullname,
 		"isAdmin":          user.IsAdmin,
-		"cmd_one":          template.HTML(ctrls.MakeSaveButton(user.Permissions.Profile.Update)),
-		"cmd_two":          template.HTML(ctrls.MakeAddButton(user.Permissions.Profile.Create)),
-		"cmd_three":        template.HTML(ctrls.MakeDeleteButton(isDeleteable)),
+		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Profile.Update)),
+		"cmd_two":          template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Profile.Create)),
+		"cmd_three":        template.HTML(ctrls.MakeButton(ctrls.BtnDelete, user.Permissions.Profile.Delete && profile.Deleteable)),
 		"isReadonly":       !user.Permissions.Profile.Update,
 		"isDisabled":       !user.Permissions.Profile.Update,
 		"uid":              profile.Uid,
