@@ -1,25 +1,16 @@
-{{template "partials/top" .}} {{template "partials/navbar" .}}
+{{template "partials/top2" .}} {{template "partials/navbar2" .}}
 <div class="container">
-  <div class="grid">
-
-    <div class="row">
-      <div class="cell">
-        <button type='button' onclick="getReport('DASHBOARD_REPORT');">Dashboard</button>
-        <button type='button' onclick="getReport('USERS_REPORT');">Users</button>
-        <button type='button' onclick="getReport('TRACKED_SOFTWARE');">Tracked Software</button>
-        <button type='button' onclick="getReport('OTHER_SOFTWARE');">Other Software</button>
-        <button type='button' onclick="getReport('USERS_COMPUTERS');">Assigned Devices</button>
-        <button type='button' onclick="getReport('NETWORK_GAPS');">Network Gaps</button>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="cell">
-        <div id="report"></div>
-      </div>
-    </div>
-
-  </div>
+  <div role="group">
+    <button type='button' onclick="getReport('DASHBOARD_REPORT');">Dashboard</button>
+    <button type='button' onclick="getReport('USERS_REPORT');">Users</button>
+    <button type='button' onclick="getReport('TRACKED_SOFTWARE');">Tracked Software</button>
+    <button type='button' onclick="getReport('OTHER_SOFTWARE');">Other Software</button>
+    <button type='button' onclick="getReport('USERS_COMPUTERS');">Assigned Devices</button>
+    <button type='button' onclick="getReport('NETWORK_GAPS');">Network Gaps</button>
+  </div> 
+  <article>
+    <div id="report"></div>
+  </article>
 </div>
 <script src="js/reports.js" defer></script>
-{{template "partials/bottom" .}}
+{{template "partials/bottom2" .}}
