@@ -1,61 +1,118 @@
 package ctrls
 
-import "github.com/gbsto/daisy/svg"
+import (
+	"fmt"
+	"sync"
 
-// Create the command buttons - Save, New and Delete, depending on the user's permissions for this record
-// MakeSaveButton creates the HTML for the save button and a hidden input field.
-// The button is only rendered if 'update' is true.
-// The hidden input 'canSave' reflects the value of 'update' (1 for true, 0 for false).
+	"github.com/gbsto/daisy/svg"
+)
+
+// Button identifiers as constants to prevent typos and improve maintainability.
+const (
+	BtnSave   = "btnSave"
+	BtnNew    = "btnNew"
+	BtnDelete = "btnDelete"
+	BtnSeen   = "btnSeen"
+	BtnBackup = "btnBackup"
+	BtnSearch = "btnSearch"
+	BtnHelp   = "btnHelp"
+	BtnTables = "btnTables"
+)
+
+type buttonInfo struct {
+	id       string
+	tooltip  string
+	style    string
+	function string
+	icon     string
+}
+
+var (
+	btnInfoMap map[string]buttonInfo
+	once       sync.Once
+)
+
+func loadBtnInfo() {
+	btnInfoMap = map[string]buttonInfo{
+		BtnSave:   {"btnSave", "Save Record", "", "saveRecord(event);", svg.GetIcon("save")},
+		BtnNew:    {"btnNew", "Create Record", "", "addRecord(event);", svg.GetIcon("add")},
+		BtnDelete: {"btnDelete", "Delete Record", "", "deleteRecord(event);", svg.GetIcon("delete")},
+		BtnSeen:   {"btnSeen", "Not Seen in 90+ days", "style='color:red;'", "seenClick();", svg.GetIcon("eye")},
+		BtnBackup: {"btnBackup", "Not Backed up in 90+ days", "style='color:red;'", "backupClick();", svg.GetIcon("copy")},
+		BtnSearch: {"btnSearch", "Search", "", "popSearch();", svg.GetIcon("search")},
+		BtnHelp:   {"btnHelp", "Help", "", "showHelp();", svg.GetIcon("help")},
+		BtnTables: {"btnTables", "Select Admin Table", "", "showTableSelect();", svg.GetIcon("factory")},
+	}
+}
+
+// MakeButton creates a command button depending on the user's permissions.
+// The button is only rendered if 'permission' is true.
+func MakeButton(name string, permission bool) string {
+	once.Do(loadBtnInfo)
+
+	btn, ok := btnInfoMap[name]
+	if !ok {
+		return ""
+	}
+
+	if !permission {
+		return fmt.Sprintf("<span id='%s' data-allowed='0'></span>", btn.id)
+	}
+
+	return fmt.Sprintf(`<button type='button' id='%s' class='outline secondary' aria-label='%s' data-tooltip='%s' data-allowed='1' %s onclick='%s'>%s</button>`, btn.id, btn.tooltip, btn.tooltip, btn.style, btn.function, btn.icon)
+}
+
+// Specialized helper functions for common button types that include hidden inputs
+// used by the application's legacy JavaScript for state and permission checks.
+
 func MakeSaveButton(update bool) string {
+	val := "0"
 	if update {
-		return `<button type='button' class='outline secondary' id='btnSave' data-tooltip='Save Record' onclick='saveRecord();'>` + svg.GetIcon("save") + `</button><input type='hidden' id='canSave' value='1' >`
+		val = "1"
 	}
-	return `<span id='btnSave'></span><input type='hidden' id='canSave' value='0'>`
+	return MakeButton(BtnSave, update) + fmt.Sprintf(`<input type='hidden' id='canSave' value='%s'>`, val)
 }
 
-// Add button
 func MakeAddButton(create bool) string {
+	val := "0"
 	if create {
-		return `<button type='button' class='outline secondary' id='btnNew' data-tooltip='Create Record' onclick='addRecord();'>` + svg.GetIcon("add") + `</button><input type='hidden' id='canNew' value='1' >`
+		val = "1"
 	}
-	return `<span id='btnNew'></span><input type='hidden' id='canNew' value='0' >`
+	return MakeButton(BtnNew, create) + fmt.Sprintf(`<input type='hidden' id='canNew' value='%s'>`, val)
 }
 
-// Delete button
-func MakeDeleteButton(delete bool) string {
-	if delete {
-		return `<button type='button' class='outline secondary' id='btnDelete' data-tooltip='Delete Record' data-target="delete-dialog" onclick='deleteRecord(event);'>` + svg.GetIcon("delete") + `</button><input type='hidden' id='canDelete' value='1' >`
+func MakeDeleteButton(canDelete bool) string {
+	if canDelete {
+		once.Do(loadBtnInfo)
+		btn := btnInfoMap[BtnDelete]
+		return fmt.Sprintf(`<button type='button' id='%s' class='outline secondary' aria-label='%s' data-tooltip='%s' data-target="delete-dialog" data-allowed='1' onclick='%s'>%s</button><input type='hidden' id='canDelete' value='1'>`,
+			btn.id, btn.tooltip, btn.tooltip, btn.function, btn.icon)
 	}
-	return `<span id='btnDelete'></span><input type='hidden' id='canDelete' value='0' >`
+	return MakeButton(BtnDelete, false) + `<input type='hidden' id='canDelete' value='0'>`
 }
 
-// Seen and missing buttons are combined
 func MakeSeeButton() string {
-	ico := `<button type='button' id='btnSee' onclick='seeIconClick();' data-tooltip='Not seen in 90+ days' style='color:red;'>` + svg.GetIcon("eye") + `</button> `
-	ico += `<button type='button' id='mif-copy' onclick='seeIconClick();' data-tooltip='Not backed up in 90+ days' style='color:red;'>` + svg.GetIcon("copy") + `</button>`
-	ico += `<input type='hidden' id='btnSeeState' value='off' ><input type='hidden' id='islate' value='0' ><input type='hidden' id='ismissing' value='0' >`
+	once.Do(loadBtnInfo)
+	ico := MakeButton(BtnSeen, true) + " " + MakeButton(BtnBackup, true)
+	ico += `<input type='hidden' id='btnSeeState' value='off'><input type='hidden' id='islate' value='0'><input type='hidden' id='ismissing' value='0'>`
 	return ico
 }
 
 func MakeSearchBtn() string {
-	return `<button type='button' class='contrast' data-tooltip='Search' onclick='popFilters();'>` + svg.GetIcon("search") + `</button>`
+	return MakeButton(BtnSearch, true)
 }
 
-// ACRUD = Admin (Create, Read, Update, Delete)
 func MakeAdminSelectButton(read bool) string {
 	if read {
-		return `<button type='button' id='btnTables' class='secondary' data-tooltip='Select Admin Table' onclick='showTableSelect();'>` + svg.GetIcon("site") + `</button>`
+		return MakeButton(BtnTables, true)
 	}
 	return `&nbsp;`
 }
 
 func MakeAdminSaveButton(update bool) string {
-	if update {
-		return `<button type='button' id='btnSave' data-tooltip='Save Record' onclick='save();'>` + svg.GetIcon("save") + `</button><input type='hidden' id='canSave' value='1' >`
-	}
-	return `<span id='btnSave'></span><input type='hidden' id='canSave' value='0' >`
+	return MakeSaveButton(update)
 }
 
 func MakeAdminHelpButton() string {
-	return `<button type='button' id='btnAdminHelp' class='secondary' data-tooltip='Help' onclick='showHelp();'>` + svg.GetIcon("help") + `</button>`
+	return MakeButton(BtnHelp, true)
 }
