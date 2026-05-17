@@ -35,7 +35,7 @@ func ProfilesTable(curUid int, filter db.ProfileFilter) string {
 		if item.Tickets > 0 {
 			ticket = buildTicketIcon(item.Tickets)
 		}
-		fmt.Fprintf(&table, "<tr data-uid='%d'><td><a href='profile.html?uid=%d'>%s</a></td><td>%s</td><td>%s</td><td> %s %s</td></tr>", item.Uid, item.Uid, item.User, mxl25(item.Fullname), mxl25(item.Group), alert, ticket)
+		fmt.Fprintf(&table, "<tr data-id='%d'><td><a href='profile.html?uid=%d'>%s</a></td><td>%s</td><td>%s</td><td> %s %s</td></tr>", item.Uid, item.Uid, item.User, mxl25(item.Fullname), mxl25(item.Group), alert, ticket)
 	}
 
 	table.WriteString("</tbody></table>")
@@ -54,7 +54,7 @@ func buildProfileTableHeader() string {
 	<tr>
 		<td colspan="4" style="text-align: right; border-bottom: none;">
 			<div style="display: inline-block; width: 10rem; margin-bottom: 0;">
-				<input type="search" id="txtSearch" name="txtSearch" placeholder="Search..." aria-label="Search" style="display: none; margin-bottom: 0;">
+				<input type="search" id="txtSearch" name="txtSearch" placeholder="Search..." aria-label="Search" margin-bottom: 0;">
 			</div
 		</td>
 	</tr>

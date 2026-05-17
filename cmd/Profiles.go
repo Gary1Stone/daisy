@@ -33,7 +33,6 @@ func GetProfiles(c *fiber.Ctx) error {
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"cmd_one":       template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Profile.Create)),
-		"cmd_two":       template.HTML(ctrls.MakeButton(ctrls.BtnSearch, user.Permissions.Profile.Read)),
 		"profilesTable": template.HTML(ctrls.ProfilesTable(user.Uid, filter)),
 		"bellIcon":      template.HTML(svg.GetIcon("bell")),
 	}))

@@ -1,5 +1,6 @@
 // grid.js
 
+
 // For the html table, enable sorting by columns and search by table data contents.
 function buildTable(tableID) {
     const table = document.getElementById(tableID);
@@ -50,4 +51,66 @@ function buildTable(tableID) {
             rows.forEach(row => tbody.appendChild(row));
         });
     });
+    tableChangeWatcher(tableID);
+    addRowClick(tableID);
+}
+
+// Add a mutation observer to watch for any table changes
+// Start observing the target node for configured mutations
+function tableChangeWatcher(tableId) {
+    if (!tableId) return;
+    const targetNode = document.getElementById(tableId);
+    if (!targetNode) return;
+    const observer = new MutationObserver((mutationsList, observer) => {
+      for (let mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+              addRowClick();
+          }
+      }
+    });
+  const config = { childList: true, subtree: true };
+  observer.observe(targetNode, config);
+}
+
+
+// Select the table and all rows
+// Loop through each row and add a click event listener
+function addRowClick(tableId) {
+    if (!tableId) return;
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+    Array.from(rows).forEach(row => {
+        if (row.parentNode.tagName.toLowerCase() === 'thead') {
+        return;
+        }
+        row.removeEventListener('click', handleRowClick);
+        row.addEventListener('click', handleRowClick);
+    });
+}
+
+// Add a onclick event to each row of the table
+// To navigate to the profile
+function handleRowClick(event) {
+  const row = event.currentTarget;
+  const id = row.dataset.id;
+  if (!id) return;
+  addRecord(id);
+}
+
+function popSearch() {
+  const searchInput = document.getElementById("txtSearch")
+  if (window.getComputedStyle(searchInput).display === "none") {
+    searchInput.style.display = "block";
+    searchInput.focus();
+  } else {
+    // Clear searchInput 
+    searchInput.value = "";
+  // Create and dispatch an 'input' event
+    const inputEvent = new Event('input', {
+      bubbles: true, // Allows the event to bubble up the DOM tree
+      cancelable: true // Allows the event to be cancelled
+    });
+    searchInput.dispatchEvent(inputEvent);
+    searchInput.style.display = "none";
+  }
 }

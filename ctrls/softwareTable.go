@@ -1,79 +1,61 @@
 package ctrls
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 // Generate profile table for wide screens
 func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 	var table strings.Builder
 
-	// Build the table header
-	table.WriteString(buildSoftwareTableHeader())
+	// Build the table header with search
+	table.WriteString(`<table id="softwaretable">
+    <thead>
+	<tr>
+		<td colspan="4" style="text-align: right; border-bottom: none;">
+			<div style="display: inline-block; width: 10rem; margin-bottom: 0;">
+				<input type="search" id="txtSearch" name="txtSearch" placeholder="Search..." aria-label="Search" margin-bottom: 0;">
+			</div
+		</td>
+	</tr>
+    <tr>
+        <th aria-sort="ascending" data-sort="asc">Name</th>
+        <th aria-sort="none">Vendor</th>
+        <th aria-sort="none">Licenses&sol;Installed</th>
+        <th aria-sort="none">OEM Licenses</th>
+    </tr>
+    </thead>
+    <tbody>`)
 
 	// Fetch software items
 	items, err := filter.GetSoftwares(curUid)
 	if err != nil {
 		log.Println(err)
-		table.WriteString("</tbody></table>")
-		return table.String()
+		return err.Error()
 	}
+
+	icon := svg.GetIcon("software")
 
 	// Build table rows
 	for _, item := range items {
-		table.WriteString(buildSoftwareTableRow(&item))
+		licenses := ""
+		if item.Free > 0 {
+			licenses = "Unlimited"
+		} else {
+			licenses = strconv.Itoa(item.Licenses)
+		}
+		fmt.Fprintf(&table, `<tr data-id='%d'><td>%s %s</td><td>%s</td><td>%s &sol; %d</td><td>%d</td></tr>`, item.Sid, icon, item.Name, mxl25(item.Source), licenses, item.Installed, item.Installed)
 	}
 
 	table.WriteString("</tbody></table>")
 	return table.String()
-}
-
-// Helper function to build the table header
-func buildSoftwareTableHeader() string {
-	return `<table data-role="table" id="softwaretable" 
-    data-rows="50" data-show-rows-steps="false" 
-    data-show-search="true" data-horizontal-scroll="true" 
-    data-table-search-title="<span class='mif-search'></span>" 
-    data-show-pagination="true" data-show-table-info="true" 
-    class="table striped table-border row-border row-hover">
-    <thead>
-    <tr>
-        <th data-sortable="true" data-show="false">SID</th>
-        <th data-sortable="true">Name</th>
-        <th data-sortable="true">Vendor</th>
-        <th data-sortable="true">Licenses&sol;Installed</th>
-        <th data-sortable="true">OEM Licenses</th>
-    </tr>
-    </thead>
-    <tbody>`
-}
-
-// Helper function to build a single table row
-func buildSoftwareTableRow(item *db.Software) string {
-	var row strings.Builder
-	row.WriteString("<tr class='row-hover'><td data-label='SID'>")
-	row.WriteString(strconv.Itoa(item.Sid))
-	row.WriteString("</td><td><span class='mif-apps icon'></span> ")
-	row.WriteString(item.Name)
-	row.WriteString("</td><td>")
-	row.WriteString(mxl25(item.Source))
-	row.WriteString("</td><td>")
-	if item.Free > 0 {
-		row.WriteString("Unlimited")
-	} else {
-		row.WriteString(strconv.Itoa(item.Licenses))
-	}
-	row.WriteString("&nbsp;&sol;&nbsp;")
-	row.WriteString(strconv.Itoa(item.Installed))
-	row.WriteString("</td><td>")
-	row.WriteString(strconv.Itoa(item.Pre_installed))
-	row.WriteString("</td></tr>")
-	return row.String()
 }
 
 // On the Device page, list all the installed software

@@ -14,7 +14,6 @@ const (
 	BtnDelete = "btnDelete"
 	BtnSeen   = "btnSeen"
 	BtnBackup = "btnBackup"
-	BtnSearch = "btnSearch"
 	BtnHelp   = "btnHelp"
 	BtnTables = "btnTables"
 )
@@ -39,7 +38,6 @@ func loadBtnInfo() {
 		BtnDelete: {"btnDelete", "Delete Record", "", "deleteRecord(event);", svg.GetIcon("delete")},
 		BtnSeen:   {"btnSeen", "Not Seen in 90+ days", "style='color:red;'", "seenClick();", svg.GetIcon("eye")},
 		BtnBackup: {"btnBackup", "Not Backed up in 90+ days", "style='color:red;'", "backupClick();", svg.GetIcon("copy")},
-		BtnSearch: {"btnSearch", "Search", "", "popSearch();", svg.GetIcon("search")},
 		BtnHelp:   {"btnHelp", "Help", "", "showHelp();", svg.GetIcon("help")},
 		BtnTables: {"btnTables", "Select Admin Table", "", "showTableSelect();", svg.GetIcon("factory")},
 	}
@@ -96,10 +94,6 @@ func MakeSeeButton() string {
 	ico := MakeButton(BtnSeen, true) + " " + MakeButton(BtnBackup, true)
 	ico += `<input type='hidden' id='btnSeeState' value='off'><input type='hidden' id='islate' value='0'><input type='hidden' id='ismissing' value='0'>`
 	return ico
-}
-
-func MakeSearchBtn() string {
-	return MakeButton(BtnSearch, true)
 }
 
 func MakeAdminSelectButton(read bool) string {
