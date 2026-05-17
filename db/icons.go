@@ -24,7 +24,7 @@ func (i *iconMap) get(name string) string {
 
 // Clear any existing map, then load all icons at once while locked
 func (i *iconMap) loadIcons() {
-	rows, err := Conn.Query("SELECT name, icon FROM icons")
+	rows, err := Conn.Query("SELECT name, icon2 FROM icons")
 	if err != nil {
 		log.Println(err)
 		return

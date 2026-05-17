@@ -37,7 +37,7 @@ func GetDashboard() []DashDeviceInfo {
 // Slices are passed by reference, so don't need pointers much
 func countDashboardDeviceTypes(dash *[]DashDeviceInfo) error {
 	query := `
-		SELECT count(*) as cnt, A.type, B.description, B.icon 
+		SELECT count(*) as cnt, A.type, B.description, B.icon2 
 		FROM devices A 
 		LEFT JOIN icons B ON B.name=A.type 
 		WHERE active=1 GROUP BY type 

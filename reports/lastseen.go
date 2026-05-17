@@ -59,7 +59,7 @@ func buildTableRow(item *db.Device, isSeen bool) string {
 	var row strings.Builder
 	row.WriteString("<tr>")
 	row.WriteString("<td>" + util.GetThumbnail(item.Image) + "</td>")
-	row.WriteString("<td>" + getButtonCtrl(item.Cid, getLastDays(item, isSeen), item.Type, item.Name) + "</td>")
+	row.WriteString("<td>" + getButtonCtrl(item.Cid, getLastDays(item, isSeen), item.Type, item.Icon, item.Name) + "</td>")
 	row.WriteString("<td>" + buildLastSeenOrBackup(item, isSeen) + "</td>")
 	row.WriteString("<td>" + buildLocation(item) + "</td>")
 	row.WriteString("<td>" + item.Assigned + "</td>")
