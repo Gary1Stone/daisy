@@ -122,38 +122,3 @@ func processSvg(data []byte) ([]byte, error) {
 	encoder.Flush()
 	return buf.Bytes(), nil
 }
-
-// UPDATE ICONS SET icon='eye.svg' WHERE icon='mif-eye';
-// UPDATE ICONS SET icon='' WHERE icon='mif-checkmark';
-// UPDATE ICONS SET icon='tag.svg' WHERE icon='mif-tag';
-// UPDATE ICONS SET icon='' WHERE icon='mif-heart-broken';
-// UPDATE ICONS SET icon='' WHERE icon='mif-steps';
-// UPDATE ICONS SET icon='' WHERE icon='mif-stethoscope';
-// UPDATE ICONS SET icon='' WHERE icon='mif-wrench';
-// UPDATE ICONS SET icon='' WHERE icon='mif-copy';
-// UPDATE ICONS SET icon='' WHERE icon='mif-apps';
-// UPDATE ICONS SET icon='' WHERE icon='mif-comment';
-// UPDATE ICONS SET icon='' WHERE icon='mif-display';
-// UPDATE ICONS SET icon='' WHERE icon='mif-laptop';
-// UPDATE ICONS SET icon='' WHERE icon='mif-tablet';
-// UPDATE ICONS SET icon='' WHERE icon='mif-printer';
-// UPDATE ICONS SET icon='' WHERE icon='mif-phone';
-// UPDATE ICONS SET icon='' WHERE icon='mif-cast';
-// UPDATE ICONS SET icon='' WHERE icon='mif-volume-medium';
-// UPDATE ICONS SET icon='' WHERE icon='mif-flow-tree';
-// UPDATE ICONS SET icon='' WHERE icon='mif-news';
-// UPDATE ICONS SET icon='' WHERE icon='mif-file-binary';
-// UPDATE ICONS SET icon='' WHERE icon='mif-fire';
-// UPDATE ICONS SET icon='' WHERE icon='mif-calendar';
-// UPDATE ICONS SET icon='user.svg' WHERE icon='mif-user';
-// UPDATE ICONS SET icon='' WHERE icon='mif-map2';
-// UPDATE ICONS SET icon='' WHERE icon='mif-room';
-// UPDATE ICONS SET icon='' WHERE icon='mif-users';
-// UPDATE ICONS SET icon='' WHERE icon='mif-hammer';
-// UPDATE ICONS SET icon='' WHERE icon='mif-question';
-// UPDATE ICONS SET icon='' WHERE icon='mif-location-city';
-// UPDATE ICONS SET icon='' WHERE icon='mif-calculator2';
-// UPDATE ICONS SET icon='' WHERE icon='mif-cabinet';
-// UPDATE ICONS SET icon='' WHERE icon='mif-windows';
-// UPDATE ICONS SET icon='' WHERE icon='mif-my-location';
-// UPDATE ICONS SET icon='' WHERE icon='mif-star-half';

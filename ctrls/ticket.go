@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 func BuildDeviceCtrl(dev db.Device) string {
@@ -14,7 +15,7 @@ func BuildDeviceCtrl(dev db.Device) string {
 	if dev.Cid != 0 {
 		year = " (" + strconv.Itoa(dev.Year) + ")"
 	} else {
-		dev.Icon = "mif-display"
+		dev.Icon = svg.GetIcon("computer")
 	}
 
 	var builder strings.Builder
