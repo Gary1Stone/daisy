@@ -1,4 +1,5 @@
-/* global Metro */
+// admin.js
+
 let building = false; // If the table is being built, do not trigger any changes to the adminData
 
 // Global variable to hold json administration table data object from the server
@@ -21,51 +22,76 @@ let siteData = [
 ];
 
 const menuLabels = new Map([
-    ["SITE", "<span class='mif-map2'></span>&nbsp;Sites"],
-    ["OFFICE", "<span class='mif-room'></span>&nbsp;Office"],
-    ["GROUP", "<span class='mif-users'></span>&nbsp;Groups"],
-    ["IMPACT", "<span class='mif-hammer'></span>&nbsp;Impact"],
-    ["STATUS", "<span class='mif-question'></span>&nbsp;Status"],
-    ["MAKE", "<span class='mif-location-city'></span>&nbsp;Make"],
-    ["CORES", "<span class='mif-calculator2'></span>&nbsp;Cores"],
-    ["DRIVETYPE", "<span class='mif-cabinet'></span>&nbsp;Drives"],
-    ["OS", "<span class='mif-windows'></span>&nbsp;OS"],
-    ["GEOFENCE", "<span class='mif-my-location'></span>&nbsp;GeoFence"],
-    ["TROUBLE", "<span class='mif-news'></span>&nbsp;Trouble"],
-    ["TYPE", "<span class='mif-star-half'></span>&nbsp;Asset ID Prefix"],
-    ["KIND", "<span class='mif-display'></span>&nbsp;Kinds"]
+    ["SITE", "Sites"],
+    ["OFFICE", "Office"],
+    ["GROUP", "Groups"],
+    ["IMPACT", "Impact"],
+    ["STATUS", "Status"],
+    ["MAKE", "Make"],
+    ["CORES", "Cores"],
+    ["DRIVETYPE", "Drives"],
+    ["OS", "OS"],
+    ["GEOFENCE", "GeoFence"],
+    ["TROUBLE", "Trouble"],
+    ["TYPE", "Asset ID Prefix"],
+    ["KIND", "Kinds"]
 ]);
 
 // Object that holds the parent (Device Type) for the trouble type => (DESKTOP, LAPTOP, PHONE...)
 let troubleParent; 
 
-$(document).ready(function () {
-    btnSave.off();
-    const jsonData = $("#deviceTypesJson").val();
-    troubleParent = JSON.parse(jsonData);
-    showSelection('SITE');
+// Icon Buttons
+let btnTables;
+let btnSave;
+let btnNew;
+let btnHelp;
+
+document.addEventListener('DOMContentLoaded', function() {
+  btnNew = new Button("btnNew");
+  btnSave = new Button("btnSave");
+  btnHelp = new Button("btnHelp");
+  btnTables = new Button("btnTables");
+  btnSave.off();
+  
+  const deviceTypesJson = document.getElementById("deviceTypesJson");
+  if (deviceTypesJson) {
+      troubleParent = JSON.parse(deviceTypesJson.value);
+  }
+  showSelection('SITE');
 });
 
 function showSelection(item) {
-    Metro.dialog.close("#tableDialog");
-    let sendData = {task: "", field: "", adminData: ""};
-    sendData.task = "build_table";
-    sendData.field = item;
-    sendData.adminData = ""
-    $.post("admin", sendData).then(response => {
+    const tblDialog = document.getElementById("tableDialog");
+    if (tblDialog) {
+        closeModal(tblDialog);
+    }
+
+//    Metro.dialog.close("#tableDialog");
+    const sendData = {task: "build_table", field: item, adminData: ""};
+    
+    fetch("admin", {
+        method: "POST",
+        body: new URLSearchParams(sendData)
+    })
+    .then(response => response.text())
+    .then(response => {
         adminData = JSON.parse(response);
         if (item === "SITE") {
             siteData = JSON.parse(response);
         }
-        if (adminData != null && adminData.length > 0) {
+        if (adminData !== null && adminData.length > 0) {
             buildTable();
         }
     });
+    
     btnSave.off();
-    $("#tableSelected").val(item);
+    const tableSelected = document.getElementById("tableSelected");
+    if (tableSelected) {
+        tableSelected.value = item;
+    }
 }
 
-function save() {
+function saveRecord() {
     if (adminData === null || adminData.length === 0) {
         return;
     }
@@ -73,18 +99,24 @@ function save() {
     sendData.task = "save_table";
     sendData.field = adminData[0].field;
     sendData.adminData = JSON.stringify(adminData);
-    $.post("admin", sendData).then(response => {
+    
+    fetch("admin", {
+        method: "POST",
+        body: new URLSearchParams(sendData)
+    })
+    .then(response => response.text())
+    .then(response => {
         if (typeof response === 'string'  && response.startsWith("ERROR:")) {
             toast("Error saving Admin table. Refresh and retry.", "alert");
         } else {
-            adminData = null; //Important to reset adminData after changes were saved, or they are repeated again and again.
+            adminData = null;
             adminData = JSON.parse(response);
             if (sendData.field === "SITE") {
                 siteData = JSON.parse(response);
             }
             buildTable();
             toast("Changes saved.", "success");
-            btnSave.off()
+            btnSave.off();
         }
     });
 }
@@ -92,10 +124,10 @@ function save() {
 function buildTable() {
     building = true;
     adminData.sort(getSortOrder("sequence"));
-    const tableSelected = $("#tableSelected").val();
+    const tableSelected = document.getElementById("tableSelected").value;
     const title = menuLabels.get(adminData[0].field);
     const headerExtraColumn = setHeaderExtraColumn(tableSelected);
-    let cnt = adminData.length;
+    const cnt = adminData.length;
     let isFirst = true;
 
     let tbl = `
@@ -168,17 +200,20 @@ function buildTable() {
                 <td class='gcell'>${lastActiveControl}</td>
                 <td colspan='3'>
                     <a href="javascript:addRow();">
-                        <span class='mif-plus mif-2x fg-green'></span>
+                        <span class='mif-plus mif-2x fg-green'></span></a>
+                </td>
+            </tr>
+        `;
+    }
+    tbl += `
                     </a>
                 </td>
             </tr>
             </tbody>
             </table>
         `;
-    }
-    tbl += "</tbody></table>";
 
-    $("#adminTable").html(tbl);
+    document.getElementById("adminTable").innerHTML = tbl;
     triggersBtnSave();
     setTimeout(() => { building = false; }, 2000);
 }
@@ -305,7 +340,7 @@ function buildAssetIdControl(txt, rowId) {
 }
 
 function buildCodeControl(txt, rowId) {
-    const tableSelected = $("#tableSelected").val();
+    const tableSelected = document.getElementById("tableSelected").value;
     const isGroupOrImpact = tableSelected === "GROUP" || tableSelected === "IMPACT";
     const isGeoFence = tableSelected === "GEOFENCE";
     const codeErrorId = `codeerror${rowId}`;
@@ -333,28 +368,31 @@ function buildCodeControl(txt, rowId) {
 
 function doCheckbox(rowId) {
     const id = txt2Int(rowId);
-    const ctlId = "#active" + id.toString();
-    let idx = adminData.findIndex((item => item.id === id));
+    const ctlId = "active" + id.toString();
+    const idx = adminData.findIndex((item => item.id === id));
     if (idx >= 0 && idx < adminData.length) {
-        adminData[idx].active = ($(ctlId).prop("checked")) ? 1 : 0;
+        adminData[idx].active = (document.getElementById(ctlId).checked) ? 1 : 0;
         adminData[idx].update = true; //Flag server to update this record
     }
 }
 
 function doTextbox(rowId) {
     const id = txt2Int(rowId);
-    const ctlId = "#descr" + id.toString();
-    const errorId = "#descrerror" + id.toString();
-    const descr = $(ctlId).val();
-    $(errorId).hide();
+    const ctlId = "descr" + id.toString();
+    const errorId = "descrerror" + id.toString();
+    const descrEl = document.getElementById(ctlId);
+    const errorEl = document.getElementById(errorId);
+    const descr = descrEl.value;
+    
+    if (errorEl) errorEl.style.display = 'none';
     
     // Validate the input text (txt)
     if (descr === undefined || descr.length < 1 || descr !== descr.replace(/[^a-zA-Z0-9.() ]/g, '')) {
-        $(errorId).show();
+        if (errorEl) errorEl.style.display = 'block';
         return;
     }
 
-    let idx = adminData.findIndex((item => item.id === id));
+    const idx = adminData.findIndex((item => item.id === id));
     if (idx >= 0 && idx < adminData.length) {
         if (adminData[idx].description !== descr) {
             adminData[idx].description = descr;
@@ -368,14 +406,16 @@ function doTextbox(rowId) {
 
 function doAssetId(rowId) {
     const id = txt2Int(rowId);
-    const ctlId = "#asset" + id.toString();
-    const errorId = "#asseterror" + id.toString();
-    const txt = $(ctlId).val();
-    $(errorId).hide();
+    const ctlId = "asset" + id.toString();
+    const errorId = "asseterror" + id.toString();
+    const inputEl = document.getElementById(ctlId);
+    const errorEl = document.getElementById(errorId);
+    const txt = inputEl.value;
+    if (errorEl) errorEl.style.display = 'none';
     
     // Validate the input text (txt)
     if (txt === undefined || txt.length < 1 || txt !== txt.replace(/[^a-zA-Z0-9]/g, '')) {
-        $(errorId).show();
+        if (errorEl) errorEl.style.display = 'block';
         return;
     }
 
@@ -391,18 +431,18 @@ function doAssetId(rowId) {
 function doParentSelect(rowId) {
     if (building) return;
     const id = txt2Int(rowId);
-    const ctlId = "#parent" + id.toString();
-    let idx = adminData.findIndex((item => item.id === id));
+    const ctlId = "parent" + id.toString();
+    const idx = adminData.findIndex((item => item.id === id));
     if (idx >= 0 && idx < adminData.length) {
-        adminData[idx].parent = $(ctlId).val();
+        adminData[idx].parent = document.getElementById(ctlId).value;
         adminData[idx].update = true; //Flag server to update this record
     }
 }
 
 function moveRowUp(rowId) {
     const id = txt2Int(rowId);
-    let idx = adminData.findIndex((item => item.id === id));
-    let seq = adminData[idx].sequence;
+    const idx = adminData.findIndex((item => item.id === id));
+    const seq = adminData[idx].sequence;
     let prevRow = idx - 1;
 
     while (adminData[prevRow].delete === true) {    //skip past deleted rows
@@ -422,8 +462,8 @@ function moveRowUp(rowId) {
 
 function moveRowDown(rowId) {
     const id = txt2Int(rowId);
-    let idx = adminData.findIndex((item => item.id === id));
-    let seq = adminData[idx].sequence;
+    const idx = adminData.findIndex((item => item.id === id));
+    const seq = adminData[idx].sequence;
     let nextRow = idx + 1;
 
     while (adminData[nextRow].delete === true) {    //skip past deleted rows
@@ -443,7 +483,7 @@ function moveRowDown(rowId) {
 
 function deleteRow(rowId) {
     const id = txt2Int(rowId);
-    let idx = adminData.findIndex((item => item.id === id));
+    const idx = adminData.findIndex((item => item.id === id));
     if (idx >= 0 && idx < adminData.length) {
         adminData[idx].delete = true;
     }
@@ -451,51 +491,56 @@ function deleteRow(rowId) {
 }
 
 function addRow() {
-    const code = $("#code0").val().toString().toUpperCase();
-    const descr = $("#descr0").val().toString();
+    const code = document.getElementById("code0").value.toString().toUpperCase();
+    const descr = document.getElementById("descr0").value.toString();
     let parent = "";
     let permissions = "";
-    const tableSelected = $("#tableSelected").val();
+    const tableSelected = document.getElementById("tableSelected").value;
     
     if (tableSelected === "OFFICE") {
-        parent = $("#parent0").val().toString();
-        $("#parenterror0").hide();
+        parent = document.getElementById("parent0").value.toString();
+        const err = document.getElementById("parenterror0");
+        if (err) err.style.display = 'none';
     } else if (tableSelected === "PERMISSIONS") {
         permissions = readPermissions();
     } else if (tableSelected === "TROUBLE") {
-        parent = $("#parent0").val().toString();
-        $("#parenterror0").hide();
+        parent = document.getElementById("parent0").value.toString();
+        const err = document.getElementById("parenterror0");
+        if (err) err.style.display = 'none';
     }
-    const active = $("#active0").prop("checked") ? 1 : 0;
-    $("#codeerror0").hide();
-    $("#descrerror0").hide();
+    const active = document.getElementById("active0").checked ? 1 : 0;
+    
+    const codeErr = document.getElementById("codeerror0");
+    const descrErr = document.getElementById("descrerror0");
+    if (codeErr) codeErr.style.display = 'none';
+    if (descrErr) descrErr.style.display = 'none';
     
     let idx = adminData.findIndex((item => item.code === code));
     
     if (tableSelected === "GROUP") {
         if (!isDigits(code) || idx > -1 || code.length < 1 || txt2Int(code) < 1 ) {
-            $("#codeerror0").show();
+            if (codeErr) codeErr.style.display = 'block';
             return;
         }
     } else if (tableSelected === "IMPACT") {
         if (!isDigits(code) || idx > -1 || code.length < 1 || txt2Int(code) < 1 ) {
-            $("#codeerror0").show();
+            if (codeErr) codeErr.style.display = 'block';
             return;
         }
     } else if (tableSelected === "GEOFENCE") {
         if (!isLatLon(code) || idx > -1 || code.length < 1) {
-            $("#codeerror0").show();
+            if (codeErr) codeErr.style.display = 'block';
             return;
         }
     } else {
         if (code !== code.replace(/[+-]?[^A-Za-z0-9 ]/g, '') || idx > -1 || code.length < 1) {
-            $("#codeerror0").show();
+            if (codeErr) codeErr.style.display = 'block';
             return;
         }
     }
 
     if (descr !== descr.replace(/[+-]?[^A-Za-z0-9 ]/g, '') || descr.length < 1) {
-        $("#descrerror0").show();
+        if (descrErr) descrErr.style.display = 'block';
         return;
     }
 
@@ -525,23 +570,25 @@ function addRow() {
 //checks for 40.838383,-79.44848  format (in one field)
 function isLatLon(value) {    
     if (typeof value !== "string" || value.length < 3) return false;
-    latLonOnly = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
+    const latLonOnly = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
     return latLonOnly.test(value);   
-}
-
-function isDigits(value) {
-    if (typeof value !== "string" || value.length < 1) return false; //true????
-    digitsOnly = /^\d+$/;
-    return digitsOnly.test(value);
 }
 
 
 function showHelp() {
-    Metro.dialog.open("#helpDialog");
+    const helpDialog = document.getElementById("helpDialog");
+    if (helpDialog) {
+        openModal(helpDialog);
+    }
+//    Metro.dialog.open("#helpDialog");
 }
 
 function showTableSelect() {
-    Metro.dialog.open("#tableDialog");
+    const tableDialog = document.getElementById("tableDialog");
+    if (tableDialog) {
+        openModal(tableDialog);
+    }
+//    Metro.dialog.open("#tableDialog");
 }
 
 //PCRUD:ACRUD:DCRUD:SCRUD:TCRUD
@@ -556,28 +603,34 @@ function popPermissions(rowId) {
       ]);
     const lookup = {"C": 1, "CR": 2, "CRU": 3, "CRUD": 4};
     const id = txt2Int(rowId);
-    $("#permRowId").val(id);
-    let idx = adminData.findIndex((item => item.id === id));
+    document.getElementById("permRowId").value = id;
+    const idx = adminData.findIndex((item => item.id === id));
     let perms = "P:D:S:T:A";
     let dialogTitle = "Group";
     if (idx >-1 ) {
         dialogTitle = adminData[idx].description;
         perms = adminData[idx].permissions;
     }
-    $("#GroupName").val(dialogTitle);
-    Metro.dialog.open("#permissionsDialog")
-    let crud = perms.split(":");
+    document.getElementById("GroupName").value = dialogTitle;
+
+    const permissionsDialog = document.getElementById("permissionsDialog");
+    if (permissionsDialog) {
+        openModal(permissionsDialog);
+    }
+    
+//    Metro.dialog.open("#permissionsDialog");
+    const crud = perms.split(":");
     for (let i = 0; i < crud.length; i++) {
         const val = lookup[crud[i].slice(1)] || 0;
-        let slider = sliders.get(crud[i].charAt(0));
-        $(slider).val(val);
+        const slider = sliders.get(crud[i].charAt(0));
+        document.querySelector(slider).value = val;
         setSlider(slider, val);
     }
 }
 
 function updatePermissions() {
-    let permissions = readPermissions();
-    const id = txt2Int($("#permRowId").val());
+    const permissions = readPermissions();
+    const id = txt2Int(document.getElementById("permRowId").value);
     const idx = adminData.findIndex(item => item.id === id);
     if (idx < 0 && idx < adminData.length) return;
     if (adminData[idx].permissions !== permissions) {
@@ -593,7 +646,7 @@ function readPermissions() {
     const starters = ["P", "D", "S", "T", "A"];
     const lookup = [":", "C:", "CR:", "CRU:", "CRUD:"];
     let permissions = sliders.map((selector, i) => {
-        const val = parseInt($(selector).val(), 10) || 0;
+        const val = parseInt(document.querySelector(selector).value, 10) || 0;
         return starters[i] + lookup[val];
     }).join("").toUpperCase().replace(/[^CRUD:PDSAT]/g, '');
     // remove trailing : from permissions string
@@ -604,34 +657,19 @@ function readPermissions() {
 }
 
 function setSlider(ctrl, val) {
-    let str = ["None", "Create", "Create and Read", "Create, Read and Update", "Create, Read, Update and Delete"];
+    const str = ["None", "Create", "Create and Read", "Create, Read and Update", "Create, Read, Update and Delete"];
     const i = txt2Int(val);    
-    $(ctrl).val(i);
-    $(ctrl+"Label").text(str[i]);
+    const slider = document.querySelector(ctrl);
+    if (slider) slider.value = i;
+    const label = document.querySelector(ctrl + "Label");
+    if (label) label.textContent = str[i];
 }
 
-const btnSave = {
-    id: "btnSave",
-    state: "on",
-    on() {
-        if ($("#canSave").val() === "1" && this.state === "off") {
-            $("#" + this.id).show();
-            this.state = "on";
-        }
-    },
-    off() {
-        if (this.state === "on") {
-            $("#" + this.id).hide();
-            this.state = "off";
-        }
-    }
-};
-
 function triggersBtnSave() {
-    $("input").on("input", function () {
-        btnSave.on()
+    document.querySelectorAll("input").forEach(el => {
+        el.addEventListener("input", () => { btnSave.on(); });
     });
-    $("select").change(function () {
-        btnSave.on();
+    document.querySelectorAll("select").forEach(el => {
+        el.addEventListener("change", () => { btnSave.on(); });
     });
 }

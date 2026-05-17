@@ -1,13 +1,10 @@
-{{template "partials/top" .}} {{template "partials/navbar" .}}
-<div class="container-fluid">
+{{template "partials/top2" .}} {{template "partials/navbar2" .}}
+<form id="theForm" name="theForm" action="#" method="post" autocomplete="off">
+<main class="container">
     <div class="grid">
         <div class="row">
             <div class="cell">
-                <form id="frmAdmin" name="frmAdmin" 
-                        data-role="validator" 
-                        method="post"
-                        action="javascript:"
-                        data-interactive-check="false">
+                <form id="frmAdmin" name="frmAdmin"  data-role="validator" method="post" action="javascript:" data-interactive-check="false">
                     <div id="adminTable"></div>
                     <input type="hidden" id="tableSelected" value="">
                     <input type="hidden" id="deviceTypesJson" value="{{.deviceTypesJson}}">
@@ -16,55 +13,73 @@
         </div>
     </div>
 </div>
-<div class="dialog" data-role="dialog" id="helpDialog">
-    <div class="dialog-title">Select List Administration</div>
-    <div class="dialog-content">
-        <p>The Codes/Descriptions are used in the select lists for users to make a choice, such as the names of the offices.</p>
-        <ul>
-            <li>Code - Value stored in the database.</li>
-            <li>Description - What the user selects onscreen.</li>
-            <li>Active - Sets if it still can be used.</li>
-        </ul>
-        <p><i>To set the display order in the select list, use the Up/Down Arrows.</i></p>
-        <p class="mt-0"><i>When the code is not used in any records, a red X will allow you to remove it.</i></p>
-        <p>The Asset ID prefixes are prepended on the Asset ID when creating a device record.</p>
-        <p>These prefixes can be used to help identify the type of the device</p>
-        <p>For example, if the prefix is "LAPTOP", the Asset ID will be "LAPTOP-123456"</p>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close">Okay</button>
-    </div>
-</div>
-<div class="dialog" data-role="dialog" id="tableDialog">
-    <div class="dialog-title">Select a Table</div>
+
+
+<dialog id="helpDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
+        <h3>Select List Administration</h3>
+    </header>
+    <p>The Codes/Descriptions are used in the select lists for users to make a choice, such as the names of the offices.</p>
+    <ul>
+        <li>Code - Value stored in the database.</li>
+        <li>Description - What the user selects onscreen.</li>
+        <li>Active - Sets if it still can be used.</li>
+    </ul>
+    <p><i>To set the display order in the select list, use the Up/Down Arrows.</i></p>
+    <p class="mt-0"><i>When the code is not used in any records, a red X will allow you to remove it.</i></p>
+    <p>The Asset ID prefixes are prepended on the Asset ID when creating a device record.</p>
+    <p>These prefixes can be used to help identify the type of the device</p>
+    <p>For example, if the prefix is "LAPTOP", the Asset ID will be "LAPTOP-123456"</p>
+    <footer>
+      <button type='button' autofocus data-target="helpDialog" onclick="toggleModal(event)">Okay</button>
+    </footer>
+  </article>
+</dialog>
+
+<dialog id="tableDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="tableDialog" onclick="toggleModal(event)"></button>
+        <h3>Select a Table</h3>
+    </header>
     <div class="dialog-content" style="overflow-y: scroll; height: 12rem; ">
-        <ul class="v-menu">
-            <li><a href="#" onclick="showSelection('SITE');"><span class="mif-map2 icon"></span>Sites</a></li>
-            <li><a href="#" onclick="showSelection('OFFICE');"><span class="mif-room icon"></span>Offices</a></li>
-            <li><a href="#" onclick="showSelection('GROUP');"><span class="mif-users icon"></span>Groups</a></li>
-            <li><a href="#" onclick="showSelection('IMPACT');"><span class="mif-hammer icon"></span>Impact</a></li>
-            <li><a href="#" onclick="showSelection('STATUS');"><span class="mif-question icon"></span>Status</a></li>
-            <li><a href="#" onclick="showSelection('MAKE');"><span class="mif-location-city icon"></span>Make</a></li>
-            <li><a href="#" onclick="showSelection('CORES');"><span class="mif-calculator2 icon"></span>CPU Cores</a></li>
-            <li><a href="#" onclick="showSelection('DRIVETYPE');"><span class="mif-cabinet icon"></span>Drive Types</a></li>
-            <li><a href="#" onclick="showSelection('OS');"><span class="mif-windows icon"></span>Operating Systems</a></li>
-            <li><a href="#" onclick="showSelection('GEOFENCE');"><span class="mif-my-location icon"></span>GeoFence Locations</a></li>
-            <li><a href="#" onclick="showSelection('TROUBLE');"><span class="mif-news icon"></span>Trouble Types</a></li>
-            <li><a href="#" onclick="showSelection('TYPE');"><span class="mif-star-half icon"></span>Asset ID Prefix</a></li>
-            <li><a href="#" onclick="showSelection('KIND');"><span class="mif-display icon"></span>Kinds of Devices</a></li>
+        <ul class="scrollarea">
+            <li><a href="#" onclick="showSelection('SITE');">{{ .siteIcon }} Sites</a></li>
+            <li><a href="#" onclick="showSelection('OFFICE');">{{ .officeIcon }} Offices</a></li>
+            <li><a href="#" onclick="showSelection('GROUP');">{{ .groupIcon }} Groups</a></li>
+            <li><a href="#" onclick="showSelection('IMPACT');">{{ .impactIcon }} Impact</a></li>
+            <li><a href="#" onclick="showSelection('STATUS');">{{ .statusIcon }} Status</a></li>
+            <li><a href="#" onclick="showSelection('MAKE');">{{ .makeIcon }} Make</a></li>
+            <li><a href="#" onclick="showSelection('CORES');">{{ .coresIcon }} CPU Cores</a></li>
+            <li><a href="#" onclick="showSelection('DRIVETYPE');">{{.drivetypeIcon }} Drive Types</a></li>
+            <li><a href="#" onclick="showSelection('OS');">{{.osIcon }} Operating Systems</a></li>
+            <li><a href="#" onclick="showSelection('GEOFENCE');">{{.geofenceIcon }} GeoFence Locations</a></li>
+            <li><a href="#" onclick="showSelection('TROUBLE');">{{.troubleIcon }} Trouble Types</a></li>
+            <li><a href="#" onclick="showSelection('TYPE');">{{ .typeIcon }} Asset ID Prefix</a></li>
+            <li><a href="#" onclick="showSelection('KIND');">{{.kindsIcon }} Kinds of Devices</a></li>
         </ul>
     </div>
-    <div class="dialog-actions">
-        <button type='button' class="button js-dialog-close">Cancel</button>
-    </div>
-</div>
+    <footer>
+      <button type='button' autofocus data-target="tableDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
-<div class="dialog" data-role="dialog" id="permissionsDialog">
-    <div class="dialog-title"><span id="GroupName"></span> Permissions</div>
-    <div class="dialog-content">
-        <input type="hidden" id="permRowId" value="" >
 
-        <div class="sliderperms">
+
+
+
+
+<dialog id="permissionsDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="permissionsDialog" onclick="toggleModal(event)"></button>
+        <h3><span id="GroupName"></span> Permissions</h3>
+    </header>
+    <input type="hidden" id="permRowId" value="" >
+        <section>
             <p>
                 <strong>Profile: </strong>
                 <span id="profileSliderLabel">Create</span>
@@ -75,8 +90,8 @@
                 ontouchend="setSlider('#profileSlider', this.value)" 
                 style="width: 100%;">
             </p>
-        </div>
-        <div class="sliderperms">
+        </section>
+        <section>
             <p>
                 <strong>Device: </strong>
                 <span id="deviceSliderLabel">Create</span>
@@ -88,8 +103,8 @@
                 style="width: 100%;">
             </p>
 
-        </div>
-        <div class="sliderperms">
+        </section>
+        <section>
             <p>
                 <strong>Software: </strong>
                 <span id="softwareSliderLabel">Create</span>
@@ -100,8 +115,8 @@
                 ontouchend="setSlider('#softwareSlider', this.value)" 
                 style="width: 100%;">
             </p>           
-        </div>
-        <div class="sliderperms">
+        </section>
+        <section>
             <p>
                 <strong>Ticket: </strong>
                 <span id="ticketSliderLabel">Create</span>
@@ -112,8 +127,8 @@
                 ontouchend="setSlider('#ticketSlider', this.value)" 
                 style="width: 100%;">
             </p>
-        </div>
-        <div class="sliderperms">
+        </section>
+        <section>
             <p>
                 <strong>Administration</strong>
                 <span id="adminSliderLabel">Create</span>
@@ -124,12 +139,12 @@
                 ontouchend="setSlider('#adminSlider', this.value)" 
                 style="width: 100%;">
             </p>
-        </div>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close" onclick="updatePermissions();">Okay</button>
-        <button type='button' class="button js-dialog-close">Cancel</button>
-    </div>
-</div>
+        </section>
+    <footer>
+      <button type='button' class="secondary" data-target="permissionsDialog" onclick="toggleModal(event);">Cancel</button>
+      <button type='button' autofocus data-target="permissionsDialog" onclick="updatePermissions(event);">Okay</button>
+    </footer>
+  </article>
+</dialog>
 <script src="js/admin.js" defer></script>
-{{template "partials/bottom" .}}
+{{template "partials/bottom2" .}}
