@@ -252,3 +252,8 @@ input[aria-invalid="true"] + small.err {
   color: var(--pico-color);
   background-color: var(--pico-dropdown-hover-background-color);
 }
+
+#settingsTable a {
+    text-decoration: none;
+    color: var(--pico-color);
+}
