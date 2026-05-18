@@ -140,7 +140,6 @@ function saveRecord() {
         }
     }
 
-
     let sendData = {task: "", field: "", adminData: ""};
     sendData.task = "save_table";
     sendData.field = adminData[0].field;
@@ -154,6 +153,7 @@ function saveRecord() {
     .then(response => {
         if (typeof response === 'string'  && response.startsWith("ERROR:")) {
             toast("Error saving Admin table. Refresh and retry.", "error");
+            console.error(response);
         } else {
             adminData = null;
             adminData = JSON.parse(response);
@@ -294,27 +294,38 @@ function buildAssetIdControl(txt, rowId) {
 
 function buildCodeControl(txt, rowId) {
     const tableSelected = document.getElementById("tableSelected").value;
-    const isGroupOrImpact = tableSelected === "GROUP" || tableSelected === "IMPACT";
-    const isGeoFence = tableSelected === "GEOFENCE";
     const codeErrorId = `codeerror${rowId}`;
     let validationRules, errorMessage;
-    if (isGroupOrImpact) {
-        validationRules = "required minlength='1' maxlength='2' integer";
-        errorMessage = "Mandatory, unique and only numbers (1-99)";
-    } else if (isGeoFence) {
-        validationRules = "required minlength='1' maxlength='30'";
-        errorMessage = "Must be lat,lon such as: 43.865050,-79.849630";
-    } else {
-        validationRules = "required minlength='1' maxlength='20' pattern='[A-Z0-9]+' ";
-        errorMessage = "Mandatory and unique with only: A to Z, 0 to 9";
+    let patternAttribute = ""; // Initialize patternAttribute as empty string
+    switch (tableSelected) {
+        
+        case "GROUP":
+        case "IMPACT":
+            validationRules = "required minlength='1' maxlength='3' pattern='[0-9]+'";
+            errorMessage = "Mandatory, unique and only numbers (0-999)";
+            break;
+        case "TROUBLE":
+            validationRules = "required minlength='1' maxlength='4'";
+            errorMessage = "Mandatory, unique and only numbers (1-9999)";
+            break;
+        case "GEOFENCE":
+            validationRules = "required minlength='1' maxlength='30'";
+            errorMessage = "Must be lat,lon such as: 43.865050,-79.849630";
+            // Create a validation pattern for the <input> field for latitude,longitude
+            patternAttribute = `pattern="^[+\\-]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?),\\s*[+\\-]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$"`;
+            break;
+        default:
+            validationRules = "required minlength='1' maxlength='20' pattern='[a-zA-Z0-9]+' ";
+            errorMessage = "Mandatory, unique and only: A to Z, 0 to 9";
+            break;
     }
     return `<input type='text' id='code${rowId}' name='code${rowId}' value="${txt || ""}" 
-            placeholder='Code' title='Code' ${validationRules}
+            placeholder='Code' title='Code' ${validationRules} ${patternAttribute}
             style='text-transform:uppercase'
             aria-invalid="false" aria-describedby='${codeErrorId}'
             onchange="doCodeValidate('${rowId}')" >
         <small class="err" id='${codeErrorId}'>${errorMessage}</small>`;
-} // <-----<<<<<<<<  check for further code control checking
+}
 
 function doCodeValidate(rowId) {
     const id = txt2Int(rowId);
@@ -440,7 +451,7 @@ function addRow() {
     let idx = adminData.findIndex((item => item.code === code));
     if (idx > -1) {
         toast("Code already exists:" + code, "error");
-        console.log("Code already exists:" + code);
+        console.error("Code already exists:" + code);
         return;
     }
 
@@ -450,7 +461,8 @@ function addRow() {
     const descr = reply.value.toString();
 
     switch (tableSelected) {
-        case "OFFICE", "TROUBLE":
+        case "OFFICE":
+        case "TROUBLE":
             reply = isValid("parent0");
             if (!reply.valid) return;
             parent = reply.value.toString();
@@ -458,7 +470,8 @@ function addRow() {
         case "PERMISSIONS":
             permissions = readPermissions();
             break;
-        case "GROUP", "IMPACT":
+        case "GROUP":
+        case "IMPACT":
             if (!isDigits(code) || code.length < 1 || txt2Int(code) < 1 ) {
                 document.getElementById("code0").setAttribute("aria-invalid", "true");
                 return;
