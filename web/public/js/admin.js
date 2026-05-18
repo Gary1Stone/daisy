@@ -126,6 +126,21 @@ function saveRecord() {
     if (adminData === null || adminData.length === 0) {
         return;
     }
+
+    // search all input elements for aria-invalid='true'
+    const form = document.querySelector('#theForm');
+    //    const allControls = form.elements; // Returns an HTMLFormControlsCollection
+    // If you specifically want only 'input' tags:
+    const inputsOnly = Array.from(form.elements).filter(el => el.tagName === 'INPUT');
+    for (let i = 0; i < inputsOnly.length; i++) {
+        const el = inputsOnly[i];
+        if (el.getAttribute("aria-invalid") === "true") {
+            toast("There are invalid inputs. Please Correct.", "error");
+            return;
+        }
+    }
+
+
     let sendData = {task: "", field: "", adminData: ""};
     sendData.task = "save_table";
     sendData.field = adminData[0].field;
@@ -374,6 +389,7 @@ function moveRowUp(rowId) {
         adminData[prevRow].sequence = seq;
         adminData[prevRow].update = true;
     }
+    btnSave.on();
     buildTable();
 }
 
@@ -395,6 +411,7 @@ function moveRowDown(rowId) {
         adminData[nextRow].sequence = seq;
         adminData[nextRow].update = true;
     }
+    btnSave.on();
     buildTable();
 }
 
@@ -404,6 +421,7 @@ function deleteRow(rowId) {
     if (idx >= 0 && idx < adminData.length) {
         adminData[idx].delete = true;
     }
+    btnSave.on();
     buildTable();
 }
 
@@ -587,6 +605,12 @@ function triggersBtnSave() {
         el.addEventListener("input", () => { btnSave.on(); });
     });
     document.querySelectorAll("select").forEach(el => {
+        el.addEventListener("change", () => { btnSave.on(); });
+    });
+    document.querySelectorAll("select").forEach(el => {
+        el.addEventListener("change", () => { btnSave.on(); });
+    });
+    document.querySelectorAll("checkbox").forEach(el => {
         el.addEventListener("change", () => { btnSave.on(); });
     });
 }
