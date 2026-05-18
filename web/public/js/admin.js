@@ -4,22 +4,14 @@ let building = false; // If the table is being built, do not trigger any changes
 
 // Global variable to hold json administration table data object from the server
 // Holds data for: SITE, OFFICE, GROUP,... but only one set at a time
-let adminData = [
-    {id: 0, description: "One", code: "ONE", parent: "", sequence: 1, field: "LIST", active: 1, assetid: "", permissions: "", update: false, add: false, delete: false, inuse: true, task: ""},
-    {id: 1, description: "Two", code: "TWO", parent: "", sequence: 2, field: "LIST", active: 1, assetid: "", permissions: "", update: false, add: false, delete: false, inuse: true, task: ""},
-    {id: 2, description: "Three", code: "THREE", parent: "", sequence: 3, field: "LIST", active: 1, assetid: "", permissions: "", update: false, add: false, delete: false, inuse: true, task: ""}
-];
+let adminData = [];
 
 // Keep the site data for the site droplist in office configuration
 // We need a copy of the site data to build the select droplists for OFFICE table (Parent/Child)
 // The solution is that SITE is the first thing displayed, meaning that this data is saved in browser
 // memory for when the user selects OFFICE
 // Otherwise we would have to do a second seperate fetch when OFFICE is selected
-let siteData = [
-    {id: 0, description: "One", code: "ONE", parent: "", sequence: 1, field: "LIST", active: 1, assetid: "", permissions: "", update: false, add: false, delete: false, inuse: true, task: ""},
-    {id: 1, description: "Two", code: "TWO", parent: "", sequence: 2, field: "LIST", active: 1, assetid: "", permissions: "", update: false, add: false, delete: false, inuse: true, task: ""},
-    {id: 2, description: "Three", code: "THREE", parent: "", sequence: 3, field: "LIST", active: 1, assetid: "", permissions: "", update: false, add: false, delete: false, inuse: true, task: ""}
-];
+let siteData = [];
 
 //use innerHTML = 
 const icons = {
@@ -71,6 +63,9 @@ document.addEventListener('DOMContentLoaded', function() {
   btnSave.off();
   btnNew.off();
   btnTables.on();
+
+  // Setup event delegation once for all table inputs
+  triggersBtnSave();
   
   const deviceTypesJson = document.getElementById("deviceTypesJson");
   if (deviceTypesJson) {
@@ -127,17 +122,11 @@ function saveRecord() {
         return;
     }
 
-    // search all input elements for aria-invalid='true'
-    const form = document.querySelector('#theForm');
-    //    const allControls = form.elements; // Returns an HTMLFormControlsCollection
-    // If you specifically want only 'input' tags:
-    const inputsOnly = Array.from(form.elements).filter(el => el.tagName === 'INPUT');
-    for (let i = 0; i < inputsOnly.length; i++) {
-        const el = inputsOnly[i];
-        if (el.getAttribute("aria-invalid") === "true") {
-            toast("There are invalid inputs. Please Correct.", "error");
-            return;
-        }
+    const invalidInput = document.querySelector('#theForm input[aria-invalid="true"]');
+    if (invalidInput) {
+        toast("There are invalid inputs. Please Correct.", "error");
+        invalidInput.focus();
+        return;
     }
 
     let sendData = {task: "", field: "", adminData: ""};
@@ -170,30 +159,33 @@ function saveRecord() {
 function buildTable() {
     building = true;
     if (adminData) adminData.sort(getSortOrder("sequence"));
-    const tableSelected = document.getElementById("tableSelected").value;
+    const tableSelectedControl = document.getElementById("tableSelected");
+    const tableSelected = tableSelectedControl ? tableSelectedControl.value : "";
     const title = (adminData && adminData.length > 0) ? menuLabels.get(adminData[0].field) : "Admin Table";
     const headerExtraColumn = setHeaderExtraColumn(tableSelected);
-    const cnt = adminData.length;
-    let isFirst = true;
 
-    let tbl = `<p><strong>${title}</strong></p>
+    const tblParts = [];
+    tblParts.push(`<h6 style="text-align: center;">${title}</h6>
         <table id="settingsTable"><thead><tr>
         <th style="width: 15%; white-space: nowrap;">Code</th><th>Description</th>${headerExtraColumn}
         <th style="width: 1%; white-space: nowrap;">Active</th><th style="width: 1%; white-space: nowrap;"></th>
         <th style="width: 1%; white-space: nowrap;"></th><th style="width: 1%; white-space: nowrap;"'></th>
-        </tr></thead><tbody>`;
+        </tr></thead><tbody>`);
 
-     if (adminData) adminData.forEach((item, index) => {
-        if (item.delete) return;
-        const descriptionControl = buildDescriptionControl(item.description, item.id);
-        const activeControl = buildActiveControl(item.active, item.id);
-        const extraColumn = setRowExtraColumn(tableSelected, item.parent, item.assetid, item.id);
-        const moveUp = !isFirst ? `<a href="javascript:moveRowUp('${item.id}');">⬆️</a>` : "&nbsp;";
-        isFirst = false;
-        const moveDown = (cnt - index - 1) > 0 ? `<a href="javascript:moveRowDown('${item.id}');">⬇️</a>` : "&nbsp;";
-        const notInUse = item.inuse !== true ? `<a href="javascript:deleteRow('${item.id}');">❌</a>` : "&nbsp;";
-        tbl += `<tr><td>${item.code}</td><td>${descriptionControl}</td>${extraColumn}<td>${activeControl}</td><td>${moveUp}</td><td>${moveDown}</td><td>${notInUse}</td></tr>`;
-    });
+    if (adminData) {
+        const activeItems = adminData.filter(item => !item.delete);
+        const cnt = activeItems.length;
+
+        activeItems.forEach((item, index) => {
+            const descriptionControl = buildDescriptionControl(item.description, item.id);
+            const activeControl = buildActiveControl(item.active, item.id);
+            const extraColumn = setRowExtraColumn(tableSelected, item.parent, item.assetid, item.id);
+            const moveUp = (index > 0) ? `<a href="javascript:moveRowUp('${item.id}');">⬆️</a>` : "&nbsp;";
+            const moveDown = (index < cnt - 1) ? `<a href="javascript:moveRowDown('${item.id}');">⬇️</a>` : "&nbsp;";
+            const notInUse = item.inuse !== true ? `<a href="javascript:deleteRow('${item.id}');">❌</a>` : "&nbsp;";
+            tblParts.push(`<tr><td>${item.code}</td><td>${descriptionControl}</td>${extraColumn}<td>${activeControl}</td><td>${moveUp}</td><td>${moveDown}</td><td>${notInUse}</td></tr>`);
+        });
+    }
 
     // Final row for adding a new item, except for the TYPE
     if (tableSelected !== "TYPE") {
@@ -201,12 +193,13 @@ function buildTable() {
         const lastDescriptionControl = buildDescriptionControl("", 0);
         const lastActiveControl = buildActiveControl(0, 0);
         const lastExtraColumn = setRowExtraColumn(tableSelected, "", "", 0);
-        tbl += `<tr><td>${lastCodeControl}</td><td>${lastDescriptionControl}</td>${lastExtraColumn}<td>${lastActiveControl}</td><td colspan='3'><a href="javascript:addRow();">➕</a></td></tr>`;
+        tblParts.push(`<tr><td>${lastCodeControl}</td><td>${lastDescriptionControl}</td>${lastExtraColumn}<td>${lastActiveControl}</td><td colspan='3'><a href="javascript:addRow();">➕</a></td></tr>`);
     }
-    tbl += `</tbody></table>`;
-    document.getElementById("adminTable").innerHTML = tbl;
-    triggersBtnSave();
-    setTimeout(() => { building = false; }, 2000);
+    tblParts.push(`</tbody></table>`);
+    document.getElementById("adminTable").innerHTML = tblParts.join('');
+    
+    // Allow a short buffer for Metro or other scripts to settle before enabling save triggers
+    setTimeout(() => { building = false; }, 100);
 }
 
 // Helper functions
@@ -503,7 +496,14 @@ function addRow() {
     const maxSeq = adminData.reduce((prev, current) => (prev.sequence > current.sequence) ? prev : current, {sequence: 0});
     // Create the item to be added
     let newItem = {id: 0, description: "", code: "", parent: "", sequence: 1, field: "", active: 1, update: false, add: true, delete: false, inuse: false, task: ""};
-    newItem.id = maxId.id + 1;
+    // Optimized single-pass reduction for metadata
+    const stats = adminData.reduce((acc, curr) => {
+        if (curr.id > acc.maxId) acc.maxId = curr.id;
+        if (curr.sequence > acc.maxSeq) acc.maxSeq = curr.sequence;
+        return acc;
+    }, {maxId: 0, maxSeq: 0});
+
+    newItem.id = stats.maxId + 1;
     newItem.description = descr;
     newItem.code = code;
     
@@ -512,7 +512,7 @@ function addRow() {
     } else if (tableSelected === "GROUP") {
         newItem.permissions = permissions;
     }
-    newItem.sequence = maxSeq.sequence + 1;
+    newItem.sequence = stats.maxSeq + 1;
     newItem.field = adminData[0].field;
     newItem.active = active;
     adminData.push(newItem);
@@ -520,10 +520,10 @@ function addRow() {
 }
 
 //checks for 40.838383,-79.44848 format (in one field)
+const latLonRegex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
 function isLatLon(value) {    
     if (typeof value !== "string" || value.length < 3) return false;
-    const latLonOnly = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
-    return latLonOnly.test(value);   
+    return latLonRegex.test(value);   
 }
 
 function showHelp() {
@@ -548,13 +548,14 @@ function popPermissions(rowId) {
         ["D", "#deviceSlider"],
         ["S", "#softwareSlider"],
         ["T", "#ticketSlider"],
+        ["N", "#netSlider"],
         ["A", "#adminSlider"]
       ]);
     const lookup = {"C": 1, "CR": 2, "CRU": 3, "CRUD": 4};
     const id = txt2Int(rowId);
     document.getElementById("permRowId").value = id;
     const idx = adminData.findIndex((item => item.id === id));
-    let perms = "P:D:S:T:A";
+    let perms = "P:D:S:T:N:A";
     let dialogTitle = "Group";
     if (idx >-1 ) {
         dialogTitle = adminData[idx].description;
@@ -570,9 +571,12 @@ function popPermissions(rowId) {
     const crud = perms.split(":");
     for (let i = 0; i < crud.length; i++) {
         const val = lookup[crud[i].slice(1)] || 0;
-        const slider = sliders.get(crud[i].charAt(0));
-        document.querySelector(slider).value = val;
-        setSlider(slider, val);
+        const sliderSelector = sliders.get(crud[i].charAt(0));
+        const sliderElement = document.querySelector(sliderSelector);
+        if (sliderElement) {
+            sliderElement.value = val;
+            setSlider(sliderSelector, val);
+        }
     }
 }
 
@@ -590,13 +594,13 @@ function updatePermissions() {
 }
 
 function readPermissions() {
-    const sliders = [ "#profileSlider", "#deviceSlider", "#softwareSlider", "#ticketSlider", "#adminSlider" ];
-    const starters = ["P", "D", "S", "T", "A"];
+    const sliders = [ "#profileSlider", "#deviceSlider", "#softwareSlider", "#ticketSlider", "#netSlider", "#adminSlider" ];
+    const starters = ["P", "D", "S", "T", "N", "A"];
     const lookup = [":", "C:", "CR:", "CRU:", "CRUD:"];
     let permissions = sliders.map((selector, i) => {
         const val = parseInt(document.querySelector(selector).value, 10) || 0;
         return starters[i] + lookup[val];
-    }).join("").toUpperCase().replace(/[^CRUD:PDSAT]/g, '');
+    }).join("").toUpperCase().replace(/[^CRUD:PDSTNA]/g, '');
     // remove trailing : from permissions string
     if (permissions.endsWith(":")) {
         permissions = permissions.slice(0, -1);
@@ -614,13 +618,13 @@ function setSlider(ctrl, val) {
 }
 
 function triggersBtnSave() {
-    document.querySelectorAll("input").forEach(el => {
-        el.addEventListener("input", () => { btnSave.on(); });
-    });
-    document.querySelectorAll("select").forEach(el => {
-        el.addEventListener("change", () => { btnSave.on(); });
-    });
-    document.querySelectorAll("input[type='checkbox']").forEach(el => {
-        el.addEventListener("change", () => { btnSave.on(); });
-    });
+    const container = document.getElementById("adminTable");
+    if (!container) return;
+    const trigger = (e) => {
+        if (!building && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+            btnSave.on();
+        }
+    };
+    container.addEventListener("input", trigger);
+    container.addEventListener("change", trigger);
 }

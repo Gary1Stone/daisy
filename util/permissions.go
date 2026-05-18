@@ -15,16 +15,17 @@ type Permissions struct {
 	Device   crud
 	Admin    crud
 	Ticket   crud
+	Network  crud
 }
 
-// :SCRUD:DCRU:PCRUD:AR
+// :SCRUD:DCRU:PCRUD:AR:NCR:
 // Split the permission string by ':'
 func (p *Permissions) GetPermissions(permissionString string) {
-	//Remove any leading colons
+	//Remove any leading/trailing colons
 	permissionString = strings.Trim(permissionString, ":")
 	//Split the string by ':'
-	parts := strings.Split(permissionString, ":")
-	for _, part := range parts {
+	parts := strings.SplitSeq(permissionString, ":")
+	for part := range parts {
 		firstLetter := string(part[0])
 		switch firstLetter {
 		case "S":
@@ -37,6 +38,8 @@ func (p *Permissions) GetPermissions(permissionString string) {
 			p.Admin = setCRUD(part)
 		case "T":
 			p.Ticket = setCRUD(part)
+		case "N":
+			p.Network = setCRUD(part)
 		}
 	}
 }

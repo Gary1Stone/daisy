@@ -116,6 +116,18 @@
         </section>
         <section>
             <p>
+                <strong>Network</strong>
+                <span id="netSliderLabel">Create</span>
+            </p>
+            <p>
+                <input type="range" id="netSlider" min="0" max="4" step="1" value="0"
+                onmouseup="setSlider('#netSlider', this.value)" 
+                ontouchend="setSlider('#netSlider', this.value)" 
+                style="width: 100%;">
+            </p>
+        </section>
+        <section>
+            <p>
                 <strong>Administration</strong>
                 <span id="adminSliderLabel">Create</span>
             </p>
@@ -128,7 +140,7 @@
         </section>
     <footer>
       <button type='button' class="secondary" data-target="permissionsDialog" onclick="toggleModal(event);">Cancel</button>
-      <button type='button' autofocus data-target="permissionsDialog" onclick="updatePermissions(event);">Okay</button>
+      <button type='button' autofocus data-target="permissionsDialog" onclick="updatePermissions(event);toggleModal(event);">Okay</button>
     </footer>
   </article>
 </dialog>
