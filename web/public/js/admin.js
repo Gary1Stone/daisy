@@ -54,21 +54,23 @@ const menuLabels = new Map([
     ["KIND", icons.kinds + " Kinds"]
 ]);
 
-// Object that holds the parent (Device Type) for the trouble type => (DESKTOP, LAPTOP, PHONE...)
-let troubleParent; 
-
 // Icon Buttons
 let btnTables;
 let btnSave;
 let btnNew;
 let btnHelp;
 
+// Object that holds the parent (Device Type) for the trouble type => (DESKTOP, LAPTOP, PHONE...)
+let troubleParent; 
+
 document.addEventListener('DOMContentLoaded', function() {
   btnNew = new Button("btnNew");
   btnSave = new Button("btnSave");
-  btnHelp = new Button("btnHelp");
   btnTables = new Button("btnTables");
+  btnHelp = new Button("btnHelp");
   btnSave.off();
+  btnNew.off();
+  btnTables.on();
   
   const deviceTypesJson = document.getElementById("deviceTypesJson");
   if (deviceTypesJson) {
@@ -76,6 +78,20 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   showSelection('SITE');
 });
+
+const isValid = (ctlId) => {
+    const el = document.getElementById(ctlId);
+    if (el) {
+        if (!el.checkValidity()) {
+            el.setAttribute("aria-invalid", "true");
+            return { valid: false, value: el.value };
+        } else {
+            el.setAttribute("aria-invalid", "false");
+            return { valid: true, value: el.value };
+        }
+    }
+    return { valid: false, value: "" };
+};
 
 function showSelection(item) {
     const tblDialog = document.getElementById("tableDialog");
@@ -145,48 +161,23 @@ function buildTable() {
     const cnt = adminData.length;
     let isFirst = true;
 
-    let tbl = `
-        <p><strong>${title}</strong></p>
-        <table>
-        <thead>
-            <tr>
-                <th style='width: 15%;'>Code</th>
-                <th>Description</th>
-                ${headerExtraColumn}
-                <th>Active</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    `;
+    let tbl = `<p><strong>${title}</strong></p>
+        <table id="settingsTable"><thead><tr>
+        <th style="width: 15%; white-space: nowrap;">Code</th><th>Description</th>${headerExtraColumn}
+        <th style="width: 1%; white-space: nowrap;">Active</th><th style="width: 1%; white-space: nowrap;"></th>
+        <th style="width: 1%; white-space: nowrap;"></th><th style="width: 1%; white-space: nowrap;"'></th>
+        </tr></thead><tbody>`;
 
     adminData.forEach((item, index) => {
         if (item.delete) return;
-
-        const rowClass = (cnt - index) % 2 === 0 ? " class='bg-lightGray'" : "";
         const descriptionControl = buildDescriptionControl(item.description, item.id);
         const activeControl = buildActiveControl(item.active, item.id);
         const extraColumn = setRowExtraColumn(tableSelected, item.parent, item.assetid, item.id);
-
         const moveUp = !isFirst ? `<a href="javascript:moveRowUp('${item.id}');">⬆️</a>` : "&nbsp;";
         isFirst = false;
         const moveDown = (cnt - index - 1) > 0 ? `<a href="javascript:moveRowDown('${item.id}');">⬇️</a>` : "&nbsp;";
         const notInUse = item.inuse !== true ? `<a href="javascript:deleteRow('${item.id}');">❌</a>` : "&nbsp;";
-
-        tbl += `
-            <tr${rowClass}>
-                <td>${item.code}</td>
-                <td>${descriptionControl}</td>
-                ${extraColumn}
-                <td>${activeControl}</td>
-                <td>${moveUp}</td>
-                <td>${moveDown}</td>
-                <td>${notInUse}</td>
-            </tr>
-        `;
+        tbl += `<tr><td>${item.code}</td><td>${descriptionControl}</td>${extraColumn}<td>${activeControl}</td><td>${moveUp}</td><td>${moveDown}</td><td>${notInUse}</td></tr>`;
     });
 
     // Final row for adding a new item, except for the TYPE
@@ -195,27 +186,9 @@ function buildTable() {
         const lastDescriptionControl = buildDescriptionControl("", 0);
         const lastActiveControl = buildActiveControl(0, 0);
         const lastExtraColumn = setRowExtraColumn(tableSelected, "", "", 0);
-
-        tbl += `
-            <tr class='bg-black fg-white'>
-                <td>${lastCodeControl}</td>
-                <td>${lastDescriptionControl}</td>
-                ${lastExtraColumn}
-                <td>${lastActiveControl}</td>
-                <td colspan='3'>
-                    <a href="javascript:addRow();">➕</a>
-                </td>
-            </tr>
-        `;
+        tbl += `<tr><td>${lastCodeControl}</td><td>${lastDescriptionControl}</td>${lastExtraColumn}<td>${lastActiveControl}</td><td colspan='3'><a href="javascript:addRow();">➕</a></td></tr>`;
     }
-    tbl += `
-                    </a>
-                </td>
-            </tr>
-            </tbody>
-            </table>
-        `;
-
+    tbl += `</tbody></table>`;
     document.getElementById("adminTable").innerHTML = tbl;
     triggersBtnSave();
     setTimeout(() => { building = false; }, 2000);
@@ -238,7 +211,7 @@ function setRowExtraColumn(tableSelected, parent, assetid, id) {
         case "TROUBLE": return `<td>${buildTroubleParentControl(parent, id)}</td>`;
         case "GROUP": return `<td>${buildGroupPermissionsControl(id)}</td>`;
         case "TYPE": return `<td>${buildAssetIdControl(assetid, id)}</td>`;
-        default: return "<td></td>";
+        default: return "";
     }
 }
 
@@ -258,37 +231,17 @@ function buildDescriptionControl(txt, rowId) {
     const ctlId = `descr${rowId}`;
     const errorId = `descrerror${rowId}`;
     const maxLength = 30;
-
-
-        //   <label for="user">{{.userIcon}} User ID</label>
-        //   <input type="email" id="user" name="user" value="{{ .userid }}"
-        //     autocomplete="email" placeholder="User's Email Address..." data-tooltip="User Identifier"
-        //     required minlength="6" maxlength="100" autofocus
-        //     {{if .Readonly }}readonly{{end}} aria-invalid="false" aria-describedby="userErr">
-        //   <small id="userErr" class="err">Mandatory: Must be a unique email address</small>
-
-    return `
-        <input type='text' 
-            id='${ctlId}'  name='${ctlId}' 
-            value="${txt}" placeholder='Description'
-            title='Description' required
-            minlength='1' maxlength='${maxLength}'
+    return `<input type='text' id='${ctlId}'  name='${ctlId}' value="${txt}" placeholder='Description'
+            title='Description' required minlength='1' maxlength='${maxLength}' pattern="[a-zA-Z0-9.\\s\\(\\)\\-]+"
             aria-invalid="false" aria-describedby='${errorId}'
-            onblur="doTextbox('${rowId}')" >
-        <small class="err" id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>
-    `;
+            onchange="doTextbox('${rowId}')" >
+        <small class="err" id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>`;
 }
 
 function buildActiveControl(isChecked, rowId) {
     const ctlId = `active${rowId}`;
     const checked = isChecked === 1 ? "checked" : "";
-    return `
-        <input type='checkbox' 
-            id='${ctlId}' name='${ctlId}' 
-            data-role='checkbox' data-caption='Active'
-            ${checked}
-            onclick="doCheckbox('${rowId}');" >
-    `;
+    return `<input type='checkbox' id='${ctlId}' name='${ctlId}' ${checked} onclick="doCheckbox('${rowId}');" >`;
 }
 
 function buildParentControl(txt, rowId) {
@@ -297,54 +250,31 @@ function buildParentControl(txt, rowId) {
         const selected = item.code === txt ? "selected" : "";
         return `<option value="${item.code}" ${selected}>${item.description}</option>`;
     }).join('');
-    return `
-        <select 
-            id='${ctlId}'  name='${ctlId}' 
-            onchange="doParentSelect('${rowId}')" >
-        ${options}
-        </select>
-    `;
+    return `<select id='${ctlId}' name='${ctlId}' onchange="doParentSelect('${rowId}')" >${options}</select>`;
 }
 
 function buildTroubleParentControl(txt, rowId) {
     const ctlId = `parent${rowId}`;
     let options = troubleParent.map(item => {
         const selected = item.name === txt ? "selected" : "";
-        return `
-            <option value="${item.name}"  ${selected}
-                data-template="<span class='${item.icon} icon'></span> $1" >
-                &nbsp;${item.description}
-            </option>
-        `;
+        return `<option value="${item.name}"  ${selected} >${item.description}</option>`;
     }).join('');
-    return `
-        <select id='${ctlId}' name='${ctlId}' 
-            onchange="doParentSelect('${rowId}')" >
-        ${options}
-        </select>
-    `;
+    return `<select id='${ctlId}' name='${ctlId}' onchange="doParentSelect('${rowId}')" >${options}</select>`;
 }
 
 function buildGroupPermissionsControl(rowId) {
-    return `
-        <button type='button' class='secondary' onclick="popPermissions('${rowId}');">Edit...</button>
-    `;
+    return `<button type='button' class='secondary' onclick="popPermissions('${rowId}');">Edit...</button>`;
 }
 
 function buildAssetIdControl(txt, rowId) {
     const ctlId = `asset${rowId}`;
     const errorId = `asseterror${rowId}`;
     const maxLength = 6;
-    return `
-        <input type='text' 
-            id='${ctlId}'  name='${ctlId}' 
-            value="${txt}" placeholder='Asset ID Prefix'
-            title='Asset ID Prefix' required
-            minlength='1' maxlength='${maxLength}'
+    return `<input type='text' id='${ctlId}' name='${ctlId}' value="${txt}" placeholder='Asset ID Prefix'
+            title='Asset ID Prefix' required minlength='1' maxlength='${maxLength}' pattern='[a-zA-Z0-9]+'
             aria-invalid="false" aria-describedby='${errorId}'
-            onblur="doAssetId('${rowId}')" >
-        <small class="err" id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>
-    `;
+            onchange="doAssetId('${rowId}')" >
+        <small class="err" id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>`;
 }
 
 function buildCodeControl(txt, rowId) {
@@ -360,18 +290,21 @@ function buildCodeControl(txt, rowId) {
         validationRules = "required minlength='1' maxlength='30'";
         errorMessage = "Must be lat,lon such as: 43.865050,-79.849630";
     } else {
-        validationRules = "required minlength='1' maxlength='20'";
+        validationRules = "required minlength='1' maxlength='20' pattern='[A-Z0-9]+' ";
         errorMessage = "Mandatory and unique with only: A to Z, 0 to 9";
     }
-    return `
-        <input type='text' 
-            id='code${rowId}' name='code${rowId}' value="${txt || ""}" 
+    return `<input type='text' id='code${rowId}' name='code${rowId}' value="${txt || ""}" 
             placeholder='Code' title='Code' ${validationRules}
             style='text-transform:uppercase'
             aria-invalid="false" aria-describedby='${codeErrorId}'
-            >
-        <small class="err" id='${codeErrorId}'>${errorMessage}</small>
-    `;
+            onchange="doCodeValidate('${rowId}')" >
+        <small class="err" id='${codeErrorId}'>${errorMessage}</small>`;
+} // <-----<<<<<<<<  check for further code control checking
+
+function doCodeValidate(rowId) {
+    const id = txt2Int(rowId);
+    const ctlId = "code" + id.toString();
+    const reply = isValid(ctlId);
 }
 
 function doCheckbox(rowId) {
@@ -387,50 +320,26 @@ function doCheckbox(rowId) {
 function doTextbox(rowId) {
     const id = txt2Int(rowId);
     const ctlId = "descr" + id.toString();
-    const errorId = "descrerror" + id.toString();
-    const descrEl = document.getElementById(ctlId);
-    const errorEl = document.getElementById(errorId);
-    const descr = descrEl.value;
-    
-    if (errorEl) errorEl.style.display = 'none';
-    
-    // Validate the input text (txt)
-    if (descr === undefined || descr.length < 1 || descr !== descr.replace(/[^a-zA-Z0-9.() ]/g, '')) {
-        if (errorEl) errorEl.style.display = 'block';
-        return;
-    }
-
+    const reply = isValid(ctlId);
+    if (!reply.valid) return;
     const idx = adminData.findIndex((item => item.id === id));
     if (idx >= 0 && idx < adminData.length) {
-        if (adminData[idx].description !== descr) {
-            adminData[idx].description = descr;
+        if (adminData[idx].description !== reply.value) {
+            adminData[idx].description = reply.value;
             adminData[idx].update = true; //Flag server to update this record
         }
     }
 }
 
-
-
-
 function doAssetId(rowId) {
     const id = txt2Int(rowId);
     const ctlId = "asset" + id.toString();
-    const errorId = "asseterror" + id.toString();
-    const inputEl = document.getElementById(ctlId);
-    const errorEl = document.getElementById(errorId);
-    const txt = inputEl.value;
-    if (errorEl) errorEl.style.display = 'none';
-    
-    // Validate the input text (txt)
-    if (txt === undefined || txt.length < 1 || txt !== txt.replace(/[^a-zA-Z0-9]/g, '')) {
-        if (errorEl) errorEl.style.display = 'block';
-        return;
-    }
-
+    const reply = isValid(ctlId);
+    if (!reply.valid) return;
     let idx = adminData.findIndex((item => item.id === id));
     if (idx >= 0 && idx < adminData.length) {
-        if (adminData[idx].assetid !== txt) {
-            adminData[idx].assetid = txt;
+        if (adminData[idx].assetid !== reply.value) {
+            adminData[idx].assetid = reply.value;
             adminData[idx].update = true; // Flag server to update this record
         }
     }
@@ -499,56 +408,60 @@ function deleteRow(rowId) {
 }
 
 function addRow() {
-    const code = document.getElementById("code0").value.toString().toUpperCase();
-    const descr = document.getElementById("descr0").value.toString();
     let parent = "";
     let permissions = "";
     const tableSelected = document.getElementById("tableSelected").value;
-    
-    if (tableSelected === "OFFICE") {
-        parent = document.getElementById("parent0").value.toString();
-        const err = document.getElementById("parenterror0");
-        if (err) err.style.display = 'none';
-    } else if (tableSelected === "PERMISSIONS") {
-        permissions = readPermissions();
-    } else if (tableSelected === "TROUBLE") {
-        parent = document.getElementById("parent0").value.toString();
-        const err = document.getElementById("parenterror0");
-        if (err) err.style.display = 'none';
-    }
     const active = document.getElementById("active0").checked ? 1 : 0;
     
-    const codeErr = document.getElementById("codeerror0");
-    const descrErr = document.getElementById("descrerror0");
-    if (codeErr) codeErr.style.display = 'none';
-    if (descrErr) descrErr.style.display = 'none';
-    
+    //Get the new "code" value as uppercase string
+    let reply = isValid("code0");
+    if (!reply.valid) return;
+    const code = reply.value.toString().toUpperCase();
+
+    //This is a new addition, so we should not find an index for it
     let idx = adminData.findIndex((item => item.code === code));
-    
-    if (tableSelected === "GROUP") {
-        if (!isDigits(code) || idx > -1 || code.length < 1 || txt2Int(code) < 1 ) {
-            if (codeErr) codeErr.style.display = 'block';
-            return;
-        }
-    } else if (tableSelected === "IMPACT") {
-        if (!isDigits(code) || idx > -1 || code.length < 1 || txt2Int(code) < 1 ) {
-            if (codeErr) codeErr.style.display = 'block';
-            return;
-        }
-    } else if (tableSelected === "GEOFENCE") {
-        if (!isLatLon(code) || idx > -1 || code.length < 1) {
-            if (codeErr) codeErr.style.display = 'block';
-            return;
-        }
-    } else {
-        if (code !== code.replace(/[+-]?[^A-Za-z0-9 ]/g, '') || idx > -1 || code.length < 1) {
-            if (codeErr) codeErr.style.display = 'block';
-            return;
-        }
+    if (idx > -1) {
+        toast("Code already exists:" + code, "error");
+        console.log("Code already exists:" + code);
+        return;
     }
 
+    // Get the new description value as string
+    reply = isValid("descr0");
+    if (!reply.valid) return;
+    const descr = reply.value.toString();
+
+    switch (tableSelected) {
+        case "OFFICE", "TROUBLE":
+            reply = isValid("parent0");
+            if (!reply.valid) return;
+            parent = reply.value.toString();
+            break;
+        case "PERMISSIONS":
+            permissions = readPermissions();
+            break;
+        case "GROUP", "IMPACT":
+            if (!isDigits(code) || code.length < 1 || txt2Int(code) < 1 ) {
+                document.getElementById("code0").setAttribute("aria-invalid", "true");
+                return;
+            }
+            break;
+        case "GEOFENCE":
+            if (!isLatLon(code) || code.length < 1) {
+                document.getElementById("code0").setAttribute("aria-invalid", "true");
+                return;
+            }
+            break;
+        default:
+             if (code !== code.replace(/[+-]?[^A-Za-z0-9 ]/g, '') || code.length < 1) {
+                document.getElementById("code0").setAttribute("aria-invalid", "true");
+                return;
+             }
+            break;
+        }
+
     if (descr !== descr.replace(/[+-]?[^A-Za-z0-9 ]/g, '') || descr.length < 1) {
-        if (descrErr) descrErr.style.display = 'block';
+        document.getElementById("descr0").setAttribute("aria-invalid", "true");
         return;
     }
 
@@ -575,20 +488,18 @@ function addRow() {
     buildTable();
 }
 
-//checks for 40.838383,-79.44848  format (in one field)
+//checks for 40.838383,-79.44848 format (in one field)
 function isLatLon(value) {    
     if (typeof value !== "string" || value.length < 3) return false;
     const latLonOnly = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
     return latLonOnly.test(value);   
 }
 
-
 function showHelp() {
     const helpDialog = document.getElementById("helpDialog");
     if (helpDialog) {
         openModal(helpDialog);
     }
-//    Metro.dialog.open("#helpDialog");
 }
 
 function showTableSelect() {
@@ -596,7 +507,6 @@ function showTableSelect() {
     if (tableDialog) {
         openModal(tableDialog);
     }
-//    Metro.dialog.open("#tableDialog");
 }
 
 //PCRUD:ACRUD:DCRUD:SCRUD:TCRUD

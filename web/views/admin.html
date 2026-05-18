@@ -1,19 +1,11 @@
 {{template "partials/top2" .}} {{template "partials/navbar2" .}}
-<form id="theForm" name="theForm" action="#" method="post" autocomplete="off">
 <main class="container">
-    <div class="grid">
-        <div class="row">
-            <div class="cell">
-                <form id="frmAdmin" name="frmAdmin"  data-role="validator" method="post" action="javascript:" data-interactive-check="false">
-                    <div id="adminTable"></div>
-                    <input type="hidden" id="tableSelected" value="">
-                    <input type="hidden" id="deviceTypesJson" value="{{.deviceTypesJson}}">
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
+    <form id="theForm" name="theForm" action="#" method="post" autocomplete="off">
+        <input type="hidden" id="tableSelected" value="">
+        <input type="hidden" id="deviceTypesJson" value="{{.deviceTypesJson}}">
+        <div id="adminTable"></div>
+    </form>
+</main>
 
 <dialog id="helpDialog">
   <article>
@@ -67,11 +59,6 @@
   </article>
 </dialog>
 
-
-
-
-
-
 <dialog id="permissionsDialog">
   <article>
     <header>
@@ -102,7 +89,6 @@
                 ontouchend="setSlider('#deviceSlider', this.value)" 
                 style="width: 100%;">
             </p>
-
         </section>
         <section>
             <p>
