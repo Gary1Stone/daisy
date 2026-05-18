@@ -59,17 +59,6 @@ func GetAdmin(c *fiber.Ctx) error {
 }
 
 func PostAdmin(c *fiber.Ctx) error {
-	adminForm := struct {
-		Task      string `json:"task"`
-		Field     string `json:"field"`
-		AdminData string `json:"adminData"`
-	}{}
-
-	//Get the data sent from the browser
-	if err := c.BodyParser(&adminForm); err != nil {
-		return c.Status(fiber.StatusOK).SendString("ERROR: ")
-	}
-
 	// Read incoming requst cookie to get curUid
 	user, err := extractUserInfo(c)
 	if err != nil {
@@ -78,6 +67,17 @@ func PostAdmin(c *fiber.Ctx) error {
 
 	if !user.Permissions.Admin.Read {
 		return c.Status(fiber.StatusOK).SendString("ERROR: You do not have permission to view admin records.")
+	}
+
+	//Get the data sent from the browser
+	adminForm := struct {
+		Task      string `json:"task"`
+		Field     string `json:"field"`
+		AdminData string `json:"adminData"`
+	}{}
+
+	if err := c.BodyParser(&adminForm); err != nil {
+		return c.Status(fiber.StatusOK).SendString("ERROR: " + err.Error())
 	}
 
 	//If the user wanted to save anything
