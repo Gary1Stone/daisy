@@ -21,20 +21,37 @@ let siteData = [
     {id: 2, description: "Three", code: "THREE", parent: "", sequence: 3, field: "LIST", active: 1, assetid: "", permissions: "", update: false, add: false, delete: false, inuse: true, task: ""}
 ];
 
+//use innerHTML = 
+const icons = {
+    site:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M80-80v-481l280-119v80l200-80v120h320v480H80Zm80-80h640v-320H480v-82l-200 80v-78l-120 53v347Zm280-80h80v-160h-80v160Zm-160 0h80v-160h-80v160Zm320 0h80v-160h-80v160Zm280-320H680l40-320h120l40 320ZM160-160h640-640Z"></path></svg>`,
+    office:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M120-120v-560h160v-160h400v320h160v400H520v-160h-80v160H120Zm80-80h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 320h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 480h80v-80h-80v80Zm0-160h80v-80h-80v80Z"></path></svg>`,
+    group: `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm720 0v-120q0-44-24.5-84.5T666-434q51 6 96 20.5t84 35.5q36 20 55 44.5t19 53.5v120H760ZM247-527q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47Zm466 0q-47 47-113 47-11 0-28-2.5t-28-5.5q27-32 41.5-71t14.5-81q0-42-14.5-81T544-792q14-5 28-6.5t28-1.5q66 0 113 47t47 113q0 66-47 113ZM120-240h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm296.5-343.5Q440-607 440-640t-23.5-56.5Q393-720 360-720t-56.5 23.5Q280-673 280-640t23.5 56.5Q327-560 360-560t56.5-23.5ZM360-240Zm0-400Z"></path></svg>`,
+    impact:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M756-120 537-339l84-84 219 219-84 84Zm-552 0-84-84 276-276-68-68-28 28-51-51v82l-28 28-121-121 28-28h82l-50-50 142-142q20-20 43-29t47-9q24 0 47 9t43 29l-92 92 50 50-28 28 68 68 90-90q-4-11-6.5-23t-2.5-24q0-59 40.5-99.5T701-841q15 0 28.5 3t27.5 9l-99 99 72 72 99-99q7 14 9.5 27.5T841-701q0 59-40.5 99.5T701-561q-12 0-24-2t-23-7L204-120Z"></path></svg>`,
+    status:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m480-80-10-120h-10q-142 0-241-99t-99-241q0-142 99-241t241-99q71 0 132.5 26.5t108 73q46.5 46.5 73 108T800-540q0 75-24.5 144t-67 128q-42.5 59-101 107T480-80Zm80-146q71-60 115.5-140.5T720-540q0-109-75.5-184.5T460-800q-109 0-184.5 75.5T200-540q0 109 75.5 184.5T460-280h100v54Zm-72-107q12-12 12-29t-12-29q-12-12-29-12t-29 12q-12 12-12 29t12 29q12 12 29 12t29-12Zm-58-115h60q0-30 6-42t38-44q18-18 30-39t12-45q0-51-34.5-76.5T460-720q-44 0-74 24.5T344-636l56 22q5-17 19-33.5t41-16.5q27 0 40.5 15t13.5 33q0 17-10 30.5T480-558q-35 30-42.5 47.5T430-448Zm30-65Z"></path></svg>`,
+    make:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M80-80v-481l280-119v80l200-80v120h320v480H80Zm80-80h640v-320H480v-82l-200 80v-78l-120 53v347Zm280-80h80v-160h-80v160Zm-160 0h80v-160h-80v160Zm320 0h80v-160h-80v160Zm280-320H680l40-320h120l40 320ZM160-160h640-640Z"></path></svg>`,
+    cores:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-120q-33 0-56.5-23.5T80-200v-560q0-33 23.5-56.5T160-840h560q33 0 56.5 23.5T800-760v80h80v80h-80v80h80v80h-80v80h80v80h-80v80q0 33-23.5 56.5T720-120H160Zm0-80h560v-560H160v560Zm80-80h200v-160H240v160Zm240-280h160v-120H480v120Zm-240 80h200v-200H240v200Zm240 200h160v-240H480v240ZM160-760v560-560Z"></path></svg>`,
+    drive:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h480q33 0 56.5 23.5T800-800v640q0 33-23.5 56.5T720-80H240Zm0-80h480v-640H240v640Zm80-80h320v-80H320v80Zm160-160q66 0 113-47t47-113q0-66-47-113t-113-47q-66 0-113 47t-47 113q0 66 47 113t113 47Zm0-120q-17 0-28.5-11.5T440-560q0-17 11.5-28.5T480-600q17 0 28.5 11.5T520-560q0 17-11.5 28.5T480-520Zm0-40Z"></path></svg>`,
+    os:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M280-200h400q-4-49-30-90t-68-65l38-68q2-4 1-9t-6-7q-4-2-8.5-1t-6.5 5l-39 70q-20-8-40-12.5t-41-4.5q-21 0-41 4.5T399-365l-39-70q-2-5-6.5-5t-9.5 2l-4 15 38 68q-42 24-68 65t-30 90Zm96-66q-6-6-6-14t6-14q6-6 14-6t14 6q6 6 6 14t-6 14q-6 6-14 6t-14-6Zm180 0q-6-6-6-14t6-14q6-6 14-6t14 6q6 6 6 14t-6 14q-6 6-14 6t-14-6ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"></path></svg>`,
+    geofence:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M536.5-503.5Q560-527 560-560t-23.5-56.5Q513-640 480-640t-56.5 23.5Q400-593 400-560t23.5 56.5Q447-480 480-480t56.5-23.5ZM480-186q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"></path></svg>`,
+    trouble:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-120q-33 0-56.5-23.5T80-200v-560q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v560q0 33-23.5 56.5T800-120H160Zm0-80h640v-560H160v560Zm80-80h480v-80H240v80Zm0-160h160v-240H240v240Zm240 0h240v-80H480v80Zm0-160h240v-80H480v80ZM160-200v-560 560Z"></path></svg>`,
+    type:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M508.5-291.5Q520-303 520-320t-11.5-28.5Q497-360 480-360t-28.5 11.5Q440-337 440-320t11.5 28.5Q463-280 480-280t28.5-11.5ZM440-440h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"></path></svg>`,
+    kinds:  `<svg height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M400-560ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720H160v480h80v80h-80Zm640-80v-320H640v320h160Zm-180 80q-25 0-42.5-17.5T560-220v-360q0-25 17.5-42.5T620-640h200q25 0 42.5 17.5T880-580v360q0 25-17.5 42.5T820-160H620Zm100-300q13 0 21.5-9t8.5-21q0-13-8.5-21.5T720-520q-12 0-21 8.5t-9 21.5q0 12 9 21t21 9ZM340-160l-20-70q-19-17-29.5-40T280-320q0-27 10.5-50t29.5-40l20-70h120l20 70q19 17 29.5 40t10.5 50q0 27-10.5 50T480-230l-20 70H340Zm60-100q26 0 43-17.5t17-42.5q0-25-18-42.5T400-380q-24 0-42 17t-18 43q0 26 17 43t43 17Zm320-140Z"></path></svg>`
+};
+
 const menuLabels = new Map([
-    ["SITE", "Sites"],
-    ["OFFICE", "Office"],
-    ["GROUP", "Groups"],
-    ["IMPACT", "Impact"],
-    ["STATUS", "Status"],
-    ["MAKE", "Make"],
-    ["CORES", "Cores"],
-    ["DRIVETYPE", "Drives"],
-    ["OS", "OS"],
-    ["GEOFENCE", "GeoFence"],
-    ["TROUBLE", "Trouble"],
-    ["TYPE", "Asset ID Prefix"],
-    ["KIND", "Kinds"]
+    ["SITE", icons.site + " Sites"],
+    ["OFFICE", icons.office +" Office"],
+    ["GROUP", icons.group + " Groups"],
+    ["IMPACT", icons.impact +" Impact"],
+    ["STATUS", icons.status + " Status"],
+    ["MAKE", icons.make + " Make"],
+    ["CORES", icons.cores + " Cores"],
+    ["DRIVETYPE", icons.drive + " Drives"],
+    ["OS", icons.os + " OS"],
+    ["GEOFENCE", icons.geofence + " GeoFence"],
+    ["TROUBLE", icons.trouble + " Trouble"],
+    ["TYPE", icons.type + " Asset ID Prefix "],
+    ["KIND", icons.kinds + " Kinds"]
 ]);
 
 // Object that holds the parent (Device Type) for the trouble type => (DESKTOP, LAPTOP, PHONE...)
@@ -65,8 +82,6 @@ function showSelection(item) {
     if (tblDialog) {
         closeModal(tblDialog);
     }
-
-//    Metro.dialog.close("#tableDialog");
     const sendData = {task: "build_table", field: item, adminData: ""};
     
     fetch("admin", {
@@ -107,7 +122,7 @@ function saveRecord() {
     .then(response => response.text())
     .then(response => {
         if (typeof response === 'string'  && response.startsWith("ERROR:")) {
-            toast("Error saving Admin table. Refresh and retry.", "alert");
+            toast("Error saving Admin table. Refresh and retry.", "error");
         } else {
             adminData = null;
             adminData = JSON.parse(response);
@@ -131,14 +146,14 @@ function buildTable() {
     let isFirst = true;
 
     let tbl = `
-        <p class='text-center'><strong>${title}</strong></p>
-        <table class='gtable'>
+        <p><strong>${title}</strong></p>
+        <table>
         <thead>
-            <tr class='bg-black fg-white'>
-                <th class='gcell' style='width: 15%;'>Code</th>
-                <th class='gcell'>Description</th>
+            <tr>
+                <th style='width: 15%;'>Code</th>
+                <th>Description</th>
                 ${headerExtraColumn}
-                <th class='gcell'>Active</th>
+                <th>Active</th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -156,28 +171,17 @@ function buildTable() {
         const activeControl = buildActiveControl(item.active, item.id);
         const extraColumn = setRowExtraColumn(tableSelected, item.parent, item.assetid, item.id);
 
-        const moveUp = !isFirst
-            ? `<a href="javascript:moveRowUp('${item.id}');">
-                 <span class="mif-arrow-up mif-2x fg-blue"></span></a>`
-            : "&nbsp;";
+        const moveUp = !isFirst ? `<a href="javascript:moveRowUp('${item.id}');">⬆️</a>` : "&nbsp;";
         isFirst = false;
-
-        const moveDown = (cnt - index - 1) > 0
-            ? `<a href="javascript:moveRowDown('${item.id}');">
-                 <span class="mif-arrow-down mif-2x fg-blue"></span></a>`
-            : "&nbsp;";
-
-        const notInUse = item.inuse !== true
-            ? `<a href="javascript:deleteRow('${item.id}');">
-                 <span class="mif-cross mif-2x fg-red"></span></a>`
-            : "&nbsp;";
+        const moveDown = (cnt - index - 1) > 0 ? `<a href="javascript:moveRowDown('${item.id}');">⬇️</a>` : "&nbsp;";
+        const notInUse = item.inuse !== true ? `<a href="javascript:deleteRow('${item.id}');">❌</a>` : "&nbsp;";
 
         tbl += `
             <tr${rowClass}>
-                <td class='gcell'>${item.code}</td>
-                <td class='gcell'>${descriptionControl}</td>
+                <td>${item.code}</td>
+                <td>${descriptionControl}</td>
                 ${extraColumn}
-                <td class='gcell'>${activeControl}</td>
+                <td>${activeControl}</td>
                 <td>${moveUp}</td>
                 <td>${moveDown}</td>
                 <td>${notInUse}</td>
@@ -194,13 +198,12 @@ function buildTable() {
 
         tbl += `
             <tr class='bg-black fg-white'>
-                <td class='gcell'>${lastCodeControl}</td>
-                <td class='gcell'>${lastDescriptionControl}</td>
+                <td>${lastCodeControl}</td>
+                <td>${lastDescriptionControl}</td>
                 ${lastExtraColumn}
-                <td class='gcell'>${lastActiveControl}</td>
+                <td>${lastActiveControl}</td>
                 <td colspan='3'>
-                    <a href="javascript:addRow();">
-                        <span class='mif-plus mif-2x fg-green'></span></a>
+                    <a href="javascript:addRow();">➕</a>
                 </td>
             </tr>
         `;
@@ -221,21 +224,21 @@ function buildTable() {
 // Helper functions
 function setHeaderExtraColumn(tableSelected) {
     switch (tableSelected) {
-        case "OFFICE": return "<th class='gcell'>Site</th>";
-        case "TROUBLE": return "<th class='gcell'>Device Type</th>";
-        case "GROUP": return "<th class='gcell'>Permissions</th>";
-        case "TYPE": return "<th class='gcell'>Asset ID Prefix</th>";
+        case "OFFICE": return "<th>Site</th>";
+        case "TROUBLE": return "<th>Device Type</th>";
+        case "GROUP": return "<th>Permissions</th>";
+        case "TYPE": return "<th>Asset ID Prefix</th>";
         default: return "";
     }
 }
 
 function setRowExtraColumn(tableSelected, parent, assetid, id) {
     switch (tableSelected) {
-        case "OFFICE": return `<td class='gcell'>${buildParentControl(parent, id)}</td>`;
-        case "TROUBLE": return `<td class='gcell'>${buildTroubleParentControl(parent, id)}</td>`;
-        case "GROUP": return `<td class='gcell'>${buildGroupPermissionsControl(id)}</td>`;
-        case "TYPE": return `<td class='gcell'>${buildAssetIdControl(assetid, id)}</td>`;
-        default: return "<td class='gcell'></td>";
+        case "OFFICE": return `<td>${buildParentControl(parent, id)}</td>`;
+        case "TROUBLE": return `<td>${buildTroubleParentControl(parent, id)}</td>`;
+        case "GROUP": return `<td>${buildGroupPermissionsControl(id)}</td>`;
+        case "TYPE": return `<td>${buildAssetIdControl(assetid, id)}</td>`;
+        default: return "<td></td>";
     }
 }
 
@@ -255,16 +258,24 @@ function buildDescriptionControl(txt, rowId) {
     const ctlId = `descr${rowId}`;
     const errorId = `descrerror${rowId}`;
     const maxLength = 30;
+
+
+        //   <label for="user">{{.userIcon}} User ID</label>
+        //   <input type="email" id="user" name="user" value="{{ .userid }}"
+        //     autocomplete="email" placeholder="User's Email Address..." data-tooltip="User Identifier"
+        //     required minlength="6" maxlength="100" autofocus
+        //     {{if .Readonly }}readonly{{end}} aria-invalid="false" aria-describedby="userErr">
+        //   <small id="userErr" class="err">Mandatory: Must be a unique email address</small>
+
     return `
         <input type='text' 
             id='${ctlId}'  name='${ctlId}' 
             value="${txt}" placeholder='Description'
             title='Description' required
             minlength='1' maxlength='${maxLength}'
-            data-role='input'
-            data-validate='required minlength=1 maxlength=${maxLength}'
+            aria-invalid="false" aria-describedby='${errorId}'
             onblur="doTextbox('${rowId}')" >
-        <span class='invalid_feedback' id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</span>
+        <small class="err" id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>
     `;
 }
 
@@ -289,7 +300,6 @@ function buildParentControl(txt, rowId) {
     return `
         <select 
             id='${ctlId}'  name='${ctlId}' 
-            data-role='select'  data-filter='false' 
             onchange="doParentSelect('${rowId}')" >
         ${options}
         </select>
@@ -309,7 +319,6 @@ function buildTroubleParentControl(txt, rowId) {
     }).join('');
     return `
         <select id='${ctlId}' name='${ctlId}' 
-            data-role='select' data-filter='false' 
             onchange="doParentSelect('${rowId}')" >
         ${options}
         </select>
@@ -318,7 +327,7 @@ function buildTroubleParentControl(txt, rowId) {
 
 function buildGroupPermissionsControl(rowId) {
     return `
-        <button type='button' class='button info' onclick="popPermissions('${rowId}');">Edit...</button>
+        <button type='button' class='secondary' onclick="popPermissions('${rowId}');">Edit...</button>
     `;
 }
 
@@ -332,10 +341,9 @@ function buildAssetIdControl(txt, rowId) {
             value="${txt}" placeholder='Asset ID Prefix'
             title='Asset ID Prefix' required
             minlength='1' maxlength='${maxLength}'
-            data-role='input'
-            data-validate='required minlength=1 maxlength=${maxLength}'
+            aria-invalid="false" aria-describedby='${errorId}'
             onblur="doAssetId('${rowId}')" >
-        <span class='invalid_feedback' id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</span>
+        <small class="err" id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>
     `;
 }
 
@@ -346,23 +354,23 @@ function buildCodeControl(txt, rowId) {
     const codeErrorId = `codeerror${rowId}`;
     let validationRules, errorMessage;
     if (isGroupOrImpact) {
-        validationRules = "required minlength=1 maxlength=2 integer";
+        validationRules = "required minlength='1' maxlength='2' integer";
         errorMessage = "Mandatory, unique and only numbers (1-99)";
     } else if (isGeoFence) {
-        validationRules = "required minlength=1 maxlength=30";
+        validationRules = "required minlength='1' maxlength='30'";
         errorMessage = "Must be lat,lon such as: 43.865050,-79.849630";
     } else {
-        validationRules = "required minlength=1 maxlength=20";
+        validationRules = "required minlength='1' maxlength='20'";
         errorMessage = "Mandatory and unique with only: A to Z, 0 to 9";
     }
     return `
         <input type='text' 
             id='code${rowId}' name='code${rowId}' value="${txt || ""}" 
-            placeholder='Code' title='Code' required 
-            minlength='1' maxlength='20' 
-            style='text-transform:uppercase' 
-            data-role='input' data-validate='${validationRules}' >
-        <span class='invalid_feedback' id='${codeErrorId}'>${errorMessage}</span>
+            placeholder='Code' title='Code' ${validationRules}
+            style='text-transform:uppercase'
+            aria-invalid="false" aria-describedby='${codeErrorId}'
+            >
+        <small class="err" id='${codeErrorId}'>${errorMessage}</small>
     `;
 }
 
@@ -618,7 +626,6 @@ function popPermissions(rowId) {
         openModal(permissionsDialog);
     }
     
-//    Metro.dialog.open("#permissionsDialog");
     const crud = perms.split(":");
     for (let i = 0; i < crud.length; i++) {
         const val = lookup[crud[i].slice(1)] || 0;
