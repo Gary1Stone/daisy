@@ -169,9 +169,9 @@ function saveRecord() {
 
 function buildTable() {
     building = true;
-    adminData.sort(getSortOrder("sequence"));
+    if (adminData) adminData.sort(getSortOrder("sequence"));
     const tableSelected = document.getElementById("tableSelected").value;
-    const title = menuLabels.get(adminData[0].field);
+    const title = (adminData && adminData.length > 0) ? menuLabels.get(adminData[0].field) : "Admin Table";
     const headerExtraColumn = setHeaderExtraColumn(tableSelected);
     const cnt = adminData.length;
     let isFirst = true;
@@ -183,7 +183,7 @@ function buildTable() {
         <th style="width: 1%; white-space: nowrap;"></th><th style="width: 1%; white-space: nowrap;"'></th>
         </tr></thead><tbody>`;
 
-    adminData.forEach((item, index) => {
+     if (adminData) adminData.forEach((item, index) => {
         if (item.delete) return;
         const descriptionControl = buildDescriptionControl(item.description, item.id);
         const activeControl = buildActiveControl(item.active, item.id);
@@ -388,7 +388,7 @@ function moveRowUp(rowId) {
     const seq = adminData[idx].sequence;
     let prevRow = idx - 1;
 
-    while (adminData[prevRow].delete === true) {    //skip past deleted rows
+    while (prevRow >= 0 && adminData[prevRow].delete === true) {    //skip past deleted rows
         prevRow--;
         if (prevRow < 0)
             break;
@@ -410,7 +410,7 @@ function moveRowDown(rowId) {
     const seq = adminData[idx].sequence;
     let nextRow = idx + 1;
 
-    while (adminData[nextRow].delete === true) {    //skip past deleted rows
+    while (nextRow < adminData.length && adminData[nextRow].delete === true) {    //skip past deleted rows
         nextRow++;
         if (nextRow > adminData.length)
             break;
@@ -498,9 +498,9 @@ function addRow() {
 
     // Find the item with the maximum id in the array
     // Its just a placeholder. Database will assign id when insert occurs
-    const maxId = adminData.reduce((prev, current) => (prev.id > current.id) ? prev : current);
+    const maxId = adminData.reduce((prev, current) => (prev.id > current.id) ? prev : current, {id: 0});
     // Find the item with the maximum sequence in the array
-    const maxSeq = adminData.reduce((prev, current) => (prev.sequence > current.sequence) ? prev : current);
+    const maxSeq = adminData.reduce((prev, current) => (prev.sequence > current.sequence) ? prev : current, {sequence: 0});
     // Create the item to be added
     let newItem = {id: 0, description: "", code: "", parent: "", sequence: 1, field: "", active: 1, update: false, add: true, delete: false, inuse: false, task: ""};
     newItem.id = maxId.id + 1;
@@ -580,7 +580,7 @@ function updatePermissions() {
     const permissions = readPermissions();
     const id = txt2Int(document.getElementById("permRowId").value);
     const idx = adminData.findIndex(item => item.id === id);
-    if (idx < 0 && idx < adminData.length) return;
+    if (idx < 0) return;
     if (adminData[idx].permissions !== permissions) {
         adminData[idx].permissions = permissions;
         adminData[idx].update = true; // Flag server to update this record
@@ -620,10 +620,7 @@ function triggersBtnSave() {
     document.querySelectorAll("select").forEach(el => {
         el.addEventListener("change", () => { btnSave.on(); });
     });
-    document.querySelectorAll("select").forEach(el => {
-        el.addEventListener("change", () => { btnSave.on(); });
-    });
-    document.querySelectorAll("checkbox").forEach(el => {
+    document.querySelectorAll("input[type='checkbox']").forEach(el => {
         el.addEventListener("change", () => { btnSave.on(); });
     });
 }
