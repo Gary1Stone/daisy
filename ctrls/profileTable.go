@@ -53,7 +53,7 @@ func buildProfileTableHeader() string {
     <thead>
     <tr>
         <th aria-sort="ascending" data-sort="asc">User ID</th>
-        <th aria-sort="ascending" data-sort="asc">Name</th>
+        <th aria-sort="none">Name</th>
         <th aria-sort="none">Group</th>
         <th aria-sort="none">Alerts&sol;Tickets</th>
     </tr>
