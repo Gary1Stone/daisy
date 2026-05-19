@@ -14,7 +14,7 @@ func BuildInventoryList() string {
 		return ""
 	}
 	var table strings.Builder
-	table.WriteString(`<table class='striped' data-sortable='true' id='inv_table'>
+	table.WriteString(`<table class='striped' id='inv_table'>
 		<thead><tr>
 		<th>Software Titles</th>
 		</tr></thead><tbody>`)

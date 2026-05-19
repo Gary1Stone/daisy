@@ -13,7 +13,7 @@ import (
 func GetDashboardReport() string {
 	items := db.GetDashboard()
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id="dashboardTable">
+	report.WriteString(`<table class='striped' id="dashboardTable">
     <thead>
     <tr>
         <th aria-sort="ascending" data-sort="asc">Device</th>
@@ -40,7 +40,7 @@ func GetDashboardReport() string {
 func GetDeviceCounts() string {
 	items := db.GetDashboard()
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id="dash_table">
+	report.WriteString(`<table class='striped' id="dash_table">
     <thead>
     <tr>
         <th aria-sort="ascending" data-sort="asc">Device</th>
@@ -69,7 +69,7 @@ func GetIssuesReport(curUid int, devType string) string {
 		return "ERROR: Cannot Generate Issues Report"
 	}
 	report.WriteString(GetDashboardReport())
-	report.WriteString(`<table class='striped' data-sortable='true' id="dash_table">
+	report.WriteString(`<table class='striped' id="dash_table">
     <thead>
     <tr>
         <th aria-sort="ascending" data-sort="asc">Device</th>
@@ -98,7 +98,7 @@ func GetDeviceReport(curUid int, devType string) string {
 		log.Println(err)
 	}
 	report.WriteString(GetDashboardReport())
-	report.WriteString(`<table class='striped' data-sortable='true' id="dash_table">
+	report.WriteString(`<table class='striped' id="dash_table">
     <thead>
     <tr>
         <th aria-sort="ascending" data-sort="asc">Photo</th>

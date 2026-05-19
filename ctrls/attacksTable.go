@@ -33,7 +33,7 @@ func BuildAttacksTable(curUid, duration int) string {
 
 // Helper function to build the table header
 func buildAttacksTableHeader() string {
-	return `<table class='striped' data-sortable='true' id="attackstable" >
+	return `<table class='striped' id="attackstable" >
     <thead>
     <tr>
         <th aria-sort="ascending" data-sort="asc">Occurred</th>

@@ -13,7 +13,7 @@ import (
 
 func TrackedSoftware() string {
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id='software_table'>
+	report.WriteString(`<table class='striped' id='software_table'>
 		<thead>
 		<tr>
 		<th aria-sort="ascending" data-sort="asc">Software</th>
@@ -43,7 +43,7 @@ func TrackedSoftware() string {
 
 func OtherSoftware() string {
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id='other_table'>
+	report.WriteString(`<table class='striped' id='other_table'>
 		<thead>
 		<tr>
 		<th aria-sort="ascending" data-sort="asc">Software</th>
@@ -69,7 +69,7 @@ func OtherSoftware() string {
 
 func UsersAssignedDevices() string {
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id='assigned_table'>
+	report.WriteString(`<table class='striped' id='assigned_table'>
 		<thead>
 		<tr>
 		<th aria-sort="ascending" data-sort="asc">User</th>
@@ -94,7 +94,7 @@ func UsersAssignedDevices() string {
 
 func NetworkGaps() string {
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id='gaps_table'>
+	report.WriteString(`<table class='striped' id='gaps_table'>
 		<thead>
 		<tr>
 		<th aria-sort="ascending" data-sort="asc">Computer</th>
@@ -118,7 +118,7 @@ func NetworkGaps() string {
 
 func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id='last_table' >
+	report.WriteString(`<table class='striped' id='last_table' >
 		<thead>
 		<tr>
 		<th aria-sort="ascending" data-sort="asc">Device</th>
@@ -154,7 +154,7 @@ func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
 
 func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id='last_table'>
+	report.WriteString(`<table class='striped' id='last_table'>
 		<thead>
 		<tr>
 		<th aria-sort="ascending" data-sort="asc">Device</th>
@@ -195,7 +195,7 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 
 func Backups(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table class='striped' data-sortable='true' id='last_table' >
+	report.WriteString(`<table class='striped' id='last_table' >
 		<thead>
 		<tr>
 		<th aria-sort="ascending" data-sort="asc">Device</th>

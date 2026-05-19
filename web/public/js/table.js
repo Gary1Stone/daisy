@@ -1,13 +1,26 @@
 // table.js
 
+// Find all tables with class='striped'
 document.addEventListener('DOMContentLoaded', function() {
-    // Find all tables with data-sortable='true'
-    const sortableTables = document.querySelectorAll('[data-sortable="true" i]');
+    // Create the search input field
+    const searchInput = document.createElement('input');
+    searchInput.type = 'search';
+    searchInput.id = 'txtSearch';
+    searchInput.placeholder = 'Search...';
+    searchInput.setAttribute('aria-label', 'Search');
+    const searchfield = document.getElementById('searchfield');
+    if (searchfield) {
+        searchfield.appendChild(searchInput);
+    } else {
+        document.body.prepend(searchInput);
+    }
+
+    // Add column header sorts
+    const sortableTables = document.querySelectorAll('table.striped');
     sortableTables.forEach(table => {
         buildTable(table.id);
     });
 });
-
 
 // For the html table, enable sorting by columns and search by table data contents.
 function buildTable(tableID) {

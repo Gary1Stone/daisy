@@ -17,6 +17,7 @@
             <li><a href="admin.html">{{.settingsIcon}} Settings</a></li>
             {{end}} 
             <li><a href="about.html">{{.aboutIcon}} About</a></li>
+            <li><a href="#" data-target="logout-dialog" onclick="toggleModal(event)">{{.logoutIcon}} Log Out</a></li>
           </ul>
         </details>
       </li>
@@ -28,14 +29,7 @@
       <li title="Device Asset Information SYstem">{{.title}}</li>
     </ul>
     <ul>
-      <li>
-        <details class="dropdown">
-          <summary>{{.userIcon}}<span id="userName">{{.fullName}}</span></summary>
-          <ul>
-            <li><a href="#" data-target="logout-dialog" onclick="toggleModal(event)">{{.logoutIcon}} Log Out</a></li>
-          </ul>
-        </details>
-      </li>
+      <li id="searchfield"></li> 
     </ul>
   </nav>
 </header>

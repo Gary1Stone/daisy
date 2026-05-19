@@ -95,7 +95,7 @@ func BuildMacCorrelationTable(filter db.MacCorrelationFilter) string {
 		return ""
 	}
 
-	ctrl.WriteString(`<table class='striped' data-sortable='true' id="alerttable">
+	ctrl.WriteString(`<table class='striped' id="alerttable">
     <thead><tr>
 	<th>Device1</th><th>Device2</th><th>Jaccard</th><th>Pearsons</th><th>&nbsp;</th>
 	</tr></thead><tbody>`)

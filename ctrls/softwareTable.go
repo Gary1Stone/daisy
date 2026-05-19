@@ -16,15 +16,8 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 	var table strings.Builder
 
 	// Build the table header with search
-	table.WriteString(`<table class='striped' data-sortable='true' id="softwaretable">
+	table.WriteString(`<table class='striped' id="softwaretable">
     <thead>
-	<tr>
-		<td colspan="4" style="text-align: right; border-bottom: none;">
-			<div style="display: inline-block; width: 10rem; margin-bottom: 0;">
-				<input type="search" id="txtSearch" name="txtSearch" placeholder="Search..." aria-label="Search" margin-bottom: 0;">
-			</div
-		</td>
-	</tr>
     <tr>
         <th aria-sort="ascending" data-sort="asc">Name</th>
         <th aria-sort='none'>Vendor</th>
@@ -71,7 +64,7 @@ func BuildInstalledList(curUid, sid int) string {
 	var table strings.Builder
 	table.WriteString(`<label>Installed On</label>
 		<div style="max-height: 400px; overflow-y: auto;">
-		<table class='striped' data-sortable='true' id="swlist" >
+		<table class='striped' id="swlist" >
 		<thead><tr>
 		<th aria-sort='none'>Device</th>
 		</tr></thead>

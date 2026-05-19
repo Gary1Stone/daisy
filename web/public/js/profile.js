@@ -234,10 +234,10 @@ async function saveRecord(event) {
     const sendData = getFormData();
     if (!validateForm(sendData)) return;
     if (sendData.uid === 0) { sendData.task = "add"; }
-    // If the user changed their own name, update the Menubar label
-    if (UI.curUid().value === String(sendData.uid)) {
-        UI.userName().innerText = `${sendData.first} ${sendData.last}`;
-    }
+    // // If the user changed their own name, update the Menubar label
+    // if (UI.curUid().value === String(sendData.uid)) {
+    //     UI.userName().innerText = `${sendData.first} ${sendData.last}`;
+    // }
     try {
         await postJSON("profile", sendData, (reply) => {
             if (!reply.success) {
