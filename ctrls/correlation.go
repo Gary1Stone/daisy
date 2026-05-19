@@ -95,14 +95,7 @@ func BuildMacCorrelationTable(filter db.MacCorrelationFilter) string {
 		return ""
 	}
 
-	ctrl.WriteString(`<table data-role="table" id="alerttable" 
-    data-rows="-1" data-show-rows-steps="false" 
-    data-show-search="true" 
-    data-table-search-title="<span class='mif-search'></span>" 
-    data-show-pagination="false" 
-    data-show-table-info="false" 
-    data-horizontal-scroll="true" 
-    class="table striped table-border row-border row-hover">
+	ctrl.WriteString(`<table class="striped" id="alerttable">
     <thead><tr>
 	<th>Device1</th><th>Device2</th><th>Jaccard</th><th>Pearsons</th><th>&nbsp;</th>
 	</tr></thead><tbody>`)

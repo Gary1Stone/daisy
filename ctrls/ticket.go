@@ -84,15 +84,7 @@ func BuildWorklog(curUid, aid int) string {
 	// Start building the worklog table
 	var table strings.Builder
 	table.WriteString(`<div>
-		<table data-role="table" id="worklog" 
-		data-rows="-1" 
-		data-show-rows-steps="false" 
-		data-show-search="true" 
-		data-table-search-title="<span class='mif-search'></span>" 
-		data-show-pagination="false" 
-		data-show-table-info="false" 
-		data-horizontal-scroll="true" 
-		class="table striped table-border row-border row-hover">
+		<table class="striped" id="worklog">
 		<thead><tr>
 		<th data-sortable="false">Steps Taken</th>
 		</tr></thead>

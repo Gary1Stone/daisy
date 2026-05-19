@@ -49,20 +49,13 @@ func BuildActiveUsersTable(curUid int) string {
 // Helper function to build the table header
 func buildActiveUsersTableHeader() string {
 	return `<div style="max-height: 400px; overflow-y: auto;">
-	<table data-role="table" id="activeuserstable" 
-    data-rows="-1" data-show-rows-steps="false" 
-    data-show-search="true" 
-    data-table-search-title="<span class='mif-search'></span>" 
-    data-show-pagination="false" 
-    data-show-table-info="false" 
-    data-horizontal-scroll="true" 
-    class="table striped table-border row-border row-hover">
+	<table class="striped" id="activeuserstable" >
     <thead>
     <tr>
-        <th data-sortable="true">User</th>
-        <th data-sortable="true">Since</th>
-        <th data-sortable="true">Location</th>
-        <th data-sortable="false">End Session</th>
+        <th aria-sort="none">User</th>
+        <th aria-sort="none">Since</th>
+        <th aria-sort="none">Location</th>
+        <th>End Session</th>
     </tr>
     </thead>
     <tbody>`

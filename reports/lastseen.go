@@ -40,18 +40,18 @@ func buildTableHeader(isSeen bool) string {
 	if isSeen {
 		title = "Last Seen"
 	}
-	return `<table data-role='table' id='last_table' data-rows='50' 
-		data-show-rows-steps='true' data-show-search='true' 
-		data-show-pagination='true' data-show-table-info='true' 
-		data-horizontal-scroll='true' 
-		class='table striped table-border row-border row-hover compact'>
+	return `<table class="striped" id='last_table'  
+		  
+		  
+		 
+		>
 		<thead><tr>
-		<th data-sortable='true'>Photo</th>
-		<th data-sortable='true'>Device</th>
-		<th data-sortable='true'>` + title + `</th>
-		<th data-sortable='true'>Location</th>
-		<th data-sortable='true'>Assigned To</th>
-		<th data-sortable='true'>Model</th>
+		<th aria-sort="none">Photo</th>
+		<th aria-sort="none">Device</th>
+		<th aria-sort="none">` + title + `</th>
+		<th aria-sort="none">Location</th>
+		<th aria-sort="none">Assigned To</th>
+		<th aria-sort="none">Model</th>
 		</tr></thead><tbody>`
 }
 

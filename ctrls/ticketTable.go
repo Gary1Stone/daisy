@@ -47,23 +47,18 @@ func TicketsTable(curUid int) string {
 
 // Helper function to build the table header
 func buildTicketsTableHeader() string {
-	return `<table data-role="table" id="tickettable" data-rows="50" 
-    data-show-rows-steps="false" data-show-search="true" 
-    data-table-search-title="<span class='mif-search'></span>" 
-    data-show-pagination="true" data-show-table-info="true" 
-    data-horizontal-scroll="true" 
-    class="table striped table-border row-border row-hover">
+	return `<table class="striped" id="tickettable">
     <thead>
     <tr>
-        <th data-sortable="true" data-show="false">AID</th>
-        <th data-sortable="true">Device</th>
-        <th data-sortable="true">Queue</th>
-        <th data-sortable="true">Assigned</th>
-        <th data-sortable="true">Trouble</th>
-        <th data-sortable="true">Report</th>
-        <th data-sortable="true">Origin</th>
-        <th data-sortable="true">Duration</th>
-        <th data-sortable="true">ACK'd</th>
+        <th aria-sort="none" data-show="false">AID</th>
+        <th aria-sort="none">Device</th>
+        <th aria-sort="none">Queue</th>
+        <th aria-sort="none">Assigned</th>
+        <th aria-sort="none">Trouble</th>
+        <th aria-sort="none">Report</th>
+        <th aria-sort="none">Origin</th>
+        <th aria-sort="none">Duration</th>
+        <th aria-sort="none">ACK'd</th>
     </tr>
     </thead>
     <tbody>`

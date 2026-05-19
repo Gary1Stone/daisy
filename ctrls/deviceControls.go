@@ -52,16 +52,10 @@ func BuildSoftwareList(curUid, cid int) string {
 	table.WriteString(items[0].ScanDate)
 	table.WriteString(`)</label>
 		<div style="max-height: 400px; overflow-y: auto;">
-		<table data-role="table" id="swlist" 
-		data-rows="-1" 
-		data-show-rows-steps="false" 
-		data-show-table-info="false" 
-		data-show-pagination="false" 
-		data-horizontal-scroll="true" 
-		class="table striped table-border row-border row-hover compact">
+		<table class="striped" id="swlist" >
 		<thead><tr>
-		<th data-sortable="true">Software</th>
-		<th data-sortable="true">OEM License</th>
+		<th aria-sort="none">Software</th>
+		<th aria-sort="none">OEM License</th>
 		</tr></thead>
 		<tbody>`)
 
@@ -139,17 +133,17 @@ func BuildYearsSelect(selected int) string {
 
 func BuildDeviceLog(curUid, cid, hist int) string {
 	var table strings.Builder
-	table.WriteString(`<table data-role='table' id='install_table' 
-		data-rows='50' 
-		data-show-rows-steps='true' 
-		data-horizontal-scroll='true' 
-		class='table striped table-border row-border row-hover compact'>
+	table.WriteString(`<table id='install_table' 
+		 
+		 
+		 
+		>
 		<thead><tr>
-		<th data-sortable='true'>Action</th>
-		<th data-sortable='true'>Date</th>
-		<th data-sortable='true'>Created By</th>
-		<th data-sortable='true'>Notes</th>
-		<th data-sortable='true'>Status</th>
+		<th aria-sort="none">Action</th>
+		<th aria-sort="none">Date</th>
+		<th aria-sort="none">Created By</th>
+		<th aria-sort="none">Notes</th>
+		<th aria-sort="none">Status</th>
 		</tr></thead>
 		<tbody>`)
 	filter := new(db.ActionFilter)

@@ -49,7 +49,7 @@ func ProfilesTable(curUid int, filter db.ProfileFilter) string {
 */
 // Helper function to build the table header
 func buildProfileTableHeader() string {
-	return `<table id="profileTable">
+	return `<table class="striped" id="profileTable">
     <thead>
 	<tr>
 		<td colspan="4" style="text-align: right; border-bottom: none;">

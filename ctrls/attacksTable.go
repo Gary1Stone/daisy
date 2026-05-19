@@ -33,23 +33,16 @@ func BuildAttacksTable(curUid, duration int) string {
 
 // Helper function to build the table header
 func buildAttacksTableHeader() string {
-	return `<table data-role="table" id="attackstable" 
-    data-rows="-1" data-show-rows-steps="false" 
-    data-show-search="true" 
-    data-table-search-title="<span class='mif-search'></span>" 
-    data-show-pagination="false" 
-    data-show-table-info="true" 
-    data-horizontal-scroll="true" 
-    class="table striped table-border row-border row-hover">
+	return `<table class="striped" id="attackstable" >
     <thead>
     <tr>
-        <th data-sortable="true">Occurred</th>
-        <th data-sortable="true">Attacking IP</th>
-        <th data-sortable="true">Attacks</th>
-        <th data-sortable="true">Browser</th>
-        <th data-sortable="true">Location</th>
-		<th data-sortable="true"><span class='mif-user icon'></span></th>
-		<th data-sortable="true">Map</th>
+        <th aria-sort="none">Occurred</th>
+        <th aria-sort="none">Attacking IP</th>
+        <th aria-sort="none">Attacks</th>
+        <th aria-sort="none">Browser</th>
+        <th aria-sort="none">Location</th>
+		<th aria-sort="none"><span class='mif-user icon'></span></th>
+		<th aria-sort="none">Map</th>
     </tr>
     </thead>
     <tbody>`

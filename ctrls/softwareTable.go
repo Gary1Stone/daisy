@@ -16,7 +16,7 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 	var table strings.Builder
 
 	// Build the table header with search
-	table.WriteString(`<table id="softwaretable">
+	table.WriteString(`<table class="striped" id="softwaretable">
     <thead>
 	<tr>
 		<td colspan="4" style="text-align: right; border-bottom: none;">
@@ -27,9 +27,9 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 	</tr>
     <tr>
         <th aria-sort="ascending" data-sort="asc">Name</th>
-        <th aria-sort="none">Vendor</th>
-        <th aria-sort="none">Licenses&sol;Installed</th>
-        <th aria-sort="none">OEM Licenses</th>
+        <th aria-sort='none'>Vendor</th>
+        <th aria-sort='none'>Licenses&sol;Installed</th>
+        <th aria-sort='none'>OEM Licenses</th>
     </tr>
     </thead>
     <tbody>`)
@@ -71,15 +71,9 @@ func BuildInstalledList(curUid, sid int) string {
 	var table strings.Builder
 	table.WriteString(`<label>Installed On</label>
 		<div style="max-height: 400px; overflow-y: auto;">
-		<table data-role="table" id="swlist" 
-		data-rows="-1" 
-		data-show-rows-steps="false" 
-		data-show-table-info="false" 
-		data-show-pagination="false" 
-		data-horizontal-scroll="true" 
-		class="table striped table-border row-border row-hover compact">
+		<table class="striped" id="swlist" >
 		<thead><tr>
-		<th data-sortable="true">Device</th>
+		<th aria-sort='none'>Device</th>
 		</tr></thead>
 		<tbody>`)
 
@@ -100,18 +94,18 @@ func BuildInstalledList(curUid, sid int) string {
 
 func BuildSoftwareLog(curUid, sid, hist int) string {
 	var table strings.Builder
-	table.WriteString("<table data-role='table' id='install_table' ")
-	table.WriteString("data-rows='50' ")
-	table.WriteString("data-show-rows-steps='true' ")
-	table.WriteString("data-horizontal-scroll='true' ")
-	table.WriteString("class='table striped table-border row-border row-hover compact'>\n")
+	table.WriteString("<table class='striped' id='install_table' ")
+	table.WriteString(" ")
+	table.WriteString(" ")
+	table.WriteString(" ")
+	table.WriteString(">\n")
 	table.WriteString("<thead>\n<tr>\n")
-	table.WriteString("<th data-sortable='true'>Action</th>\n")
-	table.WriteString("<th data-sortable='true'>Date</th>\n")
-	table.WriteString("<th data-sortable='true'>Computer</th>\n")
-	table.WriteString("<th data-sortable='true'>Installer</th>\n")
-	table.WriteString("<th data-sortable='true'>Notes</th>\n")
-	table.WriteString("<th data-sortable='true'>Status</th>\n")
+	table.WriteString("<th aria-sort='none'>Action</th>\n")
+	table.WriteString("<th aria-sort='none'>Date</th>\n")
+	table.WriteString("<th aria-sort='none'>Computer</th>\n")
+	table.WriteString("<th aria-sort='none'>Installer</th>\n")
+	table.WriteString("<th aria-sort='none'>Notes</th>\n")
+	table.WriteString("<th aria-sort='none'>Status</th>\n")
 	table.WriteString("</tr>\n</thead>\n")
 	table.WriteString("<tbody>\n")
 	//table body

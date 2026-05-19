@@ -13,19 +13,19 @@ import (
 
 func TrackedSoftware() string {
 	var report strings.Builder
-	report.WriteString(`<table data-role='table' id='software_table' data-rows='50' 
-		data-show-rows-steps='true' data-show-search='true' 
-		data-show-pagination='true' data-show-table-info='true' 
-		data-horizontal-scroll='true'
-		class='table striped table-border row-border row-hover compact' >
+	report.WriteString(`<table class="striped" id='software_table'  
+		  
+		  
+		
+		 >
 		<thead>
 		<tr>
-		<th data-sortable='true'>Software</th>
-		<th data-sortable='true'>Licenses</th>
-		<th data-sortable='true'>Active Computer Installs</th>
-		<th data-sortable='true'>Decomissioned Computer Installs</th>
-		<th data-sortable='true'>Manually Tracked</th>
-		<th data-sortable='true'>Decomissioned Tracked</th>
+		<th aria-sort="none">Software</th>
+		<th aria-sort="none">Licenses</th>
+		<th aria-sort="none">Active Computer Installs</th>
+		<th aria-sort="none">Decomissioned Computer Installs</th>
+		<th aria-sort="none">Manually Tracked</th>
+		<th aria-sort="none">Decomissioned Tracked</th>
 		</tr>
 		</thead>
 		<tbody>`)
@@ -47,15 +47,15 @@ func TrackedSoftware() string {
 
 func OtherSoftware() string {
 	var report strings.Builder
-	report.WriteString(`<table data-role='table' id='other_table' data-rows='50'
-		data-show-rows-steps='true' data-show-search='true'
-		data-show-pagination='true' data-show-table-info='true'
-		data-horizontal-scroll='true'
-		class='table striped table-border row-border row-hover compact' >
+	report.WriteString(`<table class="striped" id='other_table' 
+		 
+		 
+		
+		 >
 		<thead>
 		<tr>
-		<th data-sortable='true'>Software</th>
-		<th data-sortable='true'>Installs</th>
+		<th aria-sort="none">Software</th>
+		<th aria-sort="none">Installs</th>
 		</tr>
 		</thead>
 		<tbody>`)
@@ -77,16 +77,16 @@ func OtherSoftware() string {
 
 func UsersAssignedDevices() string {
 	var report strings.Builder
-	report.WriteString(`<table data-role='table' id='assigned_table' data-rows='50'
-		data-show-rows-steps='true' data-show-search='true'
-		data-show-pagination='true' data-show-table-info='true'
-		data-horizontal-scroll='true'
-		class='table striped table-border row-border row-hover compact' >
+	report.WriteString(`<table class="striped" id='assigned_table' 
+		 
+		 
+		
+		 >
 		<thead>
 		<tr>
-		<th data-sortable='true'>User</th>
-		<th data-sortable='true'>Name</th>
-		<th data-sortable='true'>Device</th>
+		<th aria-sort="none">User</th>
+		<th aria-sort="none">Name</th>
+		<th aria-sort="none">Device</th>
 		</tr>
 		</thead>
 		<tbody>`)
@@ -106,16 +106,16 @@ func UsersAssignedDevices() string {
 
 func NetworkGaps() string {
 	var report strings.Builder
-	report.WriteString(`<table data-role='table' id='gaps_table' data-rows='50'
-		data-show-rows-steps='true' data-show-search='true'
-		data-show-pagination='true' data-show-table-info='true'
-		data-horizontal-scroll='true'
-		class='table striped table-border row-border row-hover compact' >
+	report.WriteString(`<table class="striped" id='gaps_table' 
+		 
+		 
+		
+		 >
 		<thead>
 		<tr>
-		<th data-sortable='true'>Computer</th>
-		<th data-sortable='true'>Occurance</th>
-		<th data-sortable='true'>Gap (Minutes)</th>
+		<th aria-sort="none">Computer</th>
+		<th aria-sort="none">Occurance</th>
+		<th aria-sort="none">Gap (Minutes)</th>
 		</tr>
 		</thead>
 		<tbody>`)
@@ -134,15 +134,15 @@ func NetworkGaps() string {
 
 func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table data-role='table' id='last_table' data-rows='-1'
-		data-show-rows-steps='false' data-show-search='false'
-		data-show-pagination='false' data-show-table-info='false'
-		data-horizontal-scroll='true'
-		class='table striped table-border row-border row-hover compact' >
+	report.WriteString(`<table class="striped" id='last_table' 
+		 
+		 
+		
+		 >
 		<thead>
 		<tr>
-		<th data-sortable='true'>Device</th>
-		<th data-sortable='true'>Last Seen</th>
+		<th aria-sort="none">Device</th>
+		<th aria-sort="none">Last Seen</th>
 		</tr>
 		</thead>
 		<tbody>`)
@@ -174,16 +174,16 @@ func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
 
 func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table data-role='table' id='last_table' data-rows='-1'
-		data-show-rows-steps='false' data-show-search='false'
-		data-show-pagination='false' data-show-table-info='false'
-		data-horizontal-scroll='true'
-		class='table striped table-border row-border row-hover compact' >
+	report.WriteString(`<table class="striped" id='last_table' 
+		 
+		 
+		
+		 >
 		<thead>
 		<tr>
-		<th data-sortable='true'>Device</th>
-		<th data-sortable='true'>Date</th>
-		<th data-sortable='true'>Community</th>
+		<th aria-sort="none">Device</th>
+		<th aria-sort="none">Date</th>
+		<th aria-sort="none">Community</th>
 		</tr>
 		</thead>
 		<tbody>`)
@@ -219,17 +219,17 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 
 func Backups(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table data-role='table' id='last_table' data-rows='-1' 
-		data-show-rows-steps='false' data-show-search='false' 
-		data-show-pagination='false' data-show-table-info='false' 
-		data-horizontal-scroll='true'
-		class='table striped table-border row-border row-hover compact' >
+	report.WriteString(`<table class="striped" id='last_table'  
+		  
+		  
+		
+		 >
 		<thead>
 		<tr>
-		<th data-sortable='true'>Device</th>
-		<th data-sortable='true'>File</th>
-		<th data-sortable='true'>System</th>
-		<th data-sortable='true'>Disk</th>
+		<th aria-sort="none">Device</th>
+		<th aria-sort="none">File</th>
+		<th aria-sort="none">System</th>
+		<th aria-sort="none">Disk</th>
 		</tr>
 		</thead>
 		<tbody>`)
@@ -286,16 +286,16 @@ func Backups(curUid int, devInfo map[int]db.DevicesMeta) string {
 
 func Drivespace(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table data-role='table' id='drive_table' data-rows='-1'
-		data-show-rows-steps='false' data-show-search='false' 
-		data-show-pagination='false' data-show-table-info='false' 
-		data-horizontal-scroll='true'
-		class='table striped table-border row-border row-hover compact' >
+	report.WriteString(`<table id='drive_table' 
+		  
+		  
+		
+		 >
 		<thead>
 		<tr>
-		<th data-sortable='true'>Device</th>
-		<th data-sortable='true'>Drive Space</th>
-		<th data-sortable='true'>Date</th>
+		<th aria-sort="none">Device</th>
+		<th aria-sort="none">Drive Space</th>
+		<th aria-sort="none">Date</th>
 		</tr>
 		</thead>
 		<tbody>`)
