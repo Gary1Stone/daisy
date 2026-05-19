@@ -1,7 +1,7 @@
 // correlation.js
 
 // if user changes the sliders, show the values in the readout
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     $("#jaccard").change(function () {
         $("#jaccardValue").html($("#jaccard").val());
     });

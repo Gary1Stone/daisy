@@ -13,14 +13,10 @@ import (
 
 func TrackedSoftware() string {
 	var report strings.Builder
-	report.WriteString(`<table class="striped" id='software_table'  
-		  
-		  
-		
-		 >
+	report.WriteString(`<table class='striped' data-sortable='true' id='software_table'>
 		<thead>
 		<tr>
-		<th aria-sort="none">Software</th>
+		<th aria-sort="ascending" data-sort="asc">Software</th>
 		<th aria-sort="none">Licenses</th>
 		<th aria-sort="none">Active Computer Installs</th>
 		<th aria-sort="none">Decomissioned Computer Installs</th>
@@ -47,14 +43,10 @@ func TrackedSoftware() string {
 
 func OtherSoftware() string {
 	var report strings.Builder
-	report.WriteString(`<table class="striped" id='other_table' 
-		 
-		 
-		
-		 >
+	report.WriteString(`<table class='striped' data-sortable='true' id='other_table'>
 		<thead>
 		<tr>
-		<th aria-sort="none">Software</th>
+		<th aria-sort="ascending" data-sort="asc">Software</th>
 		<th aria-sort="none">Installs</th>
 		</tr>
 		</thead>
@@ -77,14 +69,10 @@ func OtherSoftware() string {
 
 func UsersAssignedDevices() string {
 	var report strings.Builder
-	report.WriteString(`<table class="striped" id='assigned_table' 
-		 
-		 
-		
-		 >
+	report.WriteString(`<table class='striped' data-sortable='true' id='assigned_table'>
 		<thead>
 		<tr>
-		<th aria-sort="none">User</th>
+		<th aria-sort="ascending" data-sort="asc">User</th>
 		<th aria-sort="none">Name</th>
 		<th aria-sort="none">Device</th>
 		</tr>
@@ -106,14 +94,10 @@ func UsersAssignedDevices() string {
 
 func NetworkGaps() string {
 	var report strings.Builder
-	report.WriteString(`<table class="striped" id='gaps_table' 
-		 
-		 
-		
-		 >
+	report.WriteString(`<table class='striped' data-sortable='true' id='gaps_table'>
 		<thead>
 		<tr>
-		<th aria-sort="none">Computer</th>
+		<th aria-sort="ascending" data-sort="asc">Computer</th>
 		<th aria-sort="none">Occurance</th>
 		<th aria-sort="none">Gap (Minutes)</th>
 		</tr>
@@ -134,14 +118,10 @@ func NetworkGaps() string {
 
 func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table class="striped" id='last_table' 
-		 
-		 
-		
-		 >
+	report.WriteString(`<table class='striped' data-sortable='true' id='last_table' >
 		<thead>
 		<tr>
-		<th aria-sort="none">Device</th>
+		<th aria-sort="ascending" data-sort="asc">Device</th>
 		<th aria-sort="none">Last Seen</th>
 		</tr>
 		</thead>
@@ -174,14 +154,10 @@ func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
 
 func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table class="striped" id='last_table' 
-		 
-		 
-		
-		 >
+	report.WriteString(`<table class='striped' data-sortable='true' id='last_table'>
 		<thead>
 		<tr>
-		<th aria-sort="none">Device</th>
+		<th aria-sort="ascending" data-sort="asc">Device</th>
 		<th aria-sort="none">Date</th>
 		<th aria-sort="none">Community</th>
 		</tr>
@@ -219,14 +195,10 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 
 func Backups(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table class="striped" id='last_table'  
-		  
-		  
-		
-		 >
+	report.WriteString(`<table class='striped' data-sortable='true' id='last_table' >
 		<thead>
 		<tr>
-		<th aria-sort="none">Device</th>
+		<th aria-sort="ascending" data-sort="asc">Device</th>
 		<th aria-sort="none">File</th>
 		<th aria-sort="none">System</th>
 		<th aria-sort="none">Disk</th>
@@ -286,16 +258,12 @@ func Backups(curUid int, devInfo map[int]db.DevicesMeta) string {
 
 func Drivespace(curUid int, devInfo map[int]db.DevicesMeta) string {
 	var report strings.Builder
-	report.WriteString(`<table id='drive_table' 
-		  
-		  
-		
-		 >
+	report.WriteString(`<table class='striped' id='drive_table'>
 		<thead>
 		<tr>
-		<th aria-sort="none">Device</th>
-		<th aria-sort="none">Drive Space</th>
-		<th aria-sort="none">Date</th>
+		<th>Device</th>
+		<th>Drive Space</th>
+		<th>Date</th>
 		</tr>
 		</thead>
 		<tbody>`)

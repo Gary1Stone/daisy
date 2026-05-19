@@ -17,7 +17,7 @@ let btnSave = {
 
 
 //As user changes something turn on the Save button
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     btnSave.off();
     const active = $("#active").val();
     if (active === "1") {

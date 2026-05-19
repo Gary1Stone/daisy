@@ -2,7 +2,7 @@
 
 // Remembering the filter settings from screen to screen, not session to session.
 // Should we automatically filter for this user?
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     const searchBox = document.querySelector('.table-component .table-top .table-search-block .input input[type="text"]');
     const searchString = sessionStorage.getItem('searchString');
     if (searchString === null) {

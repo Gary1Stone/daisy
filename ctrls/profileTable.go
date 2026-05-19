@@ -49,7 +49,7 @@ func ProfilesTable(curUid int, filter db.ProfileFilter) string {
 */
 // Helper function to build the table header
 func buildProfileTableHeader() string {
-	return `<table class="striped" id="profileTable">
+	return `<table class='striped' data-sortable='true' id="profileTable">
     <thead>
 	<tr>
 		<td colspan="4" style="text-align: right; border-bottom: none;">
@@ -60,7 +60,7 @@ func buildProfileTableHeader() string {
 	</tr>
     <tr>
         <th aria-sort="ascending" data-sort="asc">User ID</th>
-        <th aria-sort="none">Name</th>
+        <th aria-sort="ascending" data-sort="asc">Name</th>
         <th aria-sort="none">Group</th>
         <th aria-sort="none">Alerts&sol;Tickets</th>
     </tr>

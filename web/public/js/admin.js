@@ -166,7 +166,7 @@ function buildTable() {
 
     const tblParts = [];
     tblParts.push(`<h6 style="text-align: center;">${title}</h6>
-        <table class="striped" id="settingsTable"><thead><tr>
+        <table class='striped' data-sortable='true' id="settingsTable"><thead><tr>
         <th style="width: 15%; white-space: nowrap;">Code</th><th>Description</th>${headerExtraColumn}
         <th style="width: 1%; white-space: nowrap;">Active</th><th style="width: 1%; white-space: nowrap;"></th>
         <th style="width: 1%; white-space: nowrap;"></th><th style="width: 1%; white-space: nowrap;"'></th>

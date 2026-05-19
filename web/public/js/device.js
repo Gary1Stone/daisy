@@ -5,7 +5,7 @@ let gblOldColor = "";   //used to remember the icon's old color if the user togg
 let oldImageName = "";  //remember what the previous picture was, in case user cancels
 
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     const cid = $("#cid").val();
     gblOldColor = $("#color").val();
     if (isDigits(cid) && txt2Int(cid) === 0) {

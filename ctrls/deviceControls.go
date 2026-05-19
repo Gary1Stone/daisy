@@ -52,9 +52,9 @@ func BuildSoftwareList(curUid, cid int) string {
 	table.WriteString(items[0].ScanDate)
 	table.WriteString(`)</label>
 		<div style="max-height: 400px; overflow-y: auto;">
-		<table class="striped" id="swlist" >
+		<table class='striped' data-sortable='true' id="swlist" >
 		<thead><tr>
-		<th aria-sort="none">Software</th>
+		<th aria-sort="ascending" data-sort="asc">Software</th>
 		<th aria-sort="none">OEM License</th>
 		</tr></thead>
 		<tbody>`)

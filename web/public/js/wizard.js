@@ -19,7 +19,7 @@ const wizards = {
     REQUEST: { icon: "mif-file-binary", title: "Request", steps: ["DeviceSelect", "SoftwareSelect", "UserSelect", "TroubleSelect", "NotesText"] }
 };
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     const wizKey = $("#wizKey").val();
     const cid = $("#cid").val(); // If have cid, skip to next step
     nav.init(wizKey, cid);

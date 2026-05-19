@@ -40,13 +40,13 @@ func buildTableHeader(isSeen bool) string {
 	if isSeen {
 		title = "Last Seen"
 	}
-	return `<table class="striped" id='last_table'  
+	return `<table class='striped' data-sortable='true' id='last_table'  
 		  
 		  
 		 
 		>
 		<thead><tr>
-		<th aria-sort="none">Photo</th>
+		<th aria-sort="ascending" data-sort="asc">Photo</th>
 		<th aria-sort="none">Device</th>
 		<th aria-sort="none">` + title + `</th>
 		<th aria-sort="none">Location</th>

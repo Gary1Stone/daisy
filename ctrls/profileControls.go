@@ -23,10 +23,10 @@ func GetProfileLogins(curUid, uid int) string {
 	}
 	var report strings.Builder
 	report.WriteString(`<div style="max-height: 400px; overflow-y: auto;">
-		<table class="striped" id='dash_table'>
+		<table class='striped' data-sortable='true' id='dash_table'>
 		<thead>
 		<tr>
-		<th aria-sort="none">Date/Time</th>
+		<th aria-sort="ascending" data-sort="asc">Date/Time</th>
 		<th aria-sort="none">Days Ago</th>
 		<th aria-sort="none">Location</th>
 		<th aria-sort="none">Distance (Km)</th>

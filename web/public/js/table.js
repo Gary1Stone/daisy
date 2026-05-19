@@ -1,4 +1,12 @@
-// grid.js
+// table.js
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Find all tables with data-sortable='true'
+    const sortableTables = document.querySelectorAll('[data-sortable="true" i]');
+    sortableTables.forEach(table => {
+        buildTable(table.id);
+    });
+});
 
 
 // For the html table, enable sorting by columns and search by table data contents.

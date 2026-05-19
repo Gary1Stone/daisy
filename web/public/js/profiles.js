@@ -4,7 +4,6 @@ let btnNew;
 
 document.addEventListener('DOMContentLoaded', function() {
   btnNew = new Button("btnNew");
-  buildTable('profileTable');
 });
 
 function addRecord(id = 0) {

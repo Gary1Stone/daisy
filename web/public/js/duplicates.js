@@ -1,6 +1,6 @@
 // duplicates.js
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     $("#avoidSelect").change(function () {
         const optionSelected = $("#avoidSelect").val();
         const macsArray = optionSelected.split("_");

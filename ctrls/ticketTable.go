@@ -47,10 +47,10 @@ func TicketsTable(curUid int) string {
 
 // Helper function to build the table header
 func buildTicketsTableHeader() string {
-	return `<table class="striped" id="tickettable">
+	return `<table class='striped' data-sortable='true' id="tickettable">
     <thead>
     <tr>
-        <th aria-sort="none" data-show="false">AID</th>
+        <th aria-sort="ascending" data-sort="asc" data-show="false">AID</th>
         <th aria-sort="none">Device</th>
         <th aria-sort="none">Queue</th>
         <th aria-sort="none">Assigned</th>

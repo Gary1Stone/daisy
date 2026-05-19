@@ -26,7 +26,7 @@ func GetAlertTable(uid int) string {
 		return ""
 	}
 
-	table.WriteString(`<table class="striped" id="alerttable"><thead><tr><th>Device</th><th>Action</th><th> </th></tr></thead><tbody>`)
+	table.WriteString(`<table class='striped' data-sortable='true' id="alerttable"><thead><tr><th>Device</th><th>Action</th><th> </th></tr></thead><tbody>`)
 	for _, item := range items {
 		deviceName := item.DeviceName
 		if len(deviceName) > 10 {

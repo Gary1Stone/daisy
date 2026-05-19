@@ -55,12 +55,6 @@ func GetProfile(c *fiber.Ctx) error {
 		profile.Color = colors.Light
 	}
 
-	// // Can the record be deleted?
-	// isDeleteable := false
-	// if profile.Deleteable && user.Permissions.Profile.Delete {
-	// 	isDeleteable = true
-	// }
-
 	ipBanned := ""
 	// Check if user was banned by their IP address
 	if db.CheckUsersLastIpBanned(profile.Uid) {

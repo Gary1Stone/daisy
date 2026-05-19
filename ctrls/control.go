@@ -49,10 +49,10 @@ func BuildActiveUsersTable(curUid int) string {
 // Helper function to build the table header
 func buildActiveUsersTableHeader() string {
 	return `<div style="max-height: 400px; overflow-y: auto;">
-	<table class="striped" id="activeuserstable" >
+	<table class='striped' data-sortable='true' id="activeuserstable" >
     <thead>
     <tr>
-        <th aria-sort="none">User</th>
+        <th aria-sort="ascending" data-sort="asc">User</th>
         <th aria-sort="none">Since</th>
         <th aria-sort="none">Location</th>
         <th>End Session</th>
