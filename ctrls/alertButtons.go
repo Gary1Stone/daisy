@@ -7,7 +7,7 @@ import (
 
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/svg"
-	"github.com/gbsto/daisy/web/wizards"
+	"github.com/gbsto/daisy/wizards"
 )
 
 func GetAlertTable(uid int) string {

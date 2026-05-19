@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/web/wizards"
+	"github.com/gbsto/daisy/wizards"
 
 	"github.com/gbsto/daisy/ctrls"
 

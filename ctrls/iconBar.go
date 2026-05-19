@@ -39,7 +39,6 @@ func loadBtnInfo() {
 		BtnDelete: {"btnDelete", "Delete Record", "", "deleteRecord(event);", svg.GetIcon("delete")},
 		BtnSeen:   {"btnSeen", "Not Seen in 90+ days", "style='color:red;'", "seenClick();", svg.GetIcon("eye")},
 		BtnBackup: {"btnBackup", "Not Backed up in 90+ days", "style='color:red;'", "backupClick();", svg.GetIcon("copy")},
-		BtnSearch: {"btnSearch", "Search", "", "popSearch();", svg.GetIcon("search")},
 		BtnHelp:   {"btnHelp", "Help", "", "showHelp();", svg.GetIcon("help")},
 		BtnTables: {"btnTables", "Select Admin Table", "", "showTableSelect();", svg.GetIcon("factory")},
 	}

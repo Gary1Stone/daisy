@@ -1,6 +1,6 @@
 // table.js
 
-// Find all tables with class='striped'
+// Find all tables with class='striped', add search and sort
 document.addEventListener('DOMContentLoaded', function() {
     // Create the search input field
     const searchInput = document.createElement('input');
@@ -116,22 +116,4 @@ function handleRowClick(event) {
   const id = row.dataset.id;
   if (!id) return;
   addRecord(id);
-}
-
-function popSearch() {
-  const searchInput = document.getElementById("txtSearch")
-  if (window.getComputedStyle(searchInput).display === "none") {
-    searchInput.style.display = "block";
-    searchInput.focus();
-  } else {
-    // Clear searchInput 
-    searchInput.value = "";
-  // Create and dispatch an 'input' event
-    const inputEvent = new Event('input', {
-      bubbles: true, // Allows the event to bubble up the DOM tree
-      cancelable: true // Allows the event to be cancelled
-    });
-    searchInput.dispatchEvent(inputEvent);
-    searchInput.style.display = "none";
-  }
 }

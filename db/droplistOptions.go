@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/devices"
-	"github.com/gbsto/daisy/web/wizards"
+	"github.com/gbsto/daisy/wizards"
 )
 
 type DroplistOption struct {

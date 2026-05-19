@@ -8,7 +8,7 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
-	"github.com/gbsto/daisy/web/wizards"
+	"github.com/gbsto/daisy/wizards"
 
 	"github.com/gofiber/fiber/v2"
 )

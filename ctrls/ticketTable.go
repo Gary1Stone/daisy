@@ -7,7 +7,7 @@ import (
 
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/util"
-	"github.com/gbsto/daisy/web/wizards"
+	"github.com/gbsto/daisy/wizards"
 )
 
 // We want only BROKEN, DIED, LOST, CARE, REQUEST actions
