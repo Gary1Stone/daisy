@@ -69,7 +69,7 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("daisy.hopto.org"),
-		Cache:      autocert.DirCache("./certs"),
+		Cache:      autocert.DirCache(certCacheDir),
 	}
 
 	// TLS Config
@@ -82,16 +82,21 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	}
 
 	// Middleware to enforce HTTPS
-	app.Use(secureOnly()) // Commented out because autocert will handle this redirection for us on port 80
+	app.Use(secureOnly())
 
 	// Register all your specific application routes
 	routes(app)
 	log.Println("Daisy Web Server starting...")
 
-	// Remember to open ports 443 and 80 in the windows firewall
+	port := os.Getenv("PORT")
+	if port == "" || len(port) < 2 || port[0] != ':' {
+		port = ":443" // Default to 443
+	}
+
+	// Remember to open ports 8443 and 80 in the windows firewall
 	// And open ports 587 and 465 for sending email as well
 	// And set port forwarding up on your ISP modem/router/wifi
-	ln, err := tls.Listen("tcp", ":8443", cfg)
+	ln, err := tls.Listen("tcp", port, cfg)
 	if err != nil {
 		panic(err)
 	}
