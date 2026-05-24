@@ -19,6 +19,8 @@ import (
 func StartServer(daisyLogger *lumberjack.Logger) {
 	// Redirect standard logger output to daisyLogger for centralized logging, including autocert messages
 	log.SetOutput(io.MultiWriter(os.Stderr, daisyLogger))
+	// certFile := "cert.pem"
+	// keyFile := "key.pem"
 
 	// Get the current working directory
 	workingDir, err := os.Getwd()
@@ -26,8 +28,23 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 		workingDir = "."
 	}
 
-	// Initialize GoFiber html template engine
+	// get absolute paths
+	// certFile = filepath.Join(workingDir, "certs", certFile)
+	// keyFile = filepath.Join(workingDir, "certs", keyFile)
+	publicDir := filepath.Join(workingDir, "web", "public")
 	viewsDir := filepath.Join(workingDir, "web", "views")
+	certCacheDir := filepath.Join(workingDir, "certs")
+
+	// Ensure certsCacheDir directory exists
+	if _, err := os.Stat(certCacheDir); os.IsNotExist(err) {
+		err = os.MkdirAll(certCacheDir, 0700)
+		if err != nil {
+			log.Println("failed to create certs directory:", err)
+			return
+		}
+	}
+
+	// Initialize GoFiber html template engine
 	engine := html.New(viewsDir, ".html")
 
 	// Create GoFiber app
@@ -45,7 +62,7 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	// Give external access to the public folder
 	// where javascript, css, images,... are stored
 	// app.Static("/", dir+"/public")
-	app.Static("/", filepath.Join(workingDir, "web", "public"))
+	app.Static("/", publicDir)
 	app.Use(recover.New())
 
 	// Move logger up so it captures all traffic and potential errors
@@ -55,15 +72,6 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 
 	app.Use(addHitCounter())
 	addProtection(app)
-
-	// Check if cache directory exists and if not, create it
-	certCacheDir := filepath.Join(workingDir, "certs")
-	if _, err := os.Stat(certCacheDir); os.IsNotExist(err) {
-		err = os.MkdirAll(certCacheDir, 0700)
-		if err != nil {
-			log.Println(err)
-		}
-	}
 
 	// https: Certificate manager
 	m := &autocert.Manager{
@@ -82,16 +90,50 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	}
 
 	// Middleware to enforce HTTPS
-	app.Use(secureOnly())
+	port := os.Getenv("PORT")
+	if port == "" || len(port) < 2 || port[0] != ':' {
+		port = ":8443" // Default to 8443
+	}
+	app.Use(SecureOnly(port))
+
+	// // Start Port 80 listener for Let's Encrypt HTTP-01 challenges and redirection
+	// go func() {
+	// 	log.Println("Listening for HTTP on :80")
+	// 	mux := http.NewServeMux()
+	// 	mux.Handle("/.well-known/acme-challenge/", m.HTTPHandler(nil))
+	// 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 		host, _, err := net.SplitHostPort(r.Host)
+	// 		if err != nil {
+	// 			host = r.Host
+	// 		}
+	// 		targetURL := "https://" + host + ":8443" + r.URL.RequestURI()
+	// 		http.Redirect(w, r, targetURL, http.StatusMovedPermanently)
+	// 	})
+	// 	log.Fatal(http.ListenAndServe(":80", mux))
+	// }()
 
 	// Register all your specific application routes
 	routes(app)
-	log.Println("Daisy Web Server starting...")
 
-	port := os.Getenv("PORT")
-	if port == "" || len(port) < 2 || port[0] != ':' {
-		port = ":443" // Default to 443
-	}
+	// ATTACKS: Adding the catch-all middleware AFTER routes()
+	// meaning if user asks for a page that does not exist, kick them out.
+	// app.Use(func(c *fiber.Ctx) error {
+	// 	// Determine the originator's IP address, even through multiple proxies
+	// 	ip := c.IP()
+	// 	ips := c.IPs() // If multiple IPs, use the first one
+	// 	if len(ips) > 0 {
+	// 		ip = ips[0]
+	// 	}
+	// 	// Record the attack
+	// 	db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
+	// 	// Set the status code to 404 Not Found
+	// 	c.Status(fiber.StatusNotFound)
+	// 	return c.Render("404", fiber.Map{ // HTML template is named "404.html"
+	// 		"Path": c.Path(),
+	// 	})
+	// })
+
+	log.Println("Daisy Web Server starting...")
 
 	// Remember to open ports 8443 and 80 in the windows firewall
 	// And open ports 587 and 465 for sending email as well
@@ -105,40 +147,3 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	defer db.Conn.Close()
 	log.Fatal(app.Listener(ln))
 }
-
-// ATTACKS: Adding the catch-all middleware AFTER routes.Routes()
-// meaning if user asks for a page that does not exist, kick them out.
-// app.Use(func(c *fiber.Ctx) error {
-// 	// Determine the originator's IP address, even through multiple proxies
-// 	ip := c.IP()
-// 	ips := c.IPs() // If multiple IPs, use the first one
-// 	if len(ips) > 0 {
-// 		ip = ips[0]
-// 	}
-// 	// Record the attack
-// 	db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
-// 	// Set the status code to 404 Not Found
-// 	c.Status(fiber.StatusNotFound)
-// 	return c.Render("404", fiber.Map{ // HTML template is named "404.html"
-// 		"Path": c.Path(),
-// 	})
-// })
-
-// Start Port 80 listener for Let's Encrypt HTTP-01 challenges and redirection
-// Autocert needs this to "renew" or issue your certificates automatically. This server
-// will also redirect all other HTTP traffic to HTTPS.
-// go func() {
-// 	log.Println("Listening for HTTP on :80")
-// 	mux := http.NewServeMux()
-// 	if useAutocert {
-// 		mux.Handle("/.well-known/acme-challenge/", m.HTTPHandler(nil))
-// 	} else {
-// 		mux.Handle("/.well-known/acme-challenge/", http.NotFoundHandler())
-// 	}
-// 	// Redirect all other HTTP traffic to HTTPS
-// 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-// 		targetURL := "https://" + r.Host + r.RequestURI
-// 		http.Redirect(w, r, targetURL, http.StatusMovedPermanently)
-// 	})
-// 	log.Fatal(http.ListenAndServe(":80", mux))
-// }()
