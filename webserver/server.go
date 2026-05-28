@@ -96,42 +96,8 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	}
 	app.Use(SecureOnly(port))
 
-	// // Start Port 80 listener for Let's Encrypt HTTP-01 challenges and redirection
-	// go func() {
-	// 	log.Println("Listening for HTTP on :80")
-	// 	mux := http.NewServeMux()
-	// 	mux.Handle("/.well-known/acme-challenge/", m.HTTPHandler(nil))
-	// 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 		host, _, err := net.SplitHostPort(r.Host)
-	// 		if err != nil {
-	// 			host = r.Host
-	// 		}
-	// 		targetURL := "https://" + host + ":8443" + r.URL.RequestURI()
-	// 		http.Redirect(w, r, targetURL, http.StatusMovedPermanently)
-	// 	})
-	// 	log.Fatal(http.ListenAndServe(":80", mux))
-	// }()
-
 	// Register all your specific application routes
 	routes(app)
-
-	// ATTACKS: Adding the catch-all middleware AFTER routes()
-	// meaning if user asks for a page that does not exist, kick them out.
-	// app.Use(func(c *fiber.Ctx) error {
-	// 	// Determine the originator's IP address, even through multiple proxies
-	// 	ip := c.IP()
-	// 	ips := c.IPs() // If multiple IPs, use the first one
-	// 	if len(ips) > 0 {
-	// 		ip = ips[0]
-	// 	}
-	// 	// Record the attack
-	// 	db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
-	// 	// Set the status code to 404 Not Found
-	// 	c.Status(fiber.StatusNotFound)
-	// 	return c.Render("404", fiber.Map{ // HTML template is named "404.html"
-	// 		"Path": c.Path(),
-	// 	})
-	// })
 
 	log.Println("Daisy Web Server starting...")
 
@@ -147,3 +113,21 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	defer db.Conn.Close()
 	log.Fatal(app.Listener(ln))
 }
+
+// ATTACKS: Adding the catch-all middleware AFTER routes()
+// meaning if user asks for a page that does not exist, kick them out.
+// app.Use(func(c *fiber.Ctx) error {
+// 	// Determine the originator's IP address, even through multiple proxies
+// 	ip := c.IP()
+// 	ips := c.IPs() // If multiple IPs, use the first one
+// 	if len(ips) > 0 {
+// 		ip = ips[0]
+// 	}
+// 	// Record the attack
+// 	db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
+// 	// Set the status code to 404 Not Found
+// 	c.Status(fiber.StatusNotFound)
+// 	return c.Render("404", fiber.Map{ // HTML template is named "404.html"
+// 		"Path": c.Path(),
+// 	})
+// })
