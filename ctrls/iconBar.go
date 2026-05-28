@@ -17,6 +17,7 @@ const (
 	BtnSearch = "btnSearch"
 	BtnHelp   = "btnHelp"
 	BtnTables = "btnTables"
+	BtnFilter = "btnFilter"
 )
 
 type buttonInfo struct {
@@ -41,6 +42,7 @@ func loadBtnInfo() {
 		BtnBackup: {"btnBackup", "Not Backed up in 90+ days", "style='color:red;'", "backupClick();", svg.GetIcon("copy")},
 		BtnHelp:   {"btnHelp", "Help", "", "showHelp();", svg.GetIcon("help")},
 		BtnTables: {"btnTables", "Select Admin Table", "", "showTableSelect();", svg.GetIcon("factory")},
+		BtnFilter: {"btnFilter", "Filter...", "", "popFilters();", svg.GetIcon("filter")},
 	}
 }
 
