@@ -46,9 +46,8 @@ function search() {
   sendData.task = "get_first_page";
   postJSON("devices", sendData).then(response => {
       document.getElementById("cards").innerHTML = response;
-      let msg = "";
       if (response.length < 10) {
-          msg = "No device matches found!";
+          toast("No device matches found!", "alert");
       }
       document.getElementById("searchError").innerHTML = msg;
   });
