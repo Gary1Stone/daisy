@@ -56,7 +56,7 @@ async function getCtrl(target, ctrlData) {
     }
 
     // Show a loading indicator in the target element
-    targetElement.innerHTML = `<span class="mif-spinner4 ani-spin"></span>`;
+    targetElement.setAttribute("aria-busy", "true");
 
     try {
         const responseData = await apiRequest("droplist", {
@@ -64,9 +64,12 @@ async function getCtrl(target, ctrlData) {
             body: new URLSearchParams(ctrlData)
         });
         targetElement.innerHTML = responseData;
+        targetElement.setAttribute("aria-busy", "false");
+        initCustomSelects(target);
     } catch (error) {
         toast(`Failed to load control: ${error.message}`, "alert");
-        targetElement.innerHTML = ``;
+        console.error("Failed to load control:", error);
+        targetElement.setAttribute("aria-busy", "false");
     }
 }
 

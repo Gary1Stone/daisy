@@ -46,6 +46,11 @@ func GetDevices(c *fiber.Ctx) error {
 		"groupSearchCtrl":  template.HTML(ctrls.BuildDropList("GROUPSEARCH", strconv.Itoa(filter.Gid), "", true, false)),
 		"userSearchCtrl":   template.HTML(ctrls.BuildDropList("USERSEARCH", strconv.Itoa(filter.Uid), strconv.Itoa(filter.Gid), true, false)),
 		"cards":            template.HTML(ctrls.DeviceCards(user.Uid, &filter, false)),
+		"devicesIcon":      template.HTML(svg.GetIcon("devices")),
+		"groupIcon":        template.HTML(svg.GetIcon("group")),
+		"siteIcon":         template.HTML(svg.GetIcon("site")),
+		"officeIcon":       template.HTML(svg.GetIcon("office")),
+		"searchIcon":       template.HTML(svg.GetIcon("search")),
 	}))
 }
 

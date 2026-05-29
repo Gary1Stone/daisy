@@ -249,10 +249,15 @@ function toast(msg, type = "info") {
 // Custom select list with icons and pico formatting
 // Mostly from https://www.w3schools.com/howto/howto_custom_select.asp
 // *********************************************************************
-function initCustomSelects() {
+function initCustomSelects(namedElementID = null) {
   let x, i, j, l, ll, selElmnt, a, b, c;
 /* Look for any elements with the class "custom-select": */
-x = document.getElementsByClassName("custom-select");
+if (namedElementID) {
+  const container = document.getElementById(namedElementID);
+  x = container ? container.getElementsByClassName("custom-select") : [];
+} else {
+  x = document.getElementsByClassName("custom-select");
+} 
 l = x.length;
 for (i = 0; i < l; i++) {
   selElmnt = x[i].getElementsByTagName("select")[0];

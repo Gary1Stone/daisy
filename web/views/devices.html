@@ -8,34 +8,33 @@
   <article>
     <header>
         <button type='button' aria-label="Close" rel="prev" data-target="filterDialog" onclick="toggleModal(event)"></button>
-        <h3>Device Search</h3>
+        <h3>Filter Devices</h3>
     </header>
     <section>
+      <label for="type">{{.devicesIcon}} Device Type</label>
       {{.typeCtrl}}
+      <label for="siteSearch">{{.siteIcon}} Site</label>
       {{.siteSearchCtrl}}
+      <label for="officeSearch">{{.officeIcon}} Office</label>
       <div id="selectOffice">
         {{.officeSearchCtrl}}
       </div>
+      <label for="groupSearch">{{.groupIcon}} Group</label>
       {{.groupSearchCtrl}}
+      <label for="userSearch">{{.userIcon}} Person</label>
       <div id="selectSearchUser">
         {{.userSearchCtrl}}
       </div>
-      <label for="textSearch">Find</label>
+      <label for="textSearch">{{.searchIcon}} Find</label>
       <div class="table-search-block">
         <div class="input">
             <input type="text" id="textSearch">
-            <div class="button-group">
-                <button type='button' class="button input-clear-button" tabindex="-1" type="button" onclick="$('#txtSearch').val('');">
-                    <span class="default-icon-cross"></span>
-                </button>
-            </div>
         </div>
       </div>
     </section>
     <footer>
       <button type='button' class="secondary" data-target="filterDialog" onclick="toggleModal(event)">Cancel</button>
       <button type='button' autofocus data-target="filterDialog" onclick="search();toggleModal(event);">Search</button>
-      <small id="filterError" class="fg-red"></small>
     </footer>
   </article>
 </dialog>

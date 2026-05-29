@@ -41,7 +41,7 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 
 	// Add old Labels for Metro as converting, but not for Pico
 	isMetro := false
-	if field != "GROUP" && field != "GEOFENCE" {
+	if field != "GROUP" && field != "GEOFENCE" && field != "TYPESEARCH" && field != "SITESEARCH" && field != "OFFICESEARCH" && field != "GROUPSEARCH" && field != "USERSEARCH" {
 		isMetro = true
 		fmt.Fprintf(&ctrl, `<label for="%s">%s</label>`, droplist.Id, droplist.Label)
 	}
