@@ -118,7 +118,7 @@ func GetUserList(field string, selected, parentCode string, withBlank bool) []Dr
 		var option DroplistOption
 		options = append(options, option)
 	}
-	isSearch := strings.Contains(field, "SEARCH")
+	//	isSearch := strings.Contains(field, "SEARCH")
 	field = strings.TrimSuffix(field, "SEARCH")
 	field = strings.TrimSuffix(field, "INFORM")
 	icon := FindIconNameByName(field)
@@ -127,9 +127,10 @@ func GetUserList(field string, selected, parentCode string, withBlank bool) []Dr
 		var item DroplistOption
 		var myquery strings.Builder
 		myquery.WriteString("SELECT uid, fullname FROM profiles WHERE uid=? AND gid=? ")
-		if isSearch {
-			myquery.WriteString("AND cnt>0 ")
-		}
+		// NOT SURE WHY I included the cnt (number of alerts/notices the person has) <----------<<<<<<<<<<<<  REMOVE AFTER WIZARD RE-CODED IF NOT USED this is not used in device search
+		// if isSearch {
+		// 	myquery.WriteString("AND cnt>0 ")
+		// }
 		err := Conn.QueryRow(myquery.String(), uid, gid).Scan(&item.Value, &item.Description)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println(err)
@@ -143,9 +144,10 @@ func GetUserList(field string, selected, parentCode string, withBlank bool) []Dr
 	}
 	var query strings.Builder
 	query.WriteString("SELECT uid, fullname FROM profiles WHERE active=1 AND gid=? AND uid<>? ")
-	if isSearch {
-		query.WriteString("AND cnt>0 ")
-	}
+	// NOT SURE WHY I included the cnt (number of alerts/notices the person has) <----------<<<<<<<<<<<<  REMOVE AFTER WIZARD RE-CODED IF NOT USED
+	// if isSearch {
+	// 	query.WriteString("AND cnt>0 ")
+	// }
 	query.WriteString("ORDER BY fullname")
 	rows, err := Conn.Query(query.String(), gid, uid)
 	if err != nil && err != sql.ErrNoRows {
