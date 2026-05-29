@@ -69,10 +69,6 @@ func PostDevices(c *fiber.Ctx) error {
 	//Do processing and saves
 	response := ""
 	switch filter.Task {
-	case "get_office_control":
-		response = ctrls.BuildDropList("OFFICESEARCH", filter.Office, filter.Site, true, false)
-	case "get_user_control":
-		response = ctrls.BuildDropList("USERSEARCH", strconv.Itoa(filter.Uid), strconv.Itoa(filter.Gid), true, false)
 	case "get_next_page", "get_first_page": // Devices page search for devices
 		err := filter.SetDeviceFilter(user.Uid) // Remember the device filter settings
 		if err != nil {
