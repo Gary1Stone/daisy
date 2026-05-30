@@ -258,10 +258,16 @@ input[aria-invalid="true"] + small.err {
     color: var(--pico-color);
 }
 
-/* auto-wrap grid */
+/* auto-row-wrap grid */
 .autogrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--pico-grid-column-gap); 
   margin-bottom: var(--pico-block-spacing-vertical);
+}
+
+@media (max-width: 576px) {
+  .autogrid {
+    grid-template-columns: 1fr; /* Forces a clean single column */
+  }
 }

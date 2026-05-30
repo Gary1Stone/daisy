@@ -26,33 +26,33 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 		if item.IsMissing {
 			color = "fg-red"
 		}
-		tip := "Never Seen"
+		detail := "Never Seen"
 		if item.Last_seen_days >= 0 {
-			tip = "Last Seen (" + strconv.Itoa(item.Last_seen_days) + " days ago)"
+			detail = "Last Seen: " + strconv.Itoa(item.Last_seen_days) + " days ago"
 		}
-		eyeIcon := fmt.Sprintf("<span class='%s' data-tooltip='%s'>%s</span>", color, tip, svg.GetIcon("eye"))
+		eyeIcon := fmt.Sprintf("<span class='%s' data-tooltip='Last Seen'>%s</span> %s", color, svg.GetIcon("eye"), detail)
 
 		if item.Type == "Laptop" || item.Type == "Desktop" {
 			color = ""
 			if item.IsLate {
 				color = "fg-red"
 			}
-			tip = "Not backed up"
-			if item.Last_backup_days >= 0 { // TODO:- ints read 0 from database so how to check if no entry?
-				tip = "Last backed up " + strconv.Itoa(item.Last_seen_days) + " days ago)"
+			detail = "Not backed up"
+			if item.Last_backup_days >= 0 {
+				detail = "Backed up " + strconv.Itoa(item.Last_seen_days) + " days ago"
 			}
-			backupIcon = fmt.Sprintf("<span class='%s' data-tooltip='%s`>%s</span>", color, tip, svg.GetIcon("copy"))
+			backupIcon = fmt.Sprintf("<span class='%s' data-tooltip='Backup'`>%s</span>%s", color, svg.GetIcon("copy"), detail)
 		}
 
 		// If assigend to a user or group
 		if item.Uid > 0 {
-			assigned = "<p><span data-tooltip='Assigned to person' >" + svg.GetIcon("user") + "</span> " + item.Assigned + "</p>"
+			assigned = "<span data-tooltip='Assigned to person' >" + svg.GetIcon("user") + "</span> " + item.Assigned
 		} else if item.Gid > 0 {
-			assigned = "<span data-tooltip='Assigned to group'>" + svg.GetIcon("profiles") + "</span> " + item.Gid_usr + "</p>"
+			assigned = "<span data-tooltip='Assigned to group'>" + svg.GetIcon("profiles") + "</span> " + item.Gid_usr
 		}
 		// Broken Icon
 		if item.IsBroken {
-			brokenIcon = "<span class='fg-red' data-tooltip='Broken'>" + svg.GetIcon("broken") + "</span>&nbsp;"
+			brokenIcon = "<span class='fg-red' data-tooltip='Broken'>" + svg.GetIcon("broken") + "</span>"
 		}
 
 		// Build the card contents - HEADER
@@ -75,11 +75,12 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 		} else {
 			fmt.Fprintf(&card, "<a href='device.html?cid=%d' data-tooltip='Show Record'>", item.Cid)
 		}
-		fmt.Fprintf(&card, "<img src='images/%s' alt='device photo' width='200px'></a>", item.Small_image)
+		fmt.Fprintf(&card, "<img src='images/%s' alt='device photo' width='100%%'></a>", item.Small_image)
 
 		//BODY
 		fmt.Fprintf(&card, "<section><p>%s (%d)</p><p>%s</p><p>%s %s</p>", item.Make, item.Year, mxl25(item.Model), brokenIcon, item.Status)
-		fmt.Fprintf(&card, "<p>%s %s</p><p>%s %s %s</p></section>", item.Site, item.Office_usr, assigned, eyeIcon, backupIcon)
+		fmt.Fprintf(&card, "<p>%s %s</p><p>%s %s</p>", svg.GetIcon("site"), item.Site_usr, svg.GetIcon("office"), item.Office_usr)
+		fmt.Fprintf(&card, "<p>%s</p><p>%s</p><p>%s</p></section>", assigned, eyeIcon, backupIcon)
 
 		//FOOTER
 		card.WriteString("<footer>")

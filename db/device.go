@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -329,12 +330,21 @@ func findLastInfo(cid int, infoSlice []*LastInfo) (string, string, int) {
 // Build list of CIDs (device/Computer IDs) not seen in the last 90 days
 func GetMissingDevices() []int {
 	var missing []int
-	query := `
-		SELECT cid FROM devices
-		WHERE active = 1 AND (last_audit IS NULL OR last_audit < strftime('%s', datetime('now', '-90 day')))
-		ORDER BY cid
-		`
-	rows, err := Conn.Query(query)
+
+	days := 90
+	strDays := os.Getenv("LAST_SEEN_LATE")
+	if len(strDays) > 0 {
+		var err error
+		days, err = strconv.Atoi(strDays)
+		if err != nil {
+			days = 90
+		}
+	}
+
+	query := `SELECT cid FROM devices
+		WHERE active = 1 AND (last_audit IS NULL OR last_audit < strftime('%s', datetime('now', '-' || ? || ' day')))
+		ORDER BY cid`
+	rows, err := Conn.Query(query, days)
 	if err != nil {
 		log.Println(err)
 		return missing
@@ -358,7 +368,19 @@ func GetMissingDevices() []int {
 // Build list of CIDs (Computer IDs) not backed up in the last 90 days
 func GetLateBackups() []int {
 	var late []int
-	timestamp := time.Now().AddDate(0, 0, -90).Unix()
+
+	days := 90
+	strDays := os.Getenv("BACKUP_DISK_LATE")
+	if len(strDays) > 0 {
+		var err error
+		days, err = strconv.Atoi(strDays)
+		if err != nil {
+			days = 90
+		}
+	}
+	days = days * -1
+
+	timestamp := time.Now().AddDate(0, 0, days).Unix()
 	query := `
 	SELECT d.cid
 	FROM devices d
