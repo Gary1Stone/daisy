@@ -85,9 +85,6 @@ func PostDroplist(c *fiber.Ctx) error {
 		}
 		reply = ctrls.BuildDropList("GROUP", strconv.Itoa(recvd.Gid), "", withBlank, false)
 
-	// case "get_person_control_device":
-	// case "get_person_control_ticket":
-	// case "get_person_control_wizard":
 	case "USER":
 		withBlank := true
 		if recvd.IsWizard {
@@ -95,7 +92,7 @@ func PostDroplist(c *fiber.Ctx) error {
 				recvd.Uid = user.Uid
 			}
 			if recvd.Wizard == "broken" || recvd.Wizard == "care" || recvd.Wizard == "request" || recvd.Wizard == "claim" {
-				withBlank = false // Broken and care needs someone to look into it.
+				withBlank = false // Broken and Care needs someone to look into it.
 			}
 		}
 		if recvd.IsTicket || recvd.IsWizard {
@@ -119,12 +116,9 @@ func PostDroplist(c *fiber.Ctx) error {
 		}
 		reply = ctrls.BuildDropList("OFFICESEARCH", recvd.Office, recvd.Site, true, false)
 
-	// case "get_user_search_control_wizard":
-	// case "get_user_control_devices":
 	case "USERSEARCH":
 		reply = ctrls.BuildDropList("USERSEARCH", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
 
-	// case "get_inform_person_control_ticket":
 	case "USERINFORM":
 		if recvd.IsTicket {
 			// If there is a group, and no user, but a device, lookup that device's assigned user (if any)

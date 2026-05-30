@@ -257,3 +257,11 @@ input[aria-invalid="true"] + small.err {
     text-decoration: none;
     color: var(--pico-color);
 }
+
+/* auto-wrap grid */
+.autogrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--pico-grid-column-gap); 
+  margin-bottom: var(--pico-block-spacing-vertical);
+}

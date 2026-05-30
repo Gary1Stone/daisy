@@ -1,6 +1,6 @@
 {{template "partials/top2" .}} {{template "partials/navbar2" .}}
 <main class="container">
-  <div class="grid" id="cards">{{ .cards }}</div>
+  <div id="cards" class="autogrid">{{ .cards }}</div>
 </main>
 
 
@@ -32,7 +32,7 @@
     </section>
     <footer>
       <button type='button' class="secondary" data-target="filterDialog" onclick="toggleModal(event)">Cancel</button>
-      <button type='button' autofocus data-target="filterDialog" onclick="search();toggleModal(event);">Search</button>
+      <button type='button' autofocus data-target="filterDialog" onclick="search();">Search</button>
     </footer>
   </article>
 </dialog>
@@ -46,16 +46,16 @@
     </header>
       <div class="dialog-content" style="overflow-y: scroll; height: 12rem; ">
           <ul class="v-menu">
-              <li><a href="#" onclick="showWizard('SIGHTING');"><span class="mif-eye icon fg-green"></span>I saw...</a></li>
-              <li id="backupPick"><a href="#" onclick="showWizard('BACKUP');"><span class="mif-copy icon fg-darkBlue"></span>I backed up...</a></li>
-              <li><a href="#" onclick="showWizard('CARE');"><span class="mif-wrench icon fg-red"></span>It needs care...</a></li>
-              <li><a href="#" onclick="showWizard('BROKEN');"><span class="mif-heart-broken icon fg-red"></span>It broke...</a></li>
-              <li><a href="#" onclick="showWizard('DIED');"><span class="mif-stethoscope icon fg-red"></span>It died...</a></li>
-              <li><a href="#" onclick="showWizard('LOST');"><span class="mif-steps icon fg-red"></span>It's Lost...</a></li>
-              <li><a href="#" onclick="showWizard('USING');"><span class="mif-checkmark icon fg-green"></span>I used...</a></li>
-              <li><a href="#" onclick="showWizard('CLAIMING');"><span class="mif-tag icon fg-blue"></span>I claim...</a></li>
-              <li><a href="#" onclick="showWizard('GIVING');"><span class="mif-tag icon fg-blue"></span>I gave...</a></li>
-              <li id="removePick"><a href="#" onclick="showWizard('REQUEST');"><span class="mif-file-binary icon fg-darkBlue"></span>I need Software...</a></li>
+              <li><a href="#" onclick="showWizard('SIGHTING');"><span class="fg-green">{{.sightingIcon}}</span>I saw...</a></li>
+              <li id="backupPick"><a href="#" onclick="showWizard('BACKUP');"><span class="fg-blue">{{.backupIcon}}</span>I backed up...</a></li>
+              <li><a href="#" onclick="showWizard('CARE');"><span class="fg-red">{{.careIcon}}</span>It needs care...</a></li>
+              <li><a href="#" onclick="showWizard('BROKEN');"><span class="fg-red">{{.brokenIcon}}</span>It broke...</a></li>
+              <li><a href="#" onclick="showWizard('DIED');"><span class="fg-red">{{.diedIcon}}</span>It died...</a></li>
+              <li><a href="#" onclick="showWizard('LOST');"><span class="fg-red">{{.lostIcon}}</span>It's Lost...</a></li>
+              <li><a href="#" onclick="showWizard('USING');"><span class="fg-green">{{.usingIcon}}</span>I used...</a></li>
+              <li><a href="#" onclick="showWizard('CLAIMING');"><span class="fg-blue">{{.claimingIcon}}</span>I claim...</a></li>
+              <li><a href="#" onclick="showWizard('GIVING');"><span class="fg-blue">{{.givingIcon}}</span>I gave...</a></li>
+              <li id="removePick"><a href="#" onclick="showWizard('REQUEST');"><span class="fg-blue">{{.removeIcon}}</span>I need Software...</a></li>
           </ul>
       </div>
     <footer>

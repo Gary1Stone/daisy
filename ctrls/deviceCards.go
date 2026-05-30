@@ -2,12 +2,13 @@ package ctrls
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
 
-	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 // Device cards for the devices.html screen
@@ -18,98 +19,67 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 		log.Println(err)
 	}
 	for _, item := range items {
-		color := colors.Primary
-		eyeIcon := "<span class='mif-eye' title='Last seen (days ago)'></span>"
 		backupIcon := ""
 		assigned := ""
 		brokenIcon := ""
+		color := ""
 		if item.IsMissing {
-			eyeIcon = "<p><span class='mif-eye fg-red blinking' title='Last seen (days ago)'></span>"
-			color = "alert"
+			color = "fg-red"
 		}
+		tip := "Never Seen"
 		if item.Last_seen_days >= 0 {
-			eyeIcon += " " + strconv.Itoa(item.Last_seen_days) + " Days</p>"
-		} else {
-			eyeIcon += " never seeen</p>"
+			tip = "Last Seen (" + strconv.Itoa(item.Last_seen_days) + " days ago)"
 		}
+		eyeIcon := fmt.Sprintf("<span class='%s' data-tooltip='%s'>%s</span>", color, tip, svg.GetIcon("eye"))
+
 		if item.Type == "Laptop" || item.Type == "Desktop" {
-			backupIcon = "<p><span class='mif-copy' title='Last backup (days ago)'></span>"
+			color = ""
 			if item.IsLate {
-				backupIcon = "<p><span class='mif-copy fg-red blinking' title='Last backup (days ago)'></span>"
-				color = "alert"
+				color = "fg-red"
 			}
-			backupIcon += " " + strconv.Itoa(item.Last_backup_days) + " Days</p>"
+			tip = "Not backed up"
+			if item.Last_backup_days >= 0 { // TODO:- ints read 0 from database so how to check if no entry?
+				tip = "Last backed up " + strconv.Itoa(item.Last_seen_days) + " days ago)"
+			}
+			backupIcon = fmt.Sprintf("<span class='%s' data-tooltip='%s`>%s</span>", color, tip, svg.GetIcon("copy"))
 		}
+
 		// If assigend to a user or group
 		if item.Uid > 0 {
-			assigned = "<p><span class='mif-user' title='Assigned to person' ></span> " + item.Assigned + "</p>"
+			assigned = "<p><span data-tooltip='Assigned to person' >" + svg.GetIcon("user") + "</span> " + item.Assigned + "</p>"
 		} else if item.Gid > 0 {
-			assigned = "<span class='mif-users icon' title='Assigned to group'></span> " + item.Gid_usr + "</p>"
+			assigned = "<span data-tooltip='Assigned to group'>" + svg.GetIcon("profiles") + "</span> " + item.Gid_usr + "</p>"
 		}
 		// Broken Icon
 		if item.IsBroken {
-			brokenIcon = "<span class='mif-heart-broken fg-red blinking' title='Broken'></span>&nbsp;"
+			brokenIcon = "<span class='fg-red' data-tooltip='Broken'>" + svg.GetIcon("broken") + "</span>&nbsp;"
 		}
 
 		// Build the card contents - HEADER
-		card.WriteString("<div class='miniCard'><header>")
-		card.WriteString("<span class='")
-		card.WriteString(item.Icon)
-		card.WriteString(" icon ")
-		if color == "alert" {
-			card.WriteString("fg-red")
+		color = ""
+		if item.IsMissing || item.IsLate || item.IsBroken {
+			color = "fg-red"
 		}
-		card.WriteString("'></span>&nbsp;")
-		card.WriteString(mxl25(item.Name))
-		card.WriteString("&nbsp;")
+		fmt.Fprintf(&card, "<article><header><span class='%s' >%s</span> %s ", color, svg.GetIcon(item.Icon), mxl25(item.Name))
 
 		// LHS of title - Alert Icon
 		if len(item.Color) > 0 {
-			card.WriteString("<span class='mif-bell fg-red blinking float-right' title='Alert'></span>")
+			fmt.Fprintf(&card, "<span style='color: red; float: right !important;' data-tooltip='Alert'>%s</span></header>", svg.GetIcon("bell"))
 		} else {
-			card.WriteString("&nbsp;")
+			card.WriteString("&nbsp;</header>")
 		}
-		card.WriteString("</header>")
 
 		//PICTURE
 		if isWiz {
-			card.WriteString("<a href='#' onclick='selectDevice(")
-			card.WriteString(strconv.Itoa(item.Cid))
-			card.WriteString(");' title='Select Device'>")
-			card.WriteString("<img src='images/")
-			card.WriteString(item.Small_image)
-			card.WriteString("' alt='device photo'>")
-			card.WriteString("</a>")
+			fmt.Fprintf(&card, "<a href='#' onclick='selectDevice('%d');' data-tooltip='Show Record'>", item.Cid)
 		} else {
-			card.WriteString("<a href='device.html?cid=")
-			card.WriteString(strconv.Itoa(item.Cid))
-			card.WriteString("' title='Show Record'>")
-			card.WriteString("<img src='images/")
-			card.WriteString(item.Small_image)
-			card.WriteString("' alt='photo'>")
-			card.WriteString("</a>")
+			fmt.Fprintf(&card, "<a href='device.html?cid=%d' data-tooltip='Show Record'>", item.Cid)
 		}
+		fmt.Fprintf(&card, "<img src='images/%s' alt='device photo' width='200px'></a>", item.Small_image)
 
 		//BODY
-		card.WriteString("<section><p>")
-		card.WriteString(item.Make)
-		card.WriteString(" (")
-		card.WriteString(strconv.Itoa(item.Year))
-		card.WriteString(")</p><p>")
-		card.WriteString(mxl25(item.Model))
-		card.WriteString("</p><p>")
-		card.WriteString(brokenIcon)
-		card.WriteString(item.Status)
-		card.WriteString("</p>")
-		card.WriteString("<p>")
-		card.WriteString(item.Site)
-		card.WriteString(" ")
-		card.WriteString(item.Office_usr)
-		card.WriteString("</p>")
-		card.WriteString(assigned)
-		card.WriteString(eyeIcon)
-		card.WriteString(backupIcon)
-		card.WriteString("</section>")
+		fmt.Fprintf(&card, "<section><p>%s (%d)</p><p>%s</p><p>%s %s</p>", item.Make, item.Year, mxl25(item.Model), brokenIcon, item.Status)
+		fmt.Fprintf(&card, "<p>%s %s</p><p>%s %s %s</p></section>", item.Site, item.Office_usr, assigned, eyeIcon, backupIcon)
 
 		//FOOTER
 		card.WriteString("<footer>")
@@ -118,24 +88,12 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 			if err != nil {
 				log.Println(err)
 			}
-			card.WriteString("<div style='display: none;' id='cid")
-			card.WriteString(strconv.Itoa(item.Cid))
-			card.WriteString("'>")
-			card.WriteString(string(deviceJson))
-			card.WriteString("</div>")
+			fmt.Fprintf(&card, `<div style='display: none;' id='cid%d'>%s</div>`, item.Cid, string(deviceJson))
 		} else {
-			card.WriteString("<button title='Create Report' class='button secondary' onclick=\"popWizards(")
-			card.WriteString(strconv.Itoa(item.Cid))
-			card.WriteString(", '")
-			card.WriteString(mxl25(item.Name))
-			card.WriteString("', '")
-			card.WriteString(item.Type)
-			card.WriteString("');\">")
-			card.WriteString("<span class='mif-news icon'></span>&nbsp;Report&hellip; ")
-			card.WriteString("</button>")
+			fmt.Fprintf(&card, `<button title='Create Report' class='secondary' onclick="popWizards('%d', '%s', '%s');">`, item.Cid, mxl25(item.Name), item.Type)
+			fmt.Fprintf(&card, `%s&nbsp;Report&hellip; </button>`, svg.GetIcon("news"))
 		}
-		card.WriteString("</footer>")
-		card.WriteString("</div>")
+		card.WriteString("</footer></article>")
 	}
 	return card.String()
 }

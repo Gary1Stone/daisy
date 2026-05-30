@@ -48,8 +48,10 @@ function search() {
       document.getElementById("cards").innerHTML = response;
       if (response.length < 10) {
           toast("No device matches found!", "alert");
+      } else {
+        const dialog = document.getElementById("filterDialog");
+        if (dialog) dialog.close();
       }
-      document.getElementById("searchError").innerHTML = msg;
   });
 }
 
@@ -154,11 +156,9 @@ function popWizards(cid, devName, devType) {
   document.getElementById("wizcid").value = cid;
   document.getElementById("deviceName").value = devName;
   if (devType.toUpperCase() === "DESKTOP" || devType.toUpperCase() === "LAPTOP") {
-    document.getElementById("installPick").style.display = "";
-    document.getElementById("removePick").style.display = "";
-    document.getElementById("backupPick").style.display = "";
+    document.getElementById("removePick").style.display = "block";
+    document.getElementById("backupPick").style.display = "block";
   } else {
-    document.getElementById("installPick").style.display = "none";
     document.getElementById("removePick").style.display = "none";
     document.getElementById("backupPick").style.display = "none";
   }
@@ -178,9 +178,9 @@ function getFormData() {
     office: document.getElementById("officeSearch").value,
     gid : txt2Int(document.getElementById("groupSearch").value),
     uid: txt2Int(document.getElementById("userSearch").value),
-    searchtxt: document.getElementById("txtSearch").value,
-    islate: document.getElementById("islate").value === "1" ? true: false,
-    ismissing: document.getElementById("ismissing").value === "1" ? true: false
+    searchtxt: document.getElementById("textSearch").value,
+    islate: false,
+    ismissing: false
   }
   return sendData;
 }
