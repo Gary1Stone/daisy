@@ -3,11 +3,6 @@
 let page = 0;
 let endReached = false; // Flag to indicate if all data has been loaded
 
-// When the page is finished loading
-document.addEventListener("DOMContentLoaded", function() {
-  initCustomSelects();
-});
-
 // Asynchronously posts data to the server and updates the target element
 async function postData(task, target) {
   if (pageLoading) return; // Prevent multiple requests

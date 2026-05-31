@@ -1,5 +1,8 @@
 // home.js
-window.addEventListener("load", initialize);
+
+document.addEventListener("DOMContentLoaded", function() {
+  initialize();
+});
 
 function initialize() {
     const hrs = new Date().getHours();

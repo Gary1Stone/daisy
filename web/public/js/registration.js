@@ -17,11 +17,12 @@ window.addEventListener('load', () => {
     }
 });
 
-function okayClick() {
-    const div = document.getElementById('enterPassscode');
+function okayClick(event) {
+    if (event) event.preventDefault();
+    const div = document.getElementById('enterPasscode');
     if (div) {
-    // It's better to check for a class or data attribute than style, but this is a small improvement.
-        if (div.style.display === "block") {
+        // Check computed style if inline style isn't set yet
+        if (div.style.display === "block" || window.getComputedStyle(div).display === "block") {
             register();
         } else {
             requestCode()
@@ -34,6 +35,7 @@ function checkEmailField() {
     const emailField = document.getElementById('username');
     const username = emailField?.value?.trim();
     if (!username || !emailField.checkValidity()) {
+        toast("Please enter a valid email address", "warning");
         return "";
     }
     return username;
@@ -45,6 +47,7 @@ function checkPasscodeField() {
     const passcode = passcodeField?.value?.trim();
     if (!passcode || !passcodeField.checkValidity()) {
         showPasscodeForm();
+        toast("Please enter the code sent to your email", "warning");
         return "";
     }
     return passcode;
@@ -59,6 +62,13 @@ async function requestCode() {
     if (!apicode) {
         return;
     }
+
+    const btn = document.getElementById("btnSubmit");
+    if (btn) {
+        btn.disabled = true;
+        btn.setAttribute("aria-busy", "true");
+    }
+
     localStorage.setItem("username", username);
     try {
         const response = await fetch('/api/passkey/requestCode', {
@@ -66,27 +76,33 @@ async function requestCode() {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username: username, apicode: apicode})
         });
+
+        const reply = await response.json();
         if (!response.ok) {
-            const reply = await response.json();
-            toast(reply.msg);
+            toast(reply.msg, "error");
+            return;
+        }
+
+        if (reply.msg === "goLogin") {
+            window.location.href =  encodeURI(loginPage);
+        } else if (reply.msg === "goHome") {
+            window.location.href =  encodeURI(homePage);
         } else {
-            const reply = await response.json();
-            if (reply.msg === "goLogin") {
-                window.location.href =  encodeURI(loginPage);
-            } else if (reply.msg === "goHome") {
-                window.location.href =  encodeURI(homePage);
-            } else {
-                showPasscodeForm();
-                startCountdown();
-            }
+            showPasscodeForm();
+            startCountdown();
         }
     } catch (error) {
-        toast(error);
+        toast(error, "error");
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.setAttribute("aria-busy", "false");
+        }
     }
 }
 
 function showPasscodeForm() {
-    document.getElementById('enterPassscode').style.display = 'block';
+    document.getElementById('enterPasscode').style.display = 'block';
     const passcodeField = document.getElementById('passcode');
     passcodeField.disabled = false;
     passcodeField.focus();
@@ -105,6 +121,13 @@ async function register() {
     if (!apicode) {
         return;
     }
+
+    const btn = document.getElementById("btnSubmit");
+    if (btn) {
+        btn.disabled = true;
+        btn.setAttribute("aria-busy", "true");
+    }
+
     try {
         // Send geo/tz data to be saved in the session for automatic login
         let toSend = {username: username, passcode: passcode, apicode: apicode, tzoff: 0, lon: 0.0, lat: 0.0, timezone: ""};
@@ -127,7 +150,7 @@ async function register() {
         // Check if the registration options are ok.
         if (!response.ok) {
             const msg = await response.json();
-            throw new Error('User registered or bad options: ' + msg);
+            throw new Error(msg.msg || 'User registered or bad options');
         }
 
         // Convert the registration options to JSON.
@@ -148,21 +171,34 @@ async function register() {
 
         const reply = await verificationResponse.json();
         console.log(reply.msg);
-        if (verificationResponse.ok) {
-            sessionStorage.removeItem("geo");
-            window.location.href =  encodeURI(homePage);
-        }
+        if (!verificationResponse.ok) {
+            throw new Error(reply.msg || "Failed to verify registration");
+        }        
+        toast(reply.msg, "success");
+        sessionStorage.removeItem("geo");
+        window.location.href = encodeURI(homePage);
     } catch (error) {
-        toast(error);
+        console.error(error);
+        toast(error.message || error, "error");
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.setAttribute("aria-busy", "false");
+        }
     }
 }
 
 function startCountdown() {
     var remainingMinutes = 15;
+    const minsSpan = document.getElementById('mins');
+    if (minsSpan) minsSpan.textContent = remainingMinutes;
+    
     var countdown = setInterval(function() {
         const minsSpan = document.getElementById('mins');
-        minsSpan.textContent = remainingMinutes;
+        if (!minsSpan) return clearInterval(countdown);
+        
         remainingMinutes--;
+        minsSpan.textContent = remainingMinutes;
         if (remainingMinutes === 0) {
             clearInterval(countdown);
             minsSpan.textContent = "Expired!";

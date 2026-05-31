@@ -1,3 +1,6 @@
+//picoplus.js
+document.addEventListener("DOMContentLoaded", () => initCustomSelects());
+
 /*
  * Modal
  *
@@ -324,7 +327,6 @@ for (i = 0; i < l; i++) {
 }
 }
 
-document.addEventListener("DOMContentLoaded", initCustomSelects);
 
 function closeAllSelect(elmnt) {
   /* A function that will close all select boxes in the document, except the current select box: */
