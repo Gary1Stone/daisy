@@ -14,7 +14,13 @@ var webAuthn *webauthn.WebAuthn
 func StartWebAuthn() {
 	var err error
 	proto := os.Getenv("PROTO")
-	hostPort := os.Getenv("HOST")
+	// Combine HOST and PORT so origins include the port when specified (e.g. daisy.hopto.org:8443)
+	host := os.Getenv("HOST")
+	port := os.Getenv("PORT")
+	hostPort := host
+	if port != "" {
+		hostPort = host + port
+	}
 
 	// The RPID MUST be a valid domain string and MUST NOT include a scheme or port.
 	// We extract the host from the HOST environment variable in case it contains a port.

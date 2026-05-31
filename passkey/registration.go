@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"net/url"
 	"os"
 	"time"
 
@@ -176,7 +177,6 @@ func FinishRegistration(c *fiber.Ctx) error {
 
 	// Get the session info from cookie
 	jsonStr := c.Cookies("sid")
-	c.ClearCookie("sid")
 	if err := json.Unmarshal([]byte(jsonStr), &usr); err != nil || len(usr.Sessionid) == 0 {
 		return handleError(c, fiber.StatusBadRequest, "Missing or invalid session ID", err)
 	}
@@ -206,12 +206,31 @@ func FinishRegistration(c *fiber.Ctx) error {
 		return handleError(c, fiber.StatusInternalServerError, "Could not process request", err)
 	}
 
+	// Explicitly set the URL scheme and host for WebAuthn origin validation.
+	// Fiber's adaptor.ConvertRequest might not fully populate http.Request.URL
+	// in a way that webauthn expects, especially with non-standard ports or proxies.
+	// We use the configured RPOrigins to ensure consistency.
+	if webAuthn != nil && len(webAuthn.Config.RPOrigins) > 0 {
+		parsedOrigin, parseErr := url.Parse(webAuthn.Config.RPOrigins[0])
+		if parseErr == nil {
+			httpReq.URL.Scheme = parsedOrigin.Scheme
+			httpReq.URL.Host = parsedOrigin.Host
+			httpReq.Host = parsedOrigin.Host // Also set the Host header for good measure
+		} else {
+			log.Printf("WARNING: Could not parse RPOrigin '%s': %v", webAuthn.Config.RPOrigins[0], parseErr)
+		}
+	}
+
+	log.Printf("DEBUG: Validating registration for user %s. Request Origin: %s", usr.Username, httpReq.Header.Get("Origin"))
+
 	// Finish registration by building the credentials
 	credential, err := webAuthn.FinishRegistration(user, session, httpReq)
 	if err != nil {
-		// This error is often due to client-side issues (e.g., wrong authenticator, timeout).
 		return handleError(c, fiber.StatusBadRequest, "Failed to finish registration", err)
 	}
+
+	// Registration successful, now clear the session cookie
+	c.ClearCookie("sid", "/api/passkey")
 
 	//Store the credential object
 	user.AddCredential(credential)

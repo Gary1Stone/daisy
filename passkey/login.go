@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"net/url"
 	"os"
 	"time"
 
@@ -148,9 +149,6 @@ func FinishLogin(c *fiber.Ctx) error {
 		return handleError(c, fiber.StatusBadRequest, "Missing or invalid session ID", err)
 	}
 
-	// Remove sid & cid cookies
-	c.ClearCookie("sid")
-
 	// Get the session data stored from the BeginLogin function above
 	var sInfo sessionInfo
 	sInfo.sessionID = usr.Sessionid
@@ -172,12 +170,30 @@ func FinishLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return handleError(c, fiber.StatusInternalServerError, "Could not process request", err)
 	}
+	// Explicitly set the URL scheme and host for WebAuthn origin validation.
+	// Fiber's adaptor.ConvertRequest might not fully populate http.Request.URL
+	// in a way that webauthn expects, especially with non-standard ports or proxies.
+	// We use the configured RPOrigins to ensure consistency.
+	if webAuthn != nil && len(webAuthn.Config.RPOrigins) > 0 {
+		parsedOrigin, parseErr := url.Parse(webAuthn.Config.RPOrigins[0])
+		if parseErr == nil {
+			httpReq.URL.Scheme = parsedOrigin.Scheme
+			httpReq.URL.Host = parsedOrigin.Host
+			httpReq.Host = parsedOrigin.Host // Also set the Host header for good measure
+		} else {
+			log.Printf("WARNING: Could not parse RPOrigin '%s': %v", webAuthn.Config.RPOrigins[0], parseErr)
+		}
+	}
 
 	//Finish login
 	credential, err := webAuthn.FinishLogin(user, session, httpReq)
 	if err != nil {
 		return handleError(c, fiber.StatusBadRequest, "Failed to finish login", err)
 	}
+
+	// Registration successful, now clear the session cookie.
+	// Must specify the path used when the cookie was created.
+	c.ClearCookie("sid", "/api/passkey")
 
 	// Handle possible cloned authenticator,
 	// by removing both cookies and credentials/session in the database
