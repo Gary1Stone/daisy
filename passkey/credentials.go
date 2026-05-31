@@ -360,9 +360,9 @@ func (c *credentialInfo) getCredentials(isNew bool) (PasskeyUser, error) {
 	}
 
 	//log.Printf("Found %d credentials for authID: %s", credCount, c.authID)
-	if credCount == 0 {
-		log.Printf("No credentials found for user %s. This will trigger a discoverable credential login (QR code).", user.WebAuthnName())
-	}
+	// if credCount == 0 {
+	// 	log.Printf("No credentials found for user %s. This will trigger a discoverable credential login (QR code).", user.WebAuthnName())
+	// }
 
 	return user, nil
 }

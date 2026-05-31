@@ -221,7 +221,7 @@ func FinishRegistration(c *fiber.Ctx) error {
 		}
 	}
 
-	log.Printf("DEBUG: Validating registration for user %s. Request Origin: %s", usr.Username, httpReq.Header.Get("Origin"))
+	//	log.Printf("DEBUG: Validating registration for user %s. Request Origin: %s", usr.Username, httpReq.Header.Get("Origin"))
 
 	// Finish registration by building the credentials
 	credential, err := webAuthn.FinishRegistration(user, session, httpReq)
