@@ -9,7 +9,7 @@
 const loginPage = "login.html";
 const homePage = "home.html";
 
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const username = localStorage.getItem('username');
     const emailField = document.getElementById('username');
     if (username && emailField && !emailField.value.trim()) {
@@ -17,8 +17,7 @@ window.addEventListener('load', () => {
     }
 });
 
-function okayClick(event) {
-    if (event) event.preventDefault();
+function okayClick() {
     const div = document.getElementById('enterPasscode');
     if (div) {
         // Check computed style if inline style isn't set yet
