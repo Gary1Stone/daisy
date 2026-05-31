@@ -200,7 +200,7 @@ func (c *credentialInfo) deleteCredentials() {
 // Purge any credentials older than 30 days
 func (c *credentialInfo) purgeCredentials() {
 	query := "DELETE FROM credentials WHERE cast((strftime('%s', 'now') - created) / 86400 AS INTEGER)>30"
-	_, err := db.Conn.Exec(query, c.credentialID)
+	_, err := db.Conn.Exec(query)
 	if err != nil {
 		log.Println(err)
 	}
@@ -230,14 +230,16 @@ func (c *credentialInfo) purgeCredentials() {
 
 	// Delete all but the most recent 5 credentials for each user (cleanup old credentials but keep some history)
 	query = `
-	DELETE FROM credentials
-	WHERE credentials_id NOT IN (
-		SELECT credentials_id FROM (
-			SELECT credentials_id FROM credentials WHERE auth_id IN (SELECT auth_id FROM profiles WHERE active=1)
-			ORDER BY created DESC
-			LIMIT 5
-		)
-	)
+    DELETE FROM credentials
+    WHERE credentials_id IN (
+        SELECT credentials_id
+        FROM (
+            SELECT credentials_id,
+                   ROW_NUMBER() OVER (PARTITION BY auth_id ORDER BY created DESC) as rn
+            FROM credentials
+        )
+        WHERE rn > 5
+    )
 	`
 	_, err = db.Conn.Exec(query)
 	if err != nil {
