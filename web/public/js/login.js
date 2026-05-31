@@ -40,6 +40,12 @@ function checkEmailField() {
 }
 
 async function login(username) {
+    const btn = document.getElementById("btnSubmit");
+    if (btn) {
+        btn.disabled = true;
+        btn.setAttribute("aria-busy", "true");
+    }
+
     try {
         //Send long/lat to be saved
         let toSend ={username:"", tzoff: 0, lon:0.0, lat:0.0, timezone: ""};
@@ -62,7 +68,7 @@ async function login(username) {
         // Check if the login options are ok.
         if (!response.ok) {
             const msg = await response.json();
-            throw new Error('Failed to get login options from server: ' + msg);
+            throw new Error('Failed to get login options from server: ' + (msg.msg || msg));
         }
         // Convert the login options to JSON.
         const options = await response.json();
@@ -89,14 +95,20 @@ async function login(username) {
         });
 
         const reply = await verificationResponse.json();
-        toast(reply.msg, "success");
         if (verificationResponse.ok) {
+            toast(reply.msg, "success");
             sessionStorage.removeItem("geo");
             window.location.href = encodeURI("home.html");
+        } else {
+            toast(reply.msg, "error");
         }
     } catch (error) {
         console.error(error);
         toast(error, "error");
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.setAttribute("aria-busy", "false");
+        }
     }
 }
-
