@@ -5,8 +5,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const searchBox = document.querySelector('.table-component .table-top .table-search-block .input input[type="text"]');
     const searchString = sessionStorage.getItem('searchString');
+    const fullNameEl = document.getElementById("fullname");
+
     if (searchString === null) {
-        searchBox.value = $("#fullname").val();
+        searchBox.value = fullNameEl ? fullNameEl.value : "";
     } else {
         searchBox.value = searchString;
     }

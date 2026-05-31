@@ -6,13 +6,14 @@ function goToOnline() {
 }
 
 function goToHistory() {
-    mid = $("#mid").val();
+    const midElement = document.getElementById("mid");
+    const mid = midElement ? midElement.value : "";
     window.location.href = encodeURI("history.html?mid=" + mid);
     return false;
 }
 
 function showHelp() {
-    Metro.dialog.open("#helpDialog");
+    openModal(document.getElementById("helpDialog"));
 }
 
 function goToDuplicates() {

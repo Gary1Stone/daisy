@@ -2,45 +2,71 @@
 
 function showActiveUsers() {
     getActiveUsers();
-    Metro.dialog.open("#popup");
+//    Metro.dialog.open("#popup");
 }
 
 function doPopupOkay(){
-    $("#popupContent").html("");
-    $("#popupTitle").html("");
+    const content = document.getElementById("popupContent");
+    const title = document.getElementById("popupTitle");
+    if (content) content.innerHTML = "";
+    if (title) title.innerHTML = "";
 }
 
-function endSession(id) {
-    alert("end session");
-    $.post("control", getFormData("end_session", id)).then(response => {
-        $("#popupContent").html(response);
-        $("#popupTitle").html("Active Users");
-    });
+async function endSession(id) {
+    const sendData = getFormData("end_session", id);
+    try {
+        const response = await fetch("control", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const html = await response.text();
+        const content = document.getElementById("popupContent");
+        const title = document.getElementById("popupTitle");
+        if (content) content.innerHTML = html;
+        if (title) title.innerHTML = "Active Users";
+    } catch (error) {
+        console.error("End session failed:", error);
+    }
 }
 
-function getActiveUsers() {
+async function getActiveUsers() {
    const sendData = getFormData("get_active_users");
-    $.post("control", sendData).then(response => {
-        $("#popupContent").html(response);
-        $("#popupTitle").html("Active Users");
-    });
+    try {
+        const response = await fetch("control", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const html = await response.text();
+        const content = document.getElementById("popupContent");
+        const title = document.getElementById("popupTitle");
+        if (content) content.innerHTML = html;
+        if (title) title.innerHTML = "Active Users";
+    } catch (error) {
+        console.error("Get active users failed:", error);
+    }
 }
 
-function getAttacks(duration) {
+async function getAttacks(duration) {
     const sendData = getFormData("get_attacks", duration);
     let title = "Attacks ";
-    if (duration === 1) {
-        title += "(Day)";
-    } else if (duration === 7) {
-        title += "(Week)";
-    } else if (duration === 30) {
-        title += "(Month)";
+    if (duration === 1) { title += "(Day)"; } 
+    else if (duration === 7) { title += "(Week)"; } 
+    else if (duration === 30) { title += "(Month)"; }
+    
+    try {
+        const response = await fetch("control", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const html = await response.text();
+        const content = document.getElementById("popupContent");
+        const titleEl = document.getElementById("popupTitle");
+        if (content) content.innerHTML = html;
+        if (titleEl) titleEl.innerHTML = title;
+       // Metro.dialog.open("#popup");
+    } catch (error) {
+        console.error("Get attacks failed:", error);
     }
-    $.post("control", sendData).then(response => {
-        $("#popupContent").html(response);
-        $("#popupTitle").html(title);
-        Metro.dialog.open("#popup");
-    });
 }
 
 

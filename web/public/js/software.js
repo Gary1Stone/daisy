@@ -1,7 +1,9 @@
-/* global Metro */
+// software.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    const sid = $("#sid").val();
+    const sidEl = document.getElementById("sid");
+    const sid = sidEl ? sidEl.value : "";
+
     //Set initial button state depending if a record is displayed or not
     if (isDigits(sid) && txt2Int(sid) === 0) {
         btnSave.on();
@@ -14,46 +16,64 @@ document.addEventListener('DOMContentLoaded', function() {
     } 
 
     //if any of the 'input' elements are modified, change the save/add/delete states  
-    $("input").on("input", function(){
-        btnSave.on();
-        btnNew.off();
-        btnDelete.off();
+    document.querySelectorAll("input").forEach(el => {
+        el.addEventListener("input", function(){
+            btnSave.on();
+            btnNew.off();
+            btnDelete.off();
+        });
     });
     
     //if any of the 'select' droplists are modified, change the save/add/delete states
-    $("select").change(function () {
-        btnSave.on();
-        btnNew.off();
-        btnDelete.off();
+    document.querySelectorAll("select").forEach(el => {
+        el.addEventListener("change", function () {
+            btnSave.on();
+            btnNew.off();
+            btnDelete.off();
+        });
     });
 
     //when user changes the name of the software, check if the name is not already in use
-    $("#name").blur(function () {
+    const nameInput = document.getElementById("name");
+    if (nameInput) {
+        nameInput.addEventListener("blur", async function () {
         let sendData = getFormData();
         sendData.task = "unique";
-        $.post("software", sendData).then(response => {
-            reply = JSON.parse(response);
-            if (reply.success === true) {
-                $("#nameError").hide(); 
-            } else {
-                $("#nameError").val(reply.msg);
-                $("#nameError").show();
-            } 
+            try {
+                const response = await fetch("software", {
+                    method: "POST",
+                    body: new URLSearchParams(sendData)
+                });
+                const text = await response.text();
+                const reply = JSON.parse(text);
+                const nameError = document.getElementById("nameError");
+                if (nameError) {
+                    if (reply.success === true) {
+                        nameError.style.display = "none";
+                    } else {
+                        nameError.value = reply.msg;
+                        nameError.style.display = "block";
+                    }
+                }
+            } catch (e) {
+                console.error("Uniqueness check failed:", e);
+            }
         });
-    });
+    }
 });
 
 let btnSave = {
     id: "btnSave",
     state: "on",
     on: function () {
-        if ($("#canSave").val() === "1") {
-         $("#btnSave").show();
+        const canSave = document.getElementById("canSave");
+        if (canSave && canSave.value === "1") {
+            setDisplay(document.getElementById(this.id), true);
          this.state = "on";
      }
     },
     off: function () {
-        $("#btnSave").hide();
+        setDisplay(document.getElementById(this.id), false);
         this.state = "off";
     }
 };
@@ -62,13 +82,14 @@ let btnNew = {
     id: "btnNew",
     state: "on",
     on: function () {
-        if ($("#canNew").val() === "1") {
-            $("#btnNew").show();
+        const canNew = document.getElementById("canNew");
+        if (canNew && canNew.value === "1") {
+            setDisplay(document.getElementById(this.id), true);
             this.state = "on";
         }
     },
     off: function () {
-        $("#btnNew").hide();
+        setDisplay(document.getElementById(this.id), false);
         this.state = "off";
     }
 };
@@ -77,15 +98,16 @@ let btnDelete = {
     id: "btnDelete",
     state: "on",
     on: function () {
-        if ($("#canDelete").val() === "1") {
-            $("#btnDelete").show();
+        const canDelete = document.getElementById("canDelete");
+        if (canDelete && canDelete.value === "1") {
+            setDisplay(document.getElementById(this.id), true);
             this.state = "on";
         } else {
             this.off();
         }
     },
     off: function () {
-            $("#btnDelete").hide();
+        setDisplay(document.getElementById(this.id), false);
         this.state = "off";
     }
 };
@@ -94,30 +116,49 @@ let btnDelete = {
 //pop up a dialog for displaying the message details
 //settings={"color":"light ","action":"INSTALL","label":"Install Soft...","icon":"mif-apps","active":0,"aid":176,"cid_ack":1,"iid_ack":0,"sid_ack":1,"uid_ack":0}
 function pop(aid) {
-    $("#pop").html("<p>" + $("#notes" + aid).html() + "</p>");
-    $("#actionID").val(aid);
-    const settings = JSON.parse($("#aid" + aid).val());
-    $("#actionName").val(settings.action);
-    $("#cmd").hide();
-    if (settings.active && !settings.sid_ack) {
-        $("#cmd").show();
+    const popEl = document.getElementById("pop");
+    const notesEl = document.getElementById("notes" + aid);
+    const aidInput = document.getElementById("aid" + aid);
+    const actionIDInput = document.getElementById("actionID");
+    const actionNameInput = document.getElementById("actionName");
+    const cmdEl = document.getElementById("cmd");
+
+    if (popEl && notesEl) {
+        popEl.innerHTML = "<p>" + notesEl.innerHTML + "</p>";
     }
-    Metro.dialog.open("#NotesDialog");
+    if (actionIDInput) actionIDInput.value = aid;
+    
+    if (aidInput) {
+        const settings = JSON.parse(aidInput.value);
+        if (actionNameInput) actionNameInput.value = settings.action;
+        if (cmdEl) {
+            cmdEl.style.display = (settings.active && !settings.sid_ack) ? "block" : "none";
+        }
+    }
+    openModal(document.getElementById("NotesDialog"));
 }
 
 function acceptAction() {
-    const aid = txt2Int($("#actionID").val());
+    const actionIDInput = document.getElementById("actionID");
+    const aid = actionIDInput ? txt2Int(actionIDInput.value) : 0;
     fetchLog(aid);
 }
 
-
-function fetchLog(aid = 0) {
-    sendData = getFormData();
+async function fetchLog(aid = 0) {
+    const sendData = getFormData();
     sendData.task = "getactionlog";
     sendData.aid = aid;
-    $.post("software", sendData).then(response => {
-        $("#actionLogDiv").html(response);
-    });
+    try {
+        const response = await fetch("software", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const html = await response.text();
+        const div = document.getElementById("actionLogDiv");
+        if (div) div.innerHTML = html;
+    } catch (e) {
+        console.error("fetchLog failed:", e);
+    }
 }
 
 // Deleting a record is simply deeing it if not used anywhere
@@ -125,23 +166,31 @@ function fetchLog(aid = 0) {
 // its still in the database but not used again.
 function deleteRecord() {
     if (btnDelete.state !== "on") return;
+    const softwareName = document.getElementById("name") ? document.getElementById("name").value : "this";
     Metro.dialog.create({
         title: "Delete this software record?",
-        content: "<div><p>Deleting a record is permanent.</p><p>Are you sure you want to delete the " + $("#software").val() + " record?</p></div>",
+        content: "<div><p>Deleting a record is permanent.</p><p>Are you sure you want to delete the " + softwareName + " record?</p></div>",
         actions: [{
                 caption: "Delete",
                 cls: "js-dialog-close alert",
-                onclick: function () {
+                onclick: async function () {
                     let sendData = getFormData();
                     sendData.task = "delete";
-                    $.post("software", sendData).then(response => {
-                        reply = JSON.parse(response);
+                    try {
+                        const response = await fetch("software", {
+                            method: "POST",
+                            body: new URLSearchParams(sendData)
+                        });
+                        const text = await response.text();
+                        const reply = JSON.parse(text);
                         if (reply.success) {
                             addRecord();  //clears the displayed record
                         } else {
                             toast(reply.msg, "alert");
                         }
-                    });
+                    } catch (e) {
+                        console.error("Delete failed:", e);
+                    }
                 }
             },
             {
@@ -172,7 +221,7 @@ function addRecord() {
 
 function isDigits(value) {
     if (typeof value === "string" && value.length > 0) {
-        digitsOnly = /^\d+$/;  // d=[0-9] 
+        const digitsOnly = /^\d+$/;  // d=[0-9] 
         return digitsOnly.test(value);
     }
     return true;
@@ -180,24 +229,28 @@ function isDigits(value) {
 
 function validateForm(sendData) {
     if (!isDigits(sendData.sid)) return false;    
-    if (!$("#name")[0].checkValidity()) return false;
+    const nameInput = document.getElementById("name");
+    const nameError = document.getElementById("nameError");
+    const theForm = document.getElementById("theForm");
+
+    if (nameInput && !nameInput.checkValidity()) return false;
     //Check if the name is unique (onBlur sets if error message visible or not)
-    if ($("#nameError").is(':visible')) {
-        $("#name").focus();
+    if (nameError && nameError.style.display !== "none") {
+        if (nameInput) nameInput.focus();
         return false;
     }
     if (sendData.link.length > 0) {
         const link = document.getElementById("link");
         if (!link.checkValidity()) {
-            console.log(link.validationMessage);
+            console.warn(link.validationMessage);
             return false;
         }
     }    
-    return $("#theForm")[0].checkValidity();
+    return theForm ? theForm.checkValidity() : false;
 }
 
 
-function saveRecord() {
+async function saveRecord() {
     if (btnSave.state !== "on") return false;
     let sendData = getFormData();
     if (!validateForm(sendData)) return false;
@@ -205,8 +258,13 @@ function saveRecord() {
         sendData.task = "add";
     }
 
-    $.post("software", sendData).then(response => {
-        reply = JSON.parse(response);
+    try {
+        const response = await fetch("software", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const text = await response.text();
+        const reply = JSON.parse(text);
         if (!reply.success) {
             console.log(reply.msg);  //display error message
         } else {             //Refresh the page
@@ -219,71 +277,101 @@ function saveRecord() {
             }
             window.location.href =  encodeURI(url);
         }
-    });
+    } catch (e) {
+        console.error("Save failed:", e);
+    }
     return false;
 }
 
 function getFormData() {
-    let sendData = {task: "", sid: 0, name: "", licenses: 0, 
-        license_key: "", product: "", source: "", link: "",
-        notes: "", active: 0, reuseable: 0, aid: 0, 
-        showhistory: 0, purchased: "", inv_name: "", 
-        pre_installed: 0, free: 0 };
-    sendData.task = "save";
-    sendData.sid = txt2Int($("#sid").val());
-    sendData.name = $("#name").val().trim();
-    sendData.licenses = txt2Int($("#licenses").val());
-    sendData.license_key = $("#license_key").val().trim();
-    sendData.product = $("#product").val().trim();
-    sendData.source = $("#source").val().trim();
-    sendData.link = $("#link").val().trim();
-    sendData.notes = $("#notes").val().trim();
-    sendData.active = $("#active").val();
-    sendData.reuseable = ($("#reuseable").prop("checked")) ? 1 : 0;
-    sendData.showhistory = ($("#filter").prop("checked")) ? 1 : 0;
-    sendData.purchased = $("#purchased").val();
-    sendData.inv_name = $("#inv_name").val();
-    sendData.pre_installed = txt2Int($("#pre_installed").val());
-    sendData.free = ($("#free").prop("checked")) ? 1 : 0;
-    return sendData;
+    const sidEl = document.getElementById("sid");
+    const nameEl = document.getElementById("name");
+    const licensesEl = document.getElementById("licenses");
+    const licenseKeyEl = document.getElementById("license_key");
+    const productEl = document.getElementById("product");
+    const sourceEl = document.getElementById("source");
+    const linkEl = document.getElementById("link");
+    const notesEl = document.getElementById("notes");
+    const activeEl = document.getElementById("active");
+    const reuseableEl = document.getElementById("reuseable");
+    const filterEl = document.getElementById("filter");
+    const purchasedEl = document.getElementById("purchased");
+    const invNameEl = document.getElementById("inv_name");
+    const preInstalledEl = document.getElementById("pre_installed");
+    const freeEl = document.getElementById("free");
+
+    return {
+        task: "save",
+        sid: sidEl ? txt2Int(sidEl.value) : 0,
+        name: nameEl ? nameEl.value.trim() : "",
+        licenses: licensesEl ? txt2Int(licensesEl.value) : 0,
+        license_key: licenseKeyEl ? licenseKeyEl.value.trim() : "",
+        product: productEl ? productEl.value.trim() : "",
+        source: sourceEl ? sourceEl.value.trim() : "",
+        link: linkEl ? linkEl.value.trim() : "",
+        notes: notesEl ? notesEl.value.trim() : "",
+        active: activeEl ? activeEl.value : "0",
+        reuseable: (reuseableEl && reuseableEl.checked) ? 1 : 0,
+        showhistory: (filterEl && filterEl.checked) ? 1 : 0,
+        purchased: purchasedEl ? purchasedEl.value : "",
+        inv_name: invNameEl ? invNameEl.value : "",
+        pre_installed: preInstalledEl ? txt2Int(preInstalledEl.value) : 0,
+        free: (freeEl && freeEl.checked) ? 1 : 0
+    };
 }
 
 //The list of inv_names that are already used
 let usedNames = {"a": "a", "b":"b"};
 
-function popDialog() {
-    //Get the inventory name and populate the search field
-    const inv_name =$("#inv_name").val();
-    $("#search").val(inv_name);
+async function popDialog() {
+    const invNameEl = document.getElementById("inv_name");
+    const searchEl = document.getElementById("search");
+    const invListEl = document.getElementById("inv_list");
+    
+    const inv_name = invNameEl ? invNameEl.value : "";
+    if (searchEl) searchEl.value = inv_name;
+
     //If already have the list, just open popup
-    if ($("#inv_list").children().length > 0) {
-      Metro.dialog.open("#matchDialog");
+    if (invListEl && invListEl.children.length > 0) {
+      openModal(document.getElementById("matchDialog"));
       filterList();
       return;
     }
+    
     let sendData = { task: "get_software_inventory" };
-    $.post("inventory", sendData).then((response) => {
-        Metro.dialog.open("#matchDialog");
-        reply = JSON.parse(response);
+    try {
+        const response = await fetch("inventory", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const text = await response.text();
+        const reply = JSON.parse(text);
         if (!reply.success) {
             console.log(reply.msg);
         } else {
             usedNames = reply.used_names.filter(item => item !== inv_name);
-            $("#inv_list").html(reply.inv_table);
+            if (invListEl) invListEl.innerHTML = reply.inv_table;
+            openModal(document.getElementById("matchDialog"));
             filterList();
         }
-    });
+    } catch (e) {
+        console.error("Inventory fetch failed:", e);
+    }
   }
   
 //Search the used names list for any matches
 function closeDialog() {
-    newName = $("#search").val();
+    const searchEl = document.getElementById("search");
+    const invNameEl = document.getElementById("inv_name");
+    const errorMsgEl = document.getElementById("errorMsg");
+    const newName = searchEl ? searchEl.value : "";
+
     if (newName.length > 0 && isMatch(newName)) {
-        $("#errorMsg").html("Sorry, already in use on another software record.");
+        if (errorMsgEl) errorMsgEl.innerHTML = "Sorry, already in use on another software record.";
         return;
     }
-    $("#inv_name").val(newName); 
-    Metro.dialog.close("#matchDialog");
+    if (invNameEl) invNameEl.value = newName; 
+    closeModal(document.getElementById("matchDialog"));
     btnSave.on();
     btnNew.off();
     btnDelete.off();
@@ -291,7 +379,7 @@ function closeDialog() {
 
 function isMatch(name) {
     for (let i = 0; i < usedNames.length; i++) {
-        if (name.startsWith(usedNames[i]) || usedNames[i].startsWith(name)) {
+        if (typeof usedNames[i] === 'string' && (name.startsWith(usedNames[i]) || usedNames[i].startsWith(name))) {
             return true;
         }
     }
@@ -299,22 +387,29 @@ function isMatch(name) {
 }
 
 function fillSearch(newName) {
-    $("#search").val(newName);
+    const searchEl = document.getElementById("search");
+    if (searchEl) searchEl.value = newName;
     filterList();
 }
   
 function filterList() {
-    errorMsg = "";
-    newName = $("#search").val();
+    let errorMsg = "";
+    const searchInput = document.getElementById("search");
+    const errorMsgEl = document.getElementById("errorMsg");
+    const matchCountEl = document.getElementById("matchCount");
+    const invTable = document.getElementById("inv_table");
+
+    const newName = searchInput ? searchInput.value : "";
     if (newName.length > 0 && isMatch(newName)){
         errorMsg = "Sorry, already in use."
     }
-    $("#errorMsg").html(errorMsg);
+    if (errorMsgEl) errorMsgEl.innerHTML = errorMsg;
+
     let matchCount = 0;
-    let input = document.getElementById("search");
-    let filter = input.value;
-    let table = document.getElementById("inv_table");
-    let tr = table.getElementsByTagName("tr");
+    const filter = newName;
+    if (!invTable) return;
+
+    const tr = invTable.getElementsByTagName("tr");
     let td, a, txtValue;
     for (let i = 0; i < tr.length; i++) {
         td = tr[i].getElementsByTagName("td")[0];
@@ -333,5 +428,5 @@ function filterList() {
             }
         }
     }
-    $("#matchCount").html(matchCount + " matches")
+    if (matchCountEl) matchCountEl.innerHTML = matchCount + " matches";
 }

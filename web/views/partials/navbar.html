@@ -1,52 +1,49 @@
-<aside class="sidebar pos-absolute z-2" data-role="sidebar" data-toggle="#sidebar-toggle-1" id="menu">
-    <div class="sidebar-header bg-lightSteel">
-        <a href="/" class="fg-white sub-action" onclick="Metro.sidebar.close('#menu'); return false;">
-            <span class="mif-arrow-left mif-2x"></span>
-        </a>
-        <span class="mif-devices mif-5x p-10 fg-white"></span>
-        <span class="title fg-white">Device Asset Information SYstem</span>
-        <span class="subtitle fg-white"> 2021 &copy; StoneSoft</span>
-    </div>
-    <ul class="sidebar-menu">
-        <li><a href="home.html"><span class="mif-home icon"></span>Home</a></li>
-        <li><a href="tickets.html"><span class="mif-news icon"></span>Tickets</a></li>
-        <li class="divider"></li>
-        <li><a href="devices.html"><span class="mif-devices icon"></span>Devices</a></li>
-        <li><a href="softwares.html"><span class="mif-apps icon"></span>Software</a></li>
-        {{if .isAdmin }}
-        <li class="divider"></li>
-        <li><a href="profiles.html"><span class="mif-profile icon"></span>Profiles</a></li>
-        <li><a href="reports.html"><span class="mif-dashboard icon"></span>Reports</a></li>
-        <li><a href="control.html"><span class="mif-traff icon"></span>Control</a></li>
-        <li><a href="network.html"><span class="mif-lamp icon"></span>Network</a></li>
-        <li><a href="admin.html"><span class="mif-tools icon"></span>Admin</a></li>
-        {{end}}
-        <li class="divider"></li>
-        <li><a href="about.html"><span class="mif-info icon"></span>About</a></li>
+<header class="container">
+  <nav>
+    <ul>
+      <li>
+        <details class="dropdown">
+          <summary>{{.menuIcon}}</summary>
+          <ul>
+            <li><a href="home.html">{{.homeIcon}} Home</a></li>
+            <li><a href="tickets.html">{{.ticketIcon}} Tickets</a></li>
+            <li><a href="devices.html">{{.devicesIcon}} Devices</a></li>
+            <li><a href="softwares.html">{{.softwareIcon}} Software</a></li>
+            {{if .isAdmin }}
+            <li><a href="profiles.html">{{.profilesIcon}} Profiles</a></li>
+            <li><a href="reports.html">{{.reportsIcon}} Reports</a></li>
+            <li><a href="control.html">{{.controlIcon}} Control</a></li>
+            <li><a href="network.html">{{.networkIcon}} Network</a></li>
+            <li><a href="admin.html">{{.settingsIcon}} Settings</a></li>
+            {{end}} 
+            <li><a href="about.html">{{.aboutIcon}} About</a></li>
+            <li><a href="#" data-target="logout-dialog" onclick="toggleModal(event)">{{.logoutIcon}} Log Out</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>{{ .cmd_one }}</li>
+      <li>{{ .cmd_two }}</li>
+      <li>{{ .cmd_three }}</li>
     </ul>
-</aside>
-<div class="h-100 mb-15">
-    <nav class="app-bar bg-lightSteel fg-white z-1 mb-10" data-role="appbar">
-        <button type='button' class="app-bar-item c-pointer" id="sidebar-toggle-1" onclick="document.body.scrollTop = document.documentElement.scrollTop = 0;">
-            <span class="mif-menu fg-white"></span>
-            <span class="fg-white text-bold">&nbsp;&nbsp;<span class="mif-florist"></span>&nbsp;DAISY</span>
-        </button>
-        <div class="app-bar-container float-center">
-            <span id="cmd_one" class="topbar-brand" >{{ .cmd_one }}</span>&nbsp;
-            <span id="cmd_two" class="topbar-brand" >{{ .cmd_two }}</span>&nbsp;
-            <span id="cmd_three" class="topbar-brand" >{{ .cmd_three }}</span>
-        </div>
-        <span class="app-bar-container ml-auto mr-auto">
-            <span id="main_title" class="text-center text-bold topbar-brand">{{ .title }}</span>
-        </span>
-        <span class="app-bar-container ml-auto">
-            <span class="app-bar-container float-left">
-                <a class="app-bar-item dropdown-toggle marker-light pl-1 pr-5" href="#"><span
-                        class="mif-user"></span>&nbsp;<span id="userName">{{ .fullName }}</span></a>
-                <ul class="d-menu place-right" data-role="dropdown">
-                    <li><a href="logout.html"><span class="mif-exit"></span>&nbsp;Log Out</a></li>
-                </ul>
-            </span>
-        </span>
-    </nav>
-</div>
+    <ul>
+      <li title="Device Asset Information SYstem">{{.title}}</li>
+    </ul>
+    <ul>
+      <li id="searchfield"></li> 
+    </ul>
+  </nav>
+</header>
+<dialog id="logout-dialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="logout-dialog" onclick="toggleModal(event)"></button>
+        <h3>Logout</h3>
+    </header>
+    <p><b>Warning:</b> You will be logged out on all devices.</p> 
+    <p>Are you sure you want to continue?</p>
+    <footer>
+      <button type='button' class="secondary" data-target="logout-dialog" onclick="toggleModal(event)">Cancel</button>
+      <a href="logout.html" autofocus role="button" >{{.logoutIcon}} Confirm</a>
+    </footer>
+  </article>
+</dialog>

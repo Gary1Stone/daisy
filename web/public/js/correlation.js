@@ -2,87 +2,133 @@
 
 // if user changes the sliders, show the values in the readout
 document.addEventListener('DOMContentLoaded', function() {
-    $("#jaccard").change(function () {
-        $("#jaccardValue").html($("#jaccard").val());
-    });
-    $("#pearson").change(function () {
-        $("#pearsonValue").html($("#pearson").val());
-    });
+    const jaccard = document.getElementById("jaccard");
+    if (jaccard) {
+        jaccard.addEventListener("change", function () {
+            const val = document.getElementById("jaccardValue");
+            if (val) val.innerHTML = jaccard.value;
+        });
+    }
+    const pearson = document.getElementById("pearson");
+    if (pearson) {
+        pearson.addEventListener("change", function () {
+            const val = document.getElementById("pearsonValue");
+            if (val) val.innerHTML = pearson.value;
+        });
+    }
 });
 
 function showHelp() {
-    Metro.dialog.open("#helpDialog");
+    openModal(document.getElementById("helpDialog"));
 }
 
 function setHighHigh() {
     jsign("&gt;");
-    $("#jaccard").val("0.70").trigger("change");
+    const jaccard = document.getElementById("jaccard");
+    if (jaccard) {
+        jaccard.value = "0.70";
+        jaccard.dispatchEvent(new Event('change'));
+    }
     psign("&gt;");
-    $("#pearson").val("0.85").trigger("change");
-    $('#fixed').prop('checked', true);
-    $('input[name="hostnames"]').prop('checked', false);
+    const pearson = document.getElementById("pearson");
+    if (pearson) {
+        pearson.value = "0.85";
+        pearson.dispatchEvent(new Event('change'));
+    }
+    const fixed = document.getElementById('fixed');
+    if (fixed) fixed.checked = true;
+    document.querySelectorAll('input[name="hostnames"]').forEach(el => el.checked = false);
 }
 
 function setLowHigh() {
     jsign("&lt;");
-    $("#jaccard").val("0.10").trigger("change");
+    const jaccard = document.getElementById("jaccard");
+    if (jaccard) {
+        jaccard.value = "0.10";
+        jaccard.dispatchEvent(new Event('change'));
+    }
     psign("&gt;");
-    $("#pearson").val("0.95").trigger("change");
-    $('#random').prop('checked', true);
-    $('input[name="hostnames"]').prop('checked', false);
+    const pearson = document.getElementById("pearson");
+    if (pearson) {
+        pearson.value = "0.95";
+        pearson.dispatchEvent(new Event('change'));
+    }
+    const random = document.getElementById('random');
+    if (random) random.checked = true;
+    document.querySelectorAll('input[name="hostnames"]').forEach(el => el.checked = false);
 }
 
 // Get the value of the radio selections
-function reloadTable() {
+async function reloadTable() {
+    const jaccard = document.getElementById("jaccard");
+    const pearson = document.getElementById("pearson");
+    const macFilterChecked = document.querySelector('input[name="macfilter"]:checked');
+    const hostnamesChecked = document.querySelector('input[name="hostnames"]:checked');
+    const jsignEl = document.getElementById("jsign");
+    const psignEl = document.getElementById("psign");
+
     const sendData = { 
-        Jaccard: txt2Int($("#jaccard").val()*100),
-        Pearson: txt2Int($("#pearson").val()*100),
-        Fixed: $('input[name="macfilter"]:checked').val() === "1",
-        Random: $('input[name="macfilter"]:checked').val() === "2",
-        Hostnames: $('input[name="hostnames"]:checked').val() === "1",
-        Jsign: $("#jsign").html() === "&gt;",
-        Psign: $("#psign").html() === "&gt;"
+        Jaccard: txt2Int((jaccard ? jaccard.value : 0) * 100),
+        Pearson: txt2Int((pearson ? pearson.value : 0) * 100),
+        Fixed: macFilterChecked ? macFilterChecked.value === "1" : false,
+        Random: macFilterChecked ? macFilterChecked.value === "2" : false,
+        Hostnames: hostnamesChecked ? hostnamesChecked.value === "1" : false,
+        Jsign: jsignEl ? (jsignEl.innerHTML === ">" || jsignEl.innerHTML === "&gt;") : false,
+        Psign: psignEl ? (psignEl.innerHTML === ">" || psignEl.innerHTML === "&gt;") : false
     }
-    $.post("correlation", sendData).then(response => {
-        if (response === "CRITICAL SERVER ERROR!") {
-            console.log(response);
-            toast(response, "alert");
-            response = "";
+    
+    try {
+        const response = await fetch("correlation", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const result = await response.text();
+        if (result === "CRITICAL SERVER ERROR!") {
+            console.error(result);
+            toast(result, "alert");
+        } else {
+            const tableData = document.getElementById("tableData");
+            if (tableData) tableData.innerHTML = result;
         }
-        $("#tableData").html(response);
-    }); 
+    } catch (error) {
+        console.error("Reload table failed:", error);
+    }
 }
 
 // Search Filters show
 function popFilters() {
-  Metro.dialog.open("#searchDialog");
+    openModal(document.getElementById("searchDialog"));
 }
 
 function jsign(newsign) {
+    const el = document.getElementById("jsign");
+    if (!el) return false;
     //test if newsign exists
     if (newsign) {
-        $("#jsign").html(newsign);
+        el.innerHTML = newsign;
         return;
     }
-    const currentSign = $("#jsign").html();
-    if (currentSign === "&gt;") {
-        $("#jsign").html("&lt;");
+    const currentSign = el.innerText;
+    if (currentSign === ">" || currentSign === "&gt;") {
+        el.innerHTML = "&lt;";
     } else {
-        $("#jsign").html("&gt;");
+        el.innerHTML = "&gt;";
     }
     return false;
 }
 
 function psign(newsign) {
+    const el = document.getElementById("psign");
+    if (!el) return false;
     if (newsign) {
-        $("#psign").html(newsign);
+        el.innerHTML = newsign;
         return;
     }
-    const currentSign = $("#psign").html();
-    if (currentSign === "&gt;") {
-        $("#psign").html("&lt;");
+    const currentSign = el.innerText;
+    if (currentSign === ">" || currentSign === "&gt;") {
+        el.innerHTML = "&lt;";
     } else {
-        $("#psign").html("&gt;");
+        el.innerHTML = "&gt;";
     }
     return false;
 }
@@ -90,12 +136,15 @@ function psign(newsign) {
 function showLink(mac1, name1, host1, mac2, name2, host2) {
     document.getElementById("mac1").value = mac1;
     document.getElementById("mac2").value = mac2;
-    $("#linkText").html(`${name1} (${host1})<br>and<br>${name2}(${host2})`);
-    Metro.dialog.open("#linkDialog");
+    const linkText = document.getElementById("linkText");
+    if (linkText) {
+        linkText.innerHTML = `${name1} (${host1})<br>and<br>${name2}(${host2})`;
+    }
+    openModal(document.getElementById("linkDialog"));
 }
 
 // Read the radio buttons form to see what is selected for linking devices
-function recordLink() {
+async function recordLink() {
     let isSame = false;
     let isIgnore = false;
     // Select the checked radio button in the 'device' group
@@ -121,11 +170,18 @@ function recordLink() {
         isSame: isSame,
         isIgnore: isIgnore
     }
-    $.post("duplicatesjoin", sendData).then(response => {
-        if (response !== "ok") {
-            console.log(response);
+    try {
+        const response = await fetch("duplicatesjoin", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const result = await response.text();
+        if (result !== "ok") {
+            console.error(result);
         } else {
             reloadTable();
         }
-    }); 
+    } catch (error) {
+        console.error("Record link failed:", error);
+    }
 }

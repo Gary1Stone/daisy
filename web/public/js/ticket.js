@@ -4,13 +4,16 @@ let btnSave = {
     id: "btnSave",
     state: "on",
     on: function () {
-        if ($("#canSave").val() === "1") {
-            $("#btnSave").show(); 
+        const canSave = document.getElementById("canSave");
+        const btn = document.getElementById(this.id);
+        if (canSave && canSave.value === "1") {
+            if (btn) btn.style.display = "block";
             this.state = "on";
         }
     },
     off: function () {
-        $("#btnSave").hide();
+        const btn = document.getElementById(this.id);
+        if (btn) btn.style.display = "none";
         this.state = "off";
     }
 };
@@ -19,23 +22,26 @@ let btnSave = {
 //As user changes something turn on the Save button
 document.addEventListener('DOMContentLoaded', function() {
     btnSave.off();
-    const active = $("#active").val();
-    if (active === "1") {
-        $("#addButton").removeAttr("disabled"); //Add comment button
-        $("input").on("input", function () {
-            btnSave.on(); 
+const activeEl = document.getElementById("active");
+    if (activeEl && activeEl.value === "1") {
+        const addButton = document.getElementById("addButton");
+        if (addButton) addButton.removeAttribute("disabled"); //Add comment button
+        document.querySelectorAll("input").forEach(el => {
+            el.addEventListener("input", () => btnSave.on());
         });
-        $("select").change(function () {
-            btnSave.on();
+        document.querySelectorAll("select").forEach(el => {
+            el.addEventListener("change", () => btnSave.on());
         });
-        $("#minusButton").removeAttr("disabled");
-        $("#minusButton").click(function () {
-            btnSave.on();
-        });
-        $("#plusButton").removeAttr("disabled");
-        $("#plusButton").click(function () {
-            btnSave.on();
-        });
+        const minusButton = document.getElementById("minusButton");
+        if (minusButton) {
+            minusButton.removeAttribute("disabled");
+            minusButton.addEventListener("click", () => btnSave.on());
+        }
+        const plusButton = document.getElementById("plusButton");
+        if (plusButton) {
+            plusButton.removeAttribute("disabled");
+            plusButton.addEventListener("click", () => btnSave.on());
+        }
         setInterval(updateDuration, 60000);
     }
 });
@@ -45,9 +51,14 @@ document.addEventListener('DOMContentLoaded', function() {
 //Convert into days or hrs or mins
 function updateDuration() {
     let retVal = "";
-    const start = txt2Int($("#openedGMT").val());
-    const end = txt2Int($("#closedGMT").val());
+    const openedGMT = document.getElementById("openedGMT");
+    const closedGMT = document.getElementById("closedGMT");
+    const start = openedGMT ? txt2Int(openedGMT.value) : 0;
+    const end = closedGMT ? txt2Int(closedGMT.value) : 0;
     const now = Math.floor(Date.now() / 1000);
+
+    if (start === 0) return;
+
     let duration = now - start;
     if (end > 1000) {
         duration = end - start;
@@ -62,14 +73,20 @@ function updateDuration() {
     } else {
         retVal += `${minutes} mins`;
     }
-    $("#duration").html(retVal);
+    const durationEl = document.getElementById("duration");
+    if (durationEl) durationEl.innerHTML = retVal;
 }
 
 async function updateCtrl(task, target) {
     if (pageLoading) return;
     try {
-        const response = await $.post("ticket", getFormData(task));
-        $("#" + target).html(response);
+        const response = await fetch("ticket", {
+            method: "POST",
+            body: new URLSearchParams(getFormData(task))
+        });
+        const html = await response.text();
+        const targetEl = document.getElementById(target);
+        if (targetEl) targetEl.innerHTML = html;
     } catch (error) {
         console.error("Error while posting data:", error);
     }
@@ -77,14 +94,16 @@ async function updateCtrl(task, target) {
 
 
 function addComment() {
-    let log = $("#log").val();
+    const logEl = document.getElementById("log");
+    let log = logEl ? logEl.value : "";
     if (log.length === 0) {
-        $("#log").focus();
+        if (logEl) logEl.focus();
         return false;
     }
-    const cmd = $("#cmd").val();
+    const cmdEl = document.getElementById("cmd");
+    const cmd = cmdEl ? cmdEl.value : "";
     updateCtrl("add_log", "workLog");
-    $("#log").val(""); 
+    if (logEl) logEl.value = ""; 
     if (cmd === "CLOSED") {
         setTimeout(reloadTicket, 200);
     }
@@ -101,7 +120,8 @@ function route() {
 }
 
 const reloadTicket = () => {
-    const aid = txt2Int($("#aid").val());
+    const aidEl = document.getElementById("aid");
+    const aid = aidEl ? txt2Int(aidEl.value) : NaN;
     if (!isNaN(aid)) {
         window.location.href = `ticket.html?aid=${encodeURIComponent(aid)}`;
     }
@@ -113,6 +133,7 @@ function plusInform() {
 
 function minusInform() {
     const informs = document.getElementById('informs');
+    if (!informs) return;
     const selectedOption = informs.options[informs.selectedIndex];
     if (selectedOption) {
         informs.remove(informs.selectedIndex);
@@ -121,6 +142,7 @@ function minusInform() {
 
 function addInform() {
     const selectElement = document.getElementById('inform');
+    if (!selectElement) return;
     const selectedOption = selectElement.options[selectElement.selectedIndex];
     if (selectedOption) {
         const uid = selectedOption.value;
@@ -139,6 +161,7 @@ function addInform() {
 
 function isItInTheInformsListAlready(uid) {
     const select = document.getElementById("informs");
+    if (!select) return false;
     let optionExists = false;
     for (let i = 0; i < select.options.length; i++) {
         if (select.options[i].value === uid) {
@@ -152,32 +175,44 @@ function isItInTheInformsListAlready(uid) {
 function getFormData(task) {
     let informsList = [];
     const select = document.getElementById("informs");
+    if (select) {
     for (let i = 0; i < select.options.length; i++) {
         informsList.push(txt2Int(select.options[i].value));
     }
+    }
     let informsCSV = informsList.join(',');    
+    
+    const val = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value : "";
+    };
+    const checked = (id) => {
+        const el = document.getElementById(id);
+        return (el && el.checked) ? 1 : 0;
+    };
+
     let sendData = { 
         task: task,
-        aid: txt2Int($("#aid").val()), 
-        cid: txt2Int($("#cid").val()), 
-        cid_ack: $("#cid_ack").prop("checked") ? 1 : 0, 
-        sid: txt2Int($("#sid").val()), 
-        sid_ack: $("#sid_ack").prop("checked") ? 1 : 0,
-        trouble: txt2Int($("#trouble").val()), 
-        report: $("#report").val(), 
-        impact: txt2Int($("#impact").val()), 
-        gid: txt2Int($("#gid").val()), 
-        uid: txt2Int($("#uid").val()), 
-        uid_ack: $("#uid_ack").prop("checked") ? 1 : 0, 
-        inform_gid: txt2Int($("#inform_gid").val()), 
-        inform: txt2Int($("#inform").val()), 
-        inform_ack: $("#inform_ack").prop("checked") ? 1 : 0,
-        cmd:  $("#cmd").val(), 
-        log: $("#log").val(),
-        oldgid: txt2Int($("#oldgid").val()),
-        oldgroup: $("#oldgroup").val(),
-        olduid: txt2Int($("#olduid").val()),
-        olduser: $("#olduser").val(),
+        aid: txt2Int(val("aid")), 
+        cid: txt2Int(val("cid")), 
+        cid_ack: checked("cid_ack"), 
+        sid: txt2Int(val("sid")), 
+        sid_ack: checked("sid_ack"),
+        trouble: txt2Int(val("trouble")), 
+        report: val("report"), 
+        impact: txt2Int(val("impact")), 
+        gid: txt2Int(val("gid")), 
+        uid: txt2Int(val("uid")), 
+        uid_ack: checked("uid_ack"), 
+        inform_gid: txt2Int(val("inform_gid")), 
+        inform: txt2Int(val("inform")), 
+        inform_ack: checked("inform_ack"),
+        cmd:  val("cmd"), 
+        log: val("log"),
+        oldgid: txt2Int(val("oldgid")),
+        oldgroup: val("oldgroup"),
+        olduid: txt2Int(val("olduid")),
+        olduser: val("olduser"),
         informs: informsCSV
     };
     return sendData
@@ -200,16 +235,16 @@ function ctrlData(task) {
         task: task, 
         isTicket: false,
         isWizard: false,
-        cid: txt2Int($("#cid").val()),
-        gid: txt2Int($("#gid").val()),
-        uid: txt2Int($("#uid").val()),
+        cid: txt2Int(document.getElementById("cid")?.value),
+        gid: txt2Int(document.getElementById("gid")?.value),
+        uid: txt2Int(document.getElementById("uid")?.value),
         site: "",
         office: "",
-        impact: txt2Int($("#impact").val()),
-        trouble: txt2Int($("#trouble").val()),
+        impact: txt2Int(document.getElementById("impact")?.value),
+        trouble: txt2Int(document.getElementById("trouble")?.value),
         wizard: "",
-        type: $("#type").val(),
-        inform_gid: txt2Int($("#inform_gid").val()),
+        type: document.getElementById("type")?.value,
+        inform_gid: txt2Int(document.getElementById("inform_gid")?.value),
         isReadonly: false,
     }
     return droplistRequest;

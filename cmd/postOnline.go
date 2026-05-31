@@ -25,7 +25,7 @@ func PostOnlineGetMac(c *fiber.Ctx) error {
 	}
 
 	type Mid struct {
-		Mid int `json:"mid"`
+		Mid int `json:"Mid"`
 	}
 
 	recvd := new(Mid) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions

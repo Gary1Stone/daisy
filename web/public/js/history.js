@@ -1,12 +1,15 @@
 //History.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    $("#mid").change(function () {
-        mid = $("#mid").val();
-        window.location.href = encodeURI("history.html?mid=" + mid);
-    });
+    const mid = document.getElementById("mid");
+    if (mid) {
+        mid.addEventListener("change", function () {
+            const val = mid.value;
+            window.location.href = encodeURI("history.html?mid=" + val);
+        });
+    }
 });
 
 function showHelp() {
-    Metro.dialog.open("#helpDialog");
+    openModal(document.getElementById("helpDialog"));
 }

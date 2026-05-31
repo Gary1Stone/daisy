@@ -1,17 +1,24 @@
 // duplicates.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    $("#avoidSelect").change(function () {
-        const optionSelected = $("#avoidSelect").val();
+    const avoidSelect = document.getElementById("avoidSelect");
+    if (avoidSelect) {
+        avoidSelect.addEventListener("change", async function () {
+        const optionSelected = avoidSelect.value;
         const macsArray = optionSelected.split("_");
         const sendData = { 
             mac1: macsArray[0], 
             mac2: macsArray[1]
         }
-        $.post("duplicates", sendData).then(response => {
-            $("#chart").html(response);
-        }); 
-    });
+        try {
+            const response = await fetch("duplicates", {
+                method: "POST",
+                body: new URLSearchParams(sendData)
+            });
+            const html = await response.text();
+            document.getElementById("chart").innerHTML = html;
+        } catch (e) { console.error(e); }
+    })};
 });
 
 function showHelp() {
@@ -21,12 +28,13 @@ function showHelp() {
 function showLink() {
     const avoid = document.getElementById("avoidSelect");
     const text = avoid.options[avoid.selectedIndex].text;
-    $("#linkText").text(text);
-    Metro.dialog.open("#linkDialog");
+    const linkText = document.getElementById("linkText");
+    if (linkText) linkText.textContent = text;
+    Metro.dialog.open(document.getElementById("linkDialog"));
 }
 
 // Read the radio buttons form to see what is selected for linking devices
-function recordLink() {
+async function recordLink() {
     let isSame = false;
     // Select the checked radio button in the 'device' group
     const selectedRadio = document.querySelector('input[name="device"]:checked');
@@ -45,7 +53,7 @@ function recordLink() {
     } else {
         return;      //  No radio button selected, do nothing
     }
-    const optionSelected = $("#avoidSelect").val();
+    const optionSelected = document.getElementById("avoidSelect").value;
     const macsArray = optionSelected.split("_");
     const sendData = { 
         mac1: macsArray[0], 
@@ -53,11 +61,16 @@ function recordLink() {
         isSame: isSame,
         isIgnore: isIgnore
     }
-    $.post("duplicatesjoin", sendData).then(response => {
-        if (response != "ok") {
-            console.log(response);
+    try {
+        const response = await fetch("duplicatesjoin", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const result = await response.text();
+        if (result !== "ok") {
+            console.log(result);
         } else {
             window.location.reload();
         }
-    }); 
+    } catch (e) { console.error(e); }
 }

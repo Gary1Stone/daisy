@@ -6,8 +6,10 @@ let oldImageName = "";  //remember what the previous picture was, in case user c
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    const cid = $("#cid").val();
-    gblOldColor = $("#color").val();
+    const cidEl = document.getElementById("cid");
+    const cid = cidEl ? cidEl.value : "0";
+    const colorEl = document.getElementById("color");
+    gblOldColor = colorEl ? colorEl.value : "";
     if (isDigits(cid) && txt2Int(cid) === 0) {
         btnSave.on();
         btnNew.off(); 
@@ -18,19 +20,24 @@ document.addEventListener('DOMContentLoaded', function() {
         btnDelete.on(); 
     } 
     // if any of the 'textArea' elements are modified, change the save/add/delete states  
-    $("textarea").on("input", function () {
-        btnSave.on();
-        btnNew.off();
-        btnDelete.off();
+    document.querySelectorAll("textarea").forEach(el => {
+        el.addEventListener("input", function () {
+            btnSave.on();
+            btnNew.off();
+            btnDelete.off();
+        });
     });
     // if any of the 'input' elements are modified, change the save/add/delete states  
-    $("input").on("input", function () {
-        btnSave.on();
-        btnNew.off();
-        btnDelete.off();
+    document.querySelectorAll("input").forEach(el => {
+        el.addEventListener("input", function () {
+            btnSave.on();
+            btnNew.off();
+            btnDelete.off();
+        });
     });
     // if any of the 'select' droplists are modified, change the save/add/delete states
-    $("select").change(function () {
+    document.querySelectorAll("select").forEach(el => {
+        el.addEventListener("change", async function () {
         btnSave.on();
         btnNew.off();
         btnDelete.off();
@@ -39,36 +46,39 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (this.id) {
             case "type": // device type changed, so change the asset id (name)
                 showHideItemsByType();
-                //let sendData = getFormData();
                 sendData.task = "get_asset_id";
-                $.post("device", sendData).then(response => {
-                    reply = JSON.parse(response);
+                try {
+                    const response = await fetch("device", { method: "POST", body: new URLSearchParams(sendData) });
+                    const reply = await response.json();
                     if (reply.success) {
-                        $("#name").val(reply.msg);
-                        $("#asset").val(reply.msg);
+                        document.getElementById("name").value = reply.msg;
+                        const assetEl = document.getElementById("asset");
+                        if (assetEl) assetEl.value = reply.msg;
                     } else {
-                        $("#msg").val(reply.msg);
+                        msg(reply.msg);
                     }
-                });
+                } catch (e) { console.error(e); }
                 break;
             case "status":
-                if ($("#status").val() === "DIED") {
-                    $("#color").val("fg-olive");
+                const statusEl = document.getElementById("status");
+                if (statusEl && statusEl.value === "DIED") {
+                    if (colorEl) colorEl.value = "fg-olive";
                 } else {
                     if (gblOldColor === "fg-olive") {
                         gblOldColor = "fg-emerald";
                     }
-                    $("#color").val(gblOldColor);
+                    if (colorEl) colorEl.value = gblOldColor;
                 } 
                 break;
         }
-    });
+    })});
     //Turn off the div that relates to computers only, if it is another type of device 
     showHideItemsByType();
     // Get device name if #name blank
-    if ($("#name").val().length < 1) {
+    const nameEl = document.getElementById("name");
+    if (nameEl && nameEl.value.length < 1) {
         // trigger onchange on type select list to get a name
-        $("#type").trigger("change");
+        document.getElementById("type").dispatchEvent(new Event('change', { bubbles: true }));
     }  
 });
 
@@ -87,15 +97,15 @@ function ctrlData(task) {
       task: task, 
       isTicket: false,
       isWizard: false,
-      cid: txt2Int($("#cid").val()),
-      gid: txt2Int($("#gid").val()),
-      uid: txt2Int($("#uid").val()),
-      site: $("#site").val(),
-      office: $("#office").val(),
+      cid: txt2Int(document.getElementById("cid").value),
+      gid: txt2Int(document.getElementById("gid").value),
+      uid: txt2Int(document.getElementById("uid").value),
+      site: document.getElementById("site").value,
+      office: document.getElementById("office").value,
       impact: "",
       trouble: "",
       wizard: "",
-      type: $("#type").val(),
+      type: document.getElementById("type").value,
       inform_gid: 0,
       isReadonly: false,
     }
@@ -106,14 +116,14 @@ function ctrlData(task) {
 
 function changePic() {
     //Make sure device has a name - Only a-z, A-Z, 0-9 underscore or dash
-    let imageName = $("#name").val().toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '');
+    let imageName = document.getElementById("name").value.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '');
     if (imageName.length < 4) {
         imageName = imageName + "DEV01";
     }
     if (imageName.length > 20) {
         imageName = imageName.substr(0,20);
     }
-    oldImageName = $("#image").val();
+    oldImageName = document.getElementById("image").value;
     if (typeof oldImageName !== "string" ) {
         oldImageName = "";
     }
@@ -138,38 +148,43 @@ function changePic() {
         const cnt = txt2Int(oldImageName.slice(toStart, toEnd)) + 1;
         imageName = imageName + "-v" + cnt.toString() + ".jpg";
     }    
-    $("#image").val(imageName);
-    Metro.dialog.open("#uploadDialog");
+    document.getElementById("image").value = imageName;
+    Metro.dialog.open(document.getElementById("uploadDialog"));
 }
 
 function cancelUpload() {
-    $("#image").val(oldImageName);
+    document.getElementById("image").value = oldImageName;
 }
 
 function showHideItemsByType() {
-    $("#computerOnly, #softwareOnly, #ethernetFlag, #wifiFlag, #usbFlag, #cdFlag").hide();
-    const deviceType = $("#type").val();
+    const items = ["computerOnly", "softwareOnly", "ethernetFlag", "wifiFlag", "usbFlag", "cdFlag"];
+    items.forEach(id => setDisplay(document.getElementById(id), false));
+    const deviceType = document.getElementById("type").value;
      switch (deviceType) {
         case "DESKTOP": 
         case "LAPTOP":
-           $("#computerOnly, #softwareOnly, #ethernetFlag, #wifiFlag, #usbFlag, #cdFlag").show();
+           items.forEach(id => setDisplay(document.getElementById(id), true));
             break;
         case "PRINTER":
-            $("#ethernetFlag, #wifiFlag, #usbFlag").show();            break;
+            ["ethernetFlag", "wifiFlag", "usbFlag"].forEach(id => setDisplay(document.getElementById(id), true));
             break;
         case "NETWORK":
         case "PHONE":
-                $("#ethernetFlag, #wifiFlag").show();
+                ["ethernetFlag", "wifiFlag"].forEach(id => setDisplay(document.getElementById(id), true));
                 break;    
         }
 }
 
 function msg(str) {
+    const msgEl = document.getElementById("msg");
+    if (!msgEl) return;
     if (str.length === 0) {
-        $("#msg").val("").removeClass("remark").removeClass("alert");
+        msgEl.value = "";
+        msgEl.classList.remove("remark", "alert");
         return;
     }
-    $("#msg").val(str).addClass("remark").addClass("alert");
+    msgEl.value = str;
+    msgEl.classList.add("remark", "alert");
     setTimeout(msg, 12345, "", true);
 }
 
@@ -177,13 +192,14 @@ let btnSave = {
     id: "btnSave",
     state: "on",
     on: function () {
-        if ($("#canSave").val() === "1") {
-            $("#btnSave").show();
+        const canSave = document.getElementById("canSave");
+        if (canSave && canSave.value === "1") {
+            setDisplay(document.getElementById(this.id), true);
             this.state = "on";
         }
     },
     off: function () {
-        $("#btnSave").hide();
+        setDisplay(document.getElementById(this.id), false);
         this.state = "off";
     }
 };
@@ -192,13 +208,14 @@ let btnNew = {
     id: "btnNew",
     state: "on",
     on: function () {
-        if ($("#canNew").val() === "1") {
-            $("#btnNew").show();
+        const canNew = document.getElementById("canNew");
+        if (canNew && canNew.value === "1") {
+            setDisplay(document.getElementById(this.id), true);
             this.state = "on";
         }
     },
     off: function () {
-        $("#btnNew").hide();
+        setDisplay(document.getElementById(this.id), false);
         this.state = "off";
     }
 };
@@ -207,64 +224,78 @@ let btnDelete = {
     id: "btnDelete",
     state: "on",
     on: function () {
-        if ($("#canDelete").val() === "1") {
-            $("#btnDelete").show();
+        const canDelete = document.getElementById("canDelete");
+        if (canDelete && canDelete.value === "1") {
+            setDisplay(document.getElementById(this.id), true);
             this.state = "on";
         } else {
             this.off();
         }
     },
     off: function () {
-            $("#btnDelete").hide();
+            setDisplay(document.getElementById(this.id), false);
         this.state = "off";
     }
 };
 
 //settings={color:light, action:SIGHTING, label:Sighting, icon:mif-eye, active:0 aid:525, cid_ack:0, iid_ack:0, sid_ack:0, uid_ack:0 }
 function pop(aid) {
-    const $pop = $("#pop");
-    const $actionID = $("#actionID");
-    const $actionName = $("#actionName");
-    const $cmd = $("#cmd");
-    const $details = $("#details");
-    const $aid = $("#aid" + aid);
-    $pop.html("<p>" + $("#notes" + aid).html() + "</p>");
-    $actionID.val(aid);
-    const settings = JSON.parse($aid.val());
-    $actionName.val(settings.action);
-    $cmd.hide();
-    $details.hide();
+    const popEl = document.getElementById("pop");
+    const notesEl = document.getElementById("notes" + aid);
+    const actionIDEl = document.getElementById("actionID");
+    const actionNameEl = document.getElementById("actionName");
+    const cmdEl = document.getElementById("cmd");
+    const detailsEl = document.getElementById("details");
+    const aidInput = document.getElementById("aid" + aid);
+
+    if (popEl && notesEl) {
+        popEl.innerHTML = "<p>" + notesEl.innerHTML + "</p>";
+    }
+    if (actionIDEl) actionIDEl.value = aid;
+
+    const settings = JSON.parse(aidInput.value);
+    if (actionNameEl) actionNameEl.value = settings.action;
+    
+    setDisplay(cmdEl, false);
+    setDisplay(detailsEl, false);
+
     if (settings.active && !settings.cid_ack) { 
-        $("#cmd").show();
+        setDisplay(cmdEl, true);
     }
     if (["BROKEN", "CARE", "DIED", "LOST", "REQUEST"].includes(settings.action)) {
-        $details.show();
+        setDisplay(detailsEl, true);
     }
-    Metro.dialog.open("#NotesDialog");
+    Metro.dialog.open(document.getElementById("NotesDialog"));
 }
 
 
 function goTicket() {
-    const aid = txt2Int($("#actionID").val());
+    const aid = txt2Int(document.getElementById("actionID").value);
     window.location.href = encodeURI("ticket.html?aid=" + aid);
 }
 
 function acceptAction() {
-    const aid = txt2Int($("#actionID").val());
+    const aid = txt2Int(document.getElementById("actionID").value);
     fetchLog(aid);
 }
 
-function fetchLog(aid = 0) {
+async function fetchLog(aid = 0) {
     let sendData = getFormData();
     if (sendData.cid === 0) return; //Stop getting log when there is no record
     sendData.task = "getactionlog";
     sendData.aid = aid;
-    if ($("#filter").is(":checked")) {
+    const filter = document.getElementById("filter");
+    if (filter && filter.checked) {
         sendData.showHistory = 1
     }
-    $.post("device", sendData).then(response => {
-        $("#actionLogDiv").html(response);
-    });
+    try {
+        const response = await fetch("device", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const html = await response.text();
+        document.getElementById("actionLogDiv").innerHTML = html;
+    } catch (e) { console.error(e); }
 }
 
 // Deleting a record is simply marking the deleted flag (active) = 0;
@@ -275,21 +306,25 @@ function deleteRecord() {
     if (btnDelete.state !== "on") return;
     Metro.dialog.create({
         title: "Delete this device record?",
-        content: "<div>Deleting a record cannot be undone.<br> Are you sure you want to delete the " + $("#name").val() + " record?</div>",
+        content: "<div>Deleting a record cannot be undone.<br> Are you sure you want to delete the " + document.getElementById("name").value + " record?</div>",
         actions: [{
                 caption: "Delete",
                 cls: "js-dialog-close alert",
-                onclick: function () {
+                onclick: async function () {
                     let sendData = getFormData();
                     sendData.task = "delete";
-                    $.post("device", sendData).then(response => {
-                        reply = JSON.parse(response);
+                    try {
+                        const response = await fetch("device", {
+                            method: "POST",
+                            body: new URLSearchParams(sendData)
+                        });
+                        const reply = await response.json();
                         if (reply.success) {
                             addRecord();  //clears the displayed record
                         } else {
                             msg(reply.msg);
                         }
-                    });
+                    } catch (e) { console.error(e); }
                 }
             },
             {
@@ -325,32 +360,32 @@ function isDigits(value) {
 }
 
 function validateForm(sendData) {
-    if (!$("#name")[0].checkValidity()) return false;
+     if (!document.getElementById("name").checkValidity()) return false;
     //TYPE, MAKE, STATUS, WIFI, CD, YEAR, 
-    if (!$("#serial_number")[0].checkValidity()) return false;
+    if (!document.getElementById("serial_number").checkValidity()) return false;
     //GID, UID, OS, SITE, OFFICE, 
-    if (!$("#location")[0].checkValidity()) return false;
-    if (!$("#ram")[0].checkValidity()) return false;
-    if (!$("#cpu")[0].checkValidity()) return false;
+    if (!document.getElementById("location").checkValidity()) return false;
+    if (!document.getElementById("ram").checkValidity()) return false;
+    if (!document.getElementById("cpu").checkValidity()) return false;
     //CORES, DRIVETYPE, 
-    if (!$("#gpu")[0].checkValidity()) return false;
-    if (!$("#notes")[0].checkValidity()) return false;
+    if (!document.getElementById("gpu").checkValidity()) return false;
+    if (!document.getElementById("notes").checkValidity()) return false;
+
     if (!isDigits(sendData.cid)) return false;
     if (!isDigits(sendData.year)) return false;
-    if (!isDigits(sendData.cores)) return false;
-    if (!isDigits(sendData.cd)) return false;
-    if (!isDigits(sendData.drivesize)) return false;
     if (!isDigits(sendData.ram)) return false;
     if (!isDigits(sendData.wifi)) return false;
     if (sendData.name.length < 6) return false;
-    if ($("#nameError").is(':visible')) {
-        $("#name").focus();
-        return false;
-    }
-    return $("#theForm")[0].checkValidity();
+
+
+    // if ($("#nameError").is(':visible')) {
+    //     $("#name").focus();
+    //     return false;
+    // }
+    return document.getElementById("theForm").checkValidity();
 }
 
-function saveRecord() {
+async function saveRecord() {
     if (btnSave.state !== "on") return false;
     let sendData = getFormData();
     if (!validateForm(sendData)) return false;
@@ -359,8 +394,12 @@ function saveRecord() {
     } else {
         savePreInstalled();
     }
-    $.post("device", sendData).then(response => {
-        reply = JSON.parse(response);
+    try {
+        const response = await fetch("device", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const reply = await response.json();
         if (!reply.success) {
             msg(reply.msg);  //display error message
         } else {
@@ -376,7 +415,7 @@ function saveRecord() {
                 window.location.href = url;
             }, 200);
         }
-    });
+    } catch (e) { console.error(e); }
     return false;
 }
 
@@ -388,36 +427,33 @@ function getFormData() {
         image: "", color: "", speed: 0, uid: 0, status: "", os: "", 
         serial_number: "", gid: 0, aid: 0, showHistory: 0};
     sendData.task = "save";
-    sendData.cid = txt2Int($("#cid").val());
-    sendData.name = $("#name").val();
-    sendData.name = sendData.name.toUpperCase();
-    sendData.type = $("#type").val();
-    sendData.site = $("#site").val();
-    sendData.office = $("#office").val();
-    sendData.location = $("#location").val();
-    sendData.year = txt2Int($("#year").val());
-    sendData.make = $("#make").val();
-    sendData.model = $("#model").val();
-    sendData.cpu = $("#cpu").val();
-    sendData.cores = txt2Int($("#cores").val());
-    sendData.ram = txt2Int($("#ram").val());
-    sendData.drivetype = $("#drivetype").val();
-    sendData.drivesize = txt2Int($("#drivesize").val());
-    sendData.notes = $("#notes").val();
-    sendData.gpu = $("#gpu").val();
-    sendData.cd = ($("#cd").prop("checked")) ? 1 : 0;
-    sendData.wifi = ($("#wifi").prop("checked")) ? 1 : 0;
-    sendData.ethernet = ($("#ethernet").prop("checked")) ? 1 : 0;
-    sendData.usb = ($("#usb").prop("checked")) ? 1 : 0;
-    sendData.active = txt2Int($("#active").val());
-    sendData.image = $("#image").val();
-    sendData.color = $("#color").val();
-    sendData.speed = txt2Int($("#speed").val());
-    sendData.uid = txt2Int($("#uid").val());
-    sendData.status = $("#status").val();
-    sendData.os = $("#os").val();
-    sendData.serial_number = $("#serial_number").val();
-    sendData.gid = txt2Int($("#gid").val());
+    sendData.type = document.getElementById("type").value;
+    sendData.site = document.getElementById("site").value;
+    sendData.office = document.getElementById("office").value;
+    sendData.location = document.getElementById("location").value;
+    sendData.year = txt2Int(document.getElementById("year").value);
+    sendData.make = document.getElementById("make").value;
+    sendData.model = document.getElementById("model").value;
+    sendData.cpu = document.getElementById("cpu").value;
+    sendData.cores = txt2Int(document.getElementById("cores").value);
+    sendData.ram = txt2Int(document.getElementById("ram").value);
+    sendData.drivetype = document.getElementById("drivetype").value;
+    sendData.drivesize = txt2Int(document.getElementById("drivesize").value);
+    sendData.notes = document.getElementById("notes").value;
+    sendData.gpu = document.getElementById("gpu").value;
+    sendData.cd = (document.getElementById("cd").checked) ? 1 : 0;
+    sendData.wifi = (document.getElementById("wifi").checked) ? 1 : 0;
+    sendData.ethernet = (document.getElementById("ethernet").checked) ? 1 : 0;
+    sendData.usb = (document.getElementById("usb").checked) ? 1 : 0;
+    sendData.active = txt2Int(document.getElementById("active").value);
+    sendData.image = document.getElementById("image").value;
+    sendData.color = document.getElementById("color").value;
+    sendData.speed = txt2Int(document.getElementById("speed").value);
+    sendData.uid = txt2Int(document.getElementById("uid").value);
+    sendData.status = document.getElementById("status").value;
+    sendData.os = document.getElementById("os").value;
+    sendData.serial_number = document.getElementById("serial_number").value;
+    sendData.gid = txt2Int(document.getElementById("gid").value);
     return sendData;
 }
 
@@ -433,7 +469,7 @@ async function uploadFile() {
     }
   
     // Append the file to the FormData with its new name
-    formData.append("uploadfile", ajaxfile.files[0], $("#image").val());
+    formData.append("uploadfile", ajaxfile.files[0], document.getElementById("image").value);
   
     try {
       // Perform the file upload using fetch
@@ -482,9 +518,13 @@ function savePreInstalled() {
     }
     // transmit array of objects to server
     payload = JSON.stringify(items);
-    $.post("preinstalled", payload).then(response => {
-        if (response !== "okay") {
-            msg(response);
+    fetch("preinstalled", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload
+    }).then(response => response.text()).then(result => {
+        if (result !== "okay") {
+            msg(result);
         }
-    });
+    }).catch(e => console.error(e));
 }
