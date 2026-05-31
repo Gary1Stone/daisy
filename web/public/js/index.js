@@ -20,7 +20,7 @@ const msgs = {
 
 /**
  * Use the 'load' event instead of 'DOMContentLoaded'.
- * This ensures all external scripts (like pico.js which defines 'toast')
+ * This ensures all external scripts (like picoplus.js which defines 'toast')
  * are fully loaded and executed before initialize() runs, 
  * preventing "ReferenceError: toast is not defined".
  */

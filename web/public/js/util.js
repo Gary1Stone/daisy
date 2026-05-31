@@ -1,4 +1,4 @@
-// util2.js
+// util.js
 
 const txt2Int = (value) => {
     const result = parseInt(value, 10);
