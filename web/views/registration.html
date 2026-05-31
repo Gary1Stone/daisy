@@ -11,8 +11,8 @@
         <header>
             {{.userIcon}}&nbsp;Registration
         </header>
-        <section>
-            <form onsubmit="event.preventDefault();" id="theForm" name="theForm" autocomplete="off" action="#" method="post">
+        <form onsubmit="okayClick(); return false;" id="theForm" name="theForm" autocomplete="off" action="#" method="post">
+            <section>
                 <fieldset>
                     <input type="hidden" id="apicode" name="apicode" value="{{.apicode}}">
                     <label for="username">User ID</label>
@@ -32,11 +32,11 @@
                         aria-describedby="passcode-helper" >
                     <small id="passcode-helper">Enter the passcode emailed to you.</small>
                 </fieldset>
-            </form>
-        </section>
-        <footer>
-            <button id="btnOkay" type='button' onclick="okayClick();">Okay</button>
-        </footer>
+                <footer>
+                    <button id="btnOkay" type='submit'>Okay</button>
+                </footer>
+            </section>
+        </form>
     </article>
 </main>
 <footer class="container">
