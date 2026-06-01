@@ -10,11 +10,17 @@
 </div>
 <div style="width:1440px; margin: 0 auto;">{{.onlineDevices}}</div>
 
-<div class="dialog" data-role="dialog" id="popup">
-  <div class="dialog-title" id="popupTitle">Device</div>
-  <div class="dialog-content">
+
+
+<dialog id="popup">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="popup" onclick="toggleModal(event)"></button>
+        <h3>Device</h3>
+    </header>
+  <section>
       <form id="macForm" name="macForm" action="#" method="post" autocomplete="off" >
-        <div class="form-group">
+        <div>
             <input type="hidden" id="mid" name="mid" value="">
             <input type="hidden" id="mac" name="mac" value="">
             <input type="hidden" id="site" name="site" value="">
@@ -25,8 +31,6 @@
             <input type="text" id="name" name="name" value=""
               autocomplete="off" placeholder="Device Name" title="Device Name"
               required minlength="6" maxlength="50" autofocus
-              data-role="input"
-              data-validate="required minlength=6 maxlength=50"
               {{if .Readonly }}readonly{{end}} >
             <small id="nameError" class="invalid_feedback">Mandatory name for the device</small>
 
@@ -37,38 +41,40 @@
             <input type="text" id="location" name="location" value=""
               autocomplete="off" placeholder="Device location" title="Device Location"
               maxlength="100"
-              data-role="input"
-              data-validate="maxlength=100"
               {{if .Readonly }}readonly{{end}} >
             <small id="locationError" class="invalid_feedback">Location of the device</small>
 
             <label for="note">Note</label>
             <input type="text" id="note" name="note" value=""
               autocomplete="off" placeholder="Comments" title="Comments"
-              maxlength="255"
-              data-role="input"
-              data-validate="maxlength=255" >
+              maxlength="255">
             <small id="noteError" class="invalid_feedback">Comments are optional.</small>
         </div>
       </form>
-  </div>
-  <div class="dialog-actions">
-      <button type='button' id="cmd" class="button primary js-dialog-close" onclick="doSave();">Save</button>
-      <button type='button' class="button js-dialog-close" >Cancel</button>
-      <button type='button' class="button js-dialog-close" onclick="doHistory();" >History...</button>
-  </div>
-</div>
+  </section>
+    <footer>
+      <button type='button' id="cmd" onclick="doSave();">Save</button>
+      <button type='button' class="secondary" data-target="popup" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="secondary" onclick="doHistory();" >History...</button>
+    </footer>
+  </article>
+</dialog>
 
-<div class="dialog" data-role="dialog" id="helpDialog">
-    <div class="dialog-title">Online Detection</div>
-    <div class="dialog-content">
+
+<dialog id="helpDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
+        <h3>Online Detection</h3>
+    </header>
+    <section>
       <p>Colors:</p>
       <ul>
         <li>Green indicates the device was online.</li>
         <li>Gray indicates the device is offline.</li>
         <li>Pink indicates the network probe was down or its a future time.</li>
       </ul>
-    <p>Clicking on a online/offline device bar will open a dialog where you can edit the device information.</p>
+      <p>Clicking on a online/offline device bar will open a dialog where you can edit the device information.</p>
       <hr>
       <p>When a device connects to the network, it is identified by its MAC address. 
         This address is unique to each network interface card (NIC) and can be used to track the device's online status.</p>
@@ -78,15 +84,15 @@
       <hr>
       <p>Most cellphones randomize their Machine Address (MAC) to help prevent user tracking. 
         They may use the same MAC when reconnecting to the same network.</p>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close">Okay</button>
-    </div>
-</div>
+    </section>
+    <footer>
+      <button type='button' class="secondary" data-target="helpDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
 <script>
   officeCache = JSON.parse('{{.offices}}');
 </script>
 <script src="js/online.js" defer></script>
-<script src="js/ajax.js" defer></script>
 {{template "partials/bottom" .}}
