@@ -1,9 +1,9 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<div class="container">
+<main class="container">
 
- <div class="myCards">
+ <div class="autogrid">
 
-    <div class="myCard">
+    <article>
       <header>
         <span class='mif-devices'></span>&nbsp;Online Network Devices
       </header>
@@ -17,9 +17,9 @@
       <footer>
         <button type='button' class="button primary js-dialog-close" onclick="goToOnline();">Show Online...</button>
       </footer>
-    </div>
+    </article>
     
-    <div class="myCard">
+    <article>
       <header>
         <span class='mif-devices'></span>&nbsp;Device History
       </header>
@@ -29,10 +29,10 @@
       <footer>
         <button type='button' class="button primary js-dialog-close" onclick="goToHistory();">Show History...</button>
       </footer>
-    </div>
+    </article>
 
     
-    <div class="myCard">
+    <article>
       <header>
         <span class='mif-devices'></span>&nbsp;Online Overlap (%)
       </header>
@@ -45,24 +45,31 @@
         <button type='button' class="button primary js-dialog-close" onclick="goToDuplicates();">Show Duplicates...</button>
         <button type='button' class="button secondary js-dialog-close" onclick="goToCorrealtion();">Show Correlation...</button>
       </footer>
-    </div>
-    
-
+    </article>
+  
   </div>
-</div>
-<div style="width:1440px; margin: 0 auto;">
-  <img src="{{.networkImage}}" alt="Network Diagram" width="100%" height="100%">
-</div>
 
-<div class="dialog" data-role="dialog" id="helpDialog">
-    <div class="dialog-title">Network</div>
-    <div class="dialog-content">
-      <p>Network Diagram</p>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close">Okay</button>
-    </div>
-</div>
+  <div style="width:1440px; margin: 0 auto;">
+    <img src="{{.networkImage}}" alt="Network Diagram" width="100%" height="100%">
+  </div>
+
+</main>
+
+
+<dialog id="helpDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
+        <h3>Network</h3>
+    </header>
+    <section>
+      Network Diagram
+    </section>
+    <footer>
+      <button type='button' data-target="helpDialog" onclick="toggleModal(event)">Okay</button>
+    </footer>
+  </article>
+</dialog>
 
 <script src="js/network.js" defer></script>
 {{template "partials/bottom" .}}

@@ -29,7 +29,7 @@ func GetNetwork(c *fiber.Ctx) error {
 	hits.Warning = 40 // If more than 40 hits in a day, highlight red
 
 	return c.Render("network", addNavigationIcons(fiber.Map{
-		"title":         template.HTML(svg.GetIcon("devices") + " Network"),
+		"title":         template.HTML(svg.GetIcon("network") + " Network"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Admin.Update,
