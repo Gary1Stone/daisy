@@ -28,8 +28,8 @@ func GetNetwork(c *fiber.Ctx) error {
 	var hits svg.SparklineOptions
 	hits.Warning = 40 // If more than 40 hits in a day, highlight red
 
-	return c.Render("network", fiber.Map{
-		"title":         template.HTML("<span class='mif-devices icon'></span>&nbsp;Network"),
+	return c.Render("network", addNavigationIcons(fiber.Map{
+		"title":         template.HTML(svg.GetIcon("devices") + " Network"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Admin.Update,
@@ -43,5 +43,5 @@ func GetNetwork(c *fiber.Ctx) error {
 		"avoidanceList": template.HTML(ctrls.BuildAvoidListCtrl()),
 		"onlineSpark":   template.HTML(svg.BuildNetworkLoadChart(&hits)),
 		"maxHitsMonth":  hits.MaxValue,
-	})
+	}))
 }
