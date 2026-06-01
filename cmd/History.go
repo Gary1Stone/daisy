@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/db"
 
@@ -38,8 +39,8 @@ func GetHistory(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
-	return c.Render("history", fiber.Map{
-		"title":         template.HTML("<span class='mif-devices icon'></span>&nbsp;History"),
+	return c.Render("history", addNavigationIcons(fiber.Map{
+		"title":         template.HTML(svg.GetIcon("devices") + " History"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Device.Update,
@@ -47,5 +48,5 @@ func GetHistory(c *fiber.Ctx) error {
 		"cmd_one":       template.HTML(ctrls.MakeAdminHelpButton()),
 		"midCtrl":       template.HTML(ctrls.BuildDropList("MID", midParam, "", false, false)),
 		"deviceHistory": template.HTML(ctrls.GetOnlineDeviceHistory(user.Tzoff, macInfo.Mac)),
-	})
+	}))
 }
