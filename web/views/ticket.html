@@ -1,20 +1,17 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
- <form id="ticketForm" name="ticketForm" data-role="validator" action="#"
-    method="post" data-interactive-check="false" autocomplete="off"
-    onsubmit="event.preventDefault();"
-    data-on-before-submit="return false();" >
+<main class="container">
 
-    <input type='hidden' id='openedGMT' value="{{ .openedGMT }}" >
-    <input type='hidden' id='closedGMT' value="{{ .closedGMT }}" >
-    <input type="hidden" id="aid" value="{{.aid}}" >
-    <input type="hidden" id="cid" value="{{.cid}}" >
-    <input type="hidden" id="active" value="{{.active}}" >
+    <form id="ticketForm" name="ticketForm"  action="#" method="post" autocomplete="off" onsubmit="event.preventDefault();" >
 
-    <div class="container">
+        <input type='hidden' id='openedGMT' value="{{ .openedGMT }}" >
+        <input type='hidden' id='closedGMT' value="{{ .closedGMT }}" >
+        <input type="hidden" id="aid" value="{{.aid}}" >
+        <input type="hidden" id="cid" value="{{.cid}}" >
+        <input type="hidden" id="active" value="{{.active}}" >
 
-        <div class="myCards">
+        <div class="autogrid">
 
-            <div class="myCard">
+            <article>
                 <header>
                     <span class="mif-news"></span> {{.status}} Ticket {{.aid}} 
                 </header>
@@ -22,14 +19,10 @@
                     <label for="originator">Origin</label>
                     <input type="text" id="originator" value="{{.originator}}" 
                         placeholder="Originator" title="{{ .email }}"
-                        required minlength="6" maxlength="50" readonly
-                        data-role="input" data-prepend="<span class='mif-user'></span>"
-                        data-validate="required, minlength=6 maxlength=50" >
+                        required minlength="6" maxlength="50" readonly >
                     
                     <label for="opened">Opened</label>
-                    <input type="text" id="opened" name="opened" 
-                    data-role="input" readonly 
-                    data-prepend="<span class='mif-calendar'></span>"
+                    <input type="text" id="opened" name="opened" readonly 
                     value="{{.opened}}">
 
                     {{.troubleCtrl}}
@@ -47,9 +40,9 @@
                     <small class="invalid_feedback">Oh No!</small>
                 </section>
                 <footer></footer>
-            </div>
+            </article>
        
-            <div class="myCard">
+            <article>
                 <header>
                     <span class="{{.deviceIcon}}"></span> Device &sol; <span class="mif-apps"></span> Software</span>
                 </header>
@@ -61,9 +54,9 @@
                     {{.softwareCtrl}}
                 </section>
                 <footer></footer>
-            </div>
+            </article>
 
-            <div class="myCard">
+            <article>
                 <header>
                     Notifications
                 </header>
@@ -76,58 +69,62 @@
                     <br>
                     <label for="informs">Notify at Close</label>
                     {{.informList}}
-                    <button type="button" id="plusButton" disabled onclick="plusInform();"><span class="mif-plus fg-green icon"></span></button>
-                    <button type="button" id="minusButton" disabled onclick="minusInform();"><span class="mif-cross fg-red icon"></span></button>
+                    <button type="button" id="plusButton" disabled onclick="plusInform();"><span class="fg-green">{{.plusIcon}}</span></button>
+                    <button type="button" id="minusButton" disabled onclick="minusInform();"><span class="fg-red">{{.deleteIcon}}</span></button>
                 </section>
                 <footer></footer>
-            </div>
+            </article>
         
-        <div class="myCard">
-            <header>
-                Progress
-            </header>
-            <section>
-                <label for="cmd">Stage</label>
-                <select id='cmd' data-role="select" data-filter="false" >
-                    <option value='INVESTIGATE'>Investigate</option>
-                    <option value='SOLUTION'>Solution</option>
-                    <option value='WAITING'>Waiting</option>
-                    <option value='VERIFY'>Verify</option>
-                    <option value='CLOSED'>Closed</option>
-                </select>
-                
-                <label for="log">Comment</label>
-                
-                <input type="text" id="log" name="log" value=""
-                placeholder="Enter comment" title="Your Comment" 
-                required autocomplete="off" 
-                minlength="3" maxlength="255" 
-                data-role="input" data-prepend="<span class='mif-comment'></span>"
-                data-validate="required minlength=3 maxlength=255" >
-            </section>
-            <footer>
-                <button type="button" class="button primary" id="addButton" disabled onclick="addComment();">Add</button>
-            </footer>
-        </div>
+            <article>
+                <header>
+                    Progress
+                </header>
+                <section>
+                    <label for="cmd">Stage</label>
+                    <select id='cmd' data-role="select" data-filter="false" >
+                        <option value='INVESTIGATE'>Investigate</option>
+                        <option value='SOLUTION'>Solution</option>
+                        <option value='WAITING'>Waiting</option>
+                        <option value='VERIFY'>Verify</option>
+                        <option value='CLOSED'>Closed</option>
+                    </select>
+                    
+                    <label for="log">Comment</label>
+                    
+                    <input type="text" id="log" name="log" value=""
+                    placeholder="Enter comment" title="Your Comment" 
+                    required autocomplete="off" 
+                    minlength="3" maxlength="255" >
+                </section>
+                <footer>
+                    <button type="button" class="button primary" id="addButton" disabled onclick="addComment();">Add</button>
+                </footer>
+            </article>
 
-        <div class="myCard">
-            <header>
-                Progress Log
-            </header>
-            <section id="workLog">
-                {{ .wlog }}
-            </section>
-            <footer>
-            </footer>
-        </div>
+            <article>
+                <header>
+                    Progress Log
+                </header>
+                <section id="workLog">
+                    {{ .wlog }}
+                </section>
+                <footer>
+                </footer>
+            </article>
 
-    </div>
+        </div>
 
 </form>
+</main>
     
-<div class="dialog" data-role="dialog" id="routeDialog">
-    <div class="dialog-title">Route</div>
-    <div class="dialog-content">
+
+<dialog id="routeDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="routeDialog" onclick="toggleModal(event)"></button>
+        <h3>Route</h3>
+    </header>
+    <section>
         <input type="hidden" id="oldgid" value="{{ .gid }}" >
         <input type="hidden" id="olduid" value="{{ .uid }}" >
         <input type="hidden" id="oldgroup" value="{{ .assignGroup }}" >
@@ -142,31 +139,35 @@
         <div class="input">
             <input type="text" id="comment" name="comment" value="" 
             placeholder="Routing comment" title="Routing Comment" 
-            autocomplete="off" maxlength="255" data-role="input"
-            data-prepend="<span class='mif-comment'></span>" 
-            data-validate="maxlength=255" class="" data-role-input="true">
+            autocomplete="off" maxlength="255">
         </div>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close" onclick="route();">Okay</button>
-        <button type='button' class="button js-dialog-close">Cancel</button>
-    </div>
-</div>
+    </section>
+    <footer>
+        <button type='button' onclick="route();">Okay</button>
+        <button type='button' class="secondary" data-target="routeDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
-  
-<div class="dialog" data-role="dialog" id="addInform">
-    <div class="dialog-title">Notify At Close</div>
-    <div class="dialog-content">
-            {{ .informGroup }} 
+
+<dialog id="addInform">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="addInform" onclick="toggleModal(event)"></button>
+        <h3>Notify At Close</h3>
+    </header>
+    <section>
+        {{ .informGroup }} 
         <div id="selectInformUser">
             {{ .informUser }} 
         </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close" onclick="addInform();">Add</button>
-        <button type='button' class="button js-dialog-close">Cancel</button>
-    </div>
-  </div>
-</div>
+    </section>
+    <footer>
+        <button type='button' onclick="addInform();">Add</button>
+        <button type='button' class="secondary" data-target="addInform" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
 <script src="js/ticket.js" defer></script>
 <script src="js/ajax.js" defer></script>
