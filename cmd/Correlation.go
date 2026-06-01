@@ -33,7 +33,7 @@ func GetCorrelation(c *fiber.Ctx) error {
 	}
 
 	return c.Render("correlation", addNavigationIcons(fiber.Map{
-		"title":        template.HTML(svg.GetIcon("device") + " Device"),
+		"title":        template.HTML(svg.GetIcon("computer") + " Device"),
 		"fullName":     user.Fullname,
 		"isAdmin":      user.IsAdmin,
 		"isReadonly":   user.Permissions.Admin.Update,

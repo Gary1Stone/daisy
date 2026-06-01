@@ -13,9 +13,14 @@
 </div>
 <div id="chart" style="width:1440px; margin: 0 auto;">{{.avoidChart}}</div>
 
-<div class="dialog" data-role="dialog" id="helpDialog">
-    <div class="dialog-title">Online Device Overlap</div>
-    <div class="dialog-content">
+
+<dialog id="helpDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
+        <h3>Online Device Overlap</h3>
+    </header>
+    <section>
         <p>Colors:</p>
         <ul>
             <li>Green indicates the device was online.</li>
@@ -26,19 +31,25 @@
         <p>Device pairs with high percentage (>90%) overlap are likely to be seperate devices, unless it uses two network connections simulanously.</p>
         <p>Device pairs with the same hostname, IP address and low percentage overlap are already combined automatically.</p>
         <p>Once you determine two devices are really one device or seperate devices, link them together.</p>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close">Okay</button>
-    </div>
-</div>
+    </section>
+    <footer>
+      <button type='button' class="secondary" data-target="helpDialog" onclick="toggleModal(event)">Okay</button>
+    </footer>
+  </article>
+</dialog>
 
-<div class="dialog" data-role="dialog" id="linkDialog">
-    <div class="dialog-title">Linking Devices</div>
-    <div class="dialog-content">
+
+<dialog id="linkDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="linkDialog" onclick="toggleModal(event)"></button>
+        <h3>Linking Devices</h3>
+    </header>
+    <section>
         <p><b class="fg-red">WARNING: </b>You should have reviewed the chart and decided if these are the same device or different devices.</p>
         <br><b id="linkText"></b><br><br>
         <p>
-            <form id="linkForm" name="linkForm" action="#" method="post" autocomplete="off" data-role="validator" data-interactive-check="false">
+            <form id="linkForm" name="linkForm" action="#" method="post" autocomplete="off">
                 <fieldset>
                     <legend>Provide your determination:</legend>
                     
@@ -56,12 +67,15 @@
         <br>
         <p class="fg-red">Please be <em>absolutly</em> sure you want to do this!</p>
         <p class="fg-red">This cannot be undone.</p>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close" onclick="recordLink();">Apply</button>
-        <button type='button' class="button secondary js-dialog-close">Cancel</button>
-    </div>
-</div>
+    </section>
+    <footer>
+        <button type='button' onclick="recordLink();">Apply</button>
+        <button type='button' class="secondary" data-target="linkDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
+
+
 
 <script src="js/duplicates.js" defer></script>
 {{template "partials/bottom" .}}

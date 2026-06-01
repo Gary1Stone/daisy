@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/db"
 
@@ -28,8 +29,8 @@ func GetDuplicates(c *fiber.Ctx) error {
 		avoidSelect = "No matching hostnames found."
 	}
 
-	return c.Render("duplicates", fiber.Map{
-		"title":       template.HTML("<span class='mif-devices icon'></span>&nbsp;Network"),
+	return c.Render("duplicates", addNavigationIcons(fiber.Map{
+		"title":       template.HTML(svg.GetIcon("devices") + " Network"),
 		"fullName":    user.Fullname,
 		"isAdmin":     user.IsAdmin,
 		"isReadonly":  !user.Permissions.Device.Update,
@@ -37,7 +38,7 @@ func GetDuplicates(c *fiber.Ctx) error {
 		"cmd_one":     template.HTML(ctrls.MakeAdminHelpButton()),
 		"avoidSelect": template.HTML(avoidSelect),
 		"avoidChart":  template.HTML(ctrls.GetAvoidChart(user.Tzoff, mac1, mac2)),
-	})
+	}))
 }
 
 func PostDuplicates(c *fiber.Ctx) error {

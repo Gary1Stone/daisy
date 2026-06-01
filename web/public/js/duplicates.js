@@ -22,15 +22,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function showHelp() {
-    Metro.dialog.open("#helpDialog");
+    openModal(document.getElementById("helpDialog"));
 }
 
 function showLink() {
     const avoid = document.getElementById("avoidSelect");
     const text = avoid.options[avoid.selectedIndex].text;
     const linkText = document.getElementById("linkText");
-    if (linkText) linkText.textContent = text;
-    Metro.dialog.open(document.getElementById("linkDialog"));
+    if (linkText) linkText.textContent = text;''
+    openModal(document.getElementById("linkDialog"));
 }
 
 // Read the radio buttons form to see what is selected for linking devices
