@@ -5,9 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=10.0, user-scalable=yes">
         <meta name="author" content="StoneSoft">
         <meta name="description" content="Device Asset Information SYstem DAISY">
-        <meta name="keywords" content="WKNC Weston King Neghbourhood Centre Device Asset Information SYstem DAISY">
+        <meta name="keywords" content="DAISY Device Asset Information SYstem">
         <link rel="shortcut icon" HREF="favicon.ico" >
-        <link rel="stylesheet" href="css/metro-4.4.3.min.css">
+        <link rel="stylesheet" href="css/pico.min.css">
         <style>
             canvas {
                 pointer-events:none;  /*prevent interaction with the canvas*/
@@ -15,20 +15,16 @@
         </style>
         <title>Daisy</title>
     </head>
-    <body onload="createCaptcha()" class="h-vh-100 bg-light">
-        <div class="bg-lightGray p-6 mx-auto border bd-default win-shadow" style="width: 375px; margin: auto; height: 100vh;">
-        <form onsubmit="validateCaptcha()">           
-            <div class="form-group text-center">
+    <body onload="createCaptcha()">
+    <main class="container">
+        <div style="width: 375px; margin: auto; height: 100vh;">
+            <form onsubmit="validateCaptcha()">           
                 <div id="captcha"></div>
-            </div>
-            <div class="form-group text-center">
-                <input type="text" placeholder="Captcha" id="cpatchaTextBox" >
-            </div>
-            <div class="form-group p-2 text-center">
-                <button type="submit" class="button primary ml-3">Okay</button>
-            </div>
-        </form>
+                <div><input type="text" placeholder="Captcha" id="cpatchaTextBox" ></div>
+                <div><button type="submit">Okay</button></div>
+            </form>
         </div>
+    </main>
         <script>
             let code;
             function createCaptcha() {

@@ -68,8 +68,8 @@ func GetControl(c *fiber.Ctx) error {
 	}
 
 	// Render the page
-	return c.Render("control", fiber.Map{
-		"title":           template.HTML("<span class='mif-traff icon'></span>&nbsp;Control"),
+	return c.Render("control", addNavigationIcons(fiber.Map{
+		"title":           template.HTML(svg.GetIcon("control") + " Control"),
 		"fullName":        user.Fullname,
 		"isAdmin":         user.IsAdmin,
 		"cmd_one":         template.HTML(ctrls.MakeSaveButton(false)),
@@ -98,5 +98,5 @@ func GetControl(c *fiber.Ctx) error {
 		"checkins":        template.HTML(reports.Checkins(user.Uid, devInfo)),
 		"backups":         template.HTML(reports.Backups(user.Uid, devInfo)),
 		"drivespace":      template.HTML(reports.Drivespace(user.Uid, devInfo)),
-	})
+	}))
 }

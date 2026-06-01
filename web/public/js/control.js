@@ -1,15 +1,13 @@
 // Control.js
 
 function showActiveUsers() {
-    getActiveUsers();
-//    Metro.dialog.open("#popup");
-}
-
-function doPopupOkay(){
     const content = document.getElementById("popupContent");
     const title = document.getElementById("popupTitle");
     if (content) content.innerHTML = "";
     if (title) title.innerHTML = "";
+    getActiveUsers();
+    const modal = document.getElementById("popup");
+    if (modal) modal.showModal();
 }
 
 async function endSession(id) {
