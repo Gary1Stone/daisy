@@ -4,6 +4,7 @@ import (
 	"html/template"
 
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/db"
 
@@ -31,8 +32,8 @@ func GetCorrelation(c *fiber.Ctx) error {
 		Psign:     true,  // false=less than, true=greater than
 	}
 
-	return c.Render("correlation", fiber.Map{
-		"title":        template.HTML("<span class='mif-profile icon'></span>&nbsp;Device"),
+	return c.Render("correlation", addNavigationIcons(fiber.Map{
+		"title":        template.HTML(svg.GetIcon("device") + " Device"),
 		"fullName":     user.Fullname,
 		"isAdmin":      user.IsAdmin,
 		"isReadonly":   user.Permissions.Admin.Update,
@@ -40,7 +41,7 @@ func GetCorrelation(c *fiber.Ctx) error {
 		"cmd_one":      template.HTML(ctrls.MakeAdminHelpButton()),
 		"cmd_two":      template.HTML(ctrls.MakeSearchBtn()),
 		"affinityList": template.HTML(ctrls.BuildMacCorrelationTable(filter)),
-	})
+	}))
 }
 
 func PostCorrelation(c *fiber.Ctx) error {

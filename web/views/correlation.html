@@ -1,19 +1,18 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<div class="container">
-    <div class="grid">
-        <div class="row">
-            <div class="cell-12" id="tableData">
-                {{.affinityList}}
-            </div>
-        </div>
+<main class="container">
+    <div id="tableData">
+        {{.affinityList}}
     </div>
-</div>
+</main>
 
 
-<div class="dialog" data-role="dialog" id="helpDialog">
-    <div class="dialog-title">Online Device Overlap</div>
-    <div class="dialog-content">
-
+<dialog id="helpDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
+        <h3>Online Device Overlap</h3>
+    </header>
+    <section>
         <details>
             <summary>Jaccard Similarity (0.0 to 1.0)</summary>
             <p>
@@ -70,16 +69,21 @@
                 it helps exclude correlations. 
             </p>
         </details>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close">Okay</button>
-    </div>
-</div>
+    </section>
+    <footer>
+      <button type='button' data-target="helpDialog" onclick="toggleModal(event)">Okay</button>
+    </footer>
+  </article>
+</dialog>
 
 
-<div class="dialog" data-role="dialog" id="linkDialog">
-    <div class="dialog-title">Linking Devices</div>
-    <div class="dialog-content">
+<dialog id="linkDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="linkDialog" onclick="toggleModal(event)"></button>
+        <h3>Linking Devices</h3>
+    </header>
+    <section>
         <p><b class="fg-red">WARNING: </b>You should have reviewed the chart and decided if these are the same device or different devices.</p>
         <br><b id="linkText"></b><br><br>
         <p>
@@ -106,17 +110,22 @@
         <br>
         <p class="fg-red">Please be <em>absolutly</em> sure you want to do this!</p>
         <p class="fg-red">This cannot be undone.</p>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close" onclick="recordLink();">Apply</button>
-        <button type='button' class="button secondary js-dialog-close">Cancel</button>
-    </div>
-</div>
+    </section>
+    <footer>
+        <button type='button'  data-target="linkDialog" onclick="recordLink();">Apply</button>
+        <button type='button' class="secondary" data-target="linkDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
 
-<div class="dialog" data-role="dialog" id="searchDialog">
-    <div class="dialog-title">Jaccard &amp; Pearsons Correlation</div>
-    <div class="dialog-content">
+<dialog id="searchDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="searchDialog" onclick="toggleModal(event)"></button>
+        <h3>Jaccard &amp; Pearsons Correlation</h3>
+    </header>
+    <section>
         <div><b>Presets</b><br>
             <input type="radio" id="highhigh" name="compare" value="1" onclick="setHighHigh();">
             <label for="highhigh">High/High (Online similarity)</label><br>
@@ -148,12 +157,13 @@
                 <span id="psign" class="enlarge-3">&gt;</span></a></b> <span id="pearsonValue">0.85</span>)<br>
             <input type="range" id="pearson" name="pearson" min="-1" max="1" step="0.05" value="0.85" style="width: 100%;" >
         </div>
-    </div>
-    <div class="dialog-actions">
-        <button type='button' class="button primary js-dialog-close" onclick="reloadTable();">Apply</button>
-        <button type='button' class="button secondary js-dialog-close">Cancel</button>
-    </div>
-</div>
+    </section>
+    <footer>
+        <button type='button' data-target="searchDialog" onclick="reloadTable();">Apply</button>
+        <button type='button' class="secondary" data-target="searchDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
 <script src="js/correlation.js" defer></script>
 {{template "partials/bottom" .}}
