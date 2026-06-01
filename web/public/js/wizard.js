@@ -52,7 +52,7 @@ function selectDevice(cid) {
 
 function popFilters() {
     nav.goto("DeviceSelect");
-    Metro.dialog.open("#searchDialog");
+    openModal(document.getElementById("searchDialog"));
 }
 
 // Asynchronously posts data to the server and updates the target element
@@ -89,7 +89,7 @@ function search() {
         let msg = "";
         if (response.length < 10) {
             msg = "No device matches found!";
-            Metro.dialog.open("#searchDialog");
+            openModal(document.getElementById("searchDialog"));
         }
         $("#searchError").html(msg);
     });
@@ -253,7 +253,7 @@ let nav = {
         if (this.curStep === 0) {
             $("#btnPrev").addClass("disabled");
             $("#btnNext").addClass("disabled");
-            Metro.dialog.open("#searchDialog");
+            openModal(document.getElementById("searchDialog"));
         } else if (this.curStep === this.numSteps) {
             $("#btnNext").addClass("disabled");
             $("#btnFinish").removeClass("disabled");
@@ -302,7 +302,7 @@ function getTroubleCtrl() {
 
 function showHelp() {
     $("#helpMsg").html(nav.getHelpMessage());
-    Metro.dialog.open("#helpDialog");
+    openModal(document.getElementById("helpDialog"));
 }
 
 //check Mandatory fields for action

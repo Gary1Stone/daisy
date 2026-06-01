@@ -149,7 +149,7 @@ function changePic() {
         imageName = imageName + "-v" + cnt.toString() + ".jpg";
     }    
     document.getElementById("image").value = imageName;
-    Metro.dialog.open(document.getElementById("uploadDialog"));
+    openModal(document.getElementById("uploadDialog"));
 }
 
 function cancelUpload() {
@@ -265,7 +265,8 @@ function pop(aid) {
     if (["BROKEN", "CARE", "DIED", "LOST", "REQUEST"].includes(settings.action)) {
         setDisplay(detailsEl, true);
     }
-    Metro.dialog.open(document.getElementById("NotesDialog"));
+    
+    openModal(document.getElementById("NotesDialog"));
 }
 
 

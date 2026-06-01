@@ -111,7 +111,7 @@ function addComment() {
 }
 
 function showRouteDialog() {
-    Metro.dialog.open("#routeDialog");
+    openModal(document.getElementById("routeDialog"));
 }
 
 function route() {
@@ -128,7 +128,7 @@ const reloadTicket = () => {
 }
 
 function plusInform() {
-    Metro.dialog.open('#addInform');
+    openModal(document.getElementById("addInform"));
 }
 
 function minusInform() {

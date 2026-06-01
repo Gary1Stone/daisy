@@ -61,7 +61,7 @@ async function getAttacks(duration) {
         const titleEl = document.getElementById("popupTitle");
         if (content) content.innerHTML = html;
         if (titleEl) titleEl.innerHTML = title;
-       // Metro.dialog.open("#popup");
+        openModal(document.getElementById("popup"));
     } catch (error) {
         console.error("Get attacks failed:", error);
     }
