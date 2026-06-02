@@ -1,9 +1,8 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<form id="theForm" name="theForm" action="#" method="post" autocomplete="off">
+<form id="theForm" name="theForm" onsubmit="submitForm(); return false;" action="#" method="post" autocomplete="off">
 <main class="container">
     <div class="grid">
 
-      <div>
       <article>
         <header>
           {{.profilesIcon}} User Profile
@@ -62,9 +61,6 @@
           {{ .banned }}
         </footer>
       </article>
-
-      </div>
-      <div>
       
       <article>
         <header>
@@ -87,9 +83,7 @@
         <footer>
         </footer>
       </article>
-      
-      </div>
-    </div>
+  </div>
 
     <div class="grid">
       <article>

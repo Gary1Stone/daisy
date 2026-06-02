@@ -166,39 +166,33 @@ async function fetchLog(aid = 0) {
 // its still in the database but not used again.
 function deleteRecord() {
     if (btnDelete.state !== "on") return;
-    const softwareName = document.getElementById("name") ? document.getElementById("name").value : "this";
-    Metro.dialog.create({
-        title: "Delete this software record?",
-        content: "<div><p>Deleting a record is permanent.</p><p>Are you sure you want to delete the " + softwareName + " record?</p></div>",
-        actions: [{
-                caption: "Delete",
-                cls: "js-dialog-close alert",
-                onclick: async function () {
-                    let sendData = getFormData();
-                    sendData.task = "delete";
-                    try {
-                        const response = await fetch("software", {
-                            method: "POST",
-                            body: new URLSearchParams(sendData)
-                        });
-                        const text = await response.text();
-                        const reply = JSON.parse(text);
-                        if (reply.success) {
-                            addRecord();  //clears the displayed record
-                        } else {
-                            toast(reply.msg, "alert");
-                        }
-                    } catch (e) {
-                        console.error("Delete failed:", e);
-                    }
-                }
-            },
-            {
-                caption: "Cancel",
-                cls: "js-dialog-close",
-                onclick: function () {}
-            }]
-    });
+    openModal(document.getElementById("deleteDialog"));
+    const name = document.getElementById("name").value;
+    if (name.length > 0) {
+        document.getElementById("softwareName").innerHTML = name;
+    }
+}
+
+function confirmDelete() {
+    if (btnDelete.state !== "on") return;
+    let sendData = getFormData();
+    sendData.task = "delete";
+    try {
+        const response = await fetch("software", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const reply = await response.json();
+        if (reply.success) {
+            addRecord();  //clears the displayed record
+        } else {
+            closeModal(document.getElementById("deleteDialog"));
+            toast(reply.msg, "alert");
+        }
+    } catch (e) {
+        console.error(e);
+        toast(e, "error");
+    }
 }
 
 

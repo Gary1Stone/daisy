@@ -305,35 +305,33 @@ async function fetchLog(aid = 0) {
 // and all of its sub records (action_log...),
 function deleteRecord() {
     if (btnDelete.state !== "on") return;
-    Metro.dialog.create({
-        title: "Delete this device record?",
-        content: "<div>Deleting a record cannot be undone.<br> Are you sure you want to delete the " + document.getElementById("name").value + " record?</div>",
-        actions: [{
-                caption: "Delete",
-                cls: "js-dialog-close alert",
-                onclick: async function () {
-                    let sendData = getFormData();
-                    sendData.task = "delete";
-                    try {
-                        const response = await fetch("device", {
-                            method: "POST",
-                            body: new URLSearchParams(sendData)
-                        });
-                        const reply = await response.json();
-                        if (reply.success) {
-                            addRecord();  //clears the displayed record
-                        } else {
-                            msg(reply.msg);
-                        }
-                    } catch (e) { console.error(e); }
-                }
-            },
-            {
-                caption: "Cancel",
-                cls: "js-dialog-close",
-                onclick: function () {}
-            }]
-    });
+    openModal(document.getElementById("deleteDialog"));
+    const name = document.getElementById("name").value;
+    if (name.length > 0) {
+        document.getElementById("deviceName").innerHTML = name;
+    }
+}
+
+function confirmDelete() {
+    if (btnDelete.state !== "on") return;
+    let sendData = getFormData();
+    sendData.task = "delete";
+    try {
+        const response = await fetch("device", {
+            method: "POST",
+            body: new URLSearchParams(sendData)
+        });
+        const reply = await response.json();
+        if (reply.success) {
+            addRecord();  //clears the displayed record
+        } else {
+            closeModal(document.getElementById("deleteDialog"));
+            toast(reply.msg, "alert");
+        }
+    } catch (e) {
+        console.error(e);
+        toast(e, "error");
+    }
 }
 
 //Adding a record is a two step process

@@ -1,13 +1,9 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<form
-  id="theForm"
-  name="theForm"
-  data-role="validator"
-  action="#"
-  method="post"
-  data-interactive-check="false"
-  autocomplete="off"
-  data-on-before-submit="return saveRecord();">
+<main class="container">
+
+  <form id="theForm" name="theForm" onsubmit="submitForm(); return false;" action="#" method="post" autocomplete="off">
+  
+  
   <input type="hidden" id="gid" value="{{ .gid }}" >
   <div class="container">
     <div class="grid">
@@ -258,51 +254,62 @@
   </div>
   <input type="hidden" id="sid" name="sid" value="{{ .sid }}" >
 </form>
+</main>
 
-<div class="dialog" data-role="dialog" id="NotesDialog">
-  <input type="hidden" id="actionID" value="" >
-  <input type="hidden" id="actionName" value="" >
-  <div class="dialog-title">Notes</div>
-  <div class="dialog-content">
-    <div id="pop">
-      <p>message contents</p>
-    </div>
-  </div>
-  <div class="dialog-actions">
-    <table class='striped'>
-      <tr>
-        <td style="padding: 5px;"><button type='button' id="cmd" class="button primary js-dialog-close" onclick="acceptAction();">Accept</button></td>
-        <td style="padding: 5px;"><button type='button' class="button js-dialog-close" >Cancel</button></td>
-      </tr>
-    </table>
-  </div>
-</div>
+
+<dialog id="NotesDialog">
+  <article>
+    <header>
+      <input type="hidden" id="actionID" value="" >
+      <input type="hidden" id="actionName" value="" >
+        <button type='button' aria-label="Close" rel="prev" data-target="NotesDialog" onclick="toggleModal(event)"></button>
+        <h3>Notes</h3>
+    </header>
+    <section id="pop"><p>message contents</p></section>
+    <footer>
+        <button type='button' id="cmd" onclick="acceptAction();">Accept</button>
+        <button type='button' class="secondary" data-target="NotesDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
 
 <!-- Popup Dialog for inventory name --> 
-<div class="dialog" data-role="dialog" id="matchDialog">
-  <div class="dialog-title">Find Best Match To Software Titles</div>
-  <div class="dialog-content">
-      <div class="table-search-block">
-          <div class="input">
-              <input type="text" id="search" onkeyup="filterList()" value="">
-              <div class="button-group">
-                  <button type='button' class="button input-clear-button" tabindex="-1" type="button" onclick="$('#search').val('');filterList();">
-                      <span class="default-icon-cross"></span>
-                  </button>
-              </div>
-              <div class="prepend">Match:</div>
-          </div>
-          <div class="fg-red" id="errorMsg"></div>
-      </div>
-  </div>
-  <div class="dialog-content" id="inv_list" style="overflow-y: scroll; height: 12rem; "></div>
-  <div class="dialog-content" id="matchCount">0 matches</div>
-  <div class="dialog-actions">
-      <button type='button' class="button primary" onclick="closeDialog();">Okay</button>
-      <button type='button' class="button js-dialog-close">Cancel</button>
-  </div>
-</div>
+<dialog id="matchDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="matchDialog" onclick="toggleModal(event)"></button>
+        <h3>Find Best Match To Software Titles</h3>
+    </header>
+    <section>
+      <input type="search" id="search" onkeyup="filterList()" value="" placeholder="Search...">
+      <div id="inv_list" style="overflow-y: scroll; height: 12rem; "></div>
+      <div id="matchCount">0 matches</div>
+    </section>
+    <footer>
+      <button type='button' onclick="closeDialog();">Okay</button>
+      <button type='button' class="secondary" data-target="matchDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
+
+
+<dialog id="deleteDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="deleteDialog" onclick="toggleModal(event)"></button>
+        <h3>Delete this software record?</h3>
+    </header>
+    <section>
+      <p>Deleting a record is permanent.</p>
+      <p>Are you sure you want to delete the " + <span id="softwareName"></span>" + " record?</p>
+    </section>
+    <footer>
+      <button type='button' onclick="confirmDelete();">Delete</button>
+      <button type='button' class="secondary" data-target="deleteDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
 <script src="js/software.js" defer></script>
 {{template "partials/bottom" .}}

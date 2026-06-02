@@ -1,7 +1,6 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<form id="theForm" name="theForm" data-role="validator"
-  action="#" method="post" data-interactive-check="false"
-  autocomplete="off" data-on-before-submit="return saveRecord();" >
+
+<form id="theForm" name="theForm" onsubmit="submitForm(); return false;" action="#" method="post" autocomplete="off">
 <div class="container">
   <div class="myCards">
 
