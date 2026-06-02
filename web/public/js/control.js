@@ -13,11 +13,7 @@ function showActiveUsers() {
 async function endSession(id) {
     const sendData = getFormData("end_session", id);
     try {
-        const response = await fetch("control", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const html = await response.text();
+        const html = await postForm("control", sendData);
         const content = document.getElementById("popupContent");
         const title = document.getElementById("popupTitle");
         if (content) content.innerHTML = html;
@@ -30,11 +26,7 @@ async function endSession(id) {
 async function getActiveUsers() {
    const sendData = getFormData("get_active_users");
     try {
-        const response = await fetch("control", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const html = await response.text();
+        const html = await postForm("control", sendData);
         const content = document.getElementById("popupContent");
         const title = document.getElementById("popupTitle");
         if (content) content.innerHTML = html;
@@ -52,11 +44,7 @@ async function getAttacks(duration) {
     else if (duration === 30) { title += "(Month)"; }
     
     try {
-        const response = await fetch("control", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const html = await response.text();
+        const html = await postForm("control", sendData);
         const content = document.getElementById("popupContent");
         const titleEl = document.getElementById("popupTitle");
         if (content) content.innerHTML = html;

@@ -23,11 +23,7 @@ function doSave(){
 async function loadMac(mid) {
     const formData = { Mid: mid };
     try {
-        const response = await fetch("online/getmac", {
-            method: "POST",
-            body: new URLSearchParams(formData)
-        });
-        const text = await response.text();
+        const text = await postForm("online/getmac", formData);
         let macInfo;
         try {
             macInfo = JSON.parse(text);
@@ -117,11 +113,7 @@ async function saveMac() {
     };
     
     try {
-        const response = await fetch("online/setmac", {
-            method: "POST",
-            body: new URLSearchParams(formData)
-        });
-        const result = await response.text();
+        const result = await postForm("online/setmac", formData);
         if (result !== "ok") {
             console.log(result || "Error occurred.");
         }

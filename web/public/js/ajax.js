@@ -102,6 +102,30 @@ async function postJSON(url, data = {}, successCallback) {
 }
 
 /**
+ * Sends Form Data (URLSearchParams) to the server and returns a response.
+ * 
+ * @param {string} url - Target URL.
+ * @param {object} data - Data object to be converted to URLSearchParams.
+ * @param {function} successCallback - Optional callback for the response data.
+ */
+async function postForm(url, data = {}, successCallback) {
+    try {
+        const responseData = await apiRequest(url, {
+            method: "POST",
+            body: new URLSearchParams(data),
+        });
+
+        if (typeof successCallback === 'function') {
+            successCallback(responseData);
+        }
+        return responseData;
+    } catch (error) {
+        toast(`Request failed: ${error.message}`, "alert");
+        throw error;
+    }
+}
+
+/**
  * Fetches HTML via postJSON and replaces the content of the targetId.
  * 
  * @param {string} url - Target URL.

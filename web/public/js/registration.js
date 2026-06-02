@@ -70,14 +70,9 @@ async function requestCode() {
 
     localStorage.setItem("username", username);
     try {
-        const response = await fetch('/api/passkey/requestCode', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username: username, apicode: apicode})
-        });
-
-        const reply = await response.json();
-        if (!response.ok) {
+        const reply = await postJSON('/api/passkey/requestCode', {username: username, apicode: apicode});
+        
+        if (reply.error || !reply.msg) {
             toast(reply.msg, "error");
             return;
         }
@@ -140,37 +135,19 @@ async function register() {
         }
 
         // Get registration options from your server. Here, we also receive the challenge.
-        const response = await fetch('/api/passkey/registerStart', {
-            method: 'POST', 
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(toSend)
-        });
-
-        // Check if the registration options are ok.
-        if (!response.ok) {
-            const msg = await response.json();
-            throw new Error(msg.msg || 'User registered or bad options');
-        }
-
-        // Convert the registration options to JSON.
-        const options = await response.json();
+        const options = await postJSON('/api/passkey/registerStart', toSend);
+        if (options.msg && !options.publicKey) throw new Error(options.msg);
 
         // This triggers the browser to display the passkey / WebAuthn modal (e.g. Face ID, Touch ID, Windows Hello).
         // A new attestation is created. This also means a new public-private-key pair is created.
         const attestationResponse = await SimpleWebAuthnBrowser.startRegistration({ optionsJSON: options.publicKey });
 
         // Send attestationResponse back to server for verification and storage.
-        const verificationResponse = await fetch('/api/passkey/registerFinish', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(attestationResponse)
-        });
-
-        const reply = await verificationResponse.json();
+        const reply = await postJSON('/api/passkey/registerFinish', attestationResponse);
         console.log(reply.msg);
-        if (!verificationResponse.ok) {
+        
+        // Check status through reply content
+        if (reply.error || !reply.msg) {
             throw new Error(reply.msg || "Failed to verify registration");
         }        
         toast(reply.msg, "success");

@@ -40,21 +40,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let sendData = getFormData();
         sendData.task = "unique";
             try {
-                const response = await fetch("software", {
-                    method: "POST",
-                    body: new URLSearchParams(sendData)
-                });
-                const text = await response.text();
-                const reply = JSON.parse(text);
-                const nameError = document.getElementById("nameError");
-                if (nameError) {
+                await postForm("software", sendData, (reply) => {
+                    if (typeof reply === "string") reply = JSON.parse(reply);
+                    const nameError = document.getElementById("nameError");
                     if (reply.success === true) {
                         nameError.style.display = "none";
                     } else {
                         nameError.value = reply.msg;
                         nameError.style.display = "block";
                     }
-                }
+                });
             } catch (e) {
                 console.error("Uniqueness check failed:", e);
             }
@@ -149,13 +144,10 @@ async function fetchLog(aid = 0) {
     sendData.task = "getactionlog";
     sendData.aid = aid;
     try {
-        const response = await fetch("software", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
+        await postForm("software", sendData, (html) => {
+            const div = document.getElementById("actionLogDiv");
+            if (div) div.innerHTML = html;
         });
-        const html = await response.text();
-        const div = document.getElementById("actionLogDiv");
-        if (div) div.innerHTML = html;
     } catch (e) {
         console.error("fetchLog failed:", e);
     }
@@ -178,17 +170,15 @@ function confirmDelete() {
     let sendData = getFormData();
     sendData.task = "delete";
     try {
-        const response = await fetch("software", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const reply = await response.json();
+        await postForm("software", sendData, (reply) => {
+            if (typeof reply === "string") reply = JSON.parse(reply);
         if (reply.success) {
             addRecord();  //clears the displayed record
         } else {
             closeModal(document.getElementById("deleteDialog"));
             toast(reply.msg, "alert");
         }
+        });
     } catch (e) {
         console.error(e);
         toast(e, "error");
@@ -253,12 +243,9 @@ async function saveRecord() {
     }
 
     try {
-        const response = await fetch("software", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const text = await response.text();
-        const reply = JSON.parse(text);
+        const reply = await postForm("software", sendData);
+        if (typeof reply === "string") reply = JSON.parse(reply);
+        
         if (!reply.success) {
             console.log(reply.msg);  //display error message
         } else {             //Refresh the page
@@ -334,12 +321,9 @@ async function popDialog() {
     
     let sendData = { task: "get_software_inventory" };
     try {
-        const response = await fetch("inventory", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const text = await response.text();
-        const reply = JSON.parse(text);
+        const reply = await postForm("inventory", sendData);
+        if (typeof reply === "string") reply = JSON.parse(reply);
+        
         if (!reply.success) {
             console.log(reply.msg);
         } else {

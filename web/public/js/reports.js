@@ -1,11 +1,6 @@
 function getReport(task, devType = "") {
     const sendData = { task, devType };
-    fetch("reports", {
-        method: "POST",
-        body: new URLSearchParams(sendData)
-    })
-    .then(response => response.text())
-    .then(html => {
+    postForm("reports", sendData, (html) => {
         const reportEl = document.getElementById("report");
         if (reportEl) {
             
@@ -24,6 +19,5 @@ function getReport(task, devType = "") {
                 buildTable(tableIds[i]);
             }
         }
-    })
-    .catch(err => console.error("Report fetch failed:", err));
+    });
 }

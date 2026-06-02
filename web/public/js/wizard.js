@@ -65,8 +65,8 @@ async function updateCtrl(task, target) {
         sendData = getWizFormData(task)
     }
     try {
-        const response = await $.post("wizard",sendData);
-        $("#" + target).html(response);
+        const response = await postForm("wizard", sendData);
+        document.getElementById(target).innerHTML = response;
     } catch (error) {
         console.error("Error while posting data:", error);
     }
@@ -84,8 +84,8 @@ function search() {
     if (pageLoading) return;
     page = 0;
     sendData = getSearchFormData("search_for_devices");
-    $.post("devices", sendData).then((response) => {
-        $("#cards").html(response);
+    postForm("devices", sendData, (response) => {
+        document.getElementById("cards").innerHTML = response;
         let msg = "";
         if (response.length < 10) {
             msg = "No device matches found!";
@@ -147,11 +147,11 @@ $(window).scroll(function() {
 async function getNextBlock() {
     try {
         const sendData = getSearchFormData("search_for_devices");
-        const response = await $.post("devices", sendData);
+        const response = await postForm("devices", sendData);
         if (response.length === 0) {
             endReached = true;
         } else {
-            $("#cards").append(response);
+            document.getElementById("cards").insertAdjacentHTML('beforeend', response);
         } 
         // Wait 1/2 second before getting next block
         setTimeout(() => { pageLoading = false; }, 500);
@@ -439,7 +439,7 @@ function onFinish() {
         return;
     }
     $("#btnFinish").addClass("disabled"); //disable finish button so no second submission
-    $.post("wizard", sendData).then((response) => {
+    postForm("wizard", sendData, (response) => {
         if (response === "Okay") {
             nav.hide();
             $("#thankYou").show();

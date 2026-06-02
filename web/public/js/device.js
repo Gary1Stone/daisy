@@ -48,8 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showHideItemsByType();
                 sendData.task = "get_asset_id";
                 try {
-                    const response = await fetch("device", { method: "POST", body: new URLSearchParams(sendData) });
-                    const reply = await response.json();
+                    const reply = await postForm("device", sendData);
                     if (reply.success) {
                         document.getElementById("name").value = reply.msg;
                         const assetEl = document.getElementById("asset");
@@ -290,12 +289,8 @@ async function fetchLog(aid = 0) {
         sendData.showHistory = 1
     }
     try {
-        const response = await fetch("device", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const html = await response.text();
-        document.getElementById("actionLogDiv").innerHTML = html;
+        const html = await postForm("device", sendData);
+        if (html) document.getElementById("actionLogDiv").innerHTML = html;
     } catch (e) { console.error(e); }
 }
 
@@ -317,11 +312,9 @@ function confirmDelete() {
     let sendData = getFormData();
     sendData.task = "delete";
     try {
-        const response = await fetch("device", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const reply = await response.json();
+        const reply = await postForm("device", sendData);
+        if (typeof reply === "string") reply = JSON.parse(reply);
+        
         if (reply.success) {
             addRecord();  //clears the displayed record
         } else {
@@ -394,11 +387,9 @@ async function saveRecord() {
         savePreInstalled();
     }
     try {
-        const response = await fetch("device", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const reply = await response.json();
+        const reply = await postForm("device", sendData);
+        if (typeof reply === "string") reply = JSON.parse(reply);
+        
         if (!reply.success) {
             msg(reply.msg);  //display error message
         } else {
@@ -517,13 +508,9 @@ function savePreInstalled() {
     }
     // transmit array of objects to server
     payload = JSON.stringify(items);
-    fetch("preinstalled", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: payload
-    }).then(response => response.text()).then(result => {
-        if (result !== "okay") {
-            msg(result);
+    postJSON("preinstalled", items, (reply) => {
+        if (reply !== "okay") {
+            msg(reply);
         }
-    }).catch(e => console.error(e));
+    });
 }

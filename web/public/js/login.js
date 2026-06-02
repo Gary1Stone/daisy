@@ -60,18 +60,8 @@ async function login(username) {
         }
 
         // Get login options from your server. Here, we also receive the challenge.
-        const response = await fetch('/api/passkey/loginStart', {
-            method: 'POST', 
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(toSend)
-        });
-        // Check if the login options are ok.
-        if (!response.ok) {
-            const msg = await response.json();
-            throw new Error('Failed to get login options from server: ' + (msg.msg || msg));
-        }
-        // Convert the login options to JSON.
-        const options = await response.json();
+        const options = await postJSON('/api/passkey/loginStart', toSend);
+        if (options.msg && !options.publicKey) throw new Error(options.msg);
 
         // The browser can throw an error if `allowCredentials` is too large.
         // A client-side workaround is to truncate the array.
@@ -86,16 +76,10 @@ async function login(username) {
         const assertionResponse = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: options.publicKey });
 
         // Send assertionResponse back to server for verification.
-        const verificationResponse = await fetch('/api/passkey/loginFinish', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(assertionResponse)
-        });
-
-        const reply = await verificationResponse.json();
-        if (verificationResponse.ok) {
+        const reply = await postJSON('/api/passkey/loginFinish', assertionResponse);
+        
+        // The server typically returns success: true or similar, but verify status via reply content
+        if (reply.msg && !reply.error) {
             toast(reply.msg, "success");
             sessionStorage.removeItem("geo");
             window.location.href = encodeURI("home.html");

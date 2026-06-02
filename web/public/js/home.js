@@ -24,12 +24,9 @@ function initialize() {
         sessionStorage.removeItem("geo");
         geo.task = "save_lon_lat";
 
-        fetch("home", {
-            method: "POST",
-            body: new URLSearchParams(geo)
-        }).then(response => response.text()).then(response => {
-            if (response !== "ok") {
-                toast(response);
+        postForm("home", geo, (reply) => {
+            if (reply !== "ok") {
+                toast(reply);
             }
         });
     }
@@ -40,13 +37,10 @@ function ackAlert(aid = 0) {
         task: "get_alerts", 
         aid: txt2int(aid)
     };
-    fetch("home", {
-        method: "POST",
-        body: new URLSearchParams(sendData)
-    }).then(response => response.text()).then(response => {
+    postForm("home", sendData, (html) => {
         const alertsEl = document.getElementById("alerts");
         if (alertsEl) {
-            alertsEl.innerHTML = response;
+            alertsEl.innerHTML = html;
         }
     });
 }

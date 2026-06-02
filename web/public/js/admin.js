@@ -95,15 +95,11 @@ function showSelection(item) {
     }
     const sendData = {task: "build_table", field: item, adminData: ""};
     
-    fetch("admin", {
-        method: "POST",
-        body: new URLSearchParams(sendData)
-    })
-    .then(response => response.text())
-    .then(response => {
-        adminData = JSON.parse(response);
+    postForm("admin", sendData, (response) => {
+        const parsed = typeof response === "string" ? JSON.parse(response) : response;
+        adminData = parsed;
         if (item === "SITE") {
-            siteData = JSON.parse(response);
+            siteData = parsed;
         }
         if (adminData !== null && adminData.length > 0) {
             buildTable();
@@ -134,20 +130,15 @@ function saveRecord() {
     sendData.field = adminData[0].field;
     sendData.adminData = JSON.stringify(adminData);
     
-    fetch("admin", {
-        method: "POST",
-        body: new URLSearchParams(sendData)
-    })
-    .then(response => response.text())
-    .then(response => {
-        if (typeof response === 'string'  && response.startsWith("ERROR:")) {
+    postForm("admin", sendData, (reply) => {
+        if (typeof reply === 'string'  && reply.startsWith("ERROR:")) {
             toast("Error saving Admin table. Refresh and retry.", "error");
-            console.error(response);
+            console.error(reply);
         } else {
-            adminData = null;
-            adminData = JSON.parse(response);
+            const parsedReply = typeof reply === "string" ? JSON.parse(reply) : reply;
+            adminData = parsedReply;
             if (sendData.field === "SITE") {
-                siteData = JSON.parse(response);
+                siteData = adminData;
             }
             buildTable();
             toast("Changes saved.", "success");

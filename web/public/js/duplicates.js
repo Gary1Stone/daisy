@@ -11,12 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
             mac2: macsArray[1]
         }
         try {
-            const response = await fetch("duplicates", {
-                method: "POST",
-                body: new URLSearchParams(sendData)
-            });
-            const html = await response.text();
-            document.getElementById("chart").innerHTML = html;
+            const html = await postForm("duplicates", sendData);
+            if (html) document.getElementById("chart").innerHTML = html;
         } catch (e) { console.error(e); }
     })};
 });
@@ -62,11 +58,7 @@ async function recordLink() {
         isIgnore: isIgnore
     }
     try {
-        const response = await fetch("duplicatesjoin", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const result = await response.text();
+        const result = await postForm("duplicatesjoin", sendData);
         if (result !== "ok") {
             console.log(result);
         } else {

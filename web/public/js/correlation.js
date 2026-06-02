@@ -78,11 +78,7 @@ async function reloadTable() {
     }
     
     try {
-        const response = await fetch("correlation", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const result = await response.text();
+        const result = await postForm("correlation", sendData);
         if (result === "CRITICAL SERVER ERROR!") {
             console.error(result);
             toast(result, "alert");
@@ -171,11 +167,7 @@ async function recordLink() {
         isIgnore: isIgnore
     }
     try {
-        const response = await fetch("duplicatesjoin", {
-            method: "POST",
-            body: new URLSearchParams(sendData)
-        });
-        const result = await response.text();
+        const result = await postForm("duplicatesjoin", sendData);
         if (result !== "ok") {
             console.error(result);
         } else {
