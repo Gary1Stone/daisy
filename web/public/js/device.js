@@ -5,7 +5,15 @@ let gblOldColor = "";   //used to remember the icon's old color if the user togg
 let oldImageName = "";  //remember what the previous picture was, in case user cancels
 
 
+// Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
+let btnSave, btnNew, btnDelete;
+
+// Page loaded event
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the iconbar button instances once the scripts and DOM are ready
+    btnSave = new Button("btnSave");
+    btnNew = new Button("btnNew");
+    btnDelete = new Button("btnDelete", true); // true for forceOffIfNotAllowed
     const cidEl = document.getElementById("cid");
     const cid = cidEl ? cidEl.value : "0";
     const colorEl = document.getElementById("color");
@@ -187,55 +195,6 @@ function msg(str) {
     setTimeout(msg, 12345, "", true);
 }
 
-let btnSave = {
-    id: "btnSave",
-    state: "on",
-    on: function () {
-        const canSave = document.getElementById("canSave");
-        if (canSave && canSave.value === "1") {
-            setDisplay(document.getElementById(this.id), true);
-            this.state = "on";
-        }
-    },
-    off: function () {
-        setDisplay(document.getElementById(this.id), false);
-        this.state = "off";
-    }
-};
-
-let btnNew = {
-    id: "btnNew",
-    state: "on",
-    on: function () {
-        const canNew = document.getElementById("canNew");
-        if (canNew && canNew.value === "1") {
-            setDisplay(document.getElementById(this.id), true);
-            this.state = "on";
-        }
-    },
-    off: function () {
-        setDisplay(document.getElementById(this.id), false);
-        this.state = "off";
-    }
-};
-
-let btnDelete = {
-    id: "btnDelete",
-    state: "on",
-    on: function () {
-        const canDelete = document.getElementById("canDelete");
-        if (canDelete && canDelete.value === "1") {
-            setDisplay(document.getElementById(this.id), true);
-            this.state = "on";
-        } else {
-            this.off();
-        }
-    },
-    off: function () {
-            setDisplay(document.getElementById(this.id), false);
-        this.state = "off";
-    }
-};
 
 //settings={color:light, action:SIGHTING, label:Sighting, icon:mif-eye, active:0 aid:525, cid_ack:0, iid_ack:0, sid_ack:0, uid_ack:0 }
 function pop(aid) {

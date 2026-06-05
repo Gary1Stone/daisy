@@ -1,8 +1,18 @@
 // software.js
 
+// Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
+let btnSave, btnNew, btnDelete;
+
+// Page loaded event
+
 document.addEventListener('DOMContentLoaded', function() {
     const sidEl = document.getElementById("sid");
     const sid = sidEl ? sidEl.value : "";
+
+    // Initialize the iconbar button instances once the scripts and DOM are ready
+    btnSave = new Button("btnSave");
+    btnNew = new Button("btnNew");
+    btnDelete = new Button("btnDelete", true); // true for forceOffIfNotAllowed
 
     //Set initial button state depending if a record is displayed or not
     if (isDigits(sid) && txt2Int(sid) === 0) {
@@ -56,56 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-let btnSave = {
-    id: "btnSave",
-    state: "on",
-    on: function () {
-        const canSave = document.getElementById("canSave");
-        if (canSave && canSave.value === "1") {
-            setDisplay(document.getElementById(this.id), true);
-         this.state = "on";
-     }
-    },
-    off: function () {
-        setDisplay(document.getElementById(this.id), false);
-        this.state = "off";
-    }
-};
-
-let btnNew = {
-    id: "btnNew",
-    state: "on",
-    on: function () {
-        const canNew = document.getElementById("canNew");
-        if (canNew && canNew.value === "1") {
-            setDisplay(document.getElementById(this.id), true);
-            this.state = "on";
-        }
-    },
-    off: function () {
-        setDisplay(document.getElementById(this.id), false);
-        this.state = "off";
-    }
-};
-
-let btnDelete = {
-    id: "btnDelete",
-    state: "on",
-    on: function () {
-        const canDelete = document.getElementById("canDelete");
-        if (canDelete && canDelete.value === "1") {
-            setDisplay(document.getElementById(this.id), true);
-            this.state = "on";
-        } else {
-            this.off();
-        }
-    },
-    off: function () {
-        setDisplay(document.getElementById(this.id), false);
-        this.state = "off";
-    }
-};
 
 
 //pop up a dialog for displaying the message details

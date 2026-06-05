@@ -1,28 +1,13 @@
 // Ticket.js - JavaScript for ticket.html
 
-let btnSave = {
-    id: "btnSave",
-    state: "on",
-    on: function () {
-        const canSave = document.getElementById("canSave");
-        const btn = document.getElementById(this.id);
-        if (canSave && canSave.value === "1") {
-            if (btn) btn.style.display = "block";
-            this.state = "on";
-        }
-    },
-    off: function () {
-        const btn = document.getElementById(this.id);
-        if (btn) btn.style.display = "none";
-        this.state = "off";
-    }
-};
-
+// Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
+let btnSave;
 
 //As user changes something turn on the Save button
 document.addEventListener('DOMContentLoaded', function() {
+    btnSave = new Button("btnSave");
     btnSave.off();
-const activeEl = document.getElementById("active");
+    const activeEl = document.getElementById("active");
     if (activeEl && activeEl.value === "1") {
         const addButton = document.getElementById("addButton");
         if (addButton) addButton.removeAttribute("disabled"); //Add comment button
