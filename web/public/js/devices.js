@@ -174,8 +174,8 @@ function getFormData() {
     gid : txt2Int(document.getElementById("groupSearch").value),
     uid: txt2Int(document.getElementById("userSearch").value),
     searchtxt: document.getElementById("textSearch").value,
-    islate: false,
-    ismissing: false
+    islate: document.getElementById("islate").value,
+    ismissing: document.getElementById("ismissing").value,
   }
   return sendData;
 }
