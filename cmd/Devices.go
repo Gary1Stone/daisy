@@ -39,7 +39,6 @@ func GetDevices(c *fiber.Ctx) error {
 		"isAdmin":          user.IsAdmin,
 		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Device.Create)),
 		"cmd_two":          template.HTML(ctrls.MakeButton(ctrls.BtnFilter, user.Permissions.Device.Read)),
-		"cmd_three":        template.HTML(ctrls.MakeButton(ctrls.BtnSeen, user.Permissions.Device.Read)),
 		"typeCtrl":         template.HTML(ctrls.BuildDropList("TYPESEARCH", filter.DevType, "", true, false)),
 		"siteSearchCtrl":   template.HTML(ctrls.BuildDropList("SITESEARCH", filter.Site, "", true, false)),
 		"officeSearchCtrl": template.HTML(ctrls.BuildDropList("OFFICESEARCH", filter.Office, filter.Site, true, false)),

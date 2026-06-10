@@ -163,13 +163,13 @@ function addRecord() {
 }
 
 
-function isDigits(value) {
-    if (typeof value === "string" && value.length > 0) {
-        const digitsOnly = /^\d+$/;  // d=[0-9] 
-        return digitsOnly.test(value);
-    }
-    return true;
-}
+// function isDigits(value) {
+//     if (typeof value === "string" && value.length > 0) {
+//         const digitsOnly = /^\d+$/;  // d=[0-9] 
+//         return digitsOnly.test(value);
+//     }
+//     return true;
+// }
 
 function validateForm(sendData) {
     if (!isDigits(sendData.sid)) return false;    

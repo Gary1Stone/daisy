@@ -302,13 +302,13 @@ function addRecord() {
     window.location.href =  encodeURI(url);
 }
 
-function isDigits(value) {
-    if (typeof value === "string" && value.length > 0) {
-        digitsOnly = /^\d+$/;  // d=[0-9] 
-        return digitsOnly.test(value);
-    }
-    return true;
-}
+// function isDigits(value) {
+//     if (typeof value === "string" && value.length > 0) {
+//         digitsOnly = /^\d+$/;  // d=[0-9] 
+//         return digitsOnly.test(value);
+//     }
+//     return true;
+// }
 
 function validateForm(sendData) {
      if (!document.getElementById("name").checkValidity()) return false;

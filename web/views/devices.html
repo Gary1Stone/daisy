@@ -11,19 +11,6 @@
         <h3>Filter Devices</h3>
     </header>
     <section>
-        <div>
-            <label for="isLate">
-              <input type="checkbox" id="isLate" name="isLate"
-                {{if .isLate }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
-                Is Late
-            </label>
-              
-            <label for="isMissing">
-              <input type="checkbox" id="isMissing" name="isMissing"
-                {{if .isMissing }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
-                Is Missing
-              </label>
-        </div>
       <label for="type">{{.devicesIcon}} Device Type</label>
       {{.typeCtrl}}
       <label for="siteSearch">{{.siteIcon}} Site</label>
@@ -38,10 +25,23 @@
       <div id="selectSearchUser">
         {{.userSearchCtrl}}
       </div>
-      <label for="textSearch">{{.searchIcon}} Find</label>
-      <div class="input">
-          <input type="text" id="textSearch">
+      <div>
+        <label for="textSearch">{{.searchIcon}} Find</label>
+        <input type="text" id="textSearch">
       </div>
+      <div class="grid">
+        <label for="isLate">
+          <input type="checkbox" id="isLate" name="isLate"
+            {{if .isLate }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+            Backup Late
+        </label>
+        <label for="isMissing">
+          <input type="checkbox" id="isMissing" name="isMissing"
+            {{if .isMissing }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+            Not Seen
+          </label>
+      </div>
+      <div id="dialogMsg" class="fg-red"></div>
     </section>
     <footer>
       <button type='button' class="secondary" data-target="filterDialog" onclick="toggleModal(event)">Cancel</button>
