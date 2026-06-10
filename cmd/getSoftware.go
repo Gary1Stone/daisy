@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/db"
 
@@ -56,8 +57,8 @@ func GetSoftware(c *fiber.Ctx) error {
 		edit = "<a href='#' onclick='popDialog();'>Software Title</a>"
 	}
 
-	return c.Render("software", fiber.Map{
-		"title":          template.HTML("<span class='mif-apps icon'></span>Software"),
+	return c.Render("software", addNavigationIcons(fiber.Map{
+		"title":          template.HTML(svg.GetIcon("software") + " Software"),
 		"fullName":       user.Fullname,
 		"isAdmin":        user.IsAdmin,
 		"sid":            software.Sid,
@@ -77,11 +78,11 @@ func GetSoftware(c *fiber.Ctx) error {
 		"edit":           template.HTML(edit),
 		"notes":          software.Notes,
 		"lastupdated":    template.HTML(lun),
-		"cmd_one":        template.HTML(ctrls.MakeSaveButton(user.Permissions.Software.Update)),
-		"cmd_two":        template.HTML(ctrls.MakeAddButton(user.Permissions.Software.Create)),
-		"cmd_three":      template.HTML(ctrls.MakeDeleteButton(user.Permissions.Software.Delete)),
+		"cmd_one":        template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Software.Update)),
+		"cmd_two":        template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
+		"cmd_three":      template.HTML(ctrls.MakeButton(ctrls.BtnDelete, user.Permissions.Software.Delete)),
 		"actionlog":      template.HTML(ctrls.BuildSoftwareLog(user.Uid, sid, 0)),
 		"purchased":      software.Purchased,
 		"installed_list": template.HTML(ctrls.BuildInstalledList(user.Uid, sid)),
-	})
+	}))
 }
