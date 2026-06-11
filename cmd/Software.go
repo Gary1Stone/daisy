@@ -29,7 +29,7 @@ func GetSoftware(c *fiber.Ctx) error {
 	}
 
 	// If no read capababilty, send them home
-	if !user.Permissions.Profile.Read {
+	if !user.Permissions.Software.Read {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
@@ -75,15 +75,15 @@ func GetSoftware(c *fiber.Ctx) error {
 		"inv_name":       software.Inv_name,
 		"pre_installed":  software.Pre_installed,
 		"free":           software.Free,
+		"purchased":      software.Purchased,
 		"edit":           template.HTML(edit),
 		"notes":          software.Notes,
 		"lastupdated":    template.HTML(lun),
 		"cmd_one":        template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Software.Update)),
 		"cmd_two":        template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
 		"cmd_three":      template.HTML(ctrls.MakeButton(ctrls.BtnDelete, user.Permissions.Software.Delete)),
-		"actionlog":      template.HTML(ctrls.BuildSoftwareLog(user.Uid, sid, 0)),
-		"purchased":      software.Purchased,
 		"installed_list": template.HTML(ctrls.BuildInstalledList(user.Uid, sid)),
+		"actionlog":      template.HTML(ctrls.BuildSoftwareLog(user.Uid, sid, 0)),
 	}))
 }
 
@@ -93,7 +93,6 @@ func PostSoftware(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	recvd := new(db.Software)
 	reply := struct {
 		Success bool   `json:"success"`
 		Sid     int    `json:"sid"`
@@ -103,6 +102,8 @@ func PostSoftware(c *fiber.Ctx) error {
 		Sid:     0,
 		Msg:     "ERROR: Processing Error",
 	}
+
+	recvd := new(db.Software)
 	if err := c.BodyParser(recvd); err != nil {
 		return c.Status(fiber.StatusOK).JSON(reply)
 	}
@@ -164,7 +165,7 @@ func PostSoftware(c *fiber.Ctx) error {
 				dto.Pre_installed = recvd.Pre_installed
 				dto.Free = recvd.Free
 				dto.Last_updated_by = user.Uid
-				reply.Success = dto.UpdateRecord(user.Uid)
+				reply.Success = dto.UpdateRecord(user.Uid, user.Tzoff)
 				reply.Sid = dto.Sid
 				reply.Msg = "The software record was saved"
 				if !reply.Success {
@@ -185,7 +186,7 @@ func PostSoftware(c *fiber.Ctx) error {
 			recvd.Active = 1
 			recvd.Last_updated_by = user.Uid
 			recvd.Color = "light"
-			reply.Success = recvd.AddRecord() //			 db.AddSoftware(recvd)
+			reply.Success = recvd.AddRecord(user.Uid, user.Tzoff)
 			reply.Sid = recvd.Sid
 			reply.Msg = "The software record was created"
 			if !reply.Success {

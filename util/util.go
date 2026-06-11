@@ -21,8 +21,10 @@ func Substr(input string, start int, length int) string {
 }
 
 // Convert yyyy-mm-dd to Unix timestamp in seconds UTC since Jan 1, 1970
-func ToUnixSeconds(yyyymmdd string) int64 {
+func ToUnixSeconds(yyyymmdd string, tzoff int) int64 {
 	t, err := time.Parse("2006-01-02", yyyymmdd)
+	// include the timezone offset to convert user's timezone to UTC
+	t = t.Add(time.Duration(tzoff) * time.Second)
 	if err != nil {
 		log.Println(err)
 		return time.Now().UTC().Unix()

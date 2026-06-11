@@ -211,7 +211,7 @@ func (s *Software) DeleteRecord(curUid int) bool {
 }
 
 // Save software record
-func (s *Software) UpdateRecord(curUid int) bool {
+func (s *Software) UpdateRecord(curUid int, tzoff int) bool {
 	if curUid < 1 {
 		curUid = SYS_PROFILE.Uid
 	}
@@ -234,7 +234,7 @@ func (s *Software) UpdateRecord(curUid int) bool {
 	WHERE sid=?
 	`
 	_, err := Conn.Exec(query, s.Name, s.Licenses, s.Active,
-		util.ToUnixSeconds(s.Purchased), s.Reuseable,
+		util.ToUnixSeconds(s.Purchased, tzoff), s.Reuseable,
 		foreignKey(s.Last_updated_by), s.Source,
 		s.License_key, s.Product, s.Link, s.Notes,
 		s.Color, s.Inv_name, s.Pre_installed, s.Free, s.Sid)
@@ -246,7 +246,7 @@ func (s *Software) UpdateRecord(curUid int) bool {
 }
 
 // Add software record
-func (s *Software) AddRecord() bool {
+func (s *Software) AddRecord(uid, tzoff int) bool {
 	s.trim()
 	// Check software name is unique
 	if !s.IsUnique() {
@@ -260,7 +260,7 @@ func (s *Software) AddRecord() bool {
 		) VALUES (?,?,?,?,strftime('%s','now'),?,?,?,?,?,?,?,?,?,?,?,"")
 	`
 	result, err := Conn.Exec(query, s.Name, s.Licenses, s.Active,
-		foreignKey(s.Last_updated_by), util.ToUnixSeconds(s.Purchased),
+		foreignKey(s.Last_updated_by), util.ToUnixSeconds(s.Purchased, tzoff),
 		s.Reuseable, s.Source, s.License_key, s.Product, s.Link,
 		s.Notes, s.Color, s.Inv_name, s.Pre_installed, s.Free)
 	if err != nil {

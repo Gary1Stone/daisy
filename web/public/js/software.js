@@ -109,12 +109,13 @@ async function fetchLog(aid = 0) {
             if (div) div.innerHTML = html;
         });
     } catch (e) {
+        toast("fetchLog failed:" + e, "error");
         console.error("fetchLog failed:", e);
     }
 }
 
-// Deleting a record is simply deeing it if not used anywhere
-// else setting the active flag = 0 and moving name to old name
+// Deleting a record is simply checking if it not used anywhere,
+// else setting the active flag = 0 and moving name to old name column
 // its still in the database but not used again.
 function deleteRecord() {
     if (btnDelete.state !== "on") return;
@@ -125,7 +126,7 @@ function deleteRecord() {
     }
 }
 
-function confirmDelete() {
+async function confirmDelete() {
     if (btnDelete.state !== "on") return;
     let sendData = getFormData();
     sendData.task = "delete";
@@ -161,15 +162,6 @@ function addRecord() {
     }
     window.location.href =  encodeURI(url);
 }
-
-
-// function isDigits(value) {
-//     if (typeof value === "string" && value.length > 0) {
-//         const digitsOnly = /^\d+$/;  // d=[0-9] 
-//         return digitsOnly.test(value);
-//     }
-//     return true;
-// }
 
 function validateForm(sendData) {
     if (!isDigits(sendData.sid)) return false;    

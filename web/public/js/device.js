@@ -1,9 +1,7 @@
-/* global Metro */
 // device.js
 
 let gblOldColor = "";   //used to remember the icon's old color if the user toggels the Died status over and over
 let oldImageName = "";  //remember what the previous picture was, in case user cancels
-
 
 // Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
 let btnSave, btnNew, btnDelete;
@@ -266,7 +264,7 @@ function deleteRecord() {
     }
 }
 
-function confirmDelete() {
+async function confirmDelete() {
     if (btnDelete.state !== "on") return;
     let sendData = getFormData();
     sendData.task = "delete";
