@@ -513,7 +513,7 @@ func GetInstalledComputers(curUid, sid int) ([]installed, error) {
 	tzoff := GetTzoff(curUid) //Time Zone Offest in minutes
 	query := `
 		SELECT strftime('%Y-%m-%d %H:%M', scandate-?, 'unixepoch') AS scanDate, 
-		coalesce(A.cid, 0) as cid, B.name, B.model, C.icon FROM sw_inv A 
+		coalesce(A.cid, 0) as cid, B.name, B.model, C.icon2 FROM sw_inv A 
 		LEFT JOIN devices B ON B.cid=A.cid
 		LEFT JOIN icons C ON B.type=C.name
 		WHERE A.sid=? AND B.active=1 

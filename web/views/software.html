@@ -3,7 +3,6 @@
 
   <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
   
-
     <div class="autogrid">
 
           <div>
@@ -11,21 +10,27 @@
             <input type="text" id="name" name="name" value="{{ .name }}"
               placeholder="Software package name" title="Software package name"
               required autofocus autocomplete="off"
-              minlength="6" maxlength="100" {{if .isReadonly }} readonly {{end}} >
+              minlength="6" maxlength="100" {{if .isReadonly }} readonly {{end}}
+              aria-invalid="false" aria-describedby="nameError" >
             <small id="nameError" class="err">Required, Unique, 6-100 characters.</small>
-            <input type="hidden" id="gid" value="{{ .gid }}" >
+            <input type="hidden" id="sid" name="sid" value="{{ .sid }}" >
           </div>
 
           <div>
             <label for="purchased">Purchased</label>
-            <input type="date" id="purchased" name="purchased" value="{{ .purchased }}">
+            <input type="date" id="purchased" name="purchased" value="{{ .purchased }}" 
+            placeholder="Date YYYY-MM-DD" title="When the software was obtained"
+            maxlength="10" {{if .isReadonly }} readonly {{end}} 
+            aria-invalid="false" aria-describedby="purchasedError">
+            <small id="purchasedError" class="err">Date only: YYYY-MM-DD</small>
           </div>
           
           <div>
               <label for="source">Vendor</label>
               <input type="text" id="source" name="source" value="{{ .source }}"
-              placeholder="Entity" title="Where the software was obtained"
-              maxlength="100" {{if .isReadonly }} readonly {{end}} >
+              placeholder="Store" title="Where the software was obtained"
+              maxlength="100" {{if .isReadonly }} readonly {{end}} 
+              aria-invalid="false" aria-describedby="sourceErr">
               <small id="sourceErr" class="err">Max 100 characters</small>
           </div>
 
@@ -34,7 +39,8 @@
               <input type="url" id="link" name="link" value="{{ .link }}"
               placeholder="http://www.example.com"
               title="URL where to download this software"
-              minlength="3" maxlength="100" {{if .isReadonly }} readonly {{end}} >
+              minlength="3" maxlength="100" {{if .isReadonly }} readonly {{end}} 
+              aria-invalid="false" aria-describedby="linkErr">
               <small id="linkErr" class="err">Invalid URL format</small>
           </div>
 
@@ -42,7 +48,8 @@
               <label for="product">Product ID</label>
               <input type="text" id="product" name="product" value="{{ .product }}"
               placeholder="Product" title="Product ID"
-              maxlength="100" {{if .isReadonly }} readonly {{end}} >
+              maxlength="100" {{if .isReadonly }} readonly {{end}} 
+              aria-invalid="false" aria-describedby="productErr">
               <small id="productErr" class="err">Max 100 characters</small>
           </div>
 
@@ -50,7 +57,8 @@
               <label for="license_key">License Key</label>
               <input type="text" id="license_key" name="license_key" value="{{ .license_key }}"
               placeholder="Key" title="Activation Key" 
-              maxlength="100" {{if .isReadonly }} readonly {{end}} > 
+              maxlength="100" {{if .isReadonly }} readonly {{end}} 
+              aria-invalid="false" aria-describedby="license_keyErr">
               <small id="license_keyErr" class="err">Max 100 charcaters</small>
           </div>
 
@@ -58,15 +66,15 @@
               <label for="licenses">Purchased Licenses</label>
               <input type="number" id="licenses" name="licenses" value="{{ .licenses }}" 
               placeholder="#" title="Number of licenses purchased"
-              minlength="1" maxlength="10" {{if .isReadonly }} readonly {{end}} > 
+              minlength="1" maxlength="10" {{if .isReadonly }} readonly {{end}} 
+              aria-invalid="false" aria-describedby="licensesErr"> 
               <small id="licensesErr" class="err">Digits only</small>
           </div>
 
           <div>
             <label for="reuseable">
-              <input type="checkbox" id="reuseable" name="reuseable"
-                {{if .reuseable }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
-                Can Reuse
+              <input type="checkbox" id="reuseable" name="reuseable" {{if .reuseable }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+                Reuseable
               </label>
             <label for="free">
               <input type="checkbox" id="free" name="free" {{if .free }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
@@ -79,7 +87,8 @@
               <label for="licenses">Pre-Installed Licenses</label>
               <input type="number" id="pre_installed" name="pre_installed" value="{{ .pre_installed }}" 
               placeholder="#" title="Number of licenses that came with computers"
-              minlength="1" maxlength="10" readonly > 
+              minlength="1" maxlength="10" readonly 
+              aria-invalid="false" aria-describedby="pre_installedErr">  
               <small id="pre_installedErr" class="err">Digits only</small>
           </div>
       
@@ -87,7 +96,8 @@
             <label for="inv_name">{{ .edit }}</label>
             <input type="text" id="inv_name"  name="inv_name" value="{{ .inv_name }}"
             placeholder="Comment" title="Matching phrase for software inventory"
-            maxlength="255" readonly >
+            maxlength="255" readonly 
+              aria-invalid="false" aria-describedby="inv_nameErr">  
             <small id="inv_nameErr" class="err">Name found in software inventory</small>
         </div>
          
@@ -97,7 +107,8 @@
         <label for="notes">Notes</label>
         <input type="text"  id="notes" name="notes" value="{{ .notes }}"
         placeholder="Comment" title="General comments"
-        maxlength="255" {{if .isReadonly }} readonly {{end}} > 
+        maxlength="255" {{if .isReadonly }} readonly {{end}} 
+              aria-invalid="false" aria-describedby="notesErr">  
         <small id="notesErr" class="err">Up to 255 characters</small>
     </div>
 
@@ -105,25 +116,26 @@
       {{ .installed_list }}
     </div>
 
-    <div>
-      Last Updated: {{ .lastupdated }}
-    </div>
-
-        <div>
-          <label for="filter">
-            <input type="checkbox" id="filter" name="filter" role="switch" onchange="fetchLog()" >
-            History
+    <br>
+    <div class="grid">
+      <div>
+        Updated {{ .lastupdated }}
+      </div>
+      <div style="display: flex; justify-content: flex-end; align-items: center;">
+          <label for="filter" style="margin-bottom: 0;">
+              <input type="checkbox" id="filter" name="filter" role="switch" onchange="fetchLog(0)"> History
           </label>
-        </div>
-      
-        <div id="actionLogDiv">
-          {{ .actionlog }}
-          <input type="hidden" id="sid" name="sid" value="{{ .sid }}" >
-        </div>
+      </div>
+    </div>
+    <br>
 
-</form>
+    <div id="actionLogDiv">
+      {{ .actionlog }}
+    </div>
+    <br>
+
+  </form>
 </main>
-
 
 <dialog id="NotesDialog">
   <article>
@@ -147,7 +159,7 @@
   <article>
     <header>
         <button type='button' aria-label="Close" rel="prev" data-target="matchDialog" onclick="toggleModal(event)"></button>
-        <h3>Find Best Match To Software Titles</h3>
+        <h3>Pick The Best Match To Audit's Software Titles</h3>
     </header>
     <section>
       <input type="search" id="search" onkeyup="filterList()" value="" placeholder="Search...">
@@ -180,4 +192,5 @@
 </dialog>
 
 <script src="js/software.js" defer></script>
+<script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}

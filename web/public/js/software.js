@@ -27,11 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //if any of the 'input' elements are modified, change the save/add/delete states  
     document.querySelectorAll("input").forEach(el => {
-        el.addEventListener("input", function(){
-            btnSave.on();
-            btnNew.off();
-            btnDelete.off();
-        });
+        if (el.id !== "filter") { // Ignore history button
+            el.addEventListener("input", function(){
+                btnSave.on();
+                btnNew.off();
+                btnDelete.off();
+            });
+        }
     });
     
     //if any of the 'select' droplists are modified, change the save/add/delete states
@@ -46,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //when user changes the name of the software, check if the name is not already in use
     const nameInput = document.getElementById("name");
     if (nameInput) {
-        nameInput.addEventListener("blur", async function () {
+        nameInput.addEventListener("change", async function () {
         let sendData = getFormData();
         sendData.task = "unique";
             try {
@@ -107,6 +109,7 @@ async function fetchLog(aid = 0) {
         await postForm("software", sendData, (html) => {
             const div = document.getElementById("actionLogDiv");
             if (div) div.innerHTML = html;
+            buildTable("softwarelog");
         });
     } catch (e) {
         toast("fetchLog failed:" + e, "error");
@@ -184,6 +187,39 @@ function validateForm(sendData) {
     }    
     return theForm ? theForm.checkValidity() : false;
 }
+
+
+// function validateForm(sendData) {
+//     if (!isDigits(sendData.uid)) return false;
+
+//     const userField = UI.user();
+//     if (!userField.checkValidity()) {
+//         userField.setAttribute("aria-invalid", "true");
+//         return false;
+//     }
+
+//     if (userField.getAttribute("aria-invalid") === "true") {
+//         userField.focus();
+//         return false;
+//     }
+
+//     const firstField = UI.first();
+//     if (!firstField.checkValidity())  {
+//         firstField.setAttribute("aria-invalid", "true");
+//         return false;
+//     }
+
+//     const lastField = UI.last();
+//     if (!lastField.checkValidity())  {
+//         lastField.setAttribute("aria-invalid", "true");
+//         return false;
+//     }
+    
+//     return UI.form().checkValidity();
+// }
+
+
+
 
 
 async function saveRecord() {

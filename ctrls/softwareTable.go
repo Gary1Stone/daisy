@@ -19,7 +19,7 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 	table.WriteString(`<table class='striped' id="softwaretable">
     <thead>
     <tr>
-        <th aria-sort="ascending" data-sort="asc">Name</th>
+        <th aria-sort='ascending' data-sort='asc'>Name</th>
         <th aria-sort='none'>Vendor</th>
         <th aria-sort='none'>Licenses&sol;Installed</th>
         <th aria-sort='none'>OEM Licenses</th>
@@ -64,22 +64,11 @@ func BuildInstalledList(curUid, sid int) string {
 	var table strings.Builder
 	table.WriteString(`<label>Installed On</label>
 		<div style="max-height: 400px; overflow-y: auto;">
-		<table class='striped' id="swlist" >
-		<thead><tr>
-		<th aria-sort='none'>Device</th>
-		</tr></thead>
+		<table class='striped' id='swlist' >
+		<thead><tr><th aria-sort='ascending' data-sort='asc'>Device</th></tr></thead>
 		<tbody>`)
-
 	for _, item := range items {
-		table.WriteString("<tr><td><a href='device.html?cid=")
-		table.WriteString(strconv.Itoa(item.Cid))
-		table.WriteString("'><span class='")
-		table.WriteString(item.Icon)
-		table.WriteString(" icon'></span>&nbsp;")
-		table.WriteString(item.Name)
-		table.WriteString("</a>&nbsp;")
-		table.WriteString(item.Model)
-		table.WriteString("</td></tr>")
+		fmt.Fprintf(&table, "<tr><td><a href='device.html?cid=%d'>%s %s %s</a></td></tr>", item.Cid, svg.GetIcon(item.Icon), item.Name, item.Model)
 	}
 	table.WriteString("</tbody></table></div>")
 	return table.String()
@@ -87,20 +76,14 @@ func BuildInstalledList(curUid, sid int) string {
 
 func BuildSoftwareLog(curUid, sid, hist int) string {
 	var table strings.Builder
-	table.WriteString("<table class='striped' id='install_table' ")
-	table.WriteString(" ")
-	table.WriteString(" ")
-	table.WriteString(" ")
-	table.WriteString(">\n")
-	table.WriteString("<thead>\n<tr>\n")
-	table.WriteString("<th aria-sort='none'>Action</th>\n")
-	table.WriteString("<th aria-sort='none'>Date</th>\n")
-	table.WriteString("<th aria-sort='none'>Computer</th>\n")
-	table.WriteString("<th aria-sort='none'>Installer</th>\n")
-	table.WriteString("<th aria-sort='none'>Notes</th>\n")
-	table.WriteString("<th aria-sort='none'>Status</th>\n")
-	table.WriteString("</tr>\n</thead>\n")
-	table.WriteString("<tbody>\n")
+	table.WriteString(`<table class='striped' id='softwarelog'><thead><tr>
+	<th aria-sort='ascending' data-sort='asc'>Action</th>
+	<th aria-sort='none'>Date</th>
+	<th aria-sort='none'>Computer</th>
+	<th aria-sort='none'>Installer</th>
+	<th aria-sort='none'>Notes</th>
+	<th aria-sort='none'>Status</th>
+	</tr></thead><tbody>`)
 	//table body
 	filter := new(db.ActionFilter)
 	filter.Active = -1    // -1 = Dont care if opened or closed
@@ -130,31 +113,10 @@ func BuildSoftwareLog(curUid, sid, hist int) string {
 		button.Uid_ack = act.Uid_ack
 		button.Wlog = act.Wlog
 		button.Icon = act.Icon
-		table.WriteString("<tr>\n")
-		table.WriteString("<td>")
-		table.WriteString(buildButton(button))
-		table.WriteString("</td>")
-		table.WriteString("<td><div class='gwrap'>")
-		table.WriteString(act.Localtime)
-		table.WriteString("</div></td>")
-		table.WriteString("<td><div class='gwrap'>")
-		table.WriteString(act.Devicename)
-		table.WriteString("</div></td>")
-		table.WriteString("<td><div class='gwrap'>")
-		table.WriteString(act.OriginatorName)
-		table.WriteString("</div></td>")
-		table.WriteString("<td><div id='notes")
-		table.WriteString(strconv.Itoa(act.Aid))
-		table.WriteString("' class='gwrap'>")
-		table.WriteString(act.Notes)
-		table.WriteString("</div></td>")
-		table.WriteString("<td><div class='gwrap'>")
-		table.WriteString(calculateStatus(act))
-		table.WriteString("</div></td>")
-		table.WriteString("</tr>\n")
+		fmt.Fprintf(&table, "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>", buildButton(button), act.Localtime, act.Devicename, act.OriginatorName)
+		fmt.Fprintf(&table, "<td><div id='notes%d'>%s</div></td><td>%s</td></tr>", act.Aid, act.Notes, calculateStatus(act))
 	}
-	table.WriteString("</tbody>\n")
-	table.WriteString("</table>\n")
+	table.WriteString("</tbody></table>")
 	return table.String()
 }
 

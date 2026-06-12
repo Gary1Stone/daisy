@@ -133,11 +133,7 @@ func BuildYearsSelect(selected int) string {
 
 func BuildDeviceLog(curUid, cid, hist int) string {
 	var table strings.Builder
-	table.WriteString(`<table id='install_table' 
-		 
-		 
-		 
-		>
+	table.WriteString(`<table>
 		<thead><tr>
 		<th aria-sort="none">Action</th>
 		<th aria-sort="none">Date</th>
