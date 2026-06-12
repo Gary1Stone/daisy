@@ -15,6 +15,22 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.prepend(searchInput);
     }
 
+    // Add a single global listener for filtering all striped tables
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const sortableTables = document.querySelectorAll('table.striped');
+        sortableTables.forEach(table => {
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            Array.from(tbody.rows).forEach(row => {
+                const match = Array.from(row.cells).some(td => 
+                    td.textContent.toLowerCase().includes(query)
+                );
+                row.style.display = match ? '' : 'none';
+            });
+        });
+    });
+
     // Add column header sorts
     const sortableTables = document.querySelectorAll('table.striped');
     sortableTables.forEach(table => {
@@ -29,21 +45,6 @@ function buildTable(tableID) {
 
     const tbody = table.querySelector('tbody');
     const headers = table.querySelectorAll('thead th');
-    // Common search input ID used across the application (e.g., in devices.js)
-    const searchInput = document.getElementById('txtSearch');
-
-    // --- Filtering Logic ---
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            Array.from(tbody.rows).forEach(row => {
-                const match = Array.from(row.cells).some(td => 
-                    td.textContent.toLowerCase().includes(query)
-                );
-                row.style.display = match ? '' : 'none';
-            });
-        });
-    }
 
     // --- Sorting Logic ---
     headers.forEach((th, index) => {
