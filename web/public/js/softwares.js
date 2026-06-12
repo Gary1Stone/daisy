@@ -1,8 +1,9 @@
 // softwares.js
 
+let btnNew;
+
 document.addEventListener('DOMContentLoaded', function() {
   btnNew = new Button("btnNew");
-  buildTable('softwaretable');
 });
 
 function addRecord(id = 0) {

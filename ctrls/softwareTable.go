@@ -44,7 +44,7 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 		} else {
 			licenses = strconv.Itoa(item.Licenses)
 		}
-		fmt.Fprintf(&table, `<tr data-id='%d'><td>%s %s</td><td>%s</td><td>%s &sol; %d</td><td>%d</td></tr>`, item.Sid, icon, item.Name, mxl25(item.Source), licenses, item.Installed, item.Installed)
+		fmt.Fprintf(&table, `<tr data-id='%d'><td><a href='software.html?sid=%d'>%s %s</a></td><td>%s</td><td>%s &sol; %d</td><td>%d</td></tr>`, item.Sid, item.Sid, icon, item.Name, mxl25(item.Source), licenses, item.Installed, item.Installed)
 	}
 
 	table.WriteString("</tbody></table>")
