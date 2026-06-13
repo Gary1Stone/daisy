@@ -80,7 +80,7 @@ func GetDevice(c *fiber.Ctx) error {
 		"usb":               device.Usb,
 		"cd":                device.Cd,
 		"serial_number":     device.Serial_number,
-		"typeCtrl":          template.HTML(ctrls.BuildDropList("TYPE", device.Type, "", false, false)),
+		"typeCtrl":          template.HTML(ctrls.BuildDropList("TYPE", device.Type, "", true, false)),
 		"makeCtrl":          template.HTML(ctrls.BuildDropList("MAKE", device.Make, "", true, false)),
 		"statusCtrl":        template.HTML(ctrls.BuildDropList("STATUS", device.Status, "", false, false)),
 		"groupCtrl":         template.HTML(ctrls.BuildDropList("GROUP", groupAssigned, "", true, false)),
