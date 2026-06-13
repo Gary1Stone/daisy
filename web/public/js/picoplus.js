@@ -298,42 +298,110 @@ for (i = 0; i < l; i++) {
   selElmnt = x[i].getElementsByTagName("select")[0];
   if (!selElmnt) continue;
   ll = selElmnt.length;
-  /* For each element, create a new DIV that will act as the selected item: */
+  
+  // For each element, create a new DIV that will act as the selected item:
   a = document.createElement("DIV");
   a.classList.add("select-selected");
+  a.style.alignItems = "center";
+  a.style.gap = "0.5rem"; // Space between icon and text
+
+  let selectedContent = "";
+  let initialColor = "";
+
   if (selElmnt.selectedIndex !== -1) {
-    a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
-    const initialColor = selElmnt.options[selElmnt.selectedIndex].getAttribute("data-color");
-    if (initialColor) a.style.color = initialColor;
+    selectedContent = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+    initialColor = selElmnt.options[selElmnt.selectedIndex].getAttribute("data-color");
   } else if (selElmnt.options.length > 0) {
     // If no item is selected, but there are options, display the first option's innerHTML
-    a.innerHTML = selElmnt.options[0].innerHTML;
-    const initialColor = selElmnt.options[0].getAttribute("data-color");
-    if (initialColor) a.style.color = initialColor;
+    selectedContent = selElmnt.options[0].innerHTML;
+    initialColor = selElmnt.options[0].getAttribute("data-color");
   }
+
+  if (selectedContent) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = selectedContent;
+
+    const svgElement = tempDiv.querySelector('svg');
+    let textNode = tempDiv.textContent.trim();
+
+    // If an SVG was found, remove its outerHTML from the text content
+    if (svgElement) {
+        textNode = textNode.replace(svgElement.textContent, '').trim(); // Remove SVG's internal text content
+        svgElement.style.flexShrink = "0"; // Prevent SVG from shrinking
+        a.appendChild(svgElement);
+    }
+
+    const textSpan = document.createElement('span');
+    textSpan.textContent = textNode;
+    textSpan.style.whiteSpace = "nowrap";
+    textSpan.style.overflow = "hidden";
+    textSpan.style.textOverflow = "ellipsis";
+    textSpan.style.flexGrow = "1"; // Allow text to grow and shrink
+    textSpan.style.minWidth = "0"; // Important for ellipsis in flex containers
+    a.appendChild(textSpan);
+
+    if (initialColor) {
+        // Apply color to the text span, not the whole div, to avoid coloring the SVG unless intended
+        textSpan.style.color = initialColor;
+    }
+  }
+
   x[i].appendChild(a);
+
   /* For each element, create a new DIV that will contain the option list: */
   b = document.createElement("DIV");
   b.classList.add("select-items", "select-hide");
   for (j = 0; j < ll; j++) {
     /* For each option in the original select element, create a new DIV that will act as an option item: */
     c = document.createElement("DIV");
-    c.innerHTML = selElmnt.options[j].innerHTML;
+    c.style.display = "flex";
+    c.style.alignItems = "center";
+    c.style.gap = "0.5rem"; // Space between icon and text
+
+    const optionContent = selElmnt.options[j].innerHTML;
+    const itemColor = selElmnt.options[j].getAttribute("data-color");
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = optionContent;
+
+    const svgElement = tempDiv.querySelector('svg');
+    let textNode = tempDiv.textContent.trim();
+
+    if (svgElement) {
+        textNode = textNode.replace(svgElement.textContent, '').trim();
+        svgElement.style.flexShrink = "0";
+        c.appendChild(svgElement);
+    }
+
+    const textSpan = document.createElement('span');
+    textSpan.textContent = textNode;
+    textSpan.style.whiteSpace = "nowrap";
+    textSpan.style.overflow = "hidden";
+    textSpan.style.textOverflow = "ellipsis";
+    textSpan.style.flexGrow = "1";
+    textSpan.style.minWidth = "0";
+    c.appendChild(textSpan);
+
     // Store the index to avoid brittle innerHTML comparison
     c.setAttribute("data-index", j);
-    const itemColor = selElmnt.options[j].getAttribute("data-color");
-    if (itemColor) c.style.color = itemColor;
+    if (itemColor) {
+        textSpan.style.color = itemColor;
+    }
 
     c.addEventListener("click", function() {
         /* When an item is clicked, update the original select box, and the selected item: */
         let y, k, s, h, yl, idx;
         s = this.parentNode.parentNode.getElementsByTagName("select")[0];
         h = this.parentNode.previousSibling;
+
         idx = parseInt(this.getAttribute("data-index"));
 
         s.selectedIndex = idx;
-        h.innerHTML = this.innerHTML;
-        h.style.color = this.style.color;
+        // Update the selected display with the new icon and text
+        h.innerHTML = ''; // Clear existing content
+        Array.from(this.children).forEach(child => h.appendChild(child.cloneNode(true)));
+        h.querySelector('span').style.color = this.querySelector('span').style.color;
+
         y = this.parentNode.getElementsByClassName("same-as-selected");
         yl = y.length;
         for (k = 0; k < yl; k++) {
