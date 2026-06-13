@@ -43,12 +43,12 @@ func GetSoftware(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("index.html")
 	}
 	// Last Updated by name
-	lun := ""
-	if len(software.Last_updated_time) > 0 {
-		lun = software.Fullname
-		lun += " at "
-		lun += software.Last_updated_time
-	}
+	// lun := ""
+	// if len(software.Last_updated_time) > 0 {
+	// 	lun = software.Fullname
+	// 	lun += " at "
+	// 	lun += software.Last_updated_time
+	// }
 	// Edit inventory
 	edit := "Software Title"
 	if user.IsAdmin {
@@ -76,7 +76,8 @@ func GetSoftware(c *fiber.Ctx) error {
 		"purchased":      software.Purchased,
 		"edit":           template.HTML(edit),
 		"notes":          software.Notes,
-		"lastupdated":    template.HTML(lun),
+		"by":             software.Fullname,
+		"at":             software.Last_updated_time,
 		"cmd_one":        template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Software.Update)),
 		"cmd_two":        template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
 		"cmd_three":      template.HTML(ctrls.MakeButton(ctrls.BtnDelete, user.Permissions.Software.Delete)),

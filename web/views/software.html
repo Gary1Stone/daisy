@@ -117,24 +117,19 @@
     </div>
 
     <br>
-    <div class="grid">
-      <div>
-        Updated {{ .lastupdated }}
-      </div>
-      <div style="display: flex; justify-content: flex-end; align-items: center;">
-          <label for="filter" style="margin-bottom: 0;">
-              <input type="checkbox" id="filter" name="filter" role="switch" onchange="fetchLog(0)"> History
-          </label>
-      </div>
+    <div style="display: flex; justify-content: flex-end; align-items: center;">
+      <label for="filter" style="margin-bottom: 0;">
+          <input type="checkbox" id="filter" name="filter" role="switch" onchange="fetchLog(0)"> History
+      </label>
     </div>
-    <br>
-
     <div id="actionLogDiv">
       {{ .actionlog }}
     </div>
-    <br>
 
   </form>
+<footer>
+  Last Updated: {{ .by }} at {{ .at }}
+</footer>
 </main>
 
 <dialog id="NotesDialog">
