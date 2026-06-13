@@ -118,35 +118,6 @@ async function getNextBlock() {
   }
 }
 
-
-// function seeIconClick() { // This function seems to be related to a button with ID "btnSeeState"
-//   let curState = document.getElementById("btnSeeState").value;
-//   const devType = document.getElementById("type").value;
-//   if (!(devType === "DESKTOP" || devType === "LAPTOP" || devType === "") && curState === "see") {
-//     curState = "late";
-//   }
-//   if (curState === "off") { // Starting state is off, switching to See activated
-//     document.getElementById("btnSeeState").value = "see";
-//     document.getElementById("mif-eye").classList.remove("fg-white"); document.getElementById("mif-eye").classList.add("fg-red");
-//     document.getElementById("ismissing").value = "1";
-//     document.getElementById("islate").value = "0";
-//   } else if (curState === "see") {  // See activated, switching to late backups
-//     document.getElementById("btnSeeState").value = "late";
-//     document.getElementById("mif-copy").style.display = "";
-//     document.getElementById("mif-eye").style.display = "none";
-//     document.getElementById("ismissing").value = "0";
-//     document.getElementById("islate").value = "1";
-//   } else if (curState === "late") {    // Late activated, switching off
-//     document.getElementById("btnSeeState").value = "off";
-//     document.getElementById("mif-copy").style.display = "none";
-//     document.getElementById("mif-eye").style.display = "";
-//     document.getElementById("mif-eye").classList.remove("fg-red"); document.getElementById("mif-eye").classList.add("fg-white");
-//     document.getElementById("islate").value = "0";
-//     document.getElementById("ismissing").value = "0";
-//   }
-//   postData("get_first_page", "cards");
-// }
-
 function popWizards(cid, devName, devType) {
   if (cid < 1) return
   const modal = document.getElementById("wizardDialog");
@@ -180,6 +151,5 @@ function getFormData() {
     islate: (document.getElementById("isLate").checked) ? true : false,
     ismissing: (document.getElementById("isMissing").checked) ? true : false
   }
-console.log(sendData);
   return sendData;
 }
