@@ -2,6 +2,7 @@ package ctrls
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 func MakeImageCtrl(dev *db.Device, isUpdatePerm bool) string {
@@ -48,9 +50,8 @@ func BuildSoftwareList(curUid, cid int) string {
 	}
 
 	var table strings.Builder
-	table.WriteString("<label>(Last Scan: ")
-	table.WriteString(items[0].ScanDate)
-	table.WriteString(`)</label>
+	fmt.Fprintf(&table, "(Last Scan: %s", items[0].ScanDate)
+	table.WriteString(`)
 		<div style="max-height: 400px; overflow-y: auto;">
 		<table class='striped' id="swlist" >
 		<thead><tr>
@@ -62,7 +63,7 @@ func BuildSoftwareList(curUid, cid int) string {
 	for _, item := range items {
 		tracked := ""
 		if item.IsTracked {
-			tracked = `&nbsp;<span class="mif-steps icon"></span>`
+			tracked = svg.GetIcon("steps")
 		}
 		table.WriteString("<tr><td>")
 		table.WriteString("")
@@ -108,8 +109,7 @@ func BuildYearsSelect(selected int) string {
 		items = append(items, item)
 	}
 	var ctrl strings.Builder
-	ctrl.WriteString(`<label for='year'>Year</label><select name='year' id='year' title='Year of manufacture' 
-		data-role='select' data-filter='false' ><option value=''>&nbsp;</option>`)
+	ctrl.WriteString(`<select name='year' id='year' title='Year of manufacture'><option value=''>&nbsp;</option>`)
 	for _, item := range items {
 		ctrl.WriteString(`<option value="`)
 		ctrl.WriteString(item.Value)
@@ -117,17 +117,11 @@ func BuildYearsSelect(selected int) string {
 		if item.Selected {
 			ctrl.WriteString(`selected `)
 		}
-		// item.Icon = svg.GetIcon("calendar_today")
-		// //	item.Icon = svg.GetIcon(db.FindIconNameByName("YEARS"))
-		// // item.Icon = svg.LookupIcon("YEARS")
-		// ctrl.WriteString(`data-template="<span class='`)
-		// ctrl.WriteString(item.Icon)
-		// ctrl.WriteString(` icon'></span> $1 " >`)
 		ctrl.WriteString(`>`)
 		ctrl.WriteString(item.Description)
 		ctrl.WriteString(`</option>`)
 	}
-	ctrl.WriteString(`</select><small id="yearError" class="invalid_feedback">Select year the device was manufactured</small>`)
+	ctrl.WriteString(`</select>`)
 	return ctrl.String()
 }
 
