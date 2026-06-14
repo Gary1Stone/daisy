@@ -234,7 +234,7 @@ function buildDescriptionControl(txt, rowId) {
             title='Description' required minlength='1' maxlength='${maxLength}' pattern="[a-zA-Z0-9.\\s\\(\\)\\-]+"
             aria-invalid="false" aria-describedby='${errorId}'
             onchange="doTextbox('${rowId}')" >
-        <small class="err" id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>`;
+        <small id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>`;
 }
 
 function buildActiveControl(isChecked, rowId) {
@@ -273,7 +273,7 @@ function buildAssetIdControl(txt, rowId) {
             title='Asset ID Prefix' required minlength='1' maxlength='${maxLength}' pattern='[a-zA-Z0-9]+'
             aria-invalid="false" aria-describedby='${errorId}'
             onchange="doAssetId('${rowId}')" >
-        <small class="err" id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>`;
+        <small id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>`;
 }
 
 function buildCodeControl(txt, rowId) {
@@ -308,7 +308,7 @@ function buildCodeControl(txt, rowId) {
             style='text-transform:uppercase'
             aria-invalid="false" aria-describedby='${codeErrorId}'
             onchange="doCodeValidate('${rowId}')" >
-        <small class="err" id='${codeErrorId}'>${errorMessage}</small>`;
+        <small id='${codeErrorId}'>${errorMessage}</small>`;
 }
 
 function doCodeValidate(rowId) {

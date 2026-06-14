@@ -12,7 +12,7 @@
               required autofocus autocomplete="off"
               minlength="6" maxlength="100" {{if .isReadonly }} readonly {{end}}
               aria-invalid="false" aria-describedby="nameError" >
-            <small id="nameError" class="err">Required, Unique, 6-100 characters.</small>
+            <small id="nameError">Required, Unique, 6-100 characters.</small>
             <input type="hidden" id="sid" name="sid" value="{{ .sid }}" >
           </div>
 
@@ -22,7 +22,7 @@
             placeholder="Date YYYY-MM-DD" title="When the software was obtained"
             maxlength="10" {{if .isReadonly }} readonly {{end}} 
             aria-invalid="false" aria-describedby="purchasedError">
-            <small id="purchasedError" class="err">Date only: YYYY-MM-DD</small>
+            <small id="purchasedError">Date only: YYYY-MM-DD</small>
           </div>
           
           <div>
@@ -31,7 +31,7 @@
               placeholder="Store" title="Where the software was obtained"
               maxlength="100" {{if .isReadonly }} readonly {{end}} 
               aria-invalid="false" aria-describedby="sourceErr">
-              <small id="sourceErr" class="err">Max 100 characters</small>
+              <small id="sourceErr">Max 100 characters</small>
           </div>
 
           <div>
@@ -41,7 +41,7 @@
               title="URL where to download this software"
               minlength="3" maxlength="100" {{if .isReadonly }} readonly {{end}} 
               aria-invalid="false" aria-describedby="linkErr">
-              <small id="linkErr" class="err">Invalid URL format</small>
+              <small id="linkErr">Invalid URL format</small>
           </div>
 
           <div>
@@ -50,7 +50,7 @@
               placeholder="Product" title="Product ID"
               maxlength="100" {{if .isReadonly }} readonly {{end}} 
               aria-invalid="false" aria-describedby="productErr">
-              <small id="productErr" class="err">Max 100 characters</small>
+              <small id="productErr">Max 100 characters</small>
           </div>
 
           <div>
@@ -59,7 +59,7 @@
               placeholder="Key" title="Activation Key" 
               maxlength="100" {{if .isReadonly }} readonly {{end}} 
               aria-invalid="false" aria-describedby="license_keyErr">
-              <small id="license_keyErr" class="err">Max 100 charcaters</small>
+              <small id="license_keyErr">Max 100 charcaters</small>
           </div>
 
           <div>
@@ -68,7 +68,7 @@
               placeholder="#" title="Number of licenses purchased"
               minlength="1" maxlength="10" {{if .isReadonly }} readonly {{end}} 
               aria-invalid="false" aria-describedby="licensesErr"> 
-              <small id="licensesErr" class="err">Digits only</small>
+              <small id="licensesErr">Digits only</small>
           </div>
 
           <div>
@@ -89,7 +89,7 @@
               placeholder="#" title="Number of licenses that came with computers"
               minlength="1" maxlength="10" readonly 
               aria-invalid="false" aria-describedby="pre_installedErr">  
-              <small id="pre_installedErr" class="err">Digits only</small>
+              <small id="pre_installedErr">Digits only</small>
           </div>
       
         <div>
@@ -98,7 +98,7 @@
             placeholder="Comment" title="Matching phrase for software inventory"
             maxlength="255" readonly 
               aria-invalid="false" aria-describedby="inv_nameErr">  
-            <small id="inv_nameErr" class="err">Name found in software inventory</small>
+            <small id="inv_nameErr">Name found in software inventory</small>
         </div>
          
     </div>
@@ -109,7 +109,7 @@
         placeholder="Comment" title="General comments"
         maxlength="255" {{if .isReadonly }} readonly {{end}} 
               aria-invalid="false" aria-describedby="notesErr">  
-        <small id="notesErr" class="err">Up to 255 characters</small>
+        <small id="notesErr">Up to 255 characters</small>
     </div>
 
     <div>

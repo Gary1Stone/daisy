@@ -19,29 +19,29 @@
             autocomplete="email" placeholder="User's Email Address..." data-tooltip="User Identifier"
             required minlength="6" maxlength="100" autofocus
             {{if .Readonly }}readonly{{end}} aria-invalid="false" aria-describedby="userErr">
-          <small id="userErr" class="err">Mandatory: Must be a unique email address</small>
+          <small id="userErr">Mandatory: Must be a unique email address</small>
 
           <label for="first">First Name</label>
           <input type="text" id="first" name="first" value="{{ .first }}"
             autocomplete="off" placeholder="User's first name" data-tooltip="User's first name"
             required minlength="2" maxlength="50"
             {{if .Readonly }}readonly{{end}} aria-invalid="false" aria-describedby="firstErr">
-          <small id="firstErr" class="err">Required: Minimum 2, Maximum 50</small>
+          <small id="firstErr">Required: Minimum 2, Maximum 50</small>
 
           <label for="last">Last Name</label>
           <input type="text" id="last" name="last" value="{{ .last }}" 
             autocomplete="off" placeholder="User's last name" data-tooltip="User's last name"
             required minlength="2" maxlength="50"
             {{if .Readonly }}readonly{{end}}  aria-invalid="false" aria-describedby="lastErr">
-          <small id="lastErr" class="err">Required: Minimum 2, Maximum 50</small>
+          <small id="lastErr">Required: Minimum 2, Maximum 50</small>
 
           <label for="gid">{{.groupIcon}} Group</label>
             {{ .GroupOptions }}
-          <small id="groupError" class="err">Select a Group</small>
+          <small id="groupError">Select a Group</small>
 
           <label for="geo_fence">{{.locationIcon}} User's Base Site</label>
             {{ .FenceOptions }}
-          <small id="fenceError" class="err">Select a geo-fence site</small>
+          <small id="fenceError">Select a geo-fence site</small>
 
           <label for="geo_radius">Fence Radius</label>
           <select name="geo_radius" id="geo_radius" title="Geo Radius"
@@ -49,7 +49,7 @@
             {{if .isDisabled }}disabled{{end}} >
             {{ .RadiusOptions }}
           </select>
-          <small  class="err"></small>
+          <small ></small>
           
           {{ .chkNotify }}
           <label for="notify">Notify</label>

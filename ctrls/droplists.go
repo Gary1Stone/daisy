@@ -38,14 +38,6 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 			break
 		}
 	}
-
-	// Add old Labels for Metro as converting, but not for Pico
-	isMetro := false
-	if field != "GROUP" && field != "GEOFENCE" && field != "TYPESEARCH" && field != "SITESEARCH" && field != "OFFICESEARCH" && field != "GROUPSEARCH" && field != "USERSEARCH" {
-		isMetro = true
-		fmt.Fprintf(&ctrl, `<label for="%s">%s</label>`, droplist.Id, droplist.Label)
-	}
-
 	disabled := ""
 	if readOnly {
 		disabled = "disabled"
@@ -54,55 +46,33 @@ func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) s
 	if len(droplist.Action) > 0 {
 		onchange = `onchange="` + droplist.Action + `"`
 	}
-	if isMetro {
-		filter := "false"
-		if len(options) > 30 {
-			filter = "true"
-		}
-		fmt.Fprintf(&ctrl, `<select name="%s" id="%s" title="%s" %s %s data-role="select" data-filter="%s">`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange, filter)
-	} else {
-		if addIcons {
-			fmt.Fprintf(&ctrl, `<div class="custom-select">`)
-		}
-		fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s>`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange)
+	if addIcons {
+		fmt.Fprintf(&ctrl, `<div class="custom-select">`)
 	}
+	required := ""
+	if field == "TYPE" {
+		required = "required"
+	}
+	fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s %s aria-invalid="false" aria-describedby="%sErr" >`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange, required, droplist.Id)
 
 	for _, option := range options {
 		selected := ""
 		if option.Selected {
 			selected = "selected"
 		}
-
-		if isMetro {
-			icon := ""
-			if len(option.Icon) > 0 {
-				icon = fmt.Sprintf(`data-template="<span class='%s icon'></span> $1 " `, option.Icon)
-			}
-			color := ""
-			if len(option.Colour) > 0 {
-				color = fmt.Sprintf(`class="%s" `, xlateColor(option.Colour))
-			}
-			fmt.Fprintf(&ctrl, `<option value="%s" %s %s %s>%s</option>`, option.Value, selected, color, icon, option.Description)
-		} else {
-			icon := ""
-			if len(option.Icon) > 0 {
-				icon = svg.GetIcon(option.Icon) + " "
-			}
-			color := ""
-			if len(option.Colour) > 0 {
-				color = fmt.Sprintf(`data-color="%s" `, xlateColor(option.Colour))
-			}
-			fmt.Fprintf(&ctrl, `<option value="%s" %s %s>%s%s</option>`, option.Value, selected, color, icon, option.Description)
+		icon := ""
+		if len(option.Icon) > 0 {
+			icon = svg.GetIcon(option.Icon) + " "
 		}
+		color := ""
+		if len(option.Colour) > 0 {
+			color = fmt.Sprintf(`data-color="%s" `, xlateColor(option.Colour))
+		}
+		fmt.Fprintf(&ctrl, `<option value="%s" %s %s>%s%s</option>`, option.Value, selected, color, icon, option.Description)
 	}
 	ctrl.WriteString("</select>")
-
 	if addIcons {
 		fmt.Fprintf(&ctrl, `</div>`)
-	}
-
-	if isMetro {
-		fmt.Fprintf(&ctrl, `<small id="%sError" class="invalid_feedback">%s</small>`, droplist.Id, droplist.ErrMsg)
 	}
 	return ctrl.String()
 }

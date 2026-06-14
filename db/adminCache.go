@@ -33,6 +33,7 @@ type adminInfo struct {
 	Count       int    `json:"count" db:"cnt"`               // Count of how may times this field/code is used
 	AssetId     string `json:"assetid" db:"asset_id"`        // Starting characters dependant on device type
 	Permissions string `json:"permissions" db:"permissions"` // CRUD permssions per group
+	Color       string `json:"color" db:"color"`             // Color
 }
 
 /*
@@ -73,7 +74,7 @@ func (a *adminStruct) loadAdmin(count int) {
 	tempSlice := make([]adminInfo, count)
 	query := `
 		SELECT A.id, A.field, A.code, A.description, A.seq, A.active, A.parent, 
-		coalesce(B.icon2,"") AS icon, coalesce(C.icon2,"") AS alticon, A.cnt, A.asset_id, A.permissions
+		coalesce(B.icon2,"") AS icon, coalesce(C.icon2,"") AS alticon, A.cnt, A.asset_id, A.permissions, coalesce(B.color,"") AS color
 		FROM choices A 
 		LEFT JOIN icons B ON A.code=B.name
 		LEFT JOIN icons C ON A.field=C.name
@@ -91,7 +92,7 @@ func (a *adminStruct) loadAdmin(count int) {
 		altIcon := ""
 		err := rows.Scan(&item.Id, &item.Field, &item.Code, &item.Description,
 			&item.Seq, &item.Active, &item.Parent, &item.Icon, &altIcon,
-			&item.Count, &item.AssetId, &item.Permissions)
+			&item.Count, &item.AssetId, &item.Permissions, &item.Color)
 		if err != nil {
 			log.Println(err)
 			continue

@@ -45,7 +45,7 @@ func GetOptions(field, selected, parentCode string, withBlank bool) []DroplistOp
 			option.Selected = true
 		}
 		option.Icon = item.Icon
-		option.Colour = ""
+		option.Colour = item.Color
 		options = append(options, option)
 	}
 	return options

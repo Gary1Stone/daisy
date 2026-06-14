@@ -109,17 +109,13 @@ func BuildYearsSelect(selected int) string {
 		items = append(items, item)
 	}
 	var ctrl strings.Builder
-	ctrl.WriteString(`<select name='year' id='year' title='Year of manufacture'><option value=''>&nbsp;</option>`)
+	ctrl.WriteString(`<select name='year' id='year' data-tooltip='Year of manufacture'><option value=''></option>`)
 	for _, item := range items {
-		ctrl.WriteString(`<option value="`)
-		ctrl.WriteString(item.Value)
-		ctrl.WriteString(`" `)
+		selected := ""
 		if item.Selected {
-			ctrl.WriteString(`selected `)
+			selected = "selected"
 		}
-		ctrl.WriteString(`>`)
-		ctrl.WriteString(item.Description)
-		ctrl.WriteString(`</option>`)
+		fmt.Fprintf(&ctrl, `<option value="%s" %s>%s</option>`, item.Value, selected, item.Description)
 	}
 	ctrl.WriteString(`</select>`)
 	return ctrl.String()

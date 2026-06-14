@@ -242,12 +242,13 @@ th[data-sort="desc"]::after {
   background-color: var(--pico-dropdown-hover-background-color);
 }
 
-small.err {
+small {
   display: none;
+  color: var(--pico-del-color);
 }
 
 /* Show error whenever the JS marks the field as invalid */
-input[aria-invalid="true"] + small.err {
+input[aria-invalid="true"] + small {
   display: block;
 }
 

@@ -24,7 +24,7 @@ func GetDevice(c *fiber.Ctx) error {
 	}
 
 	// If NO Read capababilty, send them home
-	if !user.Permissions.Profile.Read {
+	if !user.Permissions.Device.Read {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
@@ -46,7 +46,7 @@ func GetDevice(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("index.html")
 	}
 
-	// Guess at the default for the assigned Group
+	// Guess at the default for the device's assigned Group
 	groupAssigned := guessAssignedGroupDefault(user.Uid, &device)
 	if device.Gid == 0 {
 		device.Gid, _ = strconv.Atoi(groupAssigned)
@@ -60,7 +60,7 @@ func GetDevice(c *fiber.Ctx) error {
 
 	// page state: empty (cid=0), with record (cid>0); affects type control, if cid=0 then user must select, with blank included but not selectable
 
-	// log.Printf("GetDevice took %s", time.Since(start))
+	//	log.Printf("GetDevice took %s", time.Since(start))
 	// Render the page
 	return c.Render("device", addNavigationIcons(fiber.Map{
 		"title":             template.HTML(svg.GetIcon("devices") + " Devices"),
@@ -130,8 +130,6 @@ func PostDevice(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	// The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
-	recvd := new(db.Device)
 	reply := struct {
 		Success bool   `json:"success"`
 		Cid     int    `json:"cid"`
@@ -142,6 +140,7 @@ func PostDevice(c *fiber.Ctx) error {
 		Msg:     "ERROR: Processing Error",
 	}
 
+	recvd := new(db.Device) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
 	if err := c.BodyParser(recvd); err != nil {
 		return c.Status(fiber.StatusOK).JSON(reply)
 	}

@@ -346,6 +346,23 @@ for (i = 0; i < l; i++) {
     }
   }
 
+  // Replicate aria-invalid behavior for Pico.css styling
+  // We use a closure to capture the specific elements for this iteration
+  const currentSelect = selElmnt;
+  const currentDisplay = a;
+  const syncInvalid = () => {
+    const val = currentSelect.getAttribute("aria-invalid");
+    if (val) currentDisplay.setAttribute("aria-invalid", val);
+    else currentDisplay.removeAttribute("aria-invalid");
+  };
+
+  syncInvalid(); // Set initial state
+
+  // Watch for dynamic validation changes (e.g. from checkValidity calls)
+  new MutationObserver((mutations) => {
+    mutations.forEach(m => m.attributeName === "aria-invalid" && syncInvalid());
+  }).observe(currentSelect, { attributes: true });
+
   x[i].appendChild(a);
 
   /* For each element, create a new DIV that will contain the option list: */

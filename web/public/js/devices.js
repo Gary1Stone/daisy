@@ -1,5 +1,25 @@
 //devices.js
 
+// Cache DOM elements using getters to ensure they are available when needed
+const UI = {
+    filterDialog: () => document.getElementById("filterDialog"),
+    dialogMsg: () => document.getElementById("dialogMsg"),
+    cards: () => document.getElementById("cards"),
+    type: () => document.getElementById("type"),
+    siteSearch: () => document.getElementById("siteSearch"),
+    officeSearch: () => document.getElementById("officeSearch"),
+    groupSearch: () => document.getElementById("groupSearch"),
+    userSearch: () => document.getElementById("userSearch"),
+    textSearch: () => document.getElementById("textSearch"),
+    isLate: () => document.getElementById("isLate"),
+    isMissing: () => document.getElementById("isMissing"),
+    wizcid: () => document.getElementById("wizcid"),
+    wizardDialog: () => document.getElementById("wizardDialog"),
+    deviceName: () => document.getElementById("deviceName"),
+    removePick: () => document.getElementById("removePick"),
+    backupPick: () => document.getElementById("backupPick")
+};
+
 let page = 0;
 let endReached = false; // Flag to indicate if all data has been loaded
 
@@ -30,7 +50,7 @@ function addRecord() {
 
 // Search Filters show
 function popFilters() {
-  const modal = document.getElementById("filterDialog");
+  const modal = UI.filterDialog();
   if (modal) modal.showModal();
 }
 
@@ -40,9 +60,9 @@ function search() {
   const sendData = getFormData();
   sendData.task = "get_first_page";
   postJSON("devices", sendData).then(response => {
-    const dialog = document.getElementById("filterDialog");
-    const dialogMsg = document.getElementById("dialogMsg");
-    const cards = document.getElementById("cards");
+    const dialog = UI.filterDialog();
+    const dialogMsg = UI.dialogMsg();
+    const cards = UI.cards();
       if (response.length < 10) {
         if (dialogMsg) dialogMsg.innerHTML = "No device matches found!";
       } else {
@@ -71,10 +91,10 @@ function ctrlData(task) {
     isTicket: false,
     isWizard: false,
     cid: 0,
-    gid: txt2Int(document.getElementById("groupSearch").value),
-    uid: txt2Int(document.getElementById("userSearch").value),
-    site: document.getElementById("siteSearch").value,
-    office: document.getElementById("officeSearch").value,
+    gid: txt2Int(UI.groupSearch().value),
+    uid: txt2Int(UI.userSearch().value),
+    site: UI.siteSearch().value,
+    office: UI.officeSearch().value,
     impact: "",
     trouble: "",
     wizard: "", // This field is not used in this context
@@ -106,7 +126,7 @@ async function getNextBlock() {
       if (response.length === 0) {
           endReached = true;
       } else {
-          document.getElementById("cards").insertAdjacentHTML('beforeend', response);
+          UI.cards().insertAdjacentHTML('beforeend', response);
       } 
       // Wait 1/2 second before getting next block
       setTimeout(() => {
@@ -120,21 +140,21 @@ async function getNextBlock() {
 
 function popWizards(cid, devName, devType) {
   if (cid < 1) return
-  const modal = document.getElementById("wizardDialog");
+  const modal = UI.wizardDialog();
   if (modal) modal.showModal();
-  document.getElementById("wizcid").value = cid;
-  document.getElementById("deviceName").value = devName;
+  UI.wizcid().value = cid;
+  UI.deviceName().value = devName;
   if (devType.toUpperCase() === "DESKTOP" || devType.toUpperCase() === "LAPTOP") {
-    document.getElementById("removePick").style.display = "block";
-    document.getElementById("backupPick").style.display = "block";
+    setDisplay(UI.removePick(), true);
+    setDisplay(UI.backupPick(), true);
   } else {
-    document.getElementById("removePick").style.display = "none";
-    document.getElementById("backupPick").style.display = "none";
+    setDisplay(UI.removePick(), false);
+    setDisplay(UI.backupPick(), false);
   }
 }
 
 function showWizard(wiz) {
-  window.location.href = encodeURI("wizard.html?wizkey=" + wiz + "&cid=" +  document.getElementById("wizcid").value);
+  window.location.href = encodeURI("wizard.html?wizkey=" + wiz + "&cid=" +  UI.wizcid().value);
 }
 
 function getFormData() {
@@ -142,14 +162,14 @@ function getFormData() {
     task: "get_first_page", 
     page: page, // 'page' is a global variable
     cid: 0,
-    devtype:  document.getElementById("type").value,
-    site: document.getElementById("siteSearch").value,
-    office: document.getElementById("officeSearch").value,
-    gid : txt2Int(document.getElementById("groupSearch").value),
-    uid: txt2Int(document.getElementById("userSearch").value),
-    searchtxt: document.getElementById("textSearch").value,
-    islate: (document.getElementById("isLate").checked) ? true : false,
-    ismissing: (document.getElementById("isMissing").checked) ? true : false
+    devtype:  UI.type().value,
+    site: UI.siteSearch().value,
+    office: UI.officeSearch().value,
+    gid : txt2Int(UI.groupSearch().value),
+    uid: txt2Int(UI.userSearch().value),
+    searchtxt: UI.textSearch().value,
+    islate: UI.isLate().checked,
+    ismissing: UI.isMissing().checked
   }
   return sendData;
 }
