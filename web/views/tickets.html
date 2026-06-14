@@ -1,7 +1,8 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
     <input type="hidden" id="fullname" value="{{.fullName}}" >
-    <div id="ticketsTable" class="container">{{ .ticketsTable }}</div>
+    <div id="ticketsTable">{{ .ticketsTable }}</div>
 </main>
 <script src="js/tickets.js" defer></script>
+<script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}

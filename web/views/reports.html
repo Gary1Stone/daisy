@@ -1,5 +1,5 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<div class="container">
+<main class="container">
   <div role="group">
     <button type='button' onclick="getReport('DASHBOARD_REPORT');">Dashboard</button>
     <button type='button' onclick="getReport('USERS_REPORT');">Users</button>
@@ -11,7 +11,7 @@
   <article>
     <div id="report"></div>
   </article>
-</div>
+</main>
 <script src="js/reports.js" defer></script>
 <script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}

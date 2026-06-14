@@ -2,6 +2,10 @@
 
 // Find all tables with class='striped', add search and sort
 document.addEventListener('DOMContentLoaded', function() {
+    //Count the number of tables with class='striped'
+    const tableCount = document.querySelectorAll('table.striped').length;
+    if (tableCount === 0) return;
+
     // Create the search input field
     const searchInput = document.createElement('input');
     searchInput.type = 'search';

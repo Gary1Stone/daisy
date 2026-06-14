@@ -13,13 +13,13 @@ import (
 // We want only BROKEN, DIED, LOST, CARE, REQUEST actions
 // They are only the ones that require follow-up
 // Generate tickets table for wide screens
-func TicketsTable(curUid int) string {
-	var table strings.Builder
+func BuildTicketsTable(curUid int) string {
+	var tbl strings.Builder
 	var filter db.ActionFilter
 	filter.Page = 0
 
 	// Build the table header
-	table.WriteString(buildTicketsTableHeader())
+	tbl.WriteString(buildTicketsTableHeader())
 
 	// Fetch profile and handle errors
 	profile, err := db.GetProfile(curUid, curUid)
@@ -32,17 +32,17 @@ func TicketsTable(curUid int) string {
 	items, err := db.GetAllActionableActions(curUid)
 	if err != nil {
 		log.Println(err)
-		table.WriteString("</tbody></table>")
-		return table.String()
+		tbl.WriteString("</tbody></table>")
+		return tbl.String()
 	}
 
 	// Build table rows
 	for _, item := range items {
-		table.WriteString(buildTicketsTableRow(curUid, item, &profile, &filter))
+		tbl.WriteString(buildTicketsTableRow(curUid, item, &profile, &filter))
 	}
 
-	table.WriteString("</tbody></table>")
-	return table.String()
+	tbl.WriteString("</tbody></table>")
+	return tbl.String()
 }
 
 // Helper function to build the table header
@@ -112,7 +112,7 @@ func buildAckCell(curUid int, item *db.Action, profile *db.Profile, filter *db.A
 	var cell strings.Builder
 	cell.WriteString("<td data-label='ACK'>")
 	if isInformAck(curUid, item, profile, filter) || isAssignedAck(curUid, item, profile, filter) {
-		cell.WriteString("<button type='button' id='cmd' class='button primary' onclick='acceptAction(\"")
+		cell.WriteString("<button type='button' id='cmd' onclick='acceptAction(\"")
 		cell.WriteString(strconv.Itoa(item.Aid))
 		cell.WriteString("\");'>Accept</button>")
 	}

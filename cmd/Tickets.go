@@ -4,6 +4,7 @@ import (
 	"html/template"
 
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,11 +22,11 @@ func GetTickets(c *fiber.Ctx) error {
 	isAdmin := user.Permissions.Admin.Read
 
 	//Render the page
-	return c.Render("tickets", fiber.Map{
-		"title":        template.HTML("<span class='mif-news icon'></span>&nbsp;Tickets"),
+	return c.Render("tickets", addNavigationIcons(fiber.Map{
+		"title":        template.HTML(svg.GetIcon("ticket") + " Tickets"),
 		"fullName":     user.Fullname,
 		"isAdmin":      isAdmin,
 		"cmd_one":      template.HTML(ctrls.MakeAddButton(user.Permissions.Ticket.Create)),
-		"ticketsTable": template.HTML(ctrls.TicketsTable(user.Uid)),
-	})
+		"ticketsTable": template.HTML(ctrls.BuildTicketsTable(user.Uid)),
+	}))
 }
