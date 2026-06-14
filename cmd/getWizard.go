@@ -8,6 +8,7 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
+	"github.com/gbsto/daisy/svg"
 	"github.com/gbsto/daisy/wizards"
 
 	"github.com/gofiber/fiber/v2"
@@ -80,8 +81,8 @@ func GetWizard(c *fiber.Ctx) error {
 		site, office = db.GetDeviceAssignedSiteOffice(user.Uid, cid)
 	}
 
-	return c.Render("wizard", fiber.Map{
-		"title":            template.HTML(title),
+	return c.Render("wizard", addNavigationIcons(fiber.Map{
+		"title":            template.HTML(svg.GetIcon("wizard") + " " + title),
 		"fullName":         user.Fullname,
 		"cmd_one":          template.HTML(ctrls.MakeSearchBtn()),
 		"isAdmin":          user.IsAdmin,
@@ -104,5 +105,5 @@ func GetWizard(c *fiber.Ctx) error {
 		"officeCtrl":       template.HTML(ctrls.BuildDropList("OFFICE", office, site, false, false)),
 		"locationCtrl":     template.HTML(ctrls.LocationCtrl(user.Uid, cid)),
 		"cards":            template.HTML(ctrls.DeviceCards(user.Uid, &filter, true)),
-	})
+	}))
 }
