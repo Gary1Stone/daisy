@@ -57,7 +57,7 @@ func GetDevices(c *fiber.Ctx) error {
 		"careIcon":         template.HTML(svg.GetIcon("wrench")),
 		"brokenIcon":       template.HTML(svg.GetIcon("broken")),
 		"diedIcon":         template.HTML(svg.GetIcon("stethoscope")),
-		"lostIcon":         template.HTML(svg.GetIcon("footprint")),
+		"lostIcon":         template.HTML(svg.GetIcon("steps")),
 		"usingIcon":        template.HTML(svg.GetIcon("tag")),
 		"claimingIcon":     template.HTML(svg.GetIcon("tag")),
 		"givingIcon":       template.HTML(svg.GetIcon("tag")),

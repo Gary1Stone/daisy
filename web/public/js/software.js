@@ -1,21 +1,52 @@
 // software.js
 
 // Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
-let btnSave, btnNew, btnDelete;
+let btnSave, btnNew, btnDelete, usedNames = [];
+
+// Cache DOM elements using getters to ensure they are available when needed
+const UI = {
+    form: () => document.getElementById('theForm'),
+    sid: () => document.getElementById("sid"),
+    name: () => document.getElementById("name"),
+    licenses: () => document.getElementById("licenses"),
+    license_key: () => document.getElementById("license_key"),
+    product: () => document.getElementById("product"),
+    source: () => document.getElementById("source"),
+    link: () => document.getElementById("link"),
+    notes: () => document.getElementById("notes"),
+    active: () => document.getElementById("active"),
+    reuseable: () => document.getElementById("reuseable"),
+    filter: () =>  document.getElementById("filter"),
+    purchased: () => document.getElementById("purchased"),
+    inv_name: () => document.getElementById("inv_name"),
+    pre_installed: () => document.getElementById("pre_installed"),
+    free: () => document.getElementById("free"),
+    pop: () => document.getElementById("pop"),
+    actionID: () => document.getElementById("actionID"),
+    actionName: () => document.getElementById("actionName"),
+    cmd: () => document.getElementById("cmd"),
+    notesDialog: () => document.getElementById("NotesDialog"),
+    actionLogDiv: () => document.getElementById("actionLogDiv"),
+    deleteDialog: () => document.getElementById("deleteDialog"),
+    softwareName: () => document.getElementById("softwareName"),
+    nameError: () => document.getElementById("nameError"),
+    matchDialog: () => document.getElementById("matchDialog"),
+    search: () => document.getElementById("search"),
+    invList: () => document.getElementById("inv_list"),
+    invTable: () => document.getElementById("inv_table"),
+    errorMsg: () => document.getElementById("errorMsg"),
+    matchCount: () => document.getElementById("matchCount")
+};
 
 // Page loaded event
-
 document.addEventListener('DOMContentLoaded', function() {
-    const sidEl = document.getElementById("sid");
-    const sid = sidEl ? sidEl.value : "";
-
-    // Initialize the iconbar button instances once the scripts and DOM are ready
+    const sid = UI.sid().value;
     btnSave = new Button("btnSave");
     btnNew = new Button("btnNew");
-    btnDelete = new Button("btnDelete", true); // true for forceOffIfNotAllowed
+    btnDelete = new Button("btnDelete", true);
 
-    //Set initial button state depending if a record is displayed or not
-    if (isDigits(sid) && txt2Int(sid) === 0) {
+    const isNew = isDigits(sid) && txt2Int(sid) === 0;
+    if (isNew) {
         btnSave.on();
         btnNew.off();
         btnDelete.off();
@@ -23,126 +54,107 @@ document.addEventListener('DOMContentLoaded', function() {
         btnSave.off();
         btnNew.on();
         btnDelete.on();
-    } 
+    }
 
-    //if any of the 'input' elements are modified, change the save/add/delete states  
-    document.querySelectorAll("input").forEach(el => {
-        if (el.id !== "filter") { // Ignore history button
-            el.addEventListener("input", function(){
-                btnSave.on();
-                btnNew.off();
-                btnDelete.off();
-            });
-        }
-    });
-    
-    //if any of the 'select' droplists are modified, change the save/add/delete states
-    document.querySelectorAll("select").forEach(el => {
-        el.addEventListener("change", function () {
-            btnSave.on();
-            btnNew.off();
-            btnDelete.off();
+    const form = UI.form();
+    if (form) {
+        form.addEventListener("input", (e) => {
+            if (e.target.id !== "filter") updateButtonStates();
         });
-    });
-
-    //when user changes the name of the software, check if the name is not already in use
-    const nameInput = document.getElementById("name");
-    if (nameInput) {
-        nameInput.addEventListener("change", async function () {
-        let sendData = getFormData();
-        sendData.task = "unique";
-            try {
-                await postForm("software", sendData, (reply) => {
-                    if (typeof reply === "string") reply = JSON.parse(reply);
-                    const nameError = document.getElementById("nameError");
-                    if (reply.success === true) {
-                        nameError.style.display = "none";
-                    } else {
-                        nameError.value = reply.msg;
-                        nameError.style.display = "block";
-                    }
-                });
-            } catch (e) {
-                console.error("Uniqueness check failed:", e);
-            }
+        form.addEventListener("change", (e) => {
+            if (e.target.matches("select")) updateButtonStates();
+            if (e.target.id === "name") onNameChange();
         });
     }
 });
 
+function updateButtonStates() {
+    btnSave.on();
+    btnNew.off();
+    btnDelete.off();
+}
 
-//pop up a dialog for displaying the message details
-//settings={"color":"light ","action":"INSTALL","label":"Install Soft...","icon":"mif-apps","active":0,"aid":176,"cid_ack":1,"iid_ack":0,"sid_ack":1,"uid_ack":0}
+async function onNameChange() {
+    const sendData = getFormData();
+    sendData.task = "unique";
+    try {
+        const reply = await postForm("software", sendData);
+        const data = typeof reply === "string" ? JSON.parse(reply) : reply;
+        const nameInput = UI.name();
+        const nameError = UI.nameError();
+        if (nameInput && nameError) {
+            if (data.success) {
+                nameInput.setAttribute("aria-invalid") === "true"
+                nameError.style.display = "none";
+            } else {
+                nameInput.setAttribute("aria-invalid") === "false"
+                nameError.value = data.msg;
+                nameError.style.display = "block";
+            }
+        }
+    } catch (e) {
+        console.error("Uniqueness check failed:", e);
+    }
+}
+
 function pop(aid) {
-    const popEl = document.getElementById("pop");
     const notesEl = document.getElementById("notes" + aid);
     const aidInput = document.getElementById("aid" + aid);
-    const actionIDInput = document.getElementById("actionID");
-    const actionNameInput = document.getElementById("actionName");
-    const cmdEl = document.getElementById("cmd");
 
-    if (popEl && notesEl) {
-        popEl.innerHTML = "<p>" + notesEl.innerHTML + "</p>";
+    if (UI.pop() && notesEl) {
+        UI.pop().innerHTML = `<p>${notesEl.innerHTML}</p>`;
     }
-    if (actionIDInput) actionIDInput.value = aid;
+    if (UI.actionID()) UI.actionID().value = aid;
     
     if (aidInput) {
         const settings = JSON.parse(aidInput.value);
-        if (actionNameInput) actionNameInput.value = settings.action;
-        if (cmdEl) {
-            cmdEl.style.display = (settings.active && !settings.sid_ack) ? "block" : "none";
+        if (UI.actionName()) UI.actionName().value = settings.action;
+        if (UI.cmd()) {
+            setDisplay(UI.cmd(), !!(settings.active && !settings.sid_ack));
         }
     }
-    openModal(document.getElementById("NotesDialog"));
+    openModal(UI.notesDialog());
 }
 
 function acceptAction() {
-    const actionIDInput = document.getElementById("actionID");
-    const aid = actionIDInput ? txt2Int(actionIDInput.value) : 0;
-    fetchLog(aid);
+    const aidEl = UI.actionID();
+    fetchLog(aidEl ? txt2Int(aidEl.value) : 0);
 }
 
 async function fetchLog(aid = 0) {
     const sendData = getFormData();
+    if (sendData.sid === 0) return;
     sendData.task = "getactionlog";
     sendData.aid = aid;
     try {
-        await postForm("software", sendData, (html) => {
-            const div = document.getElementById("actionLogDiv");
-            if (div) div.innerHTML = html;
-            buildTable("softwarelog");
-        });
+        const html = await postForm("software", sendData);
+        if (UI.actionLogDiv()) UI.actionLogDiv().innerHTML = html;
+        buildTable("actionlog");
     } catch (e) {
-        toast("fetchLog failed:" + e, "error");
-        console.error("fetchLog failed:", e);
+        toast("fetchLog failed: " + e, "error");
     }
 }
 
-// Deleting a record is simply checking if it not used anywhere,
-// else setting the active flag = 0 and moving name to old name column
-// its still in the database but not used again.
 function deleteRecord() {
     if (btnDelete.state !== "on") return;
-    openModal(document.getElementById("deleteDialog"));
-    const name = document.getElementById("name").value;
-    if (name.length > 0) {
-        document.getElementById("softwareName").innerHTML = name;
-    }
+    openModal(UI.deleteDialog());
+    const name = UI.name()?.value;
+    if (name) UI.softwareName().innerHTML = name;
 }
 
 async function confirmDelete() {
     if (btnDelete.state !== "on") return;
-    let sendData = getFormData();
+    const sendData = getFormData();
     sendData.task = "delete";
     try {
-        await postForm("software", sendData, (reply) => {
-            if (typeof reply === "string") reply = JSON.parse(reply);
-        if (reply.success) {
-            addRecord();  //clears the displayed record
+        const reply = await postForm("software", sendData);
+        const data = typeof reply === "string" ? JSON.parse(reply) : reply;
+        if (data.success) {
+            addRecord();
         } else {
-            closeModal(document.getElementById("deleteDialog"));
-            toast(reply.msg, "alert");
+            closeModal(UI.deleteDialog());
+            toast(data.msg, "alert");
         }
-        });
     } catch (e) {
         console.error(e);
         toast(e, "error");
@@ -150,249 +162,151 @@ async function confirmDelete() {
 }
 
 
-//Adding a record is a two step process
-//Display this screen with a sid=0 (Software ID = SID)
-//when user presses save, in the servlet, detect if record id (SID) is 0, then insert record.
-//then send the uid to be used inside this form
 function addRecord() {
-    if (btnNew.state !== "on") return;
-    let url = window.location.href;
-    const i = url.indexOf("?");
-    if (i < 0) {
-        url = url + "?sid=0"; // + encodeURIComponent("0");
-    } else {
-        url = url.substring(0, i) + "?sid=0"; // + encodeURIComponent("0");
-    }
-    window.location.href =  encodeURI(url);
+    if (btnNew.state !== "on" && txt2Int(UI.sid().value) !== 0) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("sid", "0");
+    window.location.href = encodeURI(url.toString());
 }
 
-function validateForm(sendData) {
-    if (!isDigits(sendData.sid)) return false;    
-    const nameInput = document.getElementById("name");
-    const nameError = document.getElementById("nameError");
-    const theForm = document.getElementById("theForm");
-
-    if (nameInput && !nameInput.checkValidity()) return false;
-    //Check if the name is unique (onBlur sets if error message visible or not)
-    if (nameError && nameError.style.display !== "none") {
-        if (nameInput) nameInput.focus();
+function validateForm(data) {
+    if (!isDigits(data.sid.toString())) return false;    
+    const nameInput = UI.name();
+    // Check aria-invalid of nameInput, it may have been set by function onNameChange()
+    if (nameInput && nameInput.getAttribute("aria-invalid") === "true") {
         return false;
     }
-    if (sendData.link.length > 0) {
-        const link = document.getElementById("link");
-        if (!link.checkValidity()) {
-            console.warn(link.validationMessage);
-            return false;
-        }
-    }    
-    return theForm ? theForm.checkValidity() : false;
-}
+    // Check validity of nameInput
+    if (nameInput && !nameInput.checkValidity()) {
+        nameInput.setAttribute("aria-invalid", "true");
+        return false;
+    } else {
+        nameInput.setAttribute("aria-invalid", "false");
+    }
 
-
-// function validateForm(sendData) {
-//     if (!isDigits(sendData.uid)) return false;
-
-//     const userField = UI.user();
-//     if (!userField.checkValidity()) {
-//         userField.setAttribute("aria-invalid", "true");
-//         return false;
-//     }
-
-//     if (userField.getAttribute("aria-invalid") === "true") {
-//         userField.focus();
-//         return false;
-//     }
-
-//     const firstField = UI.first();
-//     if (!firstField.checkValidity())  {
-//         firstField.setAttribute("aria-invalid", "true");
-//         return false;
-//     }
-
-//     const lastField = UI.last();
-//     if (!lastField.checkValidity())  {
-//         lastField.setAttribute("aria-invalid", "true");
-//         return false;
-//     }
+    if (data.link.length > 0) {
+        const link = UI.link();
+        if (link && !link.checkValidity()) return false;
+    }
     
-//     return UI.form().checkValidity();
-// }
+    // Check all the input fields if valid and set aria-invalid for each
+    const form = UI.form();
+    if (form) {
+        Array.from(form.elements).forEach(el => {
+            if (el.willValidate) {
+                el.setAttribute("aria-invalid", el.checkValidity() ? "false" : "true");
+            }
+        });
+    }
 
-
-
-
+    return form ? form.checkValidity() : false;
+}
 
 async function saveRecord() {
     if (btnSave.state !== "on") return false;
-    let sendData = getFormData();
+    const sendData = getFormData();
     if (!validateForm(sendData)) return false;
-    if (sendData.sid === 0) {
-        sendData.task = "add";
-    }
+    if (sendData.sid === 0) sendData.task = "add";
 
     try {
         const reply = await postForm("software", sendData);
-        if (typeof reply === "string") reply = JSON.parse(reply);
-        
-        if (!reply.success) {
-            console.log(reply.msg);  //display error message
-        } else {             //Refresh the page
-            let url = window.location.href;
-            const i = url.indexOf("?");
-            if (i < 0) {
-                url = url + "?sid=" + reply.sid;
-            } else {
-                url = url.substring(0, i) + "?sid=" + reply.sid;
-            }
-            window.location.href =  encodeURI(url);
+        const data = typeof reply === "string" ? JSON.parse(reply) : reply;
+        if (!data.success) {
+            toast(data.msg, "alert");
+        } else {
+            const url = new URL(window.location.href);
+            url.searchParams.set("sid", data.sid);
+            window.location.href = encodeURI(url.toString());
         }
     } catch (e) {
         console.error("Save failed:", e);
+        toast("Save failed", "error");
     }
     return false;
 }
 
 function getFormData() {
-    const sidEl = document.getElementById("sid");
-    const nameEl = document.getElementById("name");
-    const licensesEl = document.getElementById("licenses");
-    const licenseKeyEl = document.getElementById("license_key");
-    const productEl = document.getElementById("product");
-    const sourceEl = document.getElementById("source");
-    const linkEl = document.getElementById("link");
-    const notesEl = document.getElementById("notes");
-    const activeEl = document.getElementById("active");
-    const reuseableEl = document.getElementById("reuseable");
-    const filterEl = document.getElementById("filter");
-    const purchasedEl = document.getElementById("purchased");
-    const invNameEl = document.getElementById("inv_name");
-    const preInstalledEl = document.getElementById("pre_installed");
-    const freeEl = document.getElementById("free");
-
     return {
         task: "save",
-        sid: sidEl ? txt2Int(sidEl.value) : 0,
-        name: nameEl ? nameEl.value.trim() : "",
-        licenses: licensesEl ? txt2Int(licensesEl.value) : 0,
-        license_key: licenseKeyEl ? licenseKeyEl.value.trim() : "",
-        product: productEl ? productEl.value.trim() : "",
-        source: sourceEl ? sourceEl.value.trim() : "",
-        link: linkEl ? linkEl.value.trim() : "",
-        notes: notesEl ? notesEl.value.trim() : "",
-        active: activeEl ? activeEl.value : "0",
-        reuseable: (reuseableEl && reuseableEl.checked) ? 1 : 0,
-        showhistory: (filterEl && filterEl.checked) ? 1 : 0,
-        purchased: purchasedEl ? purchasedEl.value : "",
-        inv_name: invNameEl ? invNameEl.value : "",
-        pre_installed: preInstalledEl ? txt2Int(preInstalledEl.value) : 0,
-        free: (freeEl && freeEl.checked) ? 1 : 0
+        sid: txt2Int(UI.sid()?.value),
+        name: UI.name()?.value.trim() || "",
+        licenses: txt2Int(UI.licenses()?.value),
+        license_key: UI.license_key()?.value.trim() || "",
+        product: UI.product()?.value.trim() || "",
+        source: UI.source()?.value.trim() || "",
+        link: UI.link()?.value.trim() || "",
+        notes: UI.notes()?.value.trim() || "",
+        active: UI.active()?.value || "0",
+        reuseable: UI.reuseable()?.checked ? 1 : 0,
+        showhistory: UI.filter()?.checked ? 1 : 0,
+        purchased: UI.purchased()?.value || "",
+        inv_name: UI.inv_name()?.value || "",
+        pre_installed: txt2Int(UI.pre_installed()?.value),
+        free: UI.free()?.checked ? 1 : 0
     };
 }
 
-//The list of inv_names that are already used
-let usedNames = {"a": "a", "b":"b"};
-
 async function popDialog() {
-    const invNameEl = document.getElementById("inv_name");
-    const searchEl = document.getElementById("search");
-    const invListEl = document.getElementById("inv_list");
-    
-    const inv_name = invNameEl ? invNameEl.value : "";
-    if (searchEl) searchEl.value = inv_name;
+    const invName = UI.inv_name()?.value || "";
+    if (UI.search()) UI.search().value = invName;
 
     //If already have the list, just open popup
-    if (invListEl && invListEl.children.length > 0) {
-      openModal(document.getElementById("matchDialog"));
+    const invList = UI.invList();
+    if (invList && invList.children.length > 0) {
+      openModal(UI.matchDialog());
       filterList();
       return;
     }
     
-    let sendData = { task: "get_software_inventory" };
     try {
-        const reply = await postForm("inventory", sendData);
-        if (typeof reply === "string") reply = JSON.parse(reply);
-        
-        if (!reply.success) {
-            console.log(reply.msg);
-        } else {
-            usedNames = reply.used_names.filter(item => item !== inv_name);
-            if (invListEl) invListEl.innerHTML = reply.inv_table;
-            openModal(document.getElementById("matchDialog"));
+        const reply = await postForm("inventory", { task: "get_software_inventory" });
+        const data = typeof reply === "string" ? JSON.parse(reply) : reply;
+        if (data.success) {
+            usedNames = data.used_names.filter(item => item !== invName);
+            if (invList) invList.innerHTML = data.inv_table;
+            openModal(UI.matchDialog());
             filterList();
         }
     } catch (e) {
         console.error("Inventory fetch failed:", e);
     }
-  }
+}
   
 //Search the used names list for any matches
 function closeDialog() {
-    const searchEl = document.getElementById("search");
-    const invNameEl = document.getElementById("inv_name");
-    const errorMsgEl = document.getElementById("errorMsg");
-    const newName = searchEl ? searchEl.value : "";
-
-    if (newName.length > 0 && isMatch(newName)) {
-        if (errorMsgEl) errorMsgEl.innerHTML = "Sorry, already in use on another software record.";
+        const newName = UI.search()?.value || "";
+    if (newName && isMatch(newName)) {
+        if (UI.errorMsg()) UI.errorMsg().innerHTML = "Sorry, already in use on another software record.";
         return;
     }
-    if (invNameEl) invNameEl.value = newName; 
-    closeModal(document.getElementById("matchDialog"));
-    btnSave.on();
-    btnNew.off();
-    btnDelete.off();
+    if (UI.inv_name()) UI.inv_name().value = newName; 
+    closeModal(UI.matchDialog());
+    updateButtonStates();
 }
 
 function isMatch(name) {
-    for (let i = 0; i < usedNames.length; i++) {
-        if (typeof usedNames[i] === 'string' && (name.startsWith(usedNames[i]) || usedNames[i].startsWith(name))) {
-            return true;
-        }
-    }
-    return false;
+    return usedNames.some(used => name.startsWith(used) || used.startsWith(name));
 }
 
 function fillSearch(newName) {
-    const searchEl = document.getElementById("search");
-    if (searchEl) searchEl.value = newName;
+    if (UI.search()) UI.search().value = newName;
     filterList();
 }
   
 function filterList() {
-    let errorMsg = "";
-    const searchInput = document.getElementById("search");
-    const errorMsgEl = document.getElementById("errorMsg");
-    const matchCountEl = document.getElementById("matchCount");
-    const invTable = document.getElementById("inv_table");
-
-    const newName = searchInput ? searchInput.value : "";
-    if (newName.length > 0 && isMatch(newName)){
-        errorMsg = "Sorry, already in use."
-    }
-    if (errorMsgEl) errorMsgEl.innerHTML = errorMsg;
-
+    const filter = UI.search()?.value || "";
+    if (UI.errorMsg()) UI.errorMsg().innerHTML = isMatch(filter) ? "Sorry, already in use." : "";
     let matchCount = 0;
-    const filter = newName;
+        const invTable = UI.invTable();
     if (!invTable) return;
-
-    const tr = invTable.getElementsByTagName("tr");
-    let td, a, txtValue;
-    for (let i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
+       Array.from(invTable.getElementsByTagName("tr")).forEach(row => {
+        const td = row.cells[0];
         if (td) {
-            a = td.getElementsByTagName("a")[0];
-            if (a) {
-                txtValue = a.textContent || a.innerText;
-            } else {
-                txtValue = td.textContent || td.innerText;
-            }
-            if (txtValue.indexOf(filter) == 0) {
-                tr[i].style.display = "table-row";
-                matchCount++;
-            } else {
-                tr[i].style.display = "none";
-            }
+            const txtValue = td.textContent || td.innerText;
+            const matches = txtValue.trim().indexOf(filter) === 0;
+            row.style.display = matches ? "table-row" : "none";
+            if (matches) matchCount++;
         }
-    }
-    if (matchCountEl) matchCountEl.innerHTML = matchCount + " matches";
+    });
+    if (UI.matchCount()) UI.matchCount().innerHTML = `${matchCount} matches`;
 }

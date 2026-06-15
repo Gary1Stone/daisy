@@ -28,53 +28,41 @@
           Device
         </header>
         <section>
-          
           <label for="make">Manufacturer</label>
           {{ .makeCtrl }}
-
-            <label for="model">Model</label>
-            <input type="text" id="model" name="model" data-tooltip="Model"
-                maxlength="255" value="{{ .model }}" {{if .isReadonly }} readonly {{end}}
-                aria-invalid="false" aria-describedby="modelErr">  
-            <small id="modelErr">Up to 255 characters</small>
-            
-            <label for="year">Year</label>
-            {{ .years }}
-
-            <label for="serial_number">Serial Number</label>
-            <input type="text" id="serial_number" name="serial_number" data-tooltip="Serial Number"
-                maxlength="100" value="{{ .serial_number }}" {{if .isReadonly }} readonly {{end}}
-                aria-invalid="false" aria-describedby="serialErr">  
-            <small id="serialErr">Serial Number: Up to 100 characters</small>
-
-            <span id="ethernetFlag">
-              <label for="ethernet">
-                <input type="checkbox" id="ethernet" name="ethernet" 
-                {{if (eq .ethernet 1) }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
-              Ethernet</label>
-            </span>
-
-            <span id="wifiFlag">
-              <label for="wifi">
-                <input type="checkbox" id="wifi"  name="wifi"
-                 {{if (eq .wifi 1) }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
-              WiFi</label>
-            </span>
-
-            <span id="usbFlag">
-              <label for="usb">
-                <input type="checkbox" id="usb" name="usb"
-                   {{if (eq .usb 1) }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
-              USB</label>
-            </span>
-
-            <span id="cdFlag">
-              <label for="cd">
-                <input type="checkbox" id="cd" name="cd"
-                  {{if .isReadonly }} readonly {{end}} {{if (eq .cd 1) }} checked {{end}} >
-              CD-Drive</label>
-            </span>
-
+          <label for="model">Model</label>
+          <input type="text" id="model" name="model" data-tooltip="Model"
+              maxlength="255" value="{{ .model }}" {{if .isReadonly }} readonly {{end}}
+              aria-invalid="false" aria-describedby="modelErr">  
+          <small id="modelErr">Up to 255 characters</small>
+          <label for="year">Year</label>
+          {{ .years }}
+          <label for="serial_number">Serial Number</label>
+          <input type="text" id="serial_number" name="serial_number" data-tooltip="Serial Number"
+              maxlength="100" value="{{ .serial_number }}" {{if .isReadonly }} readonly {{end}}
+              aria-invalid="false" aria-describedby="serialErr">  
+          <small id="serialErr">Serial Number: Up to 100 characters</small>
+          <span id="ethernetFlag">
+            <label for="ethernet"><input type="checkbox" id="ethernet" name="ethernet" 
+              {{if (eq .ethernet 1) }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+            Ethernet</label>
+          </span>
+          <span id="wifiFlag">
+            <label for="wifi"><input type="checkbox" id="wifi" name="wifi"
+              {{if (eq .wifi 1) }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+            WiFi</label>
+          </span>
+          <span id="usbFlag">
+            <label for="usb">
+              <input type="checkbox" id="usb" name="usb"
+                {{if (eq .usb 1) }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+            USB</label>
+          </span>
+          <span id="cdFlag">
+            <label for="cd"><input type="checkbox" id="cd" name="cd"
+              {{if .isReadonly }} readonly {{end}} {{if (eq .cd 1) }} checked {{end}} >
+            CD-Drive</label>
+          </span>
         </section>
       </article>
       
@@ -109,40 +97,38 @@
         </header>
         <section>
           <label for="os">Operating System</label>
-            {{ .osCtrl }}
+          {{ .osCtrl }}
+          <label for="ram">RAM (GB)</label>
+          <input type="number" id="ram" name="ram" data-tooltip="Ram (in Gigabytes)" maxlength="10"
+            value="{{ .ramCtrl }}" {{if .isReadonly }} readonly {{end}}
+              aria-invalid="false" aria-describedby="ramErr">  
+          <small id="ramErr">Digits only</small>
 
-            <label for="ram">RAM (GB)</label>
-            <input type="number" id="ram" name="ram" data-tooltip="Ram (in Gigabytes)" maxlength="10"
-              value="{{ .ramCtrl }}" {{if .isReadonly }} readonly {{end}}
-                aria-invalid="false" aria-describedby="ramErr">  
-            <small id="ramErr">Digits only</small>
+          <label for="cpu">CPU</label>
+          <input type="text" id="cpu" name="cpu" data-tooltip="CPU information"
+            maxlength="100" value="{{ .cpuCtrl }}"
+            {{if .isReadonly }} readonly {{end}}
+              aria-invalid="false" aria-describedby="cpuErr">  
+          <small id="cpuErr">Up to 100 letters</small>
 
-            <label for="cpu">CPU</label>
-            <input type="text" id="cpu" name="cpu" data-tooltip="CPU information"
-              maxlength="100" value="{{ .cpuCtrl }}"
-              {{if .isReadonly }} readonly {{end}}
-                aria-invalid="false" aria-describedby="cpuErr">  
-            <small id="cpuErr">Up to 100 letters</small>
+          <label for="cores">Cores</label>
+          {{ .coresCtrl }}
+          <label for="drivetype">OS Drive Type</label>
+          {{ .driveTypeCtrl }}
 
-            <label for="cores">Cores</label>
-            {{ .coresCtrl }}
-            <label for="drivetype">OS Drive Type</label>
-            {{ .driveTypeCtrl }}
+          <label for="drivesize">Drive Size (GB)</label>
+          <input type="number" id="drivesize" name="drivesize" data-tooltip="Drive Size (GB)"
+            maxlength="10" value="{{ .drivesizeCtrl }}"
+            {{if .isReadonly }} readonly {{end}}
+              aria-invalid="false" aria-describedby="drivesizeErr">  
+          <small id="drivesizeErr">Numbers only</small>
 
-            <label for="drivesize">Drive Size (GB)</label>
-            <input type="number" id="drivesize" name="drivesize" data-tooltip="Drive Size (GB)"
-              maxlength="10" value="{{ .drivesizeCtrl }}"
-              {{if .isReadonly }} readonly {{end}}
-                aria-invalid="false" aria-describedby="drivesizeErr">  
-            <small id="drivesizeErr">Numbers only</small>
-
-            <label for="gpu">Graphics Card</label>
-            <input type="text" id="gpu" name="gpu" maxlength="100" value=" {{ .gpuCtrl }}"
-              data-tooltip="General Processing Unit (GPU) information"
-              {{if .isReadonly }} readonly {{end}}
-                aria-invalid="false" aria-describedby="gpuErr">  
-            <small id="gpuErr">Up to 100 letters</small>
-
+          <label for="gpu">Graphics Card</label>
+          <input type="text" id="gpu" name="gpu" maxlength="100" value="{{ .gpuCtrl }}"
+            data-tooltip="General Processing Unit (GPU) information"
+            {{if .isReadonly }} readonly {{end}}
+              aria-invalid="false" aria-describedby="gpuErr">  
+          <small id="gpuErr">Up to 100 letters</small>
         </section>
       </article>
 
@@ -178,7 +164,6 @@
 
     </div>
 
-
     <article>
       <header>
         Action Log
@@ -198,6 +183,24 @@
     <p data-tooltip="Last Updated">Last Updated: {{ .fullname }} at {{ .last_updated_time }}</p>
   </footer>
 </main>
+
+
+<dialog id="deleteDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="deleteDialog" onclick="toggleModal(event)"></button>
+        <h3>Delete this device record?</h3>
+    </header>
+    <section>
+      <p>Deleting a record is permanent.</p>
+      <p>Are you sure you want to delete the <span id="deviceName"></span> record?</p>
+    </section>
+    <footer>
+      <button type='button' onclick="confirmDelete();">Delete</button>
+      <button type='button' class="secondary" data-target="deleteDialog" onclick="toggleModal(event)">Cancel</button>
+    </footer>
+  </article>
+</dialog>
 
 
 <dialog id="NotesDialog">
@@ -241,4 +244,5 @@
 </dialog>
 
 <script src="js/device.js" defer></script>
+<script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}

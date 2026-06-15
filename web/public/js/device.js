@@ -45,7 +45,12 @@ const UI = {
     details: () => document.getElementById("details"),
     filter: () => document.getElementById("filter"),
     actionLogDiv: () => document.getElementById("actionLogDiv"),
-    deviceName: () => document.getElementById("deviceName")
+    deviceName: () => document.getElementById("deviceName"),
+    typeErr: () => document.getElementById("typeErr"),
+    uploadDialog: () => document.getElementById("uploadDialog"),
+    ajaxfile: () => document.getElementById("ajaxfile"),
+    notesDialog: () => document.getElementById("NotesDialog"),
+    deleteDialog: () => document.getElementById("deleteDialog")
 };
 
 // Page loaded event
@@ -130,13 +135,12 @@ async function onTypeChange() {
         sendData.task = "get_asset_id";
         try {
             const reply = await postForm("device", sendData);
-            if (typeof reply === "string") reply = JSON.parse(reply);
             if (reply.success) {
                 UI.name().value = reply.msg;
                 const assetEl = UI.asset();
                 if (assetEl) assetEl.innerHTML = reply.msg;
             } else {
-                toast(reply.msg, "error");
+                toast(reply.msg || "Failed to retrieve Asset ID", "error");
             }
         } catch (e) {
             toast(e, "error");
@@ -165,7 +169,7 @@ function changePic() {
         version = 2; // Assume v1 if named but no version string found
     }
     UI.image().value = `${imageName}-v${version}.jpg`;
-    openModal(document.getElementById("uploadDialog"));
+    openModal(UI.uploadDialog());
 }
 
 function cancelUpload() {
@@ -209,7 +213,7 @@ function pop(aid) {
     if (["BROKEN", "CARE", "DIED", "LOST", "REQUEST"].includes(settings.action)) {
         setDisplay(detailsEl, true);
     }
-    openModal(document.getElementById("NotesDialog"));
+    openModal(UI.notesDialog());
 }
 
 function goTicket() {
@@ -223,7 +227,7 @@ function acceptAction() {
 }
 
 async function fetchLog(aid = 0) {
-    let sendData = getFormData();
+    const sendData = getFormData();
     if (sendData.cid === 0) return; //Stop getting log when there is no record
     sendData.task = "getactionlog";
     sendData.aid = aid;
@@ -234,16 +238,16 @@ async function fetchLog(aid = 0) {
     try {
         const html = await postForm("device", sendData);
         if (html) UI.actionLogDiv().innerHTML = html;
-    } catch (e) { console.error(e); }
+        buildTable("actionlog");
+    } catch (e) { 
+        console.error(e);
+        toast("Failed to fetch action log", "error");
+    }
 }
 
-// Deleting a record is simply marking the deleted flag (active) = 0;
-// its still in the database but not used again.
-// issue: what if someone decides to have the same name, then we delete it
-// and all of its sub records (action_log...),
 function deleteRecord() {
     if (btnDelete.state !== "on") return;
-    openModal(document.getElementById("deleteDialog"));
+    openModal(UI.deleteDialog());
     const name = UI.name().value;
     if (name.length > 0) {
         UI.deviceName().innerHTML = name;
@@ -256,12 +260,10 @@ async function confirmDelete() {
     sendData.task = "delete";
     try {
         const reply = await postForm("device", sendData);
-        if (typeof reply === "string") reply = JSON.parse(reply);
-        
         if (reply.success) {
             addRecord();  //clears the displayed record
         } else {
-            closeModal(document.getElementById("deleteDialog"));
+            closeModal(UI.deleteDialog());
             toast(reply.msg, "alert");
         }
     } catch (e) {
@@ -296,12 +298,12 @@ function validateForm(data) {
         }
     });
     // Secondary logic checks
-    isTypeValid = true;
+    let isTypeValid = true;
     if (UI.type().value === "") {
         isTypeValid = false;
         toast("The device type is required.", "error");
     }
-    setDisplay(document.getElementById("typeErr"), !isTypeValid);
+    setDisplay(UI.typeErr(), !isTypeValid);
     const isRamValid = data.ram >= 0;
     UI.ram().setAttribute("aria-invalid", isRamValid ? "false" : "true");
     const isNameValid = data.name.trim().length >= 6;
@@ -320,8 +322,6 @@ async function saveRecord() {
     }
     try {
         const reply = await postForm("device", sendData);
-        if (typeof reply === "string") reply = JSON.parse(reply);
-        
         if (!reply.success) {
             toast(reply.msg, "alert")
             console.log(reply.msg);  //display error message
@@ -338,7 +338,10 @@ async function saveRecord() {
                 window.location.href = url;
             }, 200);
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error(e);
+        toast("Failed to save record", "error");
+    }
     return false;
 }
 
@@ -381,7 +384,7 @@ function getFormData() {
 
 async function uploadFile() {
     let formData = new FormData();
-    const fileInput = document.getElementById("ajaxfile");
+    const fileInput = UI.ajaxfile();
     
     // Check if a file is selected
     if (!fileInput || fileInput.files.length === 0) {

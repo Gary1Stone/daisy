@@ -76,7 +76,7 @@ func BuildInstalledList(curUid, sid int) string {
 
 func BuildSoftwareLog(curUid, sid, hist int) string {
 	var table strings.Builder
-	table.WriteString(`<table class='striped' id='softwarelog'><thead><tr>
+	table.WriteString(`<table class='striped' id='actionlog'><thead><tr>
 	<th aria-sort='ascending' data-sort='asc'>Action</th>
 	<th aria-sort='none'>Date</th>
 	<th aria-sort='none'>Computer</th>

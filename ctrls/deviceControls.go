@@ -123,10 +123,10 @@ func BuildYearsSelect(selected int) string {
 
 func BuildDeviceLog(curUid, cid, hist int) string {
 	var table strings.Builder
-	table.WriteString(`<table>
+	table.WriteString(`<table class='striped' id="actionlog">
 		<thead><tr>
 		<th aria-sort="none">Action</th>
-		<th aria-sort="none">Date</th>
+		<th aria-sort="ascending" data-sort="asc">Date</th>
 		<th aria-sort="none">Created By</th>
 		<th aria-sort="none">Notes</th>
 		<th aria-sort="none">Status</th>
@@ -145,8 +145,13 @@ func BuildDeviceLog(curUid, cid, hist int) string {
 			btnColor = act.Color
 		}
 		btnLabel := act.ActionDescription
+		// if btnLabel has a space in it, truncate at the space.
+		if strings.Contains(btnLabel, " ") {
+			btnLabel = strings.Split(btnLabel, " ")[0]
+		}
 		if len(btnLabel) > 15 {
 			btnLabel = string(btnLabel[0:12]) + "..."
+
 		}
 		var button db.Popbutton
 		button.Color = btnColor
@@ -160,19 +165,7 @@ func BuildDeviceLog(curUid, cid, hist int) string {
 		button.Sid_ack = act.Sid_ack
 		button.Wlog = act.Wlog
 		button.Icon = act.Icon
-		table.WriteString("<tr><td>")
-		table.WriteString(buildButton(button))
-		table.WriteString("</td><td><div class='gwrap'>")
-		table.WriteString(act.Localtime)
-		table.WriteString("</div></td><td><div class='gwrap'>")
-		table.WriteString(act.OriginatorName)
-		table.WriteString("</div></td><td><div id='notes")
-		table.WriteString(strconv.Itoa(act.Aid))
-		table.WriteString("' class='gwrap'>")
-		table.WriteString(act.Notes)
-		table.WriteString("</div></td><td><div class='gwrap'>")
-		table.WriteString(calculateStatus(act))
-		table.WriteString("</div></td></tr>")
+		fmt.Fprintf(&table, `<tr><td>%s</td><td>%s</td><td>%s</td><td><div id='notes%d'>%s</div></td><td>%s</td></tr>`, buildButton(button), act.Localtime, act.OriginatorName, act.Aid, act.Notes, calculateStatus(act))
 	}
 	table.WriteString("</tbody></table>")
 	return table.String()
@@ -185,21 +178,11 @@ func buildButton(button db.Popbutton) string {
 	if err != nil {
 		log.Println(err)
 	}
-	btn.WriteString("<input type='hidden' id='aid")
-	btn.WriteString(strconv.Itoa(button.Aid))
-	btn.WriteString("' value='")
-	btn.WriteString(string(btnJason))
-	btn.WriteString("' >")
-	btn.WriteString("<a class=\"button ")
-	btn.WriteString(button.Color)
-	btn.WriteString("\" href=\"#\" ")
-	btn.WriteString("onclick=\"pop('")
-	btn.WriteString(strconv.Itoa(button.Aid))
-	btn.WriteString("');\" role=\"button\" >")
-	btn.WriteString("<span class=\"")
-	btn.WriteString(button.Icon)
-	btn.WriteString(" icon\"></span>&nbsp;")
-	btn.WriteString(button.Label)
-	btn.WriteString("</a>")
+	color := ""
+	if button.Active == 0 {
+		color = `class="secondary"`
+	}
+	fmt.Fprintf(&btn, `<a href="#" onclick="pop('%d');" role="button" %s >%s %s</a>`, button.Aid, color, svg.GetIcon(button.Icon), button.Label)
+	fmt.Fprintf(&btn, `<input type='hidden' id='aid%d' value='%s' >`, button.Aid, string(btnJason))
 	return btn.String()
 }

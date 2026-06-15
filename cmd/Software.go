@@ -42,13 +42,6 @@ func GetSoftware(c *fiber.Ctx) error {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).Redirect("index.html")
 	}
-	// Last Updated by name
-	// lun := ""
-	// if len(software.Last_updated_time) > 0 {
-	// 	lun = software.Fullname
-	// 	lun += " at "
-	// 	lun += software.Last_updated_time
-	// }
 	// Edit inventory
 	edit := "Software Title"
 	if user.IsAdmin {

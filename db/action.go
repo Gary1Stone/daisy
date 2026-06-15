@@ -163,7 +163,7 @@ func readActionTable(curUid, page int, whereClause string, params ...any) ([]*Ac
 			A.aid, A.action, coalesce(A.originator, 0) originator, coalesce(A.cid, 0) cid, A.cid_ack, coalesce(A.sid, 0) sid, 
 			A.sid_ack, A.gid, coalesce(A.uid, 0) uid, A.uid_ack, coalesce(A.inform, 0) inform, A.inform_ack, 
 			coalesce(A.impact, 0) impact, A.notes, A.active, coalesce(A.closed_by, 0) closed_by, 
-			coalesce(G.color, '') colour, coalesce(G.icon,'') icon, 
+			coalesce(G.color, '') colour, coalesce(G.icon2,'') icon, 
 			A.opened as openedInt, A.closed AS closedInt, 
 			strftime('%Y-%m-%d %H:%M', A.opened-?, 'unixepoch') AS opentime, 
 			strftime('%Y-%m-%d %H:%M', A.opened-?, 'unixepoch') AS localtime, 
