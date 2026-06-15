@@ -48,7 +48,7 @@ function ackAlert(aid = 0) {
 function startWizard() {
     const wizkey = document.getElementById("wizkey");
     if (wizkey) {
-        const selected = wizkey.options[wizkey.selectedIndex].value;
+        const selected = wizkey.value;
         if (selected) {
             window.location.href = encodeURI("wizard.html?wizkey=" + selected);
         }
