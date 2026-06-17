@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         // Handle select changes and specific logic for 'type'
         form.addEventListener("change", (e) => {
-            if (e.target.matches("select")) {
+            if (e.target.matches("select, .droplist-input")) {
                 updateButtonStates();
                 if (e.target.id === "type") onTypeChange();
             }

@@ -25,55 +25,80 @@ func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool)
 	default:
 		options = db.GetOptions(field, selected, parentCode, withBlank)
 	}
-	return buildSelectCtrl(field, readOnly, options)
+	return buildCtrl(field, readOnly, options)
 }
 
-func buildSelectCtrl(field string, readOnly bool, options []db.DroplistOption) string {
-	var ctrl strings.Builder
+func buildCtrl(field string, readOnly bool, options []db.DroplistOption) string {
 	droplist := db.GetDroplistInfo(field)
-	addIcons := false
+	isDropDown := false
 	for option := range options {
-		if len(options[option].Icon) > 0 {
-			addIcons = true
+		if len(options[option].Icon) > 0 || len(options[option].Colour) > 0 {
+			isDropDown = true
 			break
 		}
-	}
-	disabled := ""
-	if readOnly {
-		disabled = "disabled"
 	}
 	onchange := ""
 	if len(droplist.Action) > 0 {
 		onchange = `onchange="` + droplist.Action + `"`
 	}
-	if addIcons {
-		fmt.Fprintf(&ctrl, `<div class="custom-select">`)
-	}
 	required := ""
 	if field == "TYPE" {
 		required = "required"
 	}
-	fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s %s aria-invalid="false" aria-describedby="%sErr" >`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange, required, droplist.Id)
+	if isDropDown {
+		return buildDropdown(droplist, options, readOnly, onchange, required)
+	}
+	return buildSelect(droplist, options, readOnly, onchange, required)
+}
 
+// Dropdown with icons and colors
+func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly bool, onchange, required string) string {
+	var ctrl strings.Builder
+	selected := ""
+	for option := range options {
+		if options[option].Selected {
+			selected = options[option].Value
+			break
+		}
+	}
+	disabled := "false"
+	if readOnly {
+		disabled = "true"
+	}
+	ariaRequired := ""
+	if required != "" {
+		ariaRequired = `aria-required="true"`
+	}
+	ctrl.WriteString(`<div class="custom-select-container">`)
+	// Use type="text" but visually hidden to support native validation and onchange handlers
+	hiddenStyle := `style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; opacity:0; pointer-events:none;"`
+	fmt.Fprintf(&ctrl, `<input type="text" class="droplist-input" id="%s" name="%s" value="%s" %s %s %s tabindex="-1" aria-hidden="true" />`, droplist.Id, droplist.Id, selected, onchange, required, hiddenStyle)
+	ctrl.WriteString(`<details role="list" class="dropdown">`)
+	fmt.Fprintf(&ctrl, `<summary aria-haspopup="listbox" aria-invalid="false" aria-disabled="%s" %s aria-describedby="%sErr" >%s</summary>`, disabled, ariaRequired, droplist.Id, droplist.Title)
+	ctrl.WriteString(`<ul role="listbox">`)
+	for _, option := range options {
+		fmt.Fprintf(&ctrl, `<li><a href="#" class="%s" data-value="%s">%s %s</a></li>`, xlateColor(option.Colour), option.Value, svg.GetIcon(option.Icon), option.Description)
+	}
+	ctrl.WriteString(`</ul></details></div>`)
+	return ctrl.String()
+}
+
+// Standard select list, no icons, no colors
+func buildSelect(droplist db.Droplist, options []db.DroplistOption, readOnly bool, onchange, required string) string {
+	var ctrl strings.Builder
+	disabled := ""
+	if readOnly {
+		disabled = "disabled"
+	}
+	fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s %s aria-invalid="false" aria-describedby="%sErr" >`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange, required, droplist.Id)
 	for _, option := range options {
 		selected := ""
 		if option.Selected {
 			selected = "selected"
 		}
-		icon := ""
-		if len(option.Icon) > 0 {
-			icon = svg.GetIcon(option.Icon) + " "
-		}
-		color := ""
-		if len(option.Colour) > 0 {
-			color = fmt.Sprintf(`data-color="%s" `, xlateColor(option.Colour))
-		}
-		fmt.Fprintf(&ctrl, `<option value="%s" %s %s>%s%s</option>`, option.Value, selected, color, icon, option.Description)
+		fmt.Fprintf(&ctrl, `<option value="%s" %s>%s</option>`, option.Value, selected, option.Description)
 	}
 	ctrl.WriteString("</select>")
-	if addIcons {
-		fmt.Fprintf(&ctrl, `</div>`)
-	}
 	return ctrl.String()
 }
 
