@@ -5,13 +5,13 @@
 
     <article>
       <header>
-        <span class='mif-devices'></span>&nbsp;Online Network Devices
+        {{.devicesIcon}}&nbsp;Online Network Devices
       </header>
       <section>
         <p>Online Devices (per day)</p>
         <p>{{.onlineSpark}}</p>
         <p>Max: {{.maxHitsMonth}} in the past 30 days</p><br>
-        <p>{{.onlineCount}} Currently Online</p>
+        <p>{{.onlineCount}} Currently Online, excluding all devices on FreeWiFi.</p>
         <p>{{.offlineCount}} Offline</p>
       </section>
       <footer>
@@ -21,7 +21,7 @@
     
     <article>
       <header>
-        <span class='mif-devices'></span>&nbsp;Device History
+        {{.devicesIcon}}&nbsp;Device History
       </header>
       <section>
         {{.midCtrl}}
@@ -34,7 +34,7 @@
     
     <article>
       <header>
-        <span class='mif-devices'></span>&nbsp;Online Overlap (%)
+        {{.devicesIcon}}&nbsp;Online Overlap (%)
       </header>
       <section>
         <div style="overflow-y: scroll; height: 12rem; ">

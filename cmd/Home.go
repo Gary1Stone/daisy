@@ -61,6 +61,11 @@ func GetHome(c *fiber.Ctx) error {
 		}
 	}
 
+	online, offline := db.GetCurrentOnOffCounts()
+
+	var hits svg.SparklineOptions
+	hits.Warning = 40 // If more than 40 hits in a day, highlight red
+
 	return c.Render("home", addNavigationIcons(fiber.Map{
 		"title":           template.HTML("&#127809; Daisy"),
 		"fullName":        user.Fullname,
@@ -81,6 +86,10 @@ func GetHome(c *fiber.Ctx) error {
 		"stepsIcon":       template.HTML(svg.GetIcon("steps")),
 		"copyIcon":        template.HTML(svg.GetIcon("copy")),
 		"bellIcon":        template.HTML(svg.GetIcon("bell")),
+		"onlineCount":     online,
+		"offlineCount":    offline,
+		"onlineSpark":     template.HTML(svg.BuildNetworkLoadChart(&hits)),
+		"maxHitsMonth":    hits.MaxValue,
 	}))
 }
 

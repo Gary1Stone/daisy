@@ -48,6 +48,22 @@
     </article>
     
     <article>
+      <header>
+        {{.devicesIcon}}&nbsp;Online Network Devices
+      </header>
+      <section>
+        <p>Online Devices (per day)</p>
+        <p>{{.onlineSpark}}</p>
+        <p>Max: {{.maxHitsMonth}} in the past 30 days</p><br>
+        <p>{{.onlineCount}} Currently Online, excluding all devices on FreeWiFi.</p>
+        <p>{{.offlineCount}} Offline</p>
+      </section>
+      <footer>
+        <button type='button' class="button primary js-dialog-close" onclick="goToOnline();">Show Online...</button>
+      </footer>
+    </article>
+    
+    <article>
       <header class="{{ .btnColour }}">
         {{.bellIcon}} Alerts
       </header>
