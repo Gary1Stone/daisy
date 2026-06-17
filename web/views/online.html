@@ -1,15 +1,10 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<div class="container">
-  <div class="grid">
-    <div class="row">
-      <div class="cell-12">
-        <input type="date" id="plotDate" name="plotDate" min="{{.minDate}}" max="{{.maxDate}}" value="{{.dateParam}}"  aria-label="Date" onchange="loadOnlineDevices()" /> 
-      </div>
-    </div>
+<main class="container">
+  <div>
+      <input type="date" id="plotDate" name="plotDate" min="{{.minDate}}" max="{{.maxDate}}" value="{{.dateParam}}"  aria-label="Date" onchange="loadOnlineDevices()" /> 
   </div>
-</div>
-<div style="width:1440px; margin: 0 auto;">{{.onlineDevices}}</div>
-
+  <div style="width:1440px; margin: 0 auto;">{{.onlineDevices}}</div>
+</main>
 
 
 <dialog id="popup">
@@ -18,7 +13,7 @@
         <button type='button' aria-label="Close" rel="prev" data-target="popup" onclick="toggleModal(event)"></button>
         <h3>Device</h3>
     </header>
-  <section>
+    <section>
         <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
         <div>
             <input type="hidden" id="mid" name="mid" value="">

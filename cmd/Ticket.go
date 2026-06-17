@@ -121,8 +121,8 @@ func GetTicket(c *fiber.Ctx) error {
 		"assignUser":    action.AssignedUserName,
 		"informList":    template.HTML(ctrls.BuildInformList(aid)),
 		"plusIcon":      template.HTML(svg.GetIcon("plus")),
-		"deleteIcon":     template.HTML(svg.GetIcon("delete")),
-
+		"deleteIcon":    template.HTML(svg.GetIcon("delete")),
+		"newsIcon":      template.HTML(svg.GetIcon("news")),
 	}))
 }
 
