@@ -77,7 +77,11 @@ func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly b
 	fmt.Fprintf(&ctrl, `<summary aria-haspopup="listbox" aria-invalid="false" aria-disabled="%s" %s aria-describedby="%sErr" >%s</summary>`, disabled, ariaRequired, droplist.Id, droplist.Title)
 	ctrl.WriteString(`<ul role="listbox">`)
 	for _, option := range options {
-		fmt.Fprintf(&ctrl, `<li><a href="#" class="%s" data-value="%s">%s %s</a></li>`, xlateColor(option.Colour), option.Value, svg.GetIcon(option.Icon), option.Description)
+		icon := ""
+		if len(option.Icon) > 0 {
+			icon = svg.GetIcon(option.Icon)
+		}
+		fmt.Fprintf(&ctrl, `<li><a href="#" class="%s" data-value="%s">%s %s</a></li>`, xlateColor(option.Colour), option.Value, icon, option.Description)
 	}
 	ctrl.WriteString(`</ul></details></div>`)
 	return ctrl.String()
