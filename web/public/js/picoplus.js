@@ -300,6 +300,7 @@ function setUpDropDowns() {
         const container = dropdown.closest('.custom-select-container') || dropdown.parentElement;
         const hiddenInput = container.querySelector('.droplist-input');
         const summary = dropdown.querySelector('summary');
+        if (!hiddenInput || !summary) return;
         const options = Array.from(dropdown.querySelectorAll('ul[role="listbox"] a'));
         let activeIndex = -1;
 
