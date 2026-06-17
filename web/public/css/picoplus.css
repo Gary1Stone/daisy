@@ -147,101 +147,6 @@ th[data-sort="desc"]::after {
   opacity: 1;
 }
 
-/***************************************************************
- * Select Lists with icons
- * Embed the select list within a <div class="custom-select">
- ***************************************************************
-
-.custom-select {
-  position: relative;
-  width: 100%;
-  margin-bottom: var(--pico-spacing);
-}
-
-.custom-select select {
-  display: none;
-}
-
-.select-selected {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
-  padding-right: calc(var(--pico-form-element-spacing-horizontal) + 1.5rem);
-  padding-inline-end: calc(var(--pico-form-element-spacing-horizontal) + 1.5rem);
-  border: var(--pico-border-width) solid var(--pico-form-element-border-color);
-  border-radius: var(--pico-border-radius);
-  background-color: var(--pico-form-element-background-color);
-  background-image: var(--pico-icon-chevron);
-  background-position: center right 0.75rem;
-  background-size: 1rem auto;
-  background-repeat: no-repeat;
-  color: var(--pico-form-element-color);
-  font-weight: var(--pico-font-weight);
-  line-height: var(--pico-line-height);
-  cursor: pointer;
-  user-select: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 + var(--pico-border-width) * 2);
-  transition: background-color var(--pico-transition), border-color var(--pico-transition), color var(--pico-transition), box-shadow var(--pico-transition);
-}
-
-.select-selected > span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.select-selected:after { 
-  display: none; 
-}
-
-.select-selected:hover {
-  border-color: var(--pico-form-element-active-border-color);
-}
-
-.select-selected.select-arrow-active {
-  border-color: var(--pico-form-element-active-border-color);
-  background-color: var(--pico-form-element-active-background-color);
-  box-shadow: 0 0 0 var(--pico-outline-width) var(--pico-form-element-focus-color);
-}
-
-.select-items {
-  position: absolute;
-  background-color: var(--pico-dropdown-background-color);
-  border: var(--pico-border-width) solid var(--pico-dropdown-border-color);
-  border-radius: var(--pico-border-radius);
-  box-shadow: var(--pico-dropdown-box-shadow);
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 99;
-  max-height: 300px;
-  overflow-y: auto;
-  margin-top: var(--pico-outline-width);
-}
-
-.select-items div {
-  padding: calc(var(--pico-form-element-spacing-vertical) * 0.5) var(--pico-form-element-spacing-horizontal);
-  color: var(--pico-dropdown-color);
-  cursor: pointer;
-  height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 + var(--pico-border-width) * 2);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.select-hide {
-  display: none;
-}
-
-.select-items div:hover, .same-as-selected {
-  background-color: var(--pico-dropdown-hover-background-color);
-}
-*/
 small {
   display: none;
   color: var(--pico-del-color);
@@ -289,7 +194,7 @@ input[aria-invalid="true"] + small {
   }
 }
 
-/* Highlights the selected element in the list */
+/* Highlights the selected element in the dropdown list */
 details[role="list"] ul li a[aria-selected="true"] {
   background-color: var(--pico-form-element-focus-color);
   font-weight: bold;
