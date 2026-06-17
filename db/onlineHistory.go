@@ -66,6 +66,25 @@ func GetCurrentOnOffCounts() (int, int) {
 		log.Println(err)
 		return 0, totalCount
 	}
+	// If the current timeslot has not been recorded yet, get the previous timeslot
+	if onCount <= 0 {
+		// subtract 15 minutes from the current UTC time
+		ts = time.Now().UTC().Add(-15 * time.Minute)
+		date := ts.Year()*10000 + int(ts.Month())*100 + ts.Day()
+		seconds := ts.Hour()*3600 + ts.Minute()*60 + ts.Second()
+		slot := seconds / (15 * 60) // 0–95
+		column := "am"
+		if slot > 48 {
+			column = "pm"
+			slot -= 48
+		}
+		query = fmt.Sprintf("SELECT count(*) FROM onlinehistory O LEFT JOIN aliases A ON A.mac=O.mac WHERE date=? AND (%s & (1 << ?)) != 0", column)
+		err = Conn.QueryRow(query, date, slot).Scan(&onCount)
+		if err != nil {
+			log.Println(err)
+			return 0, totalCount
+		}
+	}
 	return onCount, totalCount - onCount
 }
 
