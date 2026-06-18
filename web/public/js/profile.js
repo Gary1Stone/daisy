@@ -1,5 +1,7 @@
 /* Profile.js */
-'use strict';
+
+// Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
+let btnSave, btnNew, btnDelete;
 
 // Cache DOM elements using getters to ensure they are available when needed
 const UI = {
@@ -20,8 +22,6 @@ const UI = {
     alerts: () => document.getElementById("alerts")
 };
 
-// Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
-let btnSave, btnNew, btnDelete;
 
 // Page loaded event
 document.addEventListener('DOMContentLoaded', function() {
@@ -46,20 +46,30 @@ document.addEventListener('DOMContentLoaded', function() {
         btnSave.off(); btnNew.on(); btnDelete.on();
     }
 
-    //if any of the 'input' elements are modified, change the save/add/delete states and validate
-    document.querySelectorAll("input").forEach(el => {
-        el.addEventListener("change", () => { checkValid(el); });
-    });
+    // Use event delegation for all form inputs
+    if (form) {
+        // Use 'input' for immediate feedback on text fields
+        form.addEventListener("input", (e) => {
+            if (e.target.matches("input[type='text'], input[type='email'], input[type='number']")) {
+                checkValid(e.target);
+            }
+        });
 
-    // if any of the 'select' droplists are modified, change the save/add/delete states
-    document.querySelectorAll("select").forEach(el => {
-        el.addEventListener("change", () => { btnSave.on(); btnNew.off(); btnDelete.off(); });
-    });
-    
+        // Use 'change' for selects, checkboxes, and custom dropdowns
+        form.addEventListener("change", (e) => {
+            if (e.target.matches("select, input[type='checkbox'], .droplist-input")) {
+                if (e.target.classList.contains("droplist-input")) {
+                    checkDropdownValid(e.target); // in picoplus.js
+                } else {
+                    checkValid(e.target);
+                }
+            }
+        });
+    }
 });
 
-
 function checkValid(el) {
+    btnSave.on();
     btnNew.off(); 
     btnDelete.off();
     // If user has spaces before or after value, reject
@@ -77,25 +87,13 @@ function checkValid(el) {
     } 
     
     // If fails validation, set to off/invalid
-    if (!el.checkValidity()) {
-        btnSave.off();
-        el.setAttribute("aria-invalid", "true");
-        return;
-    } else if (el.id === "gid" || el.id === "geo_radius") {
-        btnSave.off();
-        el.setAttribute("aria-invalid", "false");
-        // Select the first <summary> element below this element and set it's aria-invalid attribute
-        
-
-        return;
-    } else if (el.id !== "user") {
-        btnSave.on();
-        el.setAttribute("aria-invalid", "false");
-        return;
-    }
+    const isValid = el.checkValidity();
+    if (!isValid) btnSave.off();
+    el.setAttribute("aria-invalid", !isValid);
+    if (!isValid) return;
 
     // Now have user input, check if it changed.
-    if (el.value !== el.defaultValue) {
+    if (el.id === "user" && el.value !== el.defaultValue) {
         checkUnique(el);
     }
 }

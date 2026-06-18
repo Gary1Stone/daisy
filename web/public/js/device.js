@@ -50,51 +50,67 @@ const UI = {
     uploadDialog: () => document.getElementById("uploadDialog"),
     ajaxfile: () => document.getElementById("ajaxfile"),
     notesDialog: () => document.getElementById("NotesDialog"),
-    deleteDialog: () => document.getElementById("deleteDialog")
+    deleteDialog: () => document.getElementById("deleteDialog"),
+    actionID: () => document.getElementById("actionID"),
+    actionName: () => document.getElementById("actionName")
 };
 
 // Page loaded event
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // Initialize the iconbar button instances once the scripts and DOM are ready
     btnSave = new Button("btnSave");
     btnNew = new Button("btnNew");
     btnDelete = new Button("btnDelete", true);
+
+    
+    const form = UI.form();
+    if (form) {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
+    }
+
     const cid = UI.cid().value;
     gblOldColor = UI.color().value;
-    // Set initial button state
-    const isNewRecord = isDigits(cid) && txt2Int(cid) === 0;
-    btnSave.off();
-    if (isNewRecord) {
-        btnNew.off();
-        btnDelete.off();
+    //Set initial button state depending if a record is displayed or not
+    if (isDigits(cid) && txt2Int(cid) === 0) {
+        btnSave.off(); btnNew.off(); btnDelete.off();
     } else {
-        btnNew.on();
-        btnDelete.on();
+        btnSave.off(); btnNew.on(); btnDelete.on();
     }
-    const form = UI.form();
+
     if (form) {
         // Use event delegation for input/textarea changes
         form.addEventListener("input", (e) => {
-            if (e.target.matches("input, textarea")) {
-                updateButtonStates();
+            if (e.target.matches("input[type='text'], input[type='email'], input[type='number'], textarea")) {
+                checkValid(e.target);
             }
         });
-        // Handle select changes and specific logic for 'type'
+        // Handle select changes and specific logic for 'type' and dropdowns
         form.addEventListener("change", (e) => {
-            if (e.target.matches("select, .droplist-input")) {
-                updateButtonStates();
+            if (e.target.matches("select, input[type='checkbox'], .droplist-input")) {
                 if (e.target.id === "type") onTypeChange();
+                if (e.target.classList.contains("droplist-input")) {
+                    checkDropdownValid(e.target); // in picoplus.js
+                } else {
+                    checkValid(e.target);
+                }
             }
         });
     }
     showHideItemsByType();
 });
 
-function updateButtonStates() {
+// If fails validation, set to off/invalid
+function checkValid(el) {
     btnSave.on();
     btnNew.off();
     btnDelete.off();
+    const isValid = el.checkValidity();
+    if (!isValid) btnSave.off();
+    el.setAttribute("aria-invalid", !isValid);
 }
-
 
 /**************************************************/
 /*         Droplist handling                      */
@@ -190,7 +206,6 @@ function showHideItemsByType() {
 }
 
 
-//settings={color:light, action:SIGHTING, label:Sighting, icon:mif-eye, active:0 aid:525, cid_ack:0, iid_ack:0, sid_ack:0, uid_ack:0 }
 function pop(aid) {
     const popEl = document.getElementById("pop");
     const notesEl = document.getElementById("notes" + aid);
@@ -349,21 +364,21 @@ function getFormData() {
     return {
         task: "save",
         cid: txt2Int(UI.cid().value),
-        name: UI.name().value,
+        name: UI.name().value.trim(),
         type: UI.type().value,
         site: UI.site().value,
         office: UI.office().value,
-        location: UI.location().value,
+        location: UI.location().value.trim(),
         year: txt2Int(UI.year().value),
         make: UI.make().value,
-        model: UI.model().value,
-        cpu: UI.cpu().value,
+        model: UI.model().value.trim(),
+        cpu: UI.cpu().value.trim(),
         cores: txt2Int(UI.cores().value),
         ram: txt2Int(UI.ram().value),
         drivetype: UI.drivetype().value,
         drivesize: txt2Int(UI.drivesize().value),
-        notes: UI.notes().value,
-        gpu: UI.gpu().value,
+        notes: UI.notes().value.trim(),
+        gpu: UI.gpu().value.trim(),
         cd: UI.cd().checked ? 1 : 0,
         wifi: UI.wifi().checked ? 1 : 0,
         ethernet: UI.ethernet().checked ? 1 : 0,
@@ -375,7 +390,7 @@ function getFormData() {
         uid: txt2Int(UI.uid().value),
         status: UI.status().value,
         os: UI.os().value,
-        serial_number: UI.serial_number().value,
+        serial_number: UI.serial_number().value.trim(),
         gid: txt2Int(UI.gid().value),
         aid: 0,
         showHistory: 0

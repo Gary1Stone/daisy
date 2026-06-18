@@ -385,3 +385,14 @@ function setUpDropDowns(root = document) {
         initDefault();
     });
 }
+
+function checkDropdownValid(el) {
+    btnSave.on();
+    btnNew.off();
+    btnDelete.off();
+    const isValid = el.checkValidity(); // may have a blank entry, and is required
+    if (!isValid) btnSave.off();
+    el.setAttribute("aria-invalid", !isValid);
+    const summary = el.closest('.custom-select-container')?.querySelector('summary');
+    if (summary) summary.setAttribute("aria-invalid", !isValid);
+}
