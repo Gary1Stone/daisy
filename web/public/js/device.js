@@ -2,7 +2,7 @@
 
 // Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
 let btnSave, btnNew, btnDelete;
-let gblOldColor = "";   //used to remember the icon's old color if the user toggels the Died status over and over
+let gblOldColor = "";   //used to remember the icon's old color if the user toggles the Died status over and over
 let oldImageName = "";  //remember what the previous picture was, in case user cancels
 
 // Cache DOM elements using getters to ensure they are available when needed
