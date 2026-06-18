@@ -205,7 +205,7 @@ function showHideItemsByType() {
     allItems.forEach(id => setDisplay(document.getElementById(id), activeItems.includes(id)));
 }
 
-
+// TODO: WORK NEEDED HERE
 function pop(aid) {
     const popEl = document.getElementById("pop");
     const notesEl = document.getElementById("notes" + aid);
