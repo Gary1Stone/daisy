@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', function() {
     btnSave = new Button("btnSave");
     btnNew = new Button("btnNew");
     btnDelete = new Button("btnDelete", true);
+    btnSave.on(); 
 
-    
     const form = UI.form();
     if (form) {
         form.addEventListener('submit', (event) => {
@@ -75,9 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
     gblOldColor = UI.color().value;
     //Set initial button state depending if a record is displayed or not
     if (isDigits(cid) && txt2Int(cid) === 0) {
-        btnSave.off(); btnNew.off(); btnDelete.off();
+        btnNew.off(); btnDelete.off();
     } else {
-        btnSave.off(); btnNew.on(); btnDelete.on();
+        btnNew.on(); btnDelete.on();
     }
 
     if (form) {
@@ -104,11 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // If fails validation, set to off/invalid
 function checkValid(el) {
-    btnSave.on();
     btnNew.off();
     btnDelete.off();
     const isValid = el.checkValidity();
-    if (!isValid) btnSave.off();
     el.setAttribute("aria-invalid", !isValid);
 }
 
@@ -162,7 +160,6 @@ async function onTypeChange() {
             toast(e, "error");
         }
     } else {
-        btnSave.off();
         UI.name().value = "";
         const assetEl = UI.asset();
         if (assetEl) assetEl.innerHTML = "";
@@ -327,7 +324,7 @@ function validateForm(data) {
 }
 
 async function saveRecord() {
-    if (btnSave.state !== "on") return false;
+    btnSave.off();
     let sendData = getFormData();
     if (!validateForm(sendData)) return false;
     if (sendData.cid === 0) {
@@ -422,7 +419,6 @@ async function uploadFile() {
       // Check if the upload was successful (status code 2xx)
       if (response.ok) {
         // Show the new image
-        btnSave.on();
         saveRecord()
       } else {
         // Handle the case where the upload was not successful

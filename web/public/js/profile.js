@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     btnSave = new Button("btnSave");
     btnNew = new Button("btnNew");
     btnDelete = new Button("btnDelete", true); // true for forceOffIfNotAllowed
+    btnSave.on(); 
 
     const form = UI.form();
     if (form) {
@@ -41,9 +42,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const uid = UI.uid().value;
     //Set initial button state depending if a record is displayed or not
     if (isDigits(uid) && txt2Int(uid) === 0) {
-        btnSave.off(); btnNew.off(); btnDelete.off();
+        btnNew.off(); btnDelete.off();
     } else {
-        btnSave.off(); btnNew.on(); btnDelete.on();
+        btnNew.on(); btnDelete.on();
     }
 
     // Use event delegation for all form inputs
@@ -69,12 +70,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkValid(el) {
-    btnSave.on();
     btnNew.off(); 
     btnDelete.off();
     // If user has spaces before or after value, reject
     if (el.value !== el.value.trim()) {
-        btnSave.off();
         el.setAttribute("aria-invalid", "true");
         el.setCustomValidity("Leading and trailing spaces are not allowed");
         toast("Please remove leading and trailing spaces", "warning");
@@ -88,7 +87,6 @@ function checkValid(el) {
     
     // If fails validation, set to off/invalid
     const isValid = el.checkValidity();
-    if (!isValid) btnSave.off();
     el.setAttribute("aria-invalid", !isValid);
     if (!isValid) return;
 
@@ -106,11 +104,9 @@ async function checkUnique(el) {
         await postJSON("profile", sendData, (reply) => {
             if (reply.success) {
                 el.setAttribute("aria-invalid", "false");
-                btnSave.on();
             } else {
                 el.setAttribute("aria-invalid", "true");
                 el.setCustomValidity("User ID must unique"); // This is how to set the input field to invalid
-                btnSave.off();
             }
             el.defaultValue = el.value;
         });
@@ -234,7 +230,6 @@ async function ackAlert(aid = 0) {
 }
 
 async function saveRecord(event) {
-    if (btnSave.state !== "on") return;
     btnSave.off();
     const sendData = getFormData();
     if (!validateForm(sendData)) return;
