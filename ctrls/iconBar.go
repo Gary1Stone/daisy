@@ -63,35 +63,6 @@ func MakeButton(name string, permission bool) string {
 	return fmt.Sprintf(`<button type='button' id='%s' class='outline secondary' aria-label='%s' data-tooltip='%s' data-allowed='1' %s onclick='%s'>%s</button>`, btn.id, btn.tooltip, btn.tooltip, btn.style, btn.function, btn.icon)
 }
 
-// Specialized helper functions for common button types that include hidden inputs
-// used by the application's legacy JavaScript for state and permission checks.
-
-func MakeSaveButton(update bool) string {
-	val := "0"
-	if update {
-		val = "1"
-	}
-	return MakeButton(BtnSave, update) + fmt.Sprintf(`<input type='hidden' id='canSave' value='%s'>`, val)
-}
-
-func MakeAddButton(create bool) string {
-	val := "0"
-	if create {
-		val = "1"
-	}
-	return MakeButton(BtnNew, create) + fmt.Sprintf(`<input type='hidden' id='canNew' value='%s'>`, val)
-}
-
-func MakeDeleteButton(canDelete bool) string {
-	if canDelete {
-		once.Do(loadBtnInfo)
-		btn := btnInfoMap[BtnDelete]
-		return fmt.Sprintf(`<button type='button' id='%s' class='outline secondary' aria-label='%s' data-tooltip='%s' data-target="delete-dialog" data-allowed='1' onclick='%s'>%s</button><input type='hidden' id='canDelete' value='1'>`,
-			btn.id, btn.tooltip, btn.tooltip, btn.function, btn.icon)
-	}
-	return MakeButton(BtnDelete, false) + `<input type='hidden' id='canDelete' value='0'>`
-}
-
 func MakeSeeButton() string {
 	once.Do(loadBtnInfo)
 	ico := MakeButton(BtnSeen, true) + " " + MakeButton(BtnBackup, true)
@@ -108,10 +79,6 @@ func MakeAdminSelectButton(read bool) string {
 		return MakeButton(BtnTables, true)
 	}
 	return `&nbsp;`
-}
-
-func MakeAdminSaveButton(update bool) string {
-	return MakeSaveButton(update)
 }
 
 func MakeAdminHelpButton() string {

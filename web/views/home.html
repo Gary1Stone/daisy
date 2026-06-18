@@ -1,6 +1,6 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
-  <div class="grid">
+  <div class="autogrid">
     <article>
       <header>
         <a href="#" id="theme_switcher" style="text-decoration: none;" data-tooltip="Themes: System (🌓), Dark (🌙), Light (☀️)"></a> <span id="greeting"></span> {{ .firstName }}
@@ -12,41 +12,7 @@
       <header>{{.devicesIcon}} Assigned Devices</header>
       {{ .assigned }}
     </article>
-  </div>
-
-    <article>
-      <header>
-        {{.wizardIcon}} Wizards
-      </header>
-      <section>
-
-        <!-- Dropdown -->
-      <div class="custom-select-container">
-        <input type="hidden" id="wizkey" name="wizkey" value="SIGHTING" />
-        <details role="list" class="dropdown">
-          <summary aria-haspopup="listbox" aria-invalid="false" aria-disabled="true" >Select an item...</summary>
-          <ul role="listbox">
-            <li><a href="#" data-value="SIGHTING">{{.eyeIcon}} I saw...</a></li>
-            <li><a href="#" data-value="USING">{{.ticketIcon}} I used...</a></li>
-            <li><a href="#" data-value="CLAIMING">{{.tagIcon}} I claim...</a></li>
-            <li><a href="#" data-value="GIVING">{{.tagIcon}} I gave...</a></li>
-            <li><a href="#" data-value="CARE">{{.wrenchIcon}} It needs care...</a></li>
-            <li><a href="#" data-value="BROKEN">{{.brokenIcon}} It broke...</a></li>
-            <li><a href="#" data-value="DIED">{{.stethoscopeIcon}} It died...</a></li>
-            <li><a href="#" data-value="LOST">{{.stepsIcon}} It's lost...</a></li>
-            <li><a href="#" data-value="BACKUP">{{.copyIcon}} I backed up...</a></li>
-            <li><a href="#" data-value="INSTALL">{{.softwareIcon}} I installed software...</a></li>
-            <li><a href="#" data-value="REQUEST">{{.softwareIcon}} I need software...</a></li>
-          </ul>
-        </details>
-      </div>
-
-      </section>
-      <footer>
-        <button type='button' onclick="startWizard()">Wizard...</button>
-      </footer>
-    </article>
-    
+  
     <article>
       <header>
         {{.devicesIcon}}&nbsp;Online Network Devices
@@ -58,6 +24,18 @@
         <p>{{.onlineCount}} Currently Online, excluding all devices on FreeWiFi.</p>
         <p>{{.offlineCount}} Offline</p>
       </section>
+    </article>
+
+    <article>
+      <header>
+        {{.wizardIcon}} Wizards
+      </header>
+      <section>
+        {{.wizardsSelect}}
+      </section>
+      <footer>
+        <button type='button' onclick="startWizard()">Wizard...</button>
+      </footer>
     </article>
     
     <article>
@@ -72,10 +50,6 @@
       </footer>
     </article>
   </div>
-
 </main>
-<footer class="container">
-</footer>
-
 <script src="js/home.js" defer></script>
 {{template "partials/bottom" .}}

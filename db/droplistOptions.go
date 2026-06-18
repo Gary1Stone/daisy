@@ -65,10 +65,11 @@ func GetTypeOptions(field, selected, wizard string, withBlank bool) []DroplistOp
 		options = append(options, option)
 	}
 	whatToShow := make(map[string]bool)
-	if wizard == wizards.Backup ||
+
+	if len(wizard) > 0 && (wizard == wizards.Backup ||
 		wizard == wizards.Install ||
 		wizard == wizards.Remove ||
-		wizard == wizards.Request {
+		wizard == wizards.Request) {
 		whatToShow[devices.Desktop] = true
 		whatToShow[devices.Laptop] = true
 	} else {
@@ -90,7 +91,7 @@ func GetTypeOptions(field, selected, wizard string, withBlank bool) []DroplistOp
 		option.Description = item.Description
 		option.Selected = false
 		if item.Code == selected {
-			option.Selected = true
+			option.Selected = false
 		}
 		option.Icon = item.Icon
 		option.Colour = ""
@@ -135,7 +136,7 @@ func GetUserList(field string, selected, parentCode string, withBlank bool) []Dr
 		if err != nil && err != sql.ErrNoRows {
 			log.Println(err)
 		} else {
-			item.Selected = true
+			item.Selected = false
 			item.Icon = icon
 			if len(item.Value) > 0 { // Prevent empty entries
 				options = append(options, item)
@@ -268,7 +269,7 @@ func GetKindOptions(field, selected, parentCode string, withBlank bool) []Dropli
 		option.Description = item.Description
 		option.Selected = false
 		if item.Code == selected {
-			option.Selected = true
+			option.Selected = false
 		}
 		option.Icon = item.Icon
 		option.Colour = ""
@@ -303,7 +304,7 @@ func GetMidOptions(field, selected, parentCode string, withBlank bool) []Droplis
 		} else {
 			item.Selected = false
 			if item.Value == selected {
-				item.Selected = true
+				item.Selected = false
 			}
 			if source == "M30_Guest" {
 				item.Description += " (Last detected on the guest network)"
@@ -316,4 +317,31 @@ func GetMidOptions(field, selected, parentCode string, withBlank bool) []Droplis
 		log.Println(err)
 	}
 	return options
+}
+
+func GetWizardOptions(field, selected string, withBlank bool) []DroplistOption {
+	var options []DroplistOption
+	if withBlank {
+		options = append(options, DroplistOption{})
+	}
+	list := []DroplistOption{
+		{Value: "SIGHTING", Description: "I saw...", Colour: "green", Icon: "eye", Selected: false},
+		{Value: "USING", Description: "I used...", Colour: "green", Icon: "tag", Selected: false},
+		{Value: "CLAIMING", Description: "I claim...", Colour: "green", Icon: "tag", Selected: false},
+		{Value: "GIVING", Description: "I gave...", Colour: "green", Icon: "eye", Selected: false},
+		{Value: "CARE", Description: "It needs care..", Colour: "green", Icon: "wrench", Selected: false},
+		{Value: "BROKEN", Description: "It broke...", Colour: "green", Icon: "broken", Selected: false},
+		{Value: "DIED", Description: "It died...", Colour: "green", Icon: "stethoscope", Selected: false},
+		{Value: "LOST", Description: "It is lost...", Colour: "green", Icon: "steps", Selected: false},
+		{Value: "BACKUP", Description: "I backed up...", Colour: "green", Icon: "copy", Selected: false},
+		{Value: "INSTALL", Description: "I installed software...", Colour: "green", Icon: "software", Selected: false},
+		{Value: "REQUEST", Description: "I need software...", Colour: "green", Icon: "software", Selected: false},
+	}
+
+	for i := range list {
+		if list[i].Value == selected {
+			list[i].Selected = true
+		}
+	}
+	return append(options, list...)
 }

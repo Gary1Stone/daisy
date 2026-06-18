@@ -65,7 +65,7 @@ async function getCtrl(target, ctrlData) {
         });
         targetElement.innerHTML = responseData;
         targetElement.setAttribute("aria-busy", "false");
-        initCustomSelects(target);
+        setUpDropDowns(target);
     } catch (error) {
         toast(`Failed to load control: ${error.message}`, "alert");
         console.error("Failed to load control:", error);

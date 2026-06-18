@@ -294,9 +294,13 @@ function toast(msg, type = "info") {
  *
  */
 
-function setUpDropDowns() {
+function setUpDropDowns(root = document) {
+    const scope = (typeof root === 'string') ? document.getElementById(root) : root;
+    if (!scope) return;
+
     // Scope all logic within a loop for multiple drop-list instances
-    document.querySelectorAll('details[role="list"]').forEach(dropdown => {
+    scope.querySelectorAll('details[role="list"]:not([data-initialized])').forEach(dropdown => {
+        dropdown.setAttribute('data-initialized', 'true');
         const container = dropdown.closest('.custom-select-container') || dropdown.parentElement;
         const hiddenInput = container.querySelector('.droplist-input');
         const summary = dropdown.querySelector('summary');

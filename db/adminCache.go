@@ -69,9 +69,9 @@ type adminInfo struct {
 
 // Load the database table into a temporary slice,
 // Then lock the real slice (AdminCache), assign the temporary slice to it, then release the lock
-// Otherwise some reads would happen before the slice is fully populated
+// Otherwise, some reads would happen before the slice is fully populated
 func (a *adminStruct) loadAdmin(count int) {
-	tempSlice := make([]adminInfo, count)
+	tempSlice := make([]adminInfo, 0, count) // Initialize with capacity, not length
 	query := `
 		SELECT A.id, A.field, A.code, A.description, A.seq, A.active, A.parent, 
 		coalesce(B.icon2,"") AS icon, coalesce(C.icon2,"") AS alticon, A.cnt, A.asset_id, A.permissions, coalesce(B.color,"") AS color
@@ -234,7 +234,7 @@ func checkAdminCache() {
 
 /* This is used to cache the droplists in the browser
  * so ajax calls are not necessary
- * The struct names are kept short to resuce the size of the JSON
+ * The struct names are kept short to reduce the size of the JSON
  */
 
 type FieldInfo struct {

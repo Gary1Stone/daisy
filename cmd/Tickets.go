@@ -16,17 +16,17 @@ func GetTickets(c *fiber.Ctx) error {
 	}
 
 	// If no read capababilty, send them home
-	if !user.Permissions.Profile.Read {
+	if !user.Permissions.Ticket.Read {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
-	isAdmin := user.Permissions.Admin.Read
+	isAdmin := user.IsAdmin
 
 	//Render the page
 	return c.Render("tickets", addNavigationIcons(fiber.Map{
 		"title":        template.HTML(svg.GetIcon("ticket") + " Tickets"),
 		"fullName":     user.Fullname,
 		"isAdmin":      isAdmin,
-		"cmd_one":      template.HTML(ctrls.MakeAddButton(user.Permissions.Ticket.Create)),
+		"cmd_one":      template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Ticket.Create)),
 		"ticketsTable": template.HTML(ctrls.BuildTicketsTable(user.Uid)),
 	}))
 }

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"math"
@@ -39,13 +40,9 @@ func GetProfile(c *fiber.Ctx) error {
 	}
 
 	// Last Updated by name
-	lun := ""
+	lastUpdated := ""
 	if len(profile.Last_updated_time) > 0 {
-		lun = "<p title='Last Updated'>Last Updated by: "
-		lun += profile.Lun
-		lun += " at "
-		lun += profile.Last_updated_time
-		lun += "</p>"
+		lastUpdated = fmt.Sprintf("%s at %s", profile.Lun, profile.Last_updated_time)
 	}
 
 	// When the record was created by an external registration process
@@ -77,9 +74,9 @@ func GetProfile(c *fiber.Ctx) error {
 		"pwd_reset":        profile.Pwd_reset,
 		"colour":           profile.Color,
 		"GroupOptions":     template.HTML(ctrls.BuildDropList("GROUP", strconv.Itoa(profile.Gid), "", false, false)),
-		"FenceOptions":     template.HTML(ctrls.BuildDropList("GEOFENCE", profile.Geo_fence, "", true, true)),
+		"FenceOptions":     template.HTML(ctrls.BuildDropList("GEOFENCE", profile.Geo_fence, "", true, false)),
 		"RadiusOptions":    template.HTML(ctrls.BuildRadiusOptions(profile.Geo_radius)),
-		"lastUpdated":      template.HTML(lun),
+		"lastUpdated":      template.HTML(lastUpdated),
 		"curUid":           user.Uid,
 		"assigned_devices": template.HTML(ctrls.BuildAssignedDevices(user.Uid, uid)),
 		"banned":           template.HTML(ipBanned),

@@ -81,6 +81,13 @@ function checkValid(el) {
         btnSave.off();
         el.setAttribute("aria-invalid", "true");
         return;
+    } else if (el.id === "gid" || el.id === "geo_radius") {
+        btnSave.off();
+        el.setAttribute("aria-invalid", "false");
+        // Select the first <summary> element below this element and set it's aria-invalid attribute
+        
+
+        return;
     } else if (el.id !== "user") {
         btnSave.on();
         el.setAttribute("aria-invalid", "false");

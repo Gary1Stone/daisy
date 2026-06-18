@@ -3,7 +3,6 @@ package ctrls
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 
 	"github.com/gbsto/daisy/db"
@@ -21,8 +20,8 @@ func GetProfileLogins(curUid, uid int) string {
 		log.Println(err)
 		return ""
 	}
-	var report strings.Builder
-	report.WriteString(`<div style="max-height: 400px; overflow-y: auto;">
+	var tbl strings.Builder
+	tbl.WriteString(`<div style="max-height: 400px; overflow-y: auto;">
 		<table class='striped' id='dash_table'>
 		<thead>
 		<tr>
@@ -34,29 +33,10 @@ func GetProfileLogins(curUid, uid int) string {
 		</thead>
 		<tbody>`)
 	for _, item := range items {
-		report.WriteString("<tr>")
-		//Login Time
-		report.WriteString("<td>")
-		report.WriteString(item.Last_login)
-		report.WriteString("</td><td>")
-		//days Ago
-		report.WriteString(strconv.Itoa(item.Days))
-		report.WriteString("</td><td>")
-		//location
-		report.WriteString(item.Country)
-		report.WriteString(", ")
-		report.WriteString(item.State)
-		report.WriteString(", ")
-		report.WriteString(item.City)
-		report.WriteString("<p>")
-		report.WriteString(item.Community)
-		report.WriteString("</p></td><td>")
-		// distance
-		report.WriteString(strconv.Itoa(item.Distance))
-		report.WriteString("</td></tr>")
+		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%d</td><td>%s, %s, %s<p>%s</p></td><td>%d</td></tr>`, item.Last_login, item.Days, item.Country, item.State, item.City, item.Community, item.Distance)
 	}
-	report.WriteString("</tbody></table></div>")
-	return report.String()
+	tbl.WriteString("</tbody></table></div>")
+	return tbl.String()
 }
 
 // Create list of generic radius from center point
@@ -65,16 +45,11 @@ func BuildRadiusOptions(radius int) string {
 	ctrl.WriteString("<option value='' ></option>")
 	rads := []int{1, 5, 10, 25, 50, 100}
 	for _, rad := range rads {
-		str := strconv.Itoa(rad)
-		ctrl.WriteString("<option value='")
-		ctrl.WriteString(str)
-		ctrl.WriteString("' ")
+		selected := ""
 		if rad == radius {
-			ctrl.WriteString("selected")
+			selected = "selected"
 		}
-		ctrl.WriteString(">")
-		ctrl.WriteString(str)
-		ctrl.WriteString(" Km</option>")
+		fmt.Fprintf(&ctrl, `<option value='%d' %s>%d Km</option>`, rad, selected, rad)
 	}
 	return ctrl.String()
 }

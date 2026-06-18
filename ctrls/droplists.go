@@ -22,6 +22,8 @@ func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool)
 		options = db.GetKindOptions(field, selected, parentCode, withBlank)
 	case "MID":
 		options = db.GetMidOptions(field, selected, parentCode, withBlank)
+	case "WIZARDS":
+		options = db.GetWizardOptions(field, selected, withBlank)
 	default:
 		options = db.GetOptions(field, selected, parentCode, withBlank)
 	}
@@ -71,8 +73,7 @@ func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly b
 	}
 	ctrl.WriteString(`<div class="custom-select-container">`)
 	// Use type="text" but visually hidden to support native validation and onchange handlers
-	hiddenStyle := `style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; opacity:0; pointer-events:none;"`
-	fmt.Fprintf(&ctrl, `<input type="text" class="droplist-input" id="%s" name="%s" value="%s" %s %s %s tabindex="-1" aria-hidden="true" />`, droplist.Id, droplist.Id, selected, onchange, required, hiddenStyle)
+	fmt.Fprintf(&ctrl, `<input type="text" class="droplist-input" id="%s" name="%s" value="%s" %s %s tabindex="-1" aria-hidden="true" />`, droplist.Id, droplist.Id, selected, onchange, required)
 	ctrl.WriteString(`<details role="list" class="dropdown">`)
 	fmt.Fprintf(&ctrl, `<summary aria-haspopup="listbox" aria-invalid="false" aria-disabled="%s" %s aria-describedby="%sErr" >%s</summary>`, disabled, ariaRequired, droplist.Id, droplist.Title)
 	ctrl.WriteString(`<ul role="listbox">`)
@@ -81,7 +82,11 @@ func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly b
 		if len(option.Icon) > 0 {
 			icon = svg.GetIcon(option.Icon)
 		}
-		fmt.Fprintf(&ctrl, `<li><a href="#" class="%s" data-value="%s">%s %s</a></li>`, xlateColor(option.Colour), option.Value, icon, option.Description)
+		description := "&nbsp;"
+		if len(option.Description) > 0 {
+			description = option.Description
+		}
+		fmt.Fprintf(&ctrl, `<li><a href="#" class="%s" data-value="%s">%s %s</a></li>`, xlateColor(option.Colour), option.Value, icon, description)
 	}
 	ctrl.WriteString(`</ul></details></div>`)
 	return ctrl.String()
@@ -94,7 +99,7 @@ func buildSelect(droplist db.Droplist, options []db.DroplistOption, readOnly boo
 	if readOnly {
 		disabled = "disabled"
 	}
-	fmt.Fprintf(&ctrl, `<select name="%s" id="%s" data-tooltip="%s" %s %s %s aria-invalid="false" aria-describedby="%sErr" >`, droplist.Name, droplist.Id, droplist.Title, disabled, onchange, required, droplist.Id)
+	fmt.Fprintf(&ctrl, `<select id="%s" name="%s" data-tooltip="%s" %s %s %s aria-invalid="false" aria-describedby="%sErr" >`, droplist.Id, droplist.Id, droplist.Title, disabled, onchange, required, droplist.Id)
 	for _, option := range options {
 		selected := ""
 		if option.Selected {

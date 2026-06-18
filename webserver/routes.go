@@ -66,4 +66,5 @@ func routes(app *fiber.App) {
 	app.Post("/duplicatesjoin", checkToken, cmd.PostDuplicatesJoin)
 	app.Get("/correlation.html", checkToken, cmd.GetCorrelation)
 	app.Post("/correlation", checkToken, cmd.PostCorrelation)
+	app.Post("/icon", checkToken, cmd.PostIcon)
 }

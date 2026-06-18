@@ -43,13 +43,11 @@
             {{ .FenceOptions }}
           <small id="fenceError">Select a geo-fence site</small>
 
-          <label for="geo_radius">Fence Radius</label>
-          <select name="geo_radius" id="geo_radius" title="Geo Radius"
-            data-role="select" data-filter="false"
-            {{if .isDisabled }}disabled{{end}} >
+          <label for="geo_radius">Geo-Fence Radius</label>
+          <select id="geo_radius" name="geo_radius" data-tooltip="Base site radius"
+            aria-invalid="false" {{if .isDisabled }}disabled{{end}} >
             {{ .RadiusOptions }}
           </select>
-          <small ></small>
           
           {{ .chkNotify }}
           <label for="notify">Notify</label>
@@ -85,26 +83,21 @@
       </article>
   </div>
 
-    <div class="grid">
-      <article>
-        <header>
-          <span class='mif-user'></span>&nbsp;Login History (90 days)
-        </header>
-        <section>
-          {{ .loginHistory }}
-        </section>
-        <footer>
-        </footer>
-      </article>
-    </div>
+  <article>
+    <header>
+      <span class='mif-user'></span>&nbsp;Login History (90 days)
+    </header>
+    <section>
+      {{ .loginHistory }}
+    </section>
+    <footer>
+    </footer>
+  </article>
 
-    <div class="grid">
-      <article>
-        {{ .lastUpdated }} &nbsp;
-      </article>
-    </div>
+  <footer>
+      Last Updated by: {{ .lastUpdated }}
+  </footer>
 </main>
-
 </form>
 
 <dialog id="delete-dialog">
@@ -123,4 +116,5 @@
 </dialog>
 
 <script src="js/profile.js" defer></script>
+<script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}
