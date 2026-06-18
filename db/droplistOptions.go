@@ -91,7 +91,7 @@ func GetTypeOptions(field, selected, wizard string, withBlank bool) []DroplistOp
 		option.Description = item.Description
 		option.Selected = false
 		if item.Code == selected {
-			option.Selected = false
+			option.Selected = true
 		}
 		option.Icon = item.Icon
 		option.Colour = ""
@@ -269,7 +269,7 @@ func GetKindOptions(field, selected, parentCode string, withBlank bool) []Dropli
 		option.Description = item.Description
 		option.Selected = false
 		if item.Code == selected {
-			option.Selected = false
+			option.Selected = true
 		}
 		option.Icon = item.Icon
 		option.Colour = ""
