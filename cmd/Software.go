@@ -20,11 +20,9 @@ func GetSoftware(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
+	// Read the sid from the URL, or default to 0
 	sid, err2 := strconv.Atoi(c.Query("sid", "0"))
 	if err2 != nil || sid == 0 {
-		sid = math.MaxInt
-	}
-	if sid == 0 {
 		sid = math.MaxInt //Prevent getting all the records (sid=0 means get all records)
 	}
 
@@ -32,9 +30,6 @@ func GetSoftware(c *fiber.Ctx) error {
 	if !user.Permissions.Software.Read {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
-
-	isReadonly := !user.Permissions.Software.Update
-	isDisabled := !user.Permissions.Software.Update
 
 	// Get the software record
 	software, err := db.GetSoftware(user.Uid, sid)
@@ -59,8 +54,8 @@ func GetSoftware(c *fiber.Ctx) error {
 		"name":           software.Name,
 		"licenses":       software.Licenses,
 		"active":         software.Active,
-		"isReadonly":     isReadonly,
-		"isDisabled":     isDisabled,
+		"isReadonly":     !user.Permissions.Software.Update,
+		"isDisabled":     !user.Permissions.Software.Update,
 		"reuseable":      software.Reuseable,
 		"license_key":    software.License_key,
 		"product":        software.Product,
@@ -97,6 +92,7 @@ func PostSoftware(c *fiber.Ctx) error {
 
 	recvd := new(db.Software)
 	if err := c.BodyParser(recvd); err != nil {
+		log.Println(err)
 		return c.Status(fiber.StatusOK).JSON(reply)
 	}
 

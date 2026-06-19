@@ -40,59 +40,84 @@ const UI = {
 
 // Page loaded event
 document.addEventListener('DOMContentLoaded', function() {
-    const sid = UI.sid().value;
+    //Set initial button state depending if a record is displayed or not
     btnSave = new Button("btnSave");
     btnNew = new Button("btnNew");
     btnDelete = new Button("btnDelete", true);
-
-    const isNew = isDigits(sid) && txt2Int(sid) === 0;
-    if (isNew) {
-        btnSave.on();
-        btnNew.off();
-        btnDelete.off();
+    btnSave.on();
+    const sid = UI.sid().value;
+    if (isDigits(sid) && txt2Int(sid) === 0) {
+        btnNew.off(); btnDelete.off();
     } else {
-        btnSave.off();
-        btnNew.on();
-        btnDelete.on();
+        btnNew.on(); btnDelete.on();
     }
 
+    // Use event delegation for all form inputs
     const form = UI.form();
     if (form) {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
         form.addEventListener("input", (e) => {
-            if (e.target.id !== "filter") updateButtonStates();
+            if (e.target.matches("input[type='text'], input[type='email'], input[type='number'], input[type='date'], input[type='url'], input[type='search']")) {
+                checkValid(e.target);
+            }
         });
         form.addEventListener("change", (e) => {
-            if (e.target.matches("select")) updateButtonStates();
-            if (e.target.id === "name") onNameChange();
+            if (e.target.matches("select, input[type='checkbox'], .droplist-input")) {
+                if (e.target.classList.contains("droplist-input")) {
+                    checkDropdownValid(e.target); // in picoplus.js
+                } else {
+                    checkValid(e.target);
+                }
+            }
         });
     }
 });
 
-function updateButtonStates() {
-    btnSave.on();
-    btnNew.off();
+
+function checkValid(el) {
+    btnNew.off(); 
     btnDelete.off();
+    // If user has spaces before or after value, reject
+    if (el.value !== el.value.trim()) {
+        el.setAttribute("aria-invalid", "true");
+        el.setCustomValidity("Leading and trailing spaces are not allowed");
+        toast("Please remove leading and trailing spaces", "warning");
+        return;
+    }
+
+    // Clear any previous custom errors
+    if (el.validity.customError) {
+        el.setCustomValidity("");
+    } 
+    
+    // If fails validation, set to off/invalid
+    const isValid = el.checkValidity();
+    el.setAttribute("aria-invalid", !isValid);
+    if (!isValid) return;
+
+    // Now have user input, check if it changed.
+    if (el.id === "user" && el.value !== el.defaultValue) {
+        checkUnique(el);
+    }
 }
 
-async function onNameChange() {
+async function checkUnique(el) {
     const sendData = getFormData();
     sendData.task = "unique";
     try {
-        const reply = await postForm("software", sendData);
-        const data = typeof reply === "string" ? JSON.parse(reply) : reply;
-        const nameInput = UI.name();
-        const nameError = UI.nameError();
-        if (nameInput && nameError) {
-            if (data.success) {
-                nameInput.setAttribute("aria-invalid") === "true"
-                nameError.style.display = "none";
+        await postJSON("software", sendData, (reply) => {
+            if (reply.success) {
+                el.setAttribute("aria-invalid", "false");
             } else {
-                nameInput.setAttribute("aria-invalid") === "false"
-                nameError.value = data.msg;
-                nameError.style.display = "block";
+                el.setAttribute("aria-invalid", "true");
+                el.setCustomValidity("Name must unique"); // This is how to set the input field to invalid
             }
-        }
+            el.defaultValue = el.value;
+        });
     } catch (e) {
+        toast(error, "error");
         console.error("Uniqueness check failed:", e);
     }
 }
@@ -203,7 +228,6 @@ function validateForm(data) {
 }
 
 async function saveRecord() {
-    if (btnSave.state !== "on") return false;
     const sendData = getFormData();
     if (!validateForm(sendData)) return false;
     if (sendData.sid === 0) sendData.task = "add";

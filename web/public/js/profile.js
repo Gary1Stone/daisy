@@ -25,22 +25,12 @@ const UI = {
 
 // Page loaded event
 document.addEventListener('DOMContentLoaded', function() {
-
-    // Initialize the iconbar button instances once the scripts and DOM are ready
+    //Set initial button state depending if a record is displayed or not
     btnSave = new Button("btnSave");
     btnNew = new Button("btnNew");
     btnDelete = new Button("btnDelete", true); // true for forceOffIfNotAllowed
     btnSave.on(); 
-
-    const form = UI.form();
-    if (form) {
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-        });
-    }
-
     const uid = UI.uid().value;
-    //Set initial button state depending if a record is displayed or not
     if (isDigits(uid) && txt2Int(uid) === 0) {
         btnNew.off(); btnDelete.off();
     } else {
@@ -48,15 +38,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Use event delegation for all form inputs
+    const form = UI.form();
     if (form) {
-        // Use 'input' for immediate feedback on text fields
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
         form.addEventListener("input", (e) => {
             if (e.target.matches("input[type='text'], input[type='email'], input[type='number']")) {
                 checkValid(e.target);
             }
         });
-
-        // Use 'change' for selects, checkboxes, and custom dropdowns
         form.addEventListener("change", (e) => {
             if (e.target.matches("select, input[type='checkbox'], .droplist-input")) {
                 if (e.target.classList.contains("droplist-input")) {
@@ -99,7 +90,6 @@ function checkValid(el) {
 async function checkUnique(el) {
     const sendData = getFormData();
     sendData.task = "unique";
-
     try {
         await postJSON("profile", sendData, (reply) => {
             if (reply.success) {

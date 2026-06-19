@@ -1,6 +1,8 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
 <main class="container">
+
+  <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
+
     <div class="grid">
 
       <article>
@@ -94,11 +96,11 @@
     </footer>
   </article>
 
+  </form>
   <footer>
       Last Updated by: {{ .lastUpdated }}
   </footer>
 </main>
-</form>
 
 <dialog id="delete-dialog">
   <article>
