@@ -7,16 +7,18 @@
     </nav>
 </header>
 <main class="container">
-    <article>
-        <header><img src="/icons/user.svg" alt="user" width="48px" height="48px" />&nbsp;Login</header>
-        <p>Welcome</p>
-        <p>{{.fullname}}</p>
-        <input type="hidden" id="username" value="{{.user}}" >
-        <footer>
-            <button type='button' autofocus onclick="startLogin()">Log In...</button>
-            <button type='button' class="secondary" onclick="registerMe()">Register...</button>
-        </footer>
-    </article>
+    <form id="theForm" name="theForm" onsubmit="return false;" autocomplete="off">
+        <article>
+            <header><img src="/icons/user.svg" alt="user" width="48px" height="48px" />&nbsp;Login</header>
+            <p>Welcome</p>
+            <p>{{.fullname}}</p>
+            <input type="hidden" id="username" value="{{.user}}" >
+            <footer>
+                <button type='button' autofocus onclick="startLogin()">Log In...</button>
+                <button type='button' class="secondary" onclick="registerMe()">Register...</button>
+            </footer>
+        </article>
+    </form>
 </main>
 
 <footer class="container">
