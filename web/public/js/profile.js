@@ -25,6 +25,7 @@ const UI = {
 
 // Page loaded event
 document.addEventListener('DOMContentLoaded', function() {
+    
     //Set initial button state depending if a record is displayed or not
     btnSave = new Button("btnSave");
     btnNew = new Button("btnNew");

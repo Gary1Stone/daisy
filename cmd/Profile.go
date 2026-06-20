@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"math"
@@ -21,7 +20,7 @@ func GetProfile(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	// Read the uid from the URL, or default to 0
+	// Read the uid (User ID) from the URL, or default to 0
 	uid, err2 := strconv.Atoi(c.Query("uid", "0"))
 	if err2 != nil || uid == 0 {
 		uid = math.MaxInt //Prevent getting all the records (uid=0 means get all records)
@@ -39,12 +38,6 @@ func GetProfile(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("index.html")
 	}
 
-	// Last Updated by name
-	lastUpdated := ""
-	if len(profile.Last_updated_time) > 0 {
-		lastUpdated = fmt.Sprintf("%s at %s", profile.Lun, profile.Last_updated_time)
-	}
-
 	// When the record was created by an external registration process
 	// the inital color is amber, and the lastUpdatedName is system.
 	// We Resets the color to light grey when the user saves the record
@@ -59,34 +52,35 @@ func GetProfile(c *fiber.Ctx) error {
 	}
 
 	return c.Render("profile", addNavigationIcons(fiber.Map{
-		"title":            template.HTML(svg.GetIcon("profiles") + " Profile"),
-		"fullName":         user.Fullname,
-		"isAdmin":          user.IsAdmin,
-		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Profile.Update)),
-		"cmd_two":          template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Profile.Create)),
-		"cmd_three":        template.HTML(ctrls.MakeButton(ctrls.BtnDelete, user.Permissions.Profile.Delete && profile.Deleteable)),
-		"isReadonly":       !user.Permissions.Profile.Update,
-		"isDisabled":       !user.Permissions.Profile.Update,
-		"uid":              profile.Uid,
-		"userid":           profile.User,
-		"first":            profile.First,
-		"last":             profile.Last,
-		"pwd_reset":        profile.Pwd_reset,
-		"colour":           profile.Color,
-		"GroupOptions":     template.HTML(ctrls.BuildDropList("GROUP", strconv.Itoa(profile.Gid), "", false, false)),
-		"FenceOptions":     template.HTML(ctrls.BuildDropList("GEOFENCE", profile.Geo_fence, "", true, false)),
-		"RadiusOptions":    template.HTML(ctrls.BuildRadiusOptions(profile.Geo_radius)),
-		"lastUpdated":      template.HTML(lastUpdated),
-		"curUid":           user.Uid,
-		"assigned_devices": template.HTML(ctrls.BuildAssignedDevices(user.Uid, uid)),
-		"banned":           template.HTML(ipBanned),
-		"chkActive":        template.HTML(ctrls.BuildActiveCheckbox(profile.Active, !user.Permissions.Profile.Update)),
-		"chkNotify":        template.HTML(ctrls.BuildNotifyCheckbox(profile.Notify, !user.Permissions.Profile.Update)),
-		"userAlerts":       template.HTML(ctrls.GetAlertTable(uid)),
-		"loginHistory":     template.HTML(ctrls.GetProfileLogins(user.Uid, uid)),
-		"groupIcon":        template.HTML(svg.GetIcon("group")),
-		"locationIcon":     template.HTML(svg.GetIcon("location")),
-		"bellIcon":         template.HTML(svg.GetIcon("bell")),
+		"title":             template.HTML(svg.GetIcon("profiles") + " Profile"),
+		"fullName":          user.Fullname,
+		"isAdmin":           user.IsAdmin,
+		"cmd_one":           template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Profile.Update)),
+		"cmd_two":           template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Profile.Create)),
+		"cmd_three":         template.HTML(ctrls.MakeButton(ctrls.BtnDelete, user.Permissions.Profile.Delete && profile.Deleteable)),
+		"isReadonly":        !user.Permissions.Profile.Update,
+		"isDisabled":        !user.Permissions.Profile.Update,
+		"uid":               profile.Uid,
+		"userid":            profile.User,
+		"first":             profile.First,
+		"last":              profile.Last,
+		"pwd_reset":         profile.Pwd_reset,
+		"colour":            profile.Color,
+		"GroupOptions":      template.HTML(ctrls.BuildDropList("GROUP", strconv.Itoa(profile.Gid), "", false, false)),
+		"FenceOptions":      template.HTML(ctrls.BuildDropList("GEOFENCE", profile.Geo_fence, "", true, false)),
+		"RadiusOptions":     template.HTML(ctrls.BuildRadiusOptions(profile.Geo_radius)),
+		"last_updated_by":   profile.Lun,
+		"last_updated_time": profile.Last_updated_time,
+		"curUid":            user.Uid,
+		"assigned_devices":  template.HTML(ctrls.BuildAssignedDevices(user.Uid, uid)),
+		"banned":            template.HTML(ipBanned),
+		"chkActive":         template.HTML(ctrls.BuildActiveCheckbox(profile.Active, !user.Permissions.Profile.Update)),
+		"chkNotify":         template.HTML(ctrls.BuildNotifyCheckbox(profile.Notify, !user.Permissions.Profile.Update)),
+		"userAlerts":        template.HTML(ctrls.GetAlertTable(uid)),
+		"loginHistory":      template.HTML(ctrls.GetProfileLogins(user.Uid, uid)),
+		"groupIcon":         template.HTML(svg.GetIcon("group")),
+		"locationIcon":      template.HTML(svg.GetIcon("location")),
+		"bellIcon":          template.HTML(svg.GetIcon("bell")),
 	}))
 }
 

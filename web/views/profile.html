@@ -1,8 +1,6 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
-
   <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
-
     <div class="grid">
 
       <article>
@@ -98,7 +96,7 @@
 
   </form>
   <footer>
-      Last Updated by: {{ .lastUpdated }}
+    Last Updated: {{ .fullname }} at {{ .last_updated_time }}
   </footer>
 </main>
 

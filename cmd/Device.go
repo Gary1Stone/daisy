@@ -23,21 +23,16 @@ func GetDevice(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	// If NO Read capababilty, send them home
-	if !user.Permissions.Device.Read {
-		return c.Status(fiber.StatusOK).Redirect("home.html")
-	}
-
-	// Prevent getting all the records (cid=0 means get all records)
+	// Read the cid (computer ID) from the URL, or default to 0
 	cid, err2 := strconv.Atoi(c.Query("cid", "0"))
 	if err2 != nil || cid == 0 {
 		cid = math.MaxInt
 	}
 
-	// CRUD Create Read Update Delete
-	// Create and Delete are handled at the control level
-	isReadonly := !user.Permissions.Device.Update
-	isDisabled := !user.Permissions.Device.Update
+	// If NO Read capababilty, send them home
+	if !user.Permissions.Device.Read {
+		return c.Status(fiber.StatusOK).Redirect("home.html")
+	}
 
 	// Get device record
 	device, err := db.GetDevice(user.Uid, cid)
@@ -70,8 +65,8 @@ func GetDevice(c *fiber.Ctx) error {
 		"cmd_two":           template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Device.Create)),
 		"cmd_three":         template.HTML(ctrls.MakeButton(ctrls.BtnDelete, deleteAble)),
 		"imageCtrl":         template.HTML(ctrls.MakeImageCtrl(&device, user.Permissions.Device.Update)),
-		"isReadonly":        isReadonly,
-		"isDisabled":        isDisabled,
+		"isReadonly":        !user.Permissions.Device.Update,
+		"isDisabled":        !user.Permissions.Device.Update,
 		"name":              device.Name,
 		"model":             device.Model,
 		"active":            device.Active,
@@ -89,8 +84,8 @@ func GetDevice(c *fiber.Ctx) error {
 		"coresCtrl":         template.HTML(ctrls.BuildDropList("CORES", strconv.Itoa(device.Cores), "", true, false)),
 		"driveTypeCtrl":     template.HTML(ctrls.BuildDropList("DRIVETYPE", device.Drivetype, "", false, false)),
 		"years":             template.HTML(ctrls.BuildYearsSelect(device.Year)),
-		"uidCtrl":           template.HTML(ctrls.BuildDropList("USER", strconv.Itoa(device.Uid), strconv.Itoa(device.Gid), true, isReadonly)),
-		"officeCtrl":        template.HTML(ctrls.BuildDropList("OFFICE", device.Office, device.Site, true, isReadonly)),
+		"uidCtrl":           template.HTML(ctrls.BuildDropList("USER", strconv.Itoa(device.Uid), strconv.Itoa(device.Gid), true, !user.Permissions.Device.Update)),
+		"officeCtrl":        template.HTML(ctrls.BuildDropList("OFFICE", device.Office, device.Site, true, !user.Permissions.Device.Update)),
 		"locationCtrl":      device.Location,
 		"ramCtrl":           device.Ram,
 		"cpuCtrl":           device.Cpu,
@@ -151,11 +146,6 @@ func PostDevice(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(reply)
 	}
 
-	isReadonly := true
-	if user.Permissions.Device.Update {
-		isReadonly = false
-	}
-
 	//Do processing and saves
 	switch recvd.Task {
 	case "get_asset_id":
@@ -175,9 +165,9 @@ func PostDevice(c *fiber.Ctx) error {
 			reply.Msg = "ERROR: The name " + recvd.Name + " is already used."
 		}
 	case "get_office_control":
-		return c.Status(fiber.StatusOK).SendString(ctrls.BuildDropList("OFFICE", recvd.Office, recvd.Site, true, isReadonly))
+		return c.Status(fiber.StatusOK).SendString(ctrls.BuildDropList("OFFICE", recvd.Office, recvd.Site, true, !user.Permissions.Device.Update))
 	case "get_person_control":
-		return c.Status(fiber.StatusOK).SendString(ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, isReadonly))
+		return c.Status(fiber.StatusOK).SendString(ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, !user.Permissions.Device.Update))
 	case "getactionlog":
 		if recvd.Aid > 0 { //set_accept_cid_by_aid
 			//	db.AckAlert(curUid, 0, recvd.Aid, true, true, false)

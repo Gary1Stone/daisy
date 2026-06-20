@@ -63,14 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
     btnNew = new Button("btnNew");
     btnDelete = new Button("btnDelete", true);
     btnSave.on(); 
-
-    const form = UI.form();
-    if (form) {
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-        });
-    }
-
     const cid = UI.cid().value;
     gblOldColor = UI.color().value;
     //Set initial button state depending if a record is displayed or not
@@ -80,7 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
         btnNew.on(); btnDelete.on();
     }
 
+    const form = UI.form();
     if (form) {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
         // Use event delegation for input/textarea changes
         form.addEventListener("input", (e) => {
             if (e.target.matches("input[type='text'], input[type='email'], input[type='number'], textarea")) {
