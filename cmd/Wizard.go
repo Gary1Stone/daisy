@@ -88,7 +88,7 @@ func GetWizard(c *fiber.Ctx) error {
 	return c.Render("wizard", addNavigationIcons(fiber.Map{
 		"title":            template.HTML(svg.GetIcon("wizard") + " " + title),
 		"fullName":         user.Fullname,
-		"cmd_one":          template.HTML(ctrls.MakeSearchBtn()),
+		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnFilter, user.Permissions.Device.Read)),
 		"isAdmin":          user.IsAdmin,
 		"curUid":           user.Uid,
 		"wizKey":           wizkey,
