@@ -1,187 +1,119 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
 
-  <div id="DeviceSelect"> <!-- need almost full screen for results, Search Dialog opens at this step -->
-    <p id="cidLabel">Please select a device.</p>
-    <div class="miniCards" id="cards">{{ .cards }}</div>
-  </div>
+  <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
+
+    <div id="DeviceSelect"> <!-- need almost full screen for results, Search Dialog opens at this step -->
+      <p id="cidLabel">Please select a device.</p>
+      <div id="cards" class="autogrid">{{ .cards }}</div>
+    </div>
 
   <div class="grid">
 
-    <div class="row">
-      <div class="cell"> <!-- Show the selected Device -->
-        <div id="SelectedDevice" class="wizPanel" style="text-align: center;">
+    <div>
+       <!-- Show the selected Device -->
+        <div id="SelectedDevice" style="text-align: center;">
           <img id="pic" src="{{ .devPic }}" alt="" width='200px' height='150px' >
           <p id="cidDetails">{{ .devDetails }}</p>
           <input type="hidden" id="curUid" name="curUid" value="{{ .curUid }}" >
           <input type="hidden" id="wizKey" name="wizKey" value="{{ .wizKey }}" >
           <input type="hidden" id="cid" name="cid" value="{{ .cid }}" >
         </div>
+    </div>
+
+    <div id="SiteSelect">
+      <p id="siteLabel">Which Site/Office is the device in?</p>
+      <div class="form-group">
+        <div id="selectSite">
+          {{.siteCtrl}}
+        </div> 
+        <div id="selectOffice">
+          {{.officeCtrl}}
+        </div>
       </div>
     </div>
 
-    <div class="row">
-      <div class="cell">
-        <div id="SiteSelect" class="wizPanel">
-          <p id="siteLabel">Which Site/Office is the device in?</p>
-          <div class="form-group">
-            <div id="selectSite">
-              {{.siteCtrl}}
-            </div> 
-            <div id="selectOffice">
-              {{.officeCtrl}}
-            </div>
-          </div>
-        </div>
+    <div id="LocationText">
+      <label for="location" id="locationLabel">Enter any additional location details.</label>
+      <div class="form-group" id="locationDiv">
+          {{.locationCtrl}}
+      </div>
+    </div>
 
-        <div id="LocationText" class="wizPanel">
-          <label for="location" id="locationLabel">Enter any additional location details.</label>
-          <div class="form-group" id="locationDiv">
-              {{.locationCtrl}}
-          </div>
+    <div id="UserSelect">
+      <div class="form-group">
+        <p id="uidLabel">Who should look at it?</p><br >
+        <div id="selectGroup">
+          {{ .groupCtrl }}
         </div>
-
-        <div id="UserSelect" class="wizPanel">
-          <div class="form-group">
-            <p id="uidLabel">Who should look at it?</p><br >
-            <div id="selectGroup">
-              {{ .groupCtrl }}
-            </div>
-            <div id="selectPerson">
-              {{ .userCtrl }}
-            </div>
-          </div>
-        </div>
-
-        <div id="TroubleSelect" class="wizPanel">
-          <label for="trouble" id="troubleLabel">Select the nearest description to the problem</label>
-          <div id="selectTrouble" class="form-group">
-            {{ .troubleCtrl }}
-            <span id="troubleError" class="invalid_feedback">Choose one</span>
-          </div>
-        </div>
-
-        <div id="NotesText" class="wizPanel">
-          <label for="notes" id="notesLabel">Provide details of what you need, or what the problem is.</label>
-          <div class="form-group">
-            <input
-              type="text" id="notes" name="notes" class=""
-              maxlength="255" value="" title="Notes"
-              data-role="input" data-validate="maxlength=255">
-            <span id="notesError" class="invalid_feedback">Details are needed.</span>
-          </div>
-        </div>
-
-        <div id="SoftwareSelect" class="wizPanel">
-          <label for="sid" id="sidLabel">Which software package was installed?</label>
-          <div id="selectSoftware" class="form-group">
-            {{ .softwareCtrl }}
-          </div>
-        </div>
-
-        <div id="DateChoose" class="wizPanel">
-          <p id="dateLabel">When did you install/remove the software?</p>
-          <div class="form-group">
-            <div id="cal"
-              data-role="calendar" data-picker-mode="true" data-buttons=""
-              data-on-day-click="saveDate" data-input-format="yyyy-mm-dd"></div>
-            <span id="dateError" class="invalid_feedback">Date must be between 01/01/2001 and now!</span>
-            <input type="hidden" id="installed" value="" >
-          </div>
-        </div>
-
-        <div id="ImpactSelect" class="wizPanel">
-          <label for="impact" id="impactLabel">What level of impact does this have?</label>
-          <div id="selectImpact" class="form-group">
-            {{ .impactCtrl }}
-          </div>
-        </div>
-
-        <div id="thankYou" class="wizPanel">
-          <p id="thanksLabel">Thank You</p>
-          <div class="form-group">
-            <p>The information you supplied was saved.</p>
-            <p>Thank you for helping to keep track of the electronics.</p>
-          </div>
+        <div id="selectPerson">
+          {{ .userCtrl }}
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="bottom-nav pos-fixed bottom bg-lightGray">
-    <button type='button' class="button" onclick="showHelp();">
-      <span class="icon mif-help"></span>
-      <span class="label">Help</span>
-    </button>
-    <button type='button' id="btnPrev" class="button" onclick="nav.previous();">
-      <span class="mif-arrow-left mif-2x"></span>
-      <span class="label">Back</span>
-    </button>
-    <button type='button' id="btnNext" class="button" onclick="nav.next();">
-      <span class="icon mif-arrow-right"></span>
-      <span class="label">Next</span>
-    </button>
-    <button type='button' id="btnFinish" class="button" onclick="onFinish();">
-      <span class="icon mif-checkmark"></span>
-      <span class="label">Done</span>
-    </button>
-  </div>
-</div>
-
-<div class="dialog" data-role="dialog" id="helpDialog">
-  <div class="dialog-title">Help</div>
-  <div class="dialog-content"><p id="helpMsg"></p></div>
-  <div class="dialog-actions">
-    <button type='button' class="button primary js-dialog-close">Okay</button>
-  </div>
-</div>
-
-<div class="dialog" data-role="dialog" id="searchDialog">
-  <div class="dialog-title">Device Search</div>
-  <div class="dialog-content">
-    <section>
-      {{.typeCtrl}}
-      {{.siteSearchCtrl}}
-      <div id="selectSearchOffice">
-          {{.officeSearchCtrl}}
+    <div id="TroubleSelect">
+      <label for="trouble" id="troubleLabel">Select the nearest description to the problem</label>
+      <div id="selectTrouble" class="form-group">
+        {{ .troubleCtrl }}
+        <span id="troubleError" class="invalid_feedback">Choose one</span>
       </div>
-      {{.groupSearchCtrl}}
-      <div id="selectSearchUser">
-        {{.userSearchCtrl}}
-      </div>
-      <label for="txtSearch">Find</label>
-      <div class="table-search-block">
-        <div class="input">
-            <input type="text" id="txtSearch" data-role-input="true" data-role="input">
-            <div class="button-group">
-                <button type='button' class="button input-clear-button" tabindex="-1" type="button" onclick="$('#txtSearch').val('');">
-                    <span class="default-icon-cross"></span>
-                </button>
-            </div>
-        </div>
-      </div>
-    </section>
-  </div>
-  <div class="dialog-actions">
-    <button type='button' class="button primary js-dialog-close" onclick="search();"><span class='mif-search'></span>&nbsp;Search</button>
-    <button type='button' class="button secondary js-dialog-close">Cancel</button>
-    <small id="searchError" class="fg-red"></small>
-  </div>
-</div>
+    </div>
 
-<div class="dialog" data-role="dialog" id="thanksDialog">
-  <div class="dialog-title">Thank You</div>
-  <div class="dialog-content">
-    <p>The information you supplied was saved.</p>
-    <p>Thank you for helping to keep track of the electronics.</p>
+    <div id="NotesText">
+      <label for="notes" id="notesLabel">Provide details of what you need, or what the problem is.</label>
+      <div class="form-group">
+        <input
+          type="text" id="notes" name="notes" class=""
+          maxlength="255" value="" title="Notes"
+          data-role="input" data-validate="maxlength=255">
+        <span id="notesError" class="invalid_feedback">Details are needed.</span>
+      </div>
+    </div>
+
+    <div id="SoftwareSelect">
+      <label for="sid" id="sidLabel">Which software package was installed?</label>
+      <div id="selectSoftware" class="form-group">
+        {{ .softwareCtrl }}
+      </div>
+    </div>
+
+    <div id="DateChoose">
+      <p id="dateLabel">When did you install/remove the software?</p>
+      <div class="form-group">
+        <div id="cal"
+          data-role="calendar" data-picker-mode="true" data-buttons=""
+          data-on-day-click="saveDate" data-input-format="yyyy-mm-dd"></div>
+        <span id="dateError" class="invalid_feedback">Date must be between 01/01/2001 and now!</span>
+        <input type="hidden" id="installed" value="" >
+      </div>
+    </div>
+
+    <div id="ImpactSelect">
+      <label for="impact" id="impactLabel">What level of impact does this have?</label>
+      <div id="selectImpact" class="form-group">
+        {{ .impactCtrl }}
+      </div>
+    </div>
+
+    <div id="thankYou">
+      <p id="thanksLabel">Thank You</p>
+      <div class="form-group">
+        <p>The information you supplied was saved.</p>
+        <p>Thank you for helping to keep track of the electronics.</p>
+      </div>
+    </div>
+
   </div>
-  <div class="dialog-actions">
-    <button type='button' class="button primary js-dialog-close" onclick="GoHome();">
-      Okay
-    </button>
-  </div>
-</div>
-<div id="labels" style="display: none">
+
+  <footer role="group">
+    <button type='button' class="secondary" onclick="showHelp();">? Help</button>
+    <button type='button' id="btnPrev" class="secondary" onclick="nav.previous();">⇐ Back</button>
+    <button type='button' id="btnNext" class="secondary" onclick="nav.next();">⇒ Next</button>
+    <button type='button' id="btnFinish" class="secondary" onclick="onFinish();">✓ Done</button>
+  </footer>
+
+  <div id="labels" style="display: none">
   {
   "SIGHTING": {
   "DeviceSelect": "Which device did you see?",
@@ -328,6 +260,123 @@
   "Help": "This helps track the software licenses used."
   }
 }
+  </div>
+</form>
 </main>
+
+
+
+<dialog id="helpDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
+        <h3>Logout</h3>
+    </header>
+    <section id="helpMsg"></section>
+    <p><b>Warning:</b> You will be logged out on all devices.</p> 
+    <p>Are you sure you want to continue?</p>
+    <footer>
+      <button type='button' data-target="helpDialog" onclick="toggleModal(event)">Okay</button>
+    </footer>
+  </article>
+</dialog>
+
+
+<dialog id="filterDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="filterDialog" onclick="toggleModal(event)"></button>
+        <h3>Filter Devices</h3>
+    </header>
+    <section>
+      <label for="type">{{.devicesIcon}} Device Type</label>
+      {{.typeCtrl}}
+      <label for="siteSearch">{{.siteIcon}} Site</label>
+      {{.siteSearchCtrl}}
+      <label for="officeSearch">{{.officeIcon}} Office</label>
+      <div id="selectOffice">
+        {{.officeSearchCtrl}}
+      </div>
+      <label for="groupSearch">{{.profilesIcon}} Group</label>
+      {{.groupSearchCtrl}}
+      <label for="userSearch">{{.userIcon}} Person</label>
+      <div id="selectSearchUser">
+        {{.userSearchCtrl}}
+      </div>
+      <div>
+        <label for="textSearch">{{.searchIcon}} Find</label>
+        <input type="text" id="textSearch">
+      </div>
+      <div class="grid">
+        <label for="isLate">
+          <input type="checkbox" id="isLate" name="isLate"
+            {{if .isLate }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+            Backup Late
+        </label>
+        <label for="isMissing">
+          <input type="checkbox" id="isMissing" name="isMissing"
+            {{if .isMissing }} checked {{end}} {{if .isReadonly }} readonly {{end}} >
+            Not Seen
+          </label>
+      </div>
+      <div id="dialogMsg" class="fg-red"></div>
+    </section>
+    <footer>
+      <button type='button' class="secondary" data-target="filterDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' autofocus data-target="filterDialog" onclick="search();">Search</button>
+    </footer>
+  </article>
+</dialog>
+
+<!-- <div class="dialog" data-role="dialog" id="searchDialog">
+  <div class="dialog-title">Device Search</div>
+  <div class="dialog-content">
+    <section>
+      {{.typeCtrl}}
+      {{.siteSearchCtrl}}
+      <div id="selectSearchOffice">
+          {{.officeSearchCtrl}}
+      </div>
+      {{.groupSearchCtrl}}
+      <div id="selectSearchUser">
+        {{.userSearchCtrl}}
+      </div>
+      <label for="txtSearch">Find</label>
+      <div class="table-search-block">
+        <div class="input">
+            <input type="text" id="txtSearch" data-role-input="true" data-role="input">
+            <div class="button-group">
+                <button type='button' class="button input-clear-button" tabindex="-1" type="button" onclick="$('#txtSearch').val('');">
+                    <span class="default-icon-cross"></span>
+                </button>
+            </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="dialog-actions">
+    <button type='button' class="button primary js-dialog-close" onclick="search();"><span class='mif-search'></span>&nbsp;Search</button>
+    <button type='button' class="button secondary js-dialog-close">Cancel</button>
+    <small id="searchError" class="fg-red"></small>
+  </div>
+</div> -->
+
+<dialog id="thanksDialog">
+  <article>
+    <header>
+        <button type='button' aria-label="Close" rel="prev" data-target="thanksDialog" onclick="toggleModal(event)"></button>
+        <h3>Logout</h3>
+    </header>
+    <section>
+      <p>The information you supplied was saved.</p>
+      <p>Thank you for helping to keep track of the electronics.</p>
+    </section>
+    <footer>
+      <button type='button' onclick="GoHome();">Okay</button>
+    </footer>
+  </article>
+</dialog>
+
+
 <script src="js/wizard.js" defer></script>
 {{template "partials/bottom" .}}
