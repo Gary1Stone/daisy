@@ -45,7 +45,7 @@ func GetHistory(c *fiber.Ctx) error {
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Device.Update,
 		"isDisabled":    !user.Permissions.Device.Update,
-		"cmd_one":       template.HTML(ctrls.MakeAdminHelpButton()),
+		"cmd_one":       template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"midCtrl":       template.HTML(ctrls.BuildDropList("MID", midParam, "", false, false)),
 		"deviceHistory": template.HTML(ctrls.GetOnlineDeviceHistory(user.Tzoff, macInfo.Mac)),
 	}))

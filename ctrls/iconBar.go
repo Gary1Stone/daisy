@@ -50,37 +50,12 @@ func loadBtnInfo() {
 // The button is only rendered if 'permission' is true.
 func MakeButton(name string, permission bool) string {
 	once.Do(loadBtnInfo)
-
 	btn, ok := btnInfoMap[name]
 	if !ok {
 		return ""
 	}
-
 	if !permission {
 		return fmt.Sprintf("<span id='%s' data-allowed='0'></span>", btn.id)
 	}
-
 	return fmt.Sprintf(`<button type='button' id='%s' class='outline secondary' aria-label='%s' data-tooltip='%s' data-allowed='1' %s onclick='%s'>%s</button>`, btn.id, btn.tooltip, btn.tooltip, btn.style, btn.function, btn.icon)
-}
-
-func MakeSeeButton() string {
-	once.Do(loadBtnInfo)
-	ico := MakeButton(BtnSeen, true) + " " + MakeButton(BtnBackup, true)
-	ico += `<input type='hidden' id='btnSeeState' value='off'><input type='hidden' id='islate' value='0'><input type='hidden' id='ismissing' value='0'>`
-	return ico
-}
-
-func MakeSearchBtn() string {
-	return MakeButton(BtnSearch, true)
-}
-
-func MakeAdminSelectButton(read bool) string {
-	if read {
-		return MakeButton(BtnTables, true)
-	}
-	return `&nbsp;`
-}
-
-func MakeAdminHelpButton() string {
-	return MakeButton(BtnHelp, true)
 }

@@ -35,7 +35,7 @@ func GetDuplicates(c *fiber.Ctx) error {
 		"isAdmin":     user.IsAdmin,
 		"isReadonly":  !user.Permissions.Device.Update,
 		"isDisabled":  !user.Permissions.Device.Update,
-		"cmd_one":     template.HTML(ctrls.MakeAdminHelpButton()),
+		"cmd_one":     template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"avoidSelect": template.HTML(avoidSelect),
 		"avoidChart":  template.HTML(ctrls.GetAvoidChart(user.Tzoff, mac1, mac2)),
 	}))

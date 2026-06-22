@@ -34,7 +34,7 @@ func GetNetwork(c *fiber.Ctx) error {
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Admin.Update,
 		"isDisabled":    !user.Permissions.Admin.Update,
-		"cmd_one":       template.HTML(ctrls.MakeAdminHelpButton()),
+		"cmd_one":       template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"site":          "WKNC",
 		"networkImage":  "/images/wknc-network.png",
 		"midCtrl":       template.HTML(ctrls.BuildDropList("MID", "", "", false, false)),

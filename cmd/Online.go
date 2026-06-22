@@ -45,7 +45,7 @@ func GetOnline(c *fiber.Ctx) error {
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Profile.Update,
 		"isDisabled":    !user.Permissions.Profile.Update,
-		"cmd_one":       template.HTML(ctrls.MakeAdminHelpButton()),
+		"cmd_two":       template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"minDate":       minDate,
 		"maxDate":       maxDate,
 		"dateParam":     dateParam,

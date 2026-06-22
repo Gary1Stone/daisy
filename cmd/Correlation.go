@@ -38,8 +38,8 @@ func GetCorrelation(c *fiber.Ctx) error {
 		"isAdmin":      user.IsAdmin,
 		"isReadonly":   user.Permissions.Admin.Update,
 		"isDisabled":   user.Permissions.Admin.Update,
-		"cmd_one":      template.HTML(ctrls.MakeAdminHelpButton()),
-		"cmd_two":      template.HTML(ctrls.MakeSearchBtn()),
+		"cmd_one":      template.HTML(ctrls.MakeButton(ctrls.BtnFilter, user.Permissions.Device.Read)),
+		"cmd_two":      template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"affinityList": template.HTML(ctrls.BuildMacCorrelationTable(filter)),
 	}))
 }
