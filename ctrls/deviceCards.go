@@ -11,7 +11,7 @@ import (
 	"github.com/gbsto/daisy/svg"
 )
 
-// Device cards for the devices.html screen
+// Device cards for the devices.html screen and the wizard.html screen
 func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 	var card strings.Builder
 	items, err := db.SearchDevices(curUid, filter)
