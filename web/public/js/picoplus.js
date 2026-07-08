@@ -387,10 +387,12 @@ function setUpDropDowns(root = document) {
 }
 
 function checkDropdownValid(el) {
-    btnNew.off();
-    btnDelete.off();
     const isValid = el.checkValidity(); // may have a blank entry, and is required
     el.setAttribute("aria-invalid", !isValid);
     const summary = el.closest('.custom-select-container')?.querySelector('summary');
     if (summary) summary.setAttribute("aria-invalid", !isValid);
+    if (!isValid) {
+      btnNew.off();
+      btnDelete.off();
+    }
 }

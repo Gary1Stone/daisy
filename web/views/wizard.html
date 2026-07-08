@@ -1,6 +1,5 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
-
   <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
 
     <div id="DeviceSelect"> <!-- need almost full screen for results, Search Dialog opens at this step -->
@@ -23,7 +22,7 @@
 
     <div id="SiteSelect">
       <p id="siteLabel">Which Site/Office is the device in?</p>
-      <div class="form-group">
+      <div>
         <div id="selectSite">
           {{.siteCtrl}}
         </div> 
@@ -35,13 +34,13 @@
 
     <div id="LocationText">
       <label for="location" id="locationLabel">Enter any additional location details.</label>
-      <div class="form-group" id="locationDiv">
+      <div id="locationDiv">
           {{.locationCtrl}}
       </div>
     </div>
 
     <div id="UserSelect">
-      <div class="form-group">
+      <div>
         <p id="uidLabel">Who should look at it?</p><br >
         <div id="selectGroup">
           {{ .groupCtrl }}
@@ -53,52 +52,43 @@
     </div>
 
     <div id="TroubleSelect">
-      <label for="trouble" id="troubleLabel">Select the nearest description to the problem</label>
-      <div id="selectTrouble" class="form-group">
+      <label for="trouble" id="troubleLabel">Select the closest description to the problem</label>
+      <div id="selectTrouble">
         {{ .troubleCtrl }}
-        <span id="troubleError" class="invalid_feedback">Choose one</span>
       </div>
     </div>
 
     <div id="NotesText">
       <label for="notes" id="notesLabel">Provide details of what you need, or what the problem is.</label>
-      <div class="form-group">
-        <input
-          type="text" id="notes" name="notes" class=""
-          maxlength="255" value="" title="Notes"
-          data-role="input" data-validate="maxlength=255">
-        <span id="notesError" class="invalid_feedback">Details are needed.</span>
-      </div>
+        <input type="text" id="notes" name="notes" maxlength="255" value="" title="Notes"
+          aria-invalid="false" aria-describedby="notesErr">
+        <small id="notesErr" >Details are needed.</small>
     </div>
 
     <div id="SoftwareSelect">
       <label for="sid" id="sidLabel">Which software package was installed?</label>
-      <div id="selectSoftware" class="form-group">
+      <div id="selectSoftware">
         {{ .softwareCtrl }}
       </div>
     </div>
 
     <div id="DateChoose">
-      <p id="dateLabel">When did you install/remove the software?</p>
-      <div class="form-group">
-        <div id="cal"
-          data-role="calendar" data-picker-mode="true" data-buttons=""
-          data-on-day-click="saveDate" data-input-format="yyyy-mm-dd"></div>
-        <span id="dateError" class="invalid_feedback">Date must be between 01/01/2001 and now!</span>
-        <input type="hidden" id="installed" value="" >
+      <label for="installed" id="dateLabel">When did you install/remove the software?</p>
+        <input type="date" id="installed" name="installed" value="2026-04-15" min="2001-01-01" max="2028-04-30" required />
+        <small id="dateErr">Date must be between 01/01/2001 and today!</small>
       </div>
     </div>
 
     <div id="ImpactSelect">
       <label for="impact" id="impactLabel">What level of impact does this have?</label>
-      <div id="selectImpact" class="form-group">
+      <div id="selectImpact">
         {{ .impactCtrl }}
       </div>
     </div>
 
     <div id="thankYou">
       <p id="thanksLabel">Thank You</p>
-      <div class="form-group">
+      <div>
         <p>The information you supplied was saved.</p>
         <p>Thank you for helping to keep track of the electronics.</p>
       </div>
@@ -260,10 +250,9 @@
   "Help": "This helps track the software licenses used."
   }
 }
-  </div>
-</form>
+    </div>
+  </form>
 </main>
-
 
 
 <dialog id="helpDialog">
