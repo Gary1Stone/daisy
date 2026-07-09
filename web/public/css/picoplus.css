@@ -193,7 +193,6 @@ input[aria-invalid="true"] + small {
 
 /* Highlights the selected element in the dropdown list */
 details[role="list"] ul li a[aria-selected="true"] {
-  background-color: var(--pico-form-element-focus-color);
   font-weight: bold;
 }
 
@@ -209,4 +208,24 @@ details[role="list"] ul li a[aria-selected="true"] {
   border:0; 
   opacity:0; 
   pointer-events:none;
+}
+
+/* disable word wrap text in dropdown's summary */
+details[role="list"] summary {
+  display: block;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-inline-end: 1.5rem;
+  box-sizing: border-box;
+}
+
+details[role="list"] summary::after {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  float: none;
+  margin-inline-start: 0;
 }
