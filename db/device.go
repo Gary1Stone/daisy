@@ -622,6 +622,10 @@ func GetBrokenDevices() []int {
 			list = append(list, cid)
 		}
 	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return list
+	}
 	return list
 }
 
@@ -666,6 +670,10 @@ func ListUsersDevices() ([]User2DeviceReport, error) {
 		} else {
 			list = append(list, item)
 		}
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return list, err
 	}
 	return list, nil
 }

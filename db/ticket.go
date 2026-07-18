@@ -132,6 +132,9 @@ func updateAlerts(aid int, newList []int) {
 		}
 		oldUids[uid] = id
 	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+	}
 
 	// Start a transaction
 	tx, err := Conn.Begin()
@@ -247,6 +250,10 @@ func GetLogs(curUid, aid int) ([]Wlog, error) {
 		} else {
 			items = append(items, item)
 		}
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return items, err
 	}
 	return items, nil
 }

@@ -178,6 +178,9 @@ func buildBanned(ip string) {
 			}
 			bannedIPs[ips] = true
 		}
+		if err = rows.Err(); err != nil {
+			log.Println(err)
+		}
 	} else {
 		cnt := 0
 		query := "SELECT count(*) AS cnt FROM logins WHERE ip=? AND success=0 AND timestamp > strftime('%s', datetime('now', '-7 day'))"

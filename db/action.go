@@ -111,6 +111,10 @@ func GetActionCodes(onlyDevices bool) ([]Actions, error) {
 			items = append(items, dto)
 		}
 	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return items, err
+	}
 	return items, nil
 }
 

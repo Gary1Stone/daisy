@@ -67,6 +67,10 @@ func getMacInfo(whereclause string, tzoff int, params ...any) ([]MacInfo, error)
 		}
 		items = append(items, item)
 	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return items, err
+	}
 	return items, nil
 }
 
@@ -196,6 +200,10 @@ func GetChartInfo4WhatWasOnline(maclist []string) (map[string]ChartMacInfo, erro
 		}
 		items[item.Mac] = item
 	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return items, err
+	}
 	return items, nil
 }
 
@@ -218,6 +226,10 @@ func GetHostnames() ([]string, error) {
 			continue
 		}
 		items = append(items, item)
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return items, err
 	}
 	return items, nil
 }

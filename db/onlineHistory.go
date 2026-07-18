@@ -67,7 +67,7 @@ func GetCurrentOnOffCounts() (int, int) {
 		return 0, totalCount
 	}
 	// If the current timeslot has not been recorded yet, get the previous timeslot
-	if onCount <= 0 {
+	if onCount < 1 {
 		// subtract 15 minutes from the current UTC time
 		ts = time.Now().UTC().Add(-15 * time.Minute)
 		date := ts.Year()*10000 + int(ts.Month())*100 + ts.Day()
@@ -177,6 +177,10 @@ func GetMac2Hostname(randomOnly bool) (map[string]string, error) {
 		}
 		mac2Hostname[mac] = hostname
 	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return mac2Hostname, err
+	}
 	return mac2Hostname, nil
 }
 
@@ -203,6 +207,11 @@ func GetMac2Name(randomOnly bool) (map[string]string, error) {
 			return nil, err
 		}
 		mac2Name[mac] = name
+	}
+	
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return mac2Name, err
 	}
 
 	return mac2Name, nil

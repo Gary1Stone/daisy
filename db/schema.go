@@ -1,6 +1,7 @@
 package db
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,7 +26,12 @@ func ExportSchema() error {
 		if err := rows.Scan(&sql); err != nil {
 			return err
 		}
-		schema.WriteString(sql + ";\n\n")
+		schema.WriteString(sql)
+		schema.WriteString(";\n\n")
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return err
 	}
 	// Build the path to the db directory
 	workDir, err := os.Getwd()

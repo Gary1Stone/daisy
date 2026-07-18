@@ -106,6 +106,10 @@ func GetAliases(isNewOnly bool) ([]Aliases, error) {
 		}
 		items = append(items, item)
 	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return items, err
+	}
 	return items, nil
 }
 

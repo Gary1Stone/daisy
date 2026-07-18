@@ -44,6 +44,11 @@ func RemoveOldPhotos() error {
 			}
 		}
 	}
+	
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return err
+	}
 
 	for photo, toDelete := range existingPhotos {
 		if toDelete {
