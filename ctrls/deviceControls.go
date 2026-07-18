@@ -83,8 +83,8 @@ func BuildSoftwareList(curUid, cid int) string {
 		table.WriteString("<td>")
 		if item.Sid > 0 { // Only for tracked software
 			checkboxId := "chk" + strconv.Itoa(item.Id)
-			table.WriteString(`<input type="checkbox" id="` + checkboxId + `" `)
-			table.WriteString(`onclick="setPreInstalled(` + strconv.Itoa(item.Id) + `, this.checked)" `)
+			table.WriteString(`<input type="checkbox" id="`);table.WriteString(checkboxId);table.WriteString(`" `)
+			table.WriteString(`onclick="setPreInstalled(`);table.WriteString(strconv.Itoa(item.Id));table.WriteString(`, this.checked)" `)
 			if item.PreInstalled {
 				table.WriteString("checked")
 			}

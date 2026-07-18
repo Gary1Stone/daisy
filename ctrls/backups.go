@@ -19,9 +19,9 @@ func BuildBackups(uid, cid int) string {
 
 	for _, backup := range backups {
 		tbl.WriteString("<p>")
-		tbl.WriteString(backup.Dated + ", ")
-		tbl.WriteString(backup.Source + ": ")
-		tbl.WriteString(backup.Volume + ", ")
+		tbl.WriteString(backup.Dated);tbl.WriteString(", ")
+		tbl.WriteString(backup.Source);tbl.WriteString(": ")
+		tbl.WriteString(backup.Volume);tbl.WriteString(", ")
 		tbl.WriteString(backup.What)
 		tbl.WriteString("<hr></p>")
 	}
