@@ -4,18 +4,18 @@ let page = 0;
 let endReached = false;
 
 const wizards = {
-    SIGHTING: { icon: "mif-eye", title: "Sighting", steps: ["DeviceSelect", "SiteSelect", "LocationText", "UserSelect", "NotesText"] },
-    USING: { icon: "mif-checkmark", title: "Using", steps: ["DeviceSelect", "NotesText"] },
-    CLAIMING: { icon: "mif-tag", title: "Claiming", steps: ["DeviceSelect", "SiteSelect", "LocationText", "NotesText"] },
-    GIVING: { icon: "mif-tag", title: "Giving", steps: ["DeviceSelect", "SiteSelect", "LocationText", "UserSelect", "NotesText"] },
-    BROKEN: { icon: "mif-heart-broken", title: "Broken", steps: ["DeviceSelect", "SiteSelect", "LocationText", "UserSelect", "TroubleSelect", "NotesText", "ImpactSelect"] },
-    LOST: { icon: "mif-steps", title: "Lost", steps: ["DeviceSelect", "UserSelect", "TroubleSelect", "NotesText", "ImpactSelect"] },
-    DIED: { icon: "mif-stethoscope", title: "Died", steps: ["DeviceSelect", "UserSelect", "TroubleSelect", "NotesText", "ImpactSelect"] },
-    CARE: { icon: "mif-wrench", title: "Care", steps: ["DeviceSelect", "SiteSelect", "LocationText", "UserSelect", "TroubleSelect", "NotesText", "ImpactSelect"] },
-    BACKUP: { icon: "mif-copy", title: "Backup", steps: ["DeviceSelect", "NotesText"] },
-    INSTALL: { icon: "mif-apps", title: "Install", steps: ["DeviceSelect", "SoftwareSelect", "DateChoose", "NotesText"] },
-    REMOVE: { icon: "mif-apps", title: "Remove", steps: ["DeviceSelect", "SoftwareSelect", "DateChoose", "NotesText"] },
-    REQUEST: { icon: "mif-file-binary", title: "Request", steps: ["DeviceSelect", "SoftwareSelect", "UserSelect", "TroubleSelect", "NotesText"] }
+    SIGHTING: { icon: "eye", title: "Sighting", steps: ["DeviceSelect", "SiteSelect", "LocationText", "UserSelect", "NotesText"] },
+    USING: { icon: "check", title: "Using", steps: ["DeviceSelect", "NotesText"] },
+    CLAIMING: { icon: "tag", title: "Claiming", steps: ["DeviceSelect", "SiteSelect", "LocationText", "NotesText"] },
+    GIVING: { icon: "tag", title: "Giving", steps: ["DeviceSelect", "SiteSelect", "LocationText", "UserSelect", "NotesText"] },
+    BROKEN: { icon: "broken", title: "Broken", steps: ["DeviceSelect", "SiteSelect", "LocationText", "UserSelect", "TroubleSelect", "NotesText", "ImpactSelect"] },
+    LOST: { icon: "steps", title: "Lost", steps: ["DeviceSelect", "UserSelect", "TroubleSelect", "NotesText", "ImpactSelect"] },
+    DIED: { icon: "stethoscope", title: "Died", steps: ["DeviceSelect", "UserSelect", "TroubleSelect", "NotesText", "ImpactSelect"] },
+    CARE: { icon: "wrench", title: "Care", steps: ["DeviceSelect", "SiteSelect", "LocationText", "UserSelect", "TroubleSelect", "NotesText", "ImpactSelect"] },
+    BACKUP: { icon: "copy", title: "Backup", steps: ["DeviceSelect", "NotesText"] },
+    INSTALL: { icon: "software", title: "Install", steps: ["DeviceSelect", "SoftwareSelect", "DateChoose", "NotesText"] },
+    REMOVE: { icon: "software", title: "Remove", steps: ["DeviceSelect", "SoftwareSelect", "DateChoose", "NotesText"] },
+    REQUEST: { icon: "install", title: "Request", steps: ["DeviceSelect", "SoftwareSelect", "UserSelect", "TroubleSelect", "NotesText"] }
 };
 
 const UI = {
@@ -85,6 +85,7 @@ function getOfficeSearchCtrl() {
 function getUserSearchCtrl() {
     updateCtrl("get_user_search_control", "selectSearchUser")
 }
+
 // Asynchronously posts data to the server and updates the target element
 async function updateCtrl(task, target) {
     if (pageLoading) return;
@@ -101,7 +102,6 @@ async function updateCtrl(task, target) {
         console.error("Error while posting data:", error);
     }
 }
-
 
 function search() {
     if (pageLoading) return;

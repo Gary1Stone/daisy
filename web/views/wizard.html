@@ -99,7 +99,7 @@
   <footer role="group">
     <button type='button' class="secondary" onclick="showHelp();">? Help</button>
     <button type='button' id="btnPrev" class="secondary" onclick="nav.previous();">⇐ Back</button>
-    <button type='button' id="btnNext" class="secondary" onclick="nav.next();">⇒ Next</button>
+    <button type='button' id="btnNext" class="secondary" onclick="nav.next();">Next ⇒</button>
     <button type='button' id="btnFinish" class="secondary" onclick="onFinish();">✓ Done</button>
   </footer>
 
@@ -259,11 +259,9 @@
   <article>
     <header>
         <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
-        <h3>Logout</h3>
+        <h3>help</h3>
     </header>
     <section id="helpMsg"></section>
-    <p><b>Warning:</b> You will be logged out on all devices.</p> 
-    <p>Are you sure you want to continue?</p>
     <footer>
       <button type='button' data-target="helpDialog" onclick="toggleModal(event)">Okay</button>
     </footer>

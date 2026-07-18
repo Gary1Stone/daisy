@@ -15,15 +15,16 @@
   
     <article>
       <header>
-        {{.devicesIcon}}&nbsp;Online Network Devices
+        {{.devicesIcon}}&nbsp;Online Devices (per day)
       </header>
       <section>
-        <p>Online Devices (per day)</p>
         {{.onlineSpark}}
         <p>Max: {{.maxHitsMonth}} in the past 30 days</p>
-        <p>{{.onlineCount}} Currently Online, excluding all devices on FreeWiFi.</p>
-        <p>{{.offlineCount}} Offline</p>
+        <p>{{.onlineCount}} Currently online. (excludes guest WiFi)</p>
       </section>
+      <footer>
+        <a href="online.html" role="button">Online</a>
+      </footer>
     </article>
 
     <article>
