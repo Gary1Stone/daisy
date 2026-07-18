@@ -71,9 +71,9 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 
 		//PICTURE
 		if isWiz {
-			fmt.Fprintf(&card, "<a href='#' onclick='selectDevice('%d');' data-tooltip='Show Record'>", item.Cid)
+			fmt.Fprintf(&card, `<a href='#' onclick="selectDevice('%d');" data-tooltip='Show Record'>`, item.Cid)
 		} else {
-			fmt.Fprintf(&card, "<a href='device.html?cid=%d' data-tooltip='Show Record'>", item.Cid)
+			fmt.Fprintf(&card, `<a href='device.html?cid=%d' data-tooltip='Show Record'>`, item.Cid)
 		}
 		fmt.Fprintf(&card, "<img src='images/%s' alt='device photo' width='100%%'></a>", item.Small_image)
 

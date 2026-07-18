@@ -112,7 +112,9 @@ function search() {
         let msg = "";
         if (response.length < 10) {
             msg = "No device matches found!";
-            openModal(document.getElementById("filterDialog"));
+            openModal(UI.filterDialog());
+        } else {
+            closeModal(UI.filterDialog());
         }
         setHtml("searchError", msg);
     });
@@ -290,7 +292,7 @@ let nav = {
         if (this.curStep === 0) {
             addClass("btnPrev", "disabled");
             addClass("btnNext", "disabled");
-            openModal(document.getElementById("filterDialog"));
+            openModal(UI.filterDialog());
         } else if (this.curStep === this.numSteps) {
             addClass("btnNext", "disabled");
             removeClass("btnFinish", "disabled");
@@ -339,7 +341,7 @@ function getTroubleCtrl() {
 
 function showHelp() {
     setHtml("helpMsg", nav.getHelpMessage());
-    openModal(document.getElementById("helpDialog"));
+    openModal(UI.helpDialog());
 }
 
 //check Mandatory fields for action
