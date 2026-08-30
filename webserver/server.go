@@ -17,31 +17,31 @@ import (
 )
 
 func StartServer(daisyLogger *lumberjack.Logger) {
-	// Redirect standard logger output to daisyLogger for centralized logging, including autocert messages
-	log.SetOutput(io.MultiWriter(os.Stderr, daisyLogger))
-	// certFile := "cert.pem"
-	// keyFile := "key.pem"
+	// Constants
+	domain := os.Getenv("HOST")
+	httpsPort := os.Getenv("PORT")
 
-	// Get the current working directory
+	// Logging
+	log.SetOutput(io.MultiWriter(os.Stderr, daisyLogger))
+
+	// Working Directories
 	workingDir, err := os.Getwd()
 	if err != nil {
 		workingDir = "."
 	}
-
-	// get absolute paths
-	// certFile = filepath.Join(workingDir, "certs", certFile)
-	// keyFile = filepath.Join(workingDir, "certs", keyFile)
-	publicDir := filepath.Join(workingDir, "web", "public")
-	viewsDir := filepath.Join(workingDir, "web", "views")
-	certCacheDir := filepath.Join(workingDir, "certs")
+	certDir := filepath.Join(workingDir, "certs")           // ./certs
+	publicDir := filepath.Join(workingDir, "web", "public") // ./web/public
+	viewsDir := filepath.Join(workingDir, "web", "views")   // ./web/views
 
 	// Ensure certsCacheDir directory exists
-	if _, err := os.Stat(certCacheDir); os.IsNotExist(err) {
-		err = os.MkdirAll(certCacheDir, 0700)
+	if _, err := os.Stat(certDir); os.IsNotExist(err) {
+		err = os.MkdirAll(certDir, 0700)
 		if err != nil {
 			log.Println("failed to create certs directory:", err)
 			return
 		}
+	} else if err != nil {
+		log.Printf("failed to inspect certificate cache %q: %v", certDir, err)
 	}
 
 	// Initialize GoFiber html template engine
@@ -51,21 +51,17 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	app := fiber.New(fiber.Config{
 		Views:              engine,
 		ServerHeader:       "Daisy",
-		AppName:            "Daisy App v2026.04.04",
+		AppName:            "Daisy App v2026.08.28",
 		EnableIPValidation: true,
 	})
-
-	// Allow images up to 5MBytes to be uploaded, default is normally 4MB
 	server := app.Server()
-	server.MaxRequestBodySize = 5 * 1024 * 1024
+	server.MaxRequestBodySize = 5 * 1024 * 1024 // Allow images up to 5MBytes to be uploaded, default is normally 4MB
 
 	// Give external access to the public folder
-	// where javascript, css, images,... are stored
-	// app.Static("/", dir+"/public")
 	app.Static("/", publicDir)
 	app.Use(recover.New())
 
-	// Move logger up so it captures all traffic and potential errors
+	// Logger captures all traffic and potential errors
 	app.Use(logger.New(logger.Config{
 		Output: daisyLogger,
 	}))
@@ -76,8 +72,8 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	// https: Certificate manager
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("daisy.hopto.org"),
-		Cache:      autocert.DirCache(certCacheDir),
+		HostPolicy: autocert.HostWhitelist(domain),
+		Cache:      autocert.DirCache(certDir),
 	}
 
 	// TLS Config
@@ -90,21 +86,39 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	}
 
 	// Middleware to enforce HTTPS
-	port := os.Getenv("PORT")
-	if port == "" || len(port) < 2 || port[0] != ':' {
-		port = ":8443" // Default to 8443
-	}
-	app.Use(SecureOnly(port))
+	app.Use(SecureOnly(httpsPort))
 
 	// Register all your specific application routes
 	routes(app)
 
-	log.Println("Daisy Web Server starting...")
+	// ATTACKS: Adding the catch-all middleware AFTER routes.Routes()
+	// meaning if user asks for a page that does not exist, kick them out.
+	app.Use(func(c *fiber.Ctx) error {
+		// Determine the originator's IP address, even through multiple proxies
+		ip := c.IP()
+		ips := c.IPs() // If multiple IPs, use the first one
+		if len(ips) > 0 {
+			ip = ips[0]
+		}
+		// Record the attack
+		db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
+		// Set the status code to 404 Not Found
+		c.Status(fiber.StatusNotFound)
+		return c.Render("404", fiber.Map{ // HTML template is named "404.html"
+			"Path": c.Path(),
+		})
+	})
 
-	// Remember to open ports 8443 and 80 in the windows firewall
+	// Logger captures all traffic and potential errors
+	app.Use(logger.New(logger.Config{
+		Output: daisyLogger,
+	}))
+
+	// Start server on HTTPS port 443
+	// Remember to open ports 443 and 80 in the windows firewall
 	// And open ports 587 and 465 for sending email as well
 	// And set port forwarding up on your ISP modem/router/wifi
-	ln, err := tls.Listen("tcp", port, cfg)
+	ln, err := tls.Listen("tcp", httpsPort, cfg)
 	if err != nil {
 		panic(err)
 	}
