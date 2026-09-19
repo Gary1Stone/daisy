@@ -55,13 +55,12 @@ func setupLogFiles() *lumberjack.Logger {
 		os.Mkdir(logPath, 0755)
 	} else {
 		if !stat.IsDir() {
-			log.Printf("ERROR: Cannot begin due to a file named 'logs' in the home: [%v] directory. Remove it please.", logPath)
-			panic("Ending")
+			log.Fatal("FATAL: Cannot launch due to a file named 'logs' in the home: " + logPath + " directory. Remove it please.")
 		}
 	}
 
 	log.SetOutput(&lumberjack.Logger{
-		Filename:   filepath.Join("logs", "errors.log"),
+		Filename:   filepath.Join(logPath, "errors.log"),
 		MaxSize:    10, // megabytes
 		MaxBackups: 3,  // number of old log files to keep
 		MaxAge:     28, // days to keep old log files
@@ -71,7 +70,7 @@ func setupLogFiles() *lumberjack.Logger {
 
 	// Configure a separate logger for web requests.
 	daisyLogger := &lumberjack.Logger{
-		Filename:   filepath.Join("logs", "daisy.log"),
+		Filename:   filepath.Join(logPath, "daisy.log"),
 		MaxSize:    10, // megabytes
 		MaxBackups: 3,
 		MaxAge:     28,
