@@ -84,8 +84,19 @@ func AddSoftwareList(cid int, sysInfo *SysInfo) error {
 	oldList := make(map[string]int)
 	var name string
 	var id int
+	var site, office string
+	// get the computer site/office
+	query := `SELECT C.description AS site, E.description AS office FROM devices D 
+		LEFT JOIN choices C ON D.site = C.code AND C.field = 'SITE'
+		LEFT JOIN choices E ON D.office = E.code AND E.field = 'OFFICE'
+		WHERE D.cid = ?`
+	err := Conn.QueryRow(query, cid).Scan(&site, &office)
+	if err != nil {
+		log.Println(err)
+	}
+
 	// Prepare query to fetch existing software records
-	query := "SELECT name, id FROM sw_inv WHERE cid=?"
+	query = "SELECT name, id FROM sw_inv WHERE cid=?"
 	rows, err := Conn.Query(query, cid)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
@@ -140,7 +151,7 @@ func AddSoftwareList(cid int, sysInfo *SysInfo) error {
 	}
 	//Send new software notification to sysadmin
 	if len(newSwList) > 0 {
-		err := emailNewSoftwareList(sysInfo.Hostname, newSwList)
+		err := emailNewSoftwareList(sysInfo.Hostname, site, office, newSwList)
 		if err != nil {
 			log.Println(err)
 		}

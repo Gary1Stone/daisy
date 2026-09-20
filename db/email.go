@@ -225,15 +225,15 @@ func updateEmailInQueue(email Emails) error {
 	return err
 }
 
-func emailNewSoftwareList(hostname string, swlist []string) error {
+func emailNewSoftwareList(hostname, site, office string, swlist []string) error {
 	var mail Emails
 	mail.Function = "SOFTWARE" //Type of email to be sent
 	mail.Uid = SYS_PROFILE.Uid
 	mail.User = SYS_PROFILE.User
 	mail.Body = ""
-	mail.Subject = "DAISY Software Installation Notifiction"
+	mail.Subject = "DAISY Software Installation Notification"
 	mail.Template = "emailsoftware.html"
-	mail.Param1 = hostname
+	mail.Param1 = hostname + " (" + site + " - " + office + ")"
 	mail.Param2 = strings.Join(swlist, ", ")
 	mail.Status = "2SEND" //Waiting to be sent
 	mail.Sent = 0         //First try at sending
