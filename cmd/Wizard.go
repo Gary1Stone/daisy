@@ -301,7 +301,7 @@ func saveAlerts(curUid, aid, active int, alerts []db.Alert) {
 
 // Update device record to say device was seen
 func saveSeenDevice(cid int) {
-	db.SetAuditCheckin(cid)
+	db.SetLastSeen(cid)
 }
 
 // Update device record and returns note comment and previous assigned Uid

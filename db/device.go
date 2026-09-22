@@ -342,7 +342,7 @@ func GetMissingDevices() []int {
 	}
 
 	query := `SELECT cid FROM devices
-		WHERE active = 1 AND (last_audit IS NULL OR last_audit < strftime('%s', datetime('now', '-' || ? || ' day')))
+		WHERE active = 1 AND (last_seen IS NULL OR last_seen < strftime('%s', datetime('now', '-' || ? || ' day')))
 		ORDER BY cid`
 	rows, err := Conn.Query(query, days)
 	if err != nil {
@@ -865,11 +865,11 @@ func GetDeviceAssignedSiteOffice(curUid, cid int) (string, string) {
 	return site, office
 }
 
-func SetAuditCheckin(cid int) error {
+func SetLastSeen(cid int) error {
 	if cid <= 0 {
 		return errors.New("invalid cid")
 	}
-	query := "UPDATE devices SET last_audit=strftime('%s', 'now') WHERE cid=?"
+	var query = `UPDATE devices SET last_seen=strftime('%s','now') WHERE cid=?`
 	_, err := Conn.Exec(query, cid)
 	if err != nil {
 		log.Println(err)

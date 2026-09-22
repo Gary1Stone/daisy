@@ -112,8 +112,8 @@ func GetLastSeenDevices(curUid int) ([]LastSeen, error) {
 	tzoff := GetTzoff(curUid)
 	items := make([]LastSeen, 0)
 	query := `
-	SELECT D.cid, D.name, D.type, D.image, coalesce(cast((strftime('%s', 'now') - D.last_audit) / 86400 AS INTEGER), 0) AS days,
-	coalesce(strftime('%Y-%m-%d', D.last_audit-?, 'unixepoch'), 'never') AS last_seen, coalesce(C.description, '') AS make, D.model
+	SELECT D.cid, D.name, D.type, D.image, coalesce(cast((strftime('%s', 'now') - D.last_seen) / 86400 AS INTEGER), 0) AS days,
+	coalesce(strftime('%Y-%m-%d', D.last_seen-?, 'unixepoch'), 'never') AS last_seen, coalesce(C.description, '') AS make, D.model
 	FROM devices D
 	LEFT JOIN choices C ON  C.code=D.make AND C.field='MAKE'
 	WHERE D.active=1
