@@ -1,6 +1,7 @@
 package reports
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -53,14 +54,9 @@ func buildTableHeader(isSeen bool) string {
 
 func buildTableRow(item *db.Device, isSeen bool) string {
 	var row strings.Builder
-	row.WriteString("<tr>")
-	row.WriteString("<td>" + util.GetThumbnail(item.Image) + "</td>")
-	row.WriteString("<td>" + getButtonCtrl(item.Cid, getLastDays(item, isSeen), item.Type, item.Icon, item.Name) + "</td>")
-	row.WriteString("<td>" + buildLastSeenOrBackup(item, isSeen) + "</td>")
-	row.WriteString("<td>" + buildLocation(item) + "</td>")
-	row.WriteString("<td>" + item.Assigned + "</td>")
-	row.WriteString("<td>" + item.Model + "</td>")
-	row.WriteString("</tr>")
+	fmt.Fprintf(&row, `<tr><td>%s</td><td>%s</td>`, util.GetThumbnail(item.Image), getButtonCtrl(item.Cid, getLastDays(item, isSeen), item.Type, item.Icon, item.Name))
+	fmt.Fprintf(&row, `<td>%s</td><td>%s</td>`, buildLastSeenOrBackup(item, isSeen), buildLocation(item))
+	fmt.Fprintf(&row, `<td>%s</td><td>%s</td></tr>`, item.Assigned, item.Model)
 	return row.String()
 }
 
@@ -80,10 +76,9 @@ func buildLastSeenOrBackup(item *db.Device, isSeen bool) string {
 
 func buildLocation(item *db.Device) string {
 	var location strings.Builder
-	location.WriteString(db.GetCodeDescription("SITE", item.Site) + " ")
-	location.WriteString(db.GetCodeDescription("OFFICE", item.Office))
+	fmt.Fprintf(&location, `%s %s`, db.GetCodeDescription("SITE", item.Site), db.GetCodeDescription("OFFICE", item.Office))
 	if len(item.Location) > 0 {
-		location.WriteString("<p>" + item.Location + "</p>")
+		fmt.Fprintf(&location, `<p>%s</p>`, item.Location)
 	}
 	return location.String()
 }
