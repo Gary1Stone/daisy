@@ -22,10 +22,10 @@ func GetComstat(c *fiber.Ctx) error {
 
 	//Render the page
 	return c.Render("comstat", addNavigationIcons(fiber.Map{
-		"title":          template.HTML(svg.GetIcon("devices") + " Computer Status"),
-		"fullName":       user.Fullname,
-		"isAdmin":        user.IsAdmin,
-		"cmd_one":        template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Device.Create)),
+		"title":        template.HTML(svg.GetIcon("devices") + " Computer Status"),
+		"fullName":     user.Fullname,
+		"isAdmin":      user.IsAdmin,
+		"cmd_one":      template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Device.Create)),
 		"comstatTable": template.HTML(ctrls.ComstatTable(user.Uid)),
 	}))
 }
