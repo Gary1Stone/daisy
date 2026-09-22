@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"html/template"
-	"log"
 
 	"github.com/gbsto/daisy/reports"
 	"github.com/gbsto/daisy/svg"
@@ -62,10 +61,10 @@ func GetControl(c *fiber.Ctx) error {
 
 	// The device meta data is used in most tables on this page,
 	// So we get it here to significantly reduce the number of database hits
-	devInfo, err := db.GetDeviceMeta()
-	if err != nil {
-		log.Println(err)
-	}
+	// devInfo, err := db.GetDeviceMeta()
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 
 	// Render the page
 	return c.Render("control", addNavigationIcons(fiber.Map{
@@ -94,13 +93,13 @@ func GetControl(c *fiber.Ctx) error {
 		"maxHitsDay":      maxHitsDay,
 		"maxHitsWeek":     maxHitsWeek,
 		"maxHitsMonth":    maxHitsMonth,
-		"LastSeenDevices": template.HTML(reports.LastSeenDevices(user.Uid, devInfo)),
-		"checkins":        template.HTML(reports.Checkins(user.Uid, devInfo)),
-		"backups":         template.HTML(reports.Backups(user.Uid, devInfo)),
-		"drivespace":      template.HTML(reports.Drivespace(user.Uid, devInfo)),
 	}))
 }
 
+// "LastSeenDevices": template.HTML(reports.LastSeenDevices(user.Uid, devInfo)),
+// "checkins":        template.HTML(reports.Checkins(user.Uid, devInfo)), //audits
+// "backups":         template.HTML(reports.Backups(user.Uid, devInfo)),
+// "drivespace":      template.HTML(reports.Drivespace(user.Uid, devInfo)),
 // Pop-up dialogs of the details for the graphs
 func PostControl(c *fiber.Ctx) error {
 	user, err := extractUserInfo(c)

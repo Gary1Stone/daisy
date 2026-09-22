@@ -67,4 +67,5 @@ func routes(app *fiber.App) {
 	app.Get("/correlation.html", checkToken, cmd.GetCorrelation)
 	app.Post("/correlation", checkToken, cmd.PostCorrelation)
 	app.Post("/icon", checkToken, cmd.PostIcon)
+	app.Get("/comstat.html", checkToken, cmd.GetComstat)
 }
