@@ -1,5 +1,9 @@
 package main
 
+// Great timer
+// start := time.Now()
+// log.Println("Comment: " + time.Since(start).String())
+
 import (
 	"log"
 	"os"
