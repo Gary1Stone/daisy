@@ -39,6 +39,9 @@ type Comstat struct {
 	DisksInfo  []DiskInfo // Drive information for this computer
 }
 
+// Check that the Seen Date and Audit Date are not mixed up.
+
+
 func GetComstat(curUid int) ([]*Comstat, error) {
 	computers := make([]*Comstat, 0)
 	var query strings.Builder
@@ -60,8 +63,8 @@ func GetComstat(curUid int) ([]*Comstat, error) {
 		COALESCE(I.description, '') As status,
 		COALESCE(K.description, '') As groupname,
 		COALESCE(B.fullname, '') AS assigned, 
-        COALESCE(cast((strftime('%s', 'now') - A.last_audit) / 86400 AS INTEGER), 0) AS seen_days,
-	    COALESCE(strftime('%Y-%m-%d', A.last_audit-?, 'unixepoch'), 'never') AS last_seen
+        COALESCE(cast((strftime('%s', 'now') - A.last_seen) / 86400 AS INTEGER), 0) AS seen_days,
+	    COALESCE(strftime('%Y-%m-%d', A.last_seen-?, 'unixepoch'), 'never') AS last_seen
 	FROM devices A  
 		LEFT JOIN profiles B ON A.uid=B.uid 
 		LEFT JOIN icons E on E.name=A.type
