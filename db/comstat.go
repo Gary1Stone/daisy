@@ -6,6 +6,21 @@ import (
 	"strings"
 )
 
+// Check that the Seen Date and Audit Date are not mixed up.
+// UPDATE devices
+// SET last_seen = latest.opened
+// FROM (
+//     SELECT cid, opened
+//     FROM action_log
+//     WHERE aid IN (
+//         SELECT MAX(aid)
+//         FROM action_log
+//         WHERE action IN ('SIGHTING', 'DIED', 'USING', 'GIVING', 'BROKEN')
+//         GROUP BY cid
+//     )
+// ) AS latest
+// WHERE devices.cid = latest.cid
+
 // Computer Status information structure
 // You would think this would be easy to cache, but the timezone offset is user specific for all the date fields.
 type Comstat struct {
@@ -38,9 +53,6 @@ type Comstat struct {
 	DiskDate   string     // YYYY-MM-DD of most recent disk backup
 	DisksInfo  []DiskInfo // Drive information for this computer
 }
-
-// Check that the Seen Date and Audit Date are not mixed up.
-
 
 func GetComstat(curUid int) ([]*Comstat, error) {
 	computers := make([]*Comstat, 0)
