@@ -86,7 +86,7 @@ func AddSoftwareList(cid int, sysInfo *SysInfo) error {
 	var id int
 	var site, office string
 	// get the computer site/office
-	query := `SELECT C.description AS site, E.description AS office FROM devices D 
+	query := `SELECT C.description AS site, coalesce(E.description, '') AS office FROM devices D 
 		LEFT JOIN choices C ON D.site = C.code AND C.field = 'SITE'
 		LEFT JOIN choices E ON D.office = E.code AND E.field = 'OFFICE'
 		WHERE D.cid = ?`
