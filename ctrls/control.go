@@ -1,11 +1,12 @@
 package ctrls
 
 import (
+	"fmt"
 	"log"
-	"strconv"
 	"strings"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 func BuildActiveUsersTable(curUid int) string {
@@ -15,40 +16,7 @@ func BuildActiveUsersTable(curUid int) string {
 		return ""
 	}
 	var table strings.Builder
-	table.WriteString(buildActiveUsersTableHeader())
-
-	for _, item := range items {
-		table.WriteString("<tr>")
-		//Login Time
-		table.WriteString("<td>")
-		table.WriteString(item.Fullname)
-		table.WriteString("</td><td>")
-		//days Ago
-		table.WriteString(item.Since)
-		table.WriteString("</td><td>")
-		//location
-		table.WriteString(item.Country)
-		table.WriteString(", ")
-		table.WriteString(item.State)
-		table.WriteString(", ")
-		table.WriteString(item.City)
-		table.WriteString("<p>")
-		table.WriteString(item.Community)
-		table.WriteString("</p></td><td>")
-		// boot off
-		table.WriteString(`<button type='button' onclick="endSession('`)
-		table.WriteString(strconv.Itoa(item.Id))
-		table.WriteString(`');"><span class='mif-settings-power mif-4x fg-red'></span></button>`)
-		table.WriteString("</td></tr>")
-	}
-	table.WriteString("</tbody></table></div>")
-	return table.String()
-
-}
-
-// Helper function to build the table header
-func buildActiveUsersTableHeader() string {
-	return `<div style="max-height: 400px; overflow-y: auto;">
+	table.WriteString(`<div style="max-height: 400px; overflow-y: auto;">
 	<table class='striped' id="activeuserstable" >
     <thead>
     <tr>
@@ -58,5 +26,20 @@ func buildActiveUsersTableHeader() string {
         <th>End Session</th>
     </tr>
     </thead>
-    <tbody>`
+    <tbody>`)
+
+	logoutIcon := svg.GetIcon("logout")
+
+	for _, item := range items {
+
+		// Login Time
+		fmt.Fprintf(&table, `<tr><td>%s</td><td>%s</td>`, item.Fullname, item.Since)
+		// location
+		fmt.Fprintf(&table, `<td>%s, %s, <p>%s</p></td>`, item.Country, item.State, item.Community)
+		// boot off
+		fmt.Fprintf(&table, `<td><button type='button' class="outline" onclick="endSession('%d');"><span style='color:red;'>%s</span></button></td></tr>`, item.Id, logoutIcon)
+	}
+	table.WriteString("</tbody></table></div>")
+	return table.String()
+
 }
