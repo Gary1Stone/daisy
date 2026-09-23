@@ -17,11 +17,7 @@ CREATE INDEX "cities_lat_lon_idx" ON "cities" (
 	"longitude"	ASC
 );
 
-CREATE UNIQUE INDEX "devices_idx" ON "devices" (
-	"cid"	ASC,
-	"active"	ASC,
-	"name"	ASC
-);
+CREATE UNIQUE INDEX devices_idx ON devices ("cid" ASC, "active" ASC, "name" ASC);
 
 CREATE INDEX logins_idx ON logins ("id" ASC, "timestamp" ASC, "uid" ASC, "success" ASC);
 
@@ -169,77 +165,7 @@ CREATE TABLE "device_mac" (
 	FOREIGN KEY("cid") REFERENCES "devices"("cid") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE "devices" (
-	"cid"	INTEGER NOT NULL UNIQUE,
-	"name"	TEXT NOT NULL UNIQUE COLLATE NOCASE,
-	"type"	TEXT NOT NULL DEFAULT 'DESKTOP' COLLATE NOCASE,
-	"site"	TEXT NOT NULL,
-	"office"	TEXT NOT NULL,
-	"location"	TEXT NOT NULL,
-	"year"	INTEGER NOT NULL,
-	"make"	TEXT NOT NULL,
-	"model"	TEXT NOT NULL,
-	"cpu"	TEXT NOT NULL,
-	"ram"	INTEGER NOT NULL,
-	"drivetype"	TEXT NOT NULL,
-	"drivesize"	INTEGER NOT NULL,
-	"cd"	INTEGER NOT NULL,
-	"notes"	TEXT NOT NULL,
-	"cores"	INTEGER NOT NULL,
-	"gpu"	TEXT NOT NULL,
-	"wifi"	INTEGER NOT NULL DEFAULT 0,
-	"ethernet"	INTEGER NOT NULL DEFAULT 0,
-	"usb"	INTEGER NOT NULL DEFAULT 0,
-	"uid"	INTEGER,
-	"active"	INTEGER NOT NULL DEFAULT 1,
-	"last_updated_by"	INTEGER,
-	"last_updated_time"	INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-	"image"	TEXT NOT NULL,
-	"color"	TEXT NOT NULL,
-	"speed"	NUMERIC NOT NULL,
-	"status"	NUMERIC NOT NULL DEFAULT 'WORKING',
-	"os"	TEXT NOT NULL,
-	"serial_number"	TEXT NOT NULL,
-	"gid"	INTEGER NOT NULL DEFAULT 0,
-	"old_name"	BLOB NOT NULL,
-	"os_name"	TEXT,
-	"os_version"	TEXT,
-	"os_manufacturer"	TEXT,
-	"os_configuration"	TEXT,
-	"os_build_type"	TEXT,
-	"registered_owner"	TEXT,
-	"registered_organization"	TEXT,
-	"product_id"	TEXT,
-	"original_install_date"	TEXT,
-	"system_boot_time"	TEXT,
-	"system_manufacturer"	TEXT,
-	"system_model"	TEXT,
-	"system_type"	TEXT,
-	"processors"	TEXT,
-	"bios_version"	TEXT,
-	"windows_directory"	TEXT,
-	"system_directory"	TEXT,
-	"boot_device"	TEXT,
-	"system_locale"	TEXT,
-	"input_locale"	TEXT,
-	"time_zone"	TEXT,
-	"total_physical_memory"	TEXT,
-	"available_physical_memory"	TEXT,
-	"virtual_memory_max_size"	TEXT,
-	"virtual_memory_available"	TEXT,
-	"virtual_memory_in_use"	TEXT,
-	"page_file_locations"	TEXT,
-	"domain"	TEXT,
-	"logon_server"	TEXT,
-	"hotfixs"	TEXT,
-	"network_cards"	TEXT,
-	"hyperv_requirements"	TEXT,
-	"battery"	INTEGER,
-	"last_audit"	INTEGER,
-	PRIMARY KEY("cid" AUTOINCREMENT),
-	FOREIGN KEY("last_updated_by") REFERENCES "profiles"("uid") ON DELETE SET NULL ON UPDATE CASCADE,
-	FOREIGN KEY("uid") REFERENCES "profiles"("uid") ON DELETE SET NULL ON UPDATE CASCADE
-);
+CREATE TABLE devices (cid INTEGER NOT NULL UNIQUE, name TEXT NOT NULL UNIQUE COLLATE NOCASE, type TEXT NOT NULL DEFAULT 'DESKTOP' COLLATE NOCASE, site TEXT NOT NULL, office TEXT NOT NULL, location TEXT NOT NULL, year INTEGER NOT NULL, make TEXT NOT NULL, model TEXT NOT NULL, cpu TEXT NOT NULL, ram INTEGER NOT NULL, drivetype TEXT NOT NULL, drivesize INTEGER NOT NULL, cd INTEGER NOT NULL, notes TEXT NOT NULL, cores INTEGER NOT NULL, gpu TEXT NOT NULL, wifi INTEGER NOT NULL DEFAULT 0, ethernet INTEGER NOT NULL DEFAULT 0, usb INTEGER NOT NULL DEFAULT 0, uid INTEGER, active INTEGER NOT NULL DEFAULT 1, last_updated_by INTEGER, last_updated_time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')), image TEXT NOT NULL, color TEXT NOT NULL, speed NUMERIC NOT NULL, status NUMERIC NOT NULL DEFAULT 'WORKING', os TEXT NOT NULL, serial_number TEXT NOT NULL, gid INTEGER NOT NULL DEFAULT 0, old_name BLOB NOT NULL, os_name TEXT, os_version TEXT, os_manufacturer TEXT, os_configuration TEXT, os_build_type TEXT, registered_owner TEXT, registered_organization TEXT, product_id TEXT, original_install_date TEXT, system_boot_time TEXT, system_manufacturer TEXT, system_model TEXT, system_type TEXT, processors TEXT, bios_version TEXT, windows_directory TEXT, system_directory TEXT, boot_device TEXT, system_locale TEXT, input_locale TEXT, time_zone TEXT, total_physical_memory TEXT, available_physical_memory TEXT, virtual_memory_max_size TEXT, virtual_memory_available TEXT, virtual_memory_in_use TEXT, page_file_locations TEXT, domain TEXT, logon_server TEXT, hotfixs TEXT, network_cards TEXT, hyperv_requirements TEXT, battery INTEGER, last_audit INTEGER NOT NULL DEFAULT (0), last_seen INTEGER NOT NULL DEFAULT (0), PRIMARY KEY (cid AUTOINCREMENT), FOREIGN KEY (last_updated_by) REFERENCES profiles (uid) ON DELETE SET NULL ON UPDATE CASCADE, FOREIGN KEY (uid) REFERENCES profiles (uid) ON DELETE SET NULL ON UPDATE CASCADE);
 
 CREATE TABLE disks (id INTEGER PRIMARY KEY NOT NULL UNIQUE, cid INTEGER REFERENCES devices (cid) ON DELETE SET NULL ON UPDATE CASCADE MATCH SIMPLE, drive TEXT NOT NULL DEFAULT "", total INTEGER NOT NULL DEFAULT (0), free INTEGER NOT NULL DEFAULT (0), used INTEGER NOT NULL DEFAULT (0), fill REAL NOT NULL DEFAULT (0), timestamp INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))) STRICT;
 
@@ -427,63 +353,11 @@ BEGIN
 UPDATE cache_dirty SET is_dirty = 1 WHERE id = 1;
 END;
 
-CREATE TRIGGER update_counts_on_delete
-AFTER DELETE ON devices
-WHEN OLD.active = 1 -- Only update counts if the deleted row was active
-BEGIN
-    UPDATE choices SET cnt = cnt - 1 WHERE field = 'TYPE' AND active = 1 AND code = OLD.type;
-    UPDATE choices SET cnt = cnt - 1 WHERE field = 'SITE' AND active = 1 AND code = OLD.site;
-    UPDATE choices SET cnt = cnt - 1 WHERE field = 'OFFICE' AND active = 1 AND code = OLD.office;
-    UPDATE choices SET cnt = cnt - 1 WHERE field = 'GROUP' AND active = 1 AND code = OLD.gid;
-    UPDATE profiles SET cnt = cnt - 1 WHERE uid = OLD.uid AND active = 1;
-END;
+CREATE TRIGGER update_counts_on_delete AFTER DELETE ON devices WHEN OLD.active = 1 BEGIN UPDATE choices SET cnt = cnt - 1 WHERE field = 'TYPE' AND active = 1 AND code = OLD.type; UPDATE choices SET cnt = cnt - 1 WHERE field = 'SITE' AND active = 1 AND code = OLD.site; UPDATE choices SET cnt = cnt - 1 WHERE field = 'OFFICE' AND active = 1 AND code = OLD.office; UPDATE choices SET cnt = cnt - 1 WHERE field = 'GROUP' AND active = 1 AND code = OLD.gid; UPDATE profiles SET cnt = cnt - 1 WHERE uid = OLD.uid AND active = 1; END;
 
-CREATE TRIGGER update_counts_on_insert
-AFTER INSERT ON devices
-WHEN NEW.active = 1 -- Only update counts if the new row is active
-BEGIN
-    UPDATE choices SET cnt = cnt + 1 WHERE field = 'TYPE' AND active = 1 AND code = NEW.type;
-    UPDATE choices SET cnt = cnt + 1 WHERE field = 'SITE' AND active = 1 AND code = NEW.site;
-    UPDATE choices SET cnt = cnt + 1 WHERE field = 'OFFICE' AND active = 1 AND code = NEW.office;
-    UPDATE choices SET cnt = cnt + 1 WHERE field = 'GROUP' AND active = 1 AND code = NEW.gid;
-    UPDATE profiles SET cnt = cnt + 1 WHERE uid = NEW.uid AND active = 1;
-END;
+CREATE TRIGGER update_counts_on_insert AFTER INSERT ON devices WHEN NEW.active = 1 BEGIN UPDATE choices SET cnt = cnt + 1 WHERE field = 'TYPE' AND active = 1 AND code = NEW.type; UPDATE choices SET cnt = cnt + 1 WHERE field = 'SITE' AND active = 1 AND code = NEW.site; UPDATE choices SET cnt = cnt + 1 WHERE field = 'OFFICE' AND active = 1 AND code = NEW.office; UPDATE choices SET cnt = cnt + 1 WHERE field = 'GROUP' AND active = 1 AND code = NEW.gid; UPDATE profiles SET cnt = cnt + 1 WHERE uid = NEW.uid AND active = 1; END;
 
-CREATE TRIGGER update_counts_on_update
-AFTER UPDATE ON devices
-WHEN OLD.active <> NEW.active 
-    OR COALESCE(OLD.type, '') <> COALESCE(NEW.type, '') 
-    OR COALESCE(OLD.site, '') <> COALESCE(NEW.site, '') 
-    OR COALESCE(OLD.office, '') <> COALESCE(NEW.office, '') 
-    OR COALESCE(OLD.gid, '') <> COALESCE(NEW.gid, '') 
-    OR COALESCE(OLD.uid, '') <> COALESCE(NEW.uid, '')
-BEGIN
-    -- Decrement counts if active switches from 1 to 0
-    UPDATE choices SET cnt = cnt - 1 WHERE field='TYPE' AND active=1 AND code=OLD.type AND OLD.active = 1 AND NEW.active = 0;
-    UPDATE choices SET cnt = cnt - 1 WHERE field='SITE' AND active=1 AND code=OLD.site AND OLD.active = 1 AND NEW.active = 0;
-    UPDATE choices SET cnt = cnt - 1 WHERE field='OFFICE' AND active=1 AND code=OLD.office AND OLD.active = 1 AND NEW.active = 0;
-    UPDATE choices SET cnt = cnt - 1 WHERE field='GROUP' AND active=1 AND code=OLD.gid AND OLD.active = 1 AND NEW.active = 0;
-    UPDATE profiles SET cnt = cnt - 1 WHERE uid=OLD.uid AND active=1 AND OLD.active = 1 AND NEW.active = 0;
-
-    -- Increment counts if active switches from 0 to 1
-    UPDATE choices SET cnt = cnt + 1 WHERE field='TYPE' AND active=1 AND code=NEW.type AND OLD.active = 0 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt + 1 WHERE field='SITE' AND active=1 AND code=NEW.site AND OLD.active = 0 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt + 1 WHERE field='OFFICE' AND active=1 AND code=NEW.office AND OLD.active = 0 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt + 1 WHERE field='GROUP' AND active=1 AND code=NEW.gid AND OLD.active = 0 AND NEW.active = 1;
-    UPDATE profiles SET cnt = cnt + 1 WHERE uid=NEW.uid AND active=1 AND OLD.active = 0 AND NEW.active = 1;
-
-    -- Adjust counts only if active remains 1 and fields change
-    UPDATE choices SET cnt = cnt - 1 WHERE field='TYPE' AND active=1 AND code=OLD.type AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt + 1 WHERE field='TYPE' AND active=1 AND code=NEW.type AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt - 1 WHERE field='SITE' AND active=1 AND code=OLD.site AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt + 1 WHERE field='SITE' AND active=1 AND code=NEW.site AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt - 1 WHERE field='OFFICE' AND active=1 AND code=OLD.office AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt + 1 WHERE field='OFFICE' AND active=1 AND code=NEW.office AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt - 1 WHERE field='GROUP' AND active=1 AND code=OLD.gid AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE choices SET cnt = cnt + 1 WHERE field='GROUP' AND active=1 AND code=NEW.gid AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE profiles SET cnt = cnt - 1 WHERE uid=OLD.uid AND active=1 AND OLD.active = 1 AND NEW.active = 1;
-    UPDATE profiles SET cnt = cnt + 1 WHERE uid=NEW.uid AND active=1 AND OLD.active = 1 AND NEW.active = 1;
-END;
+CREATE TRIGGER update_counts_on_update AFTER UPDATE ON devices WHEN OLD.active <> NEW.active OR COALESCE(OLD.type, '') <> COALESCE(NEW.type, '') OR COALESCE(OLD.site, '') <> COALESCE(NEW.site, '') OR COALESCE(OLD.office, '') <> COALESCE(NEW.office, '') OR COALESCE(OLD.gid, '') <> COALESCE(NEW.gid, '') OR COALESCE(OLD.uid, '') <> COALESCE(NEW.uid, '') BEGIN UPDATE choices SET cnt = cnt - 1 WHERE field = 'TYPE' AND active = 1 AND code = OLD.type AND OLD.active = 1 AND NEW.active = 0; UPDATE choices SET cnt = cnt - 1 WHERE field = 'SITE' AND active = 1 AND code = OLD.site AND OLD.active = 1 AND NEW.active = 0; UPDATE choices SET cnt = cnt - 1 WHERE field = 'OFFICE' AND active = 1 AND code = OLD.office AND OLD.active = 1 AND NEW.active = 0; UPDATE choices SET cnt = cnt - 1 WHERE field = 'GROUP' AND active = 1 AND code = OLD.gid AND OLD.active = 1 AND NEW.active = 0; UPDATE profiles SET cnt = cnt - 1 WHERE uid = OLD.uid AND active = 1 AND OLD.active = 1 AND NEW.active = 0; UPDATE choices SET cnt = cnt + 1 WHERE field = 'TYPE' AND active = 1 AND code = NEW.type AND OLD.active = 0 AND NEW.active = 1; UPDATE choices SET cnt = cnt + 1 WHERE field = 'SITE' AND active = 1 AND code = NEW.site AND OLD.active = 0 AND NEW.active = 1; UPDATE choices SET cnt = cnt + 1 WHERE field = 'OFFICE' AND active = 1 AND code = NEW.office AND OLD.active = 0 AND NEW.active = 1; UPDATE choices SET cnt = cnt + 1 WHERE field = 'GROUP' AND active = 1 AND code = NEW.gid AND OLD.active = 0 AND NEW.active = 1; UPDATE profiles SET cnt = cnt + 1 WHERE uid = NEW.uid AND active = 1 AND OLD.active = 0 AND NEW.active = 1; UPDATE choices SET cnt = cnt - 1 WHERE field = 'TYPE' AND active = 1 AND code = OLD.type AND OLD.active = 1 AND NEW.active = 1; UPDATE choices SET cnt = cnt + 1 WHERE field = 'TYPE' AND active = 1 AND code = NEW.type AND OLD.active = 1 AND NEW.active = 1; UPDATE choices SET cnt = cnt - 1 WHERE field = 'SITE' AND active = 1 AND code = OLD.site AND OLD.active = 1 AND NEW.active = 1; UPDATE choices SET cnt = cnt + 1 WHERE field = 'SITE' AND active = 1 AND code = NEW.site AND OLD.active = 1 AND NEW.active = 1; UPDATE choices SET cnt = cnt - 1 WHERE field = 'OFFICE' AND active = 1 AND code = OLD.office AND OLD.active = 1 AND NEW.active = 1; UPDATE choices SET cnt = cnt + 1 WHERE field = 'OFFICE' AND active = 1 AND code = NEW.office AND OLD.active = 1 AND NEW.active = 1; UPDATE choices SET cnt = cnt - 1 WHERE field = 'GROUP' AND active = 1 AND code = OLD.gid AND OLD.active = 1 AND NEW.active = 1; UPDATE choices SET cnt = cnt + 1 WHERE field = 'GROUP' AND active = 1 AND code = NEW.gid AND OLD.active = 1 AND NEW.active = 1; UPDATE profiles SET cnt = cnt - 1 WHERE uid = OLD.uid AND active = 1 AND OLD.active = 1 AND NEW.active = 1; UPDATE profiles SET cnt = cnt + 1 WHERE uid = NEW.uid AND active = 1 AND OLD.active = 1 AND NEW.active = 1; END;
 
 CREATE VIEW onlinehistory AS SELECT COALESCE(A.alias, O.mac) AS mac, O.date, O.am, O.pm, o.host FROM online O LEFT JOIN aliases A ON O.mac=A.mac;
 
