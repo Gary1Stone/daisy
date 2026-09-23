@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"strconv"
 
+	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/reports"
 	"github.com/gbsto/daisy/svg"
 	"github.com/gofiber/fiber/v2"
@@ -59,6 +60,8 @@ func PostReports(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(reports.UsersAssignedDevices())
 	case "NETWORK_GAPS":
 		return c.Status(fiber.StatusOK).SendString(reports.NetworkGaps())
+	case "COMSTAT":
+		return c.Status(fiber.StatusOK).SendString(ctrls.ComstatTable(curUid))
 	}
 	return c.Status(fiber.StatusOK).SendString("ERROR: Unknown report")
 }
