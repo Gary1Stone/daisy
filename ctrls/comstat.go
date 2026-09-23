@@ -14,6 +14,8 @@ import (
 func ComstatTable(uid int) string {
 	var table strings.Builder
 
+	BEGININGOFTIME := "1969-12-31"
+
 	auditLate, err := strconv.Atoi(os.Getenv("AUDIT_LATE"))
 	if err != nil {
 		auditLate = 28
@@ -84,11 +86,18 @@ func ComstatTable(uid int) string {
 			colorIcon = "red"
 		}
 
-		//<tr data-id='%d' item.Cid //(This causes the whole row to be clickable, eliminating the community MAP)
+		//<tr data-id='%d' item.Cid //(This causes the whole row to be clickable, eliminating the ability to show the community MAP)
 		fmt.Fprintf(&table, `<tr><td><span style="color:%s;">%s</span><a href='device.html?cid=%d'>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>`,
 			colorIcon, svg.GetIcon(item.Icon), item.Cid, item.Name, item.Site, item.Office, assigned, item.Status)
 
+		if item.SeenDate == BEGININGOFTIME {
+			item.SeenDate = "never"
+		}
 		fmt.Fprintf(&table, `<td style='color:%s;'  title="%d days ago">%s</td>`, seenColor, item.SeenDays, item.SeenDate)
+
+		if item.AuditDate == BEGININGOFTIME {
+			item.AuditDate = "never"
+		}
 		fmt.Fprintf(&table, `<td style='color:%s;'  title="%d days ago">%s</td>`, auditColor, item.AuditDays, item.AuditDate)
 		fmt.Fprintf(&table, `<td><a href='https://www.google.com/maps/search/?api=1&query=%f,%f' target='_blank' title="WARNING: Location accuracy is only 10Km">%s</a></td>`, item.Latitude, item.Longitude, item.Community)
 
