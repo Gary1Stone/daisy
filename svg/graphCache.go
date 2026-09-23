@@ -7,8 +7,8 @@ import (
 
 type GraphCacheStruct struct {
 	mu      sync.RWMutex
-	Graphs  [9]string
-	Max     [9]int
+	Graphs  [10]string
+	Max     [10]int
 	Updated time.Time
 }
 
@@ -50,8 +50,8 @@ func StartGraphCache() {
 func generateGraphs() {
 
 	type graphs struct {
-		graph [9]string
-		max   [9]int
+		graph [10]string
+		max   [10]int
 	}
 
 	var opts SparklineOptions
@@ -92,7 +92,7 @@ func generateGraphs() {
 	temp.max[5] = login.MaxValue
 
 	var hits SparklineOptions
-	hits.Warning = 1000 // If more than 1000 hits in a 15 minute interval, highlight red
+	hits.Warning = 1000 // If more than 1000 hits (web requests) in a 15 minute interval, highlight red
 
 	// 6 = Hits per day
 	opts.Duration = Day
@@ -108,6 +108,12 @@ func generateGraphs() {
 	hits.Duration = Month
 	temp.graph[8] = BuildHitsChart(&hits)
 	temp.max[8] = hits.MaxValue
+
+	// 9 = Network Load
+	var online SparklineOptions
+	online.Warning = 40 // If more than 40 devices in a day, highlight red
+	temp.graph[9] = BuildNetworkLoadChart(&online)
+	temp.max[9] = online.MaxValue
 
 	// Copy the temp variable onto the graphCache global variable
 	GraphCache.mu.Lock()

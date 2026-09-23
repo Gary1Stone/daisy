@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
 	"log"
 	"os"
@@ -63,9 +64,6 @@ func GetHome(c *fiber.Ctx) error {
 
 	online, offline := db.GetCurrentOnOffCounts()
 
-	var hits svg.SparklineOptions
-	hits.Warning = 40 // If more than 40 hits in a day, highlight red
-
 	return c.Render("home", addNavigationIcons(fiber.Map{
 		"title":         template.HTML("&#127809; Daisy"),
 		"fullName":      user.Fullname,
@@ -81,8 +79,8 @@ func GetHome(c *fiber.Ctx) error {
 		"bellIcon":      template.HTML(svg.GetIcon("bell")),
 		"onlineCount":   online,
 		"offlineCount":  offline,
-		"onlineSpark":   template.HTML(svg.BuildNetworkLoadChart(&hits)),
-		"maxHitsMonth":  hits.MaxValue,
+		"onlineSpark":   template.HTML(svg.GraphCache.GetGraph(9)),
+		"maxHitsMonth":  svg.GraphCache.GetMax(9),
 		"wizardsSelect": template.HTML(ctrls.BuildDropList("WIZARDS", "", "", false, false)),
 	}))
 }
@@ -99,16 +97,13 @@ func getAssignedDevices(curUid int) (string, error) {
 	missing := db.GetMissingDevices()
 	var i int = 0
 	var cnt int = 0
+	icon := svg.GetIcon("search")
 
 	for _, item := range items {
-		msg.WriteString("<p>")
-		msg.WriteString(item.Name)
-		msg.WriteString(" ")
-		msg.WriteString(item.Model)
-		msg.WriteString(" ")
+		fmt.Fprintf(&msg, `<p>%s %s `, item.Name, item.Model)
 		i = sort.SearchInts(missing, item.Cid)
 		if i < len(missing) && item.Cid == missing[i] {
-			msg.WriteString("<span class='mif-search mif-1x fg-red' title='Not seen recently'></span>")
+			fmt.Fprintf(&msg, `<span style='color:red;' title='Not seen recently'>%s</span>`, icon)
 		}
 		msg.WriteString("</p>")
 		cnt++
