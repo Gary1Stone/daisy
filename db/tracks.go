@@ -3,7 +3,7 @@ package db
 import "log"
 
 type Tracks struct {
-	LastSeen  int64   `json:"last_seen"` // UTC time
+	LastSeen  int64   `json:"last_seen"` // UTC time of the most recent audit checkin
 	Checkin   string  `json:"checkin"`   // YYYY-MM-DD of most recent checkin
 	Cid       int     `json:"cid"`       // Computer ID
 	Name      string  `json:"name"`      // Computer name

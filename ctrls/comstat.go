@@ -79,15 +79,18 @@ func ComstatTable(uid int) string {
 			assigned = item.Group
 		}
 
-		//<tr data-id='%d' item.Cid
-		fmt.Fprintf(&table, `<tr><td><a href='device.html?cid=%d'>%s %s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>`,
-			item.Cid, svg.GetIcon(item.Icon), item.Name, item.Site, item.Office, assigned, item.Status)
+		colorIcon := "black"
+		if item.IsBroken {
+			colorIcon = "red"
+		}
 
-		fmt.Fprintf(&table, `<td><span style='color:%s;'  title="%d days ago">%s</span></td>`, seenColor, item.SeenDays, item.SeenDate)
-		fmt.Fprintf(&table, `<td><span style='color:%s;'  title="%d days ago">%s</span></td>`, auditColor, item.AuditDays, item.AuditDate)
+		//<tr data-id='%d' item.Cid //(This causes the whole row to be clickable, eliminating the community MAP)
+		fmt.Fprintf(&table, `<tr><td><span style="color:%s;">%s</span><a href='device.html?cid=%d'>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>`,
+			colorIcon, svg.GetIcon(item.Icon), item.Cid, item.Name, item.Site, item.Office, assigned, item.Status)
+
+		fmt.Fprintf(&table, `<td style='color:%s;'  title="%d days ago">%s</td>`, seenColor, item.SeenDays, item.SeenDate)
+		fmt.Fprintf(&table, `<td style='color:%s;'  title="%d days ago">%s</td>`, auditColor, item.AuditDays, item.AuditDate)
 		fmt.Fprintf(&table, `<td><a href='https://www.google.com/maps/search/?api=1&query=%f,%f' target='_blank' title="WARNING: Location accuracy is only 10Km">%s</a></td>`, item.Latitude, item.Longitude, item.Community)
-
-		// Build the backup information for each computer
 
 		colourFile := "green"
 		if item.FileDays > fileLate {
@@ -101,10 +104,10 @@ func ComstatTable(uid int) string {
 		if item.DiskDays > diskLate {
 			colourDisk = "red"
 		}
-
-		fmt.Fprintf(&table, `<td><span style='color:%s;' title="%d days ago">%s</span></td>`, colourFile, item.FileDays, item.FileDate)
-		fmt.Fprintf(&table, `<td><span style='color:%s;' title="%d days ago">%s</span></td>`, colourSystem, item.SystemDays, item.SystemDate)
-		fmt.Fprintf(&table, `<td><span style='color:%s;' title="%d days ago">%s</span></td>`, colourDisk, item.DiskDays, item.DiskDate)
+		// Build the backup information for each computer
+		fmt.Fprintf(&table, `<td style='color:%s;' title="%d days ago">%s</td>`, colourFile, item.FileDays, item.FileDate)
+		fmt.Fprintf(&table, `<td style='color:%s;' title="%d days ago">%s</td>`, colourSystem, item.SystemDays, item.SystemDate)
+		fmt.Fprintf(&table, `<td style='color:%s;' title="%d days ago">%s</td>`, colourDisk, item.DiskDays, item.DiskDate)
 
 		// meter bars
 		table.WriteString(`<td>`)
