@@ -3,7 +3,6 @@ package cmd
 import (
 	"html/template"
 
-	"github.com/gbsto/daisy/reports"
 	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/ctrls"
@@ -23,83 +22,31 @@ func GetControl(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
-	var opts svg.SparklineOptions
-	opts.Warning = 10 // If more than 10 hits in a 15 minute interval, highlight red
-	opts.Duration = svg.Day
-	attacksDay := svg.BuildAttackChart(&opts)
-	maxAttacksDay := opts.MaxValue
-	opts.Duration = svg.Week
-	attacksWeek := svg.BuildAttackChart(&opts)
-	maxAttacksWeek := opts.MaxValue
-	opts.Duration = svg.Month
-	attacksMonth := svg.BuildAttackChart(&opts)
-	maxAttacksMonth := opts.MaxValue
-
-	var login svg.SparklineOptions
-	login.Warning = 250 // If more than 250 logins in a 15 minute interval, highlight red
-	login.Duration = svg.Day
-	loginsDay := svg.BuildLoginsChart(&login)
-	maxLoginsDay := login.MaxValue
-	login.Duration = svg.Week
-	loginsWeek := svg.BuildLoginsChart(&login)
-	maxLoginsWeek := login.MaxValue
-	login.Duration = svg.Month
-	loginsMonth := svg.BuildLoginsChart(&login)
-	maxLoginsMonth := login.MaxValue
-
-	var hits svg.SparklineOptions
-	hits.Warning = 1000 // If more than 1000 hits in a 15 minute interval, highlight red
-	opts.Duration = svg.Day
-	hitsDay := svg.BuildHitsChart(&hits)
-	maxHitsDay := hits.MaxValue
-	opts.Duration = svg.Week
-	hitsWeek := svg.BuildHitsChart(&hits)
-	maxHitsWeek := hits.MaxValue
-	hits.Duration = svg.Month
-	hitsMonth := svg.BuildHitsChart(&hits)
-	maxHitsMonth := hits.MaxValue
-
-	// The device meta data is used in most tables on this page,
-	// So we get it here to significantly reduce the number of database hits
-	// devInfo, err := db.GetDeviceMeta()
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-
-	// Render the page
 	return c.Render("control", addNavigationIcons(fiber.Map{
 		"title":           template.HTML(svg.GetIcon("control") + " Control"),
 		"fullName":        user.Fullname,
 		"isAdmin":         user.IsAdmin,
-		"cmd_one":         template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Admin.Update)),
-		"cmd_two":         template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Admin.Create)),
-		"cmd_three":       template.HTML(ctrls.MakeButton(ctrls.BtnDelete, user.Permissions.Admin.Delete)),
-		"attacksDay":      template.HTML(attacksDay),
-		"attacksWeek":     template.HTML(attacksWeek),
-		"attacksMonth":    template.HTML(attacksMonth),
-		"maxAttacksDay":   maxAttacksDay,
-		"maxAttacksWeek":  maxAttacksWeek,
-		"maxAttacksMonth": maxAttacksMonth,
-		"dashboard":       template.HTML(reports.GetDeviceCounts()),
-		"loginsDay":       template.HTML(loginsDay),
-		"loginsWeek":      template.HTML(loginsWeek),
-		"loginsMonth":     template.HTML(loginsMonth),
-		"maxLoginsDay":    maxLoginsDay,
-		"maxLoginsWeek":   maxLoginsWeek,
-		"maxLoginsMonth":  maxLoginsMonth,
-		"hitsDay":         template.HTML(hitsDay),
-		"hitsWeek":        template.HTML(hitsWeek),
-		"hitsMonth":       template.HTML(hitsMonth),
-		"maxHitsDay":      maxHitsDay,
-		"maxHitsWeek":     maxHitsWeek,
-		"maxHitsMonth":    maxHitsMonth,
+		"attacksDay":      template.HTML(svg.GraphCache.GetGraph(0)),
+		"attacksWeek":     template.HTML(svg.GraphCache.GetGraph(1)),
+		"attacksMonth":    template.HTML(svg.GraphCache.GetGraph(2)),
+		"maxAttacksDay":   svg.GraphCache.GetMax(0),
+		"maxAttacksWeek":  svg.GraphCache.GetMax(1),
+		"maxAttacksMonth": svg.GraphCache.GetMax(2),
+		"loginsDay":       template.HTML(svg.GraphCache.GetGraph(3)),
+		"loginsWeek":      template.HTML(svg.GraphCache.GetGraph(4)),
+		"loginsMonth":     template.HTML(svg.GraphCache.GetGraph(5)),
+		"maxLoginsDay":    svg.GraphCache.GetMax(3),
+		"maxLoginsWeek":   svg.GraphCache.GetMax(4),
+		"maxLoginsMonth":  svg.GraphCache.GetMax(5),
+		"hitsDay":         template.HTML(svg.GraphCache.GetGraph(6)),
+		"hitsWeek":        template.HTML(svg.GraphCache.GetGraph(7)),
+		"hitsMonth":       template.HTML(svg.GraphCache.GetGraph(8)),
+		"maxHitsDay":      svg.GraphCache.GetMax(6),
+		"maxHitsWeek":     svg.GraphCache.GetMax(7),
+		"maxHitsMonth":    svg.GraphCache.GetMax(8),
 	}))
 }
 
-// "LastSeenDevices": template.HTML(reports.LastSeenDevices(user.Uid, devInfo)),
-// "checkins":        template.HTML(reports.Checkins(user.Uid, devInfo)), //audits
-// "backups":         template.HTML(reports.Backups(user.Uid, devInfo)),
-// "drivespace":      template.HTML(reports.Drivespace(user.Uid, devInfo)),
 // Pop-up dialogs of the details for the graphs
 func PostControl(c *fiber.Ctx) error {
 	user, err := extractUserInfo(c)

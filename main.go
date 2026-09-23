@@ -12,6 +12,7 @@ import (
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/schedule"
+	"github.com/gbsto/daisy/svg"
 	"github.com/gbsto/daisy/webserver"
 	"github.com/joho/godotenv"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -28,6 +29,7 @@ func main() {
 	db.StartServer()                   // Start the database server
 	schedule.StartServer()             // Schedule 2 am backups and photos directory cleanups
 	passkey.StartWebAuthn()            // Configure Passkey for use
+	svg.StartGraphCache()              // Generate the cached graphs every 15 minutes
 	webserver.StartServer(daisyLogger) // Start the webserver. This is a blocking never-ending loop
 }
 
