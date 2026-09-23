@@ -1,6 +1,7 @@
 package ctrls
 
 import (
+	"fmt"
 	"html"
 	"log"
 	"strconv"
@@ -35,7 +36,10 @@ func BuildDeviceCtrl(dev db.Device) string {
 // permissions = TCRUD = Ticket: Create, Read, Update, Delete
 func BuildRouteButton(canUpdate bool) string {
 	if canUpdate {
-		return `<button type='button' onclick="showRouteDialog();" id="btnSave" title="Save Record" style="border: none; outline: none; background: none; cursor: pointer;"><span class="mif-floppy-disk fg-white"></span></button><input type="hidden" id="canSave" value="1" >`
+		var btn strings.Builder
+		btn.WriteString(`<button type='button' onclick="showRouteDialog();" id="btnSave" title="Save Record" style="border: none; outline: none; background: none; cursor: pointer;">`)
+		fmt.Fprintf(&btn, `<span style:"color:white;">%s</span></button><input type="hidden" id="canSave" value="1" >`, svg.GetIcon("save"))
+		return btn.String()
 	}
 	return `<span id="btnSave"></span><input type="hidden" id="canSave" value="0" >`
 }
@@ -125,9 +129,7 @@ func BuildReportCtrl(report string, readonly bool) string {
 	}
 
 	// Add additional attributes for validation and styling
-	ctrl.WriteString(`data-role="input" data-prepend="<span class='mif-news'></span>" 
-					data-validate="required, minlength=6, maxlength=100" >
-					<small class="invalid_feedback">Required, 6-100 characters.</small>`)
+	ctrl.WriteString(` ><small class="invalid_feedback">Required, 6-100 characters.</small>`)
 
 	return ctrl.String()
 }

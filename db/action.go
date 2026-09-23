@@ -91,7 +91,7 @@ type Actions struct {
 // Return struct of the code/descriptions
 func GetActionCodes(onlyDevices bool) ([]Actions, error) {
 	var items []Actions
-	query := "SELECT id, name, description, color, priority, icon, is_device FROM icons "
+	query := "SELECT id, name, description, color, priority, icon2, is_device FROM icons "
 	if onlyDevices {
 		query += "WHERE is_device=1 "
 	}

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 func TrackedSoftware() string {
@@ -32,9 +33,10 @@ func TrackedSoftware() string {
 		report.WriteString(`</tbody></table>`)
 		return report.String()
 	}
+	icon := svg.GetIcon("software")
 
 	for _, item := range items {
-		btn := fmt.Sprintf(`<a class='button' href='software.html?sid=%d' role='button' ><span class='mif-app icon'></span>&nbsp;%s</a>`, item.Sid, item.Name)
+		btn := fmt.Sprintf(`<a class='button' href='software.html?sid=%d' role='button' >%s&nbsp;%s</a>`, item.Sid, icon, item.Name)
 		fmt.Fprintf(&report, `<tr><td>%s</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td></tr>`, btn, item.Licenses, item.CountActiveInstalls, item.CountDecomissionedInstalls, item.Manual, item.Manual_inactive)
 	}
 	fmt.Fprintf(&report, `</tbody></table>`)
@@ -175,6 +177,7 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 		report.WriteString(`</tbody></table>`)
 		return report.String()
 	}
+	icon := svg.GetIcon("map")
 
 	for _, item := range items {
 		colour := "green"
@@ -187,7 +190,7 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 		// Column 2 - Audit Date
 		fmt.Fprintf(&report, `<td><span style='color:%s;'  title="%d days ago">%s</span></td>`, colour, item.Days, item.Checkin)
 		// Column 3 - Community
-		fmt.Fprintf(&report, `<td><a href='https://www.google.com/maps/search/?api=1&query=%f,%f' target='_blank' title="WARNING: Location accuracy is only 10Km">%s&nbsp;<span class='mif-map icon'></span>...</a></td>`, item.Latitude, item.Longitude, item.Community)
+		fmt.Fprintf(&report, `<td><a href='https://www.google.com/maps/search/?api=1&query=%f,%f' target='_blank' title="WARNING: Location accuracy is only 10Km">%s&nbsp;%s</a></td>`, item.Latitude, item.Longitude, item.Community, icon)
 	}
 	fmt.Fprintf(&report, `</tbody></table>`)
 	return report.String()

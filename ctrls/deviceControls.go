@@ -60,35 +60,29 @@ func BuildSoftwareList(curUid, cid int) string {
 		</tr></thead>
 		<tbody>`)
 
+	appIcon := svg.GetIcon("software")
+	stepsIcon := svg.GetIcon("steps")
+
 	for _, item := range items {
 		tracked := ""
 		if item.IsTracked {
-			tracked = svg.GetIcon("steps")
+			tracked = stepsIcon
 		}
 		table.WriteString("<tr><td>")
-		table.WriteString("")
 		if item.Sid > 0 {
-			table.WriteString(`<a href="software.html?sid=`)
-			table.WriteString(strconv.Itoa(item.Sid))
-			table.WriteString(`"><span class="mif-apps icon"></span>&nbsp;`)
-			table.WriteString(item.Name)
-			table.WriteString(tracked)
-			table.WriteString("</a>")
+			fmt.Fprintf(&table, `<a href="software.html?sid=%d>%s&nbsp;%s %s</a></td>`, item.Sid, appIcon, item.Name, tracked)
 		} else {
-			table.WriteString(`<span class="mif-apps icon"></span>&nbsp;`)
-			table.WriteString(item.Name)
-			table.WriteString(tracked)
+			fmt.Fprintf(&table, `%s&nbsp;%s %s</td>`, appIcon, item.Name, tracked)
 		}
-		table.WriteString("</td>")
+
 		table.WriteString("<td>")
 		if item.Sid > 0 { // Only for tracked software
-			checkboxId := "chk" + strconv.Itoa(item.Id)
-			table.WriteString(`<input type="checkbox" id="`);table.WriteString(checkboxId);table.WriteString(`" `)
-			table.WriteString(`onclick="setPreInstalled(`);table.WriteString(strconv.Itoa(item.Id));table.WriteString(`, this.checked)" `)
+			checked := ""
 			if item.PreInstalled {
+				checked = "checked"
 				table.WriteString("checked")
 			}
-			table.WriteString(` >`)
+			fmt.Fprintf(&table, `<input type="checkbox" id="chk%d" onclick="setPreInstalled(%d, this.checked)" %s>`, item.Id, item.Id, checked)
 		}
 		table.WriteString("</td></tr>")
 	}

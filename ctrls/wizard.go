@@ -1,21 +1,21 @@
 package ctrls
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 func BuildWizardTitle(wizkey string) string {
 	var title strings.Builder
-	title.WriteString(`<span class="mif-app icon"></span>&nbsp;Wizard `)
+	title.WriteString(svg.GetIcon("wizard"))
+	title.WriteString(`&nbsp;Wizard `)
 	items, _ := db.GetActionCodes(false)
 	for _, item := range items {
 		if item.Name == wizkey {
-			title.WriteString(`<span class="`)
-			title.WriteString(item.Icon)
-			title.WriteString(` icon"></span>&nbsp;`)
-			title.WriteString(item.Description)
+			fmt.Fprintf(&title, `%s&nbsp;%s`, svg.GetIcon(item.Icon), item.Description)
 		}
 	}
 	return title.String()

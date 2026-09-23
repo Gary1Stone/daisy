@@ -887,43 +887,43 @@ type DevicesMeta struct {
 	Icon  string `json:"icon"`
 }
 
-func GetDeviceMeta() (map[int]DevicesMeta, error) {
-	items := make(map[int]DevicesMeta)
-	query := `
-		SELECT D.cid, D.name, coalesce(C.description, ''), coalesce(D.model, ''),
-		D.type, coalesce(I.icon, 'mif-devices')
-		FROM devices D
-		LEFT JOIN icons I ON D.type=I.name
-		LEFT JOIN choices C ON D.make=C.code AND C.field='MAKE'
-		WHERE D.active=1 
-	`
-	rows, err := Conn.Query(query)
-	if err != nil {
-		log.Println(err)
-		return items, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var item DevicesMeta
-		err := rows.Scan(&item.Cid, &item.Name, &item.Make, &item.Model, &item.Type, &item.Icon)
-		if err != nil {
-			log.Println(err)
-		} else {
-			items[item.Cid] = DevicesMeta{
-				Cid:   item.Cid,
-				Name:  item.Name,
-				Make:  item.Make,
-				Model: item.Model,
-				Type:  item.Type,
-				Icon:  item.Icon,
-			}
-		}
-	}
-	if err = rows.Err(); err != nil {
-		log.Println(err)
-	}
-	return items, nil
-}
+// func GetDeviceMeta() (map[int]DevicesMeta, error) {
+// 	items := make(map[int]DevicesMeta)
+// 	query := `
+// 		SELECT D.cid, D.name, coalesce(C.description, ''), coalesce(D.model, ''),
+// 		D.type, coalesce(I.icon2, 'devices')
+// 		FROM devices D
+// 		LEFT JOIN icons I ON D.type=I.name
+// 		LEFT JOIN choices C ON D.make=C.code AND C.field='MAKE'
+// 		WHERE D.active=1
+// 	`
+// 	rows, err := Conn.Query(query)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return items, err
+// 	}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		var item DevicesMeta
+// 		err := rows.Scan(&item.Cid, &item.Name, &item.Make, &item.Model, &item.Type, &item.Icon)
+// 		if err != nil {
+// 			log.Println(err)
+// 		} else {
+// 			items[item.Cid] = DevicesMeta{
+// 				Cid:   item.Cid,
+// 				Name:  item.Name,
+// 				Make:  item.Make,
+// 				Model: item.Model,
+// 				Type:  item.Type,
+// 				Icon:  item.Icon,
+// 			}
+// 		}
+// 	}
+// 	if err = rows.Err(); err != nil {
+// 		log.Println(err)
+// 	}
+// 	return items, nil
+// }
 
 // name is unique in the devices table
 func GetDevicesByNames(hostnames []string) (map[string]Device, error) {
