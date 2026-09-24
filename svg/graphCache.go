@@ -1,6 +1,8 @@
 package svg
 
 import (
+	"log"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -11,6 +13,20 @@ type GraphCacheStruct struct {
 	Max     [10]int
 	Updated time.Time
 }
+
+// If more networks/sites are being monitored, it would be added here
+const (
+	AttacksPerDay   = 0 // Number of invalid requests (404) each day on Daisy4wknc
+	AttacksPerWeek  = 1 // week
+	AttacksPerMonth = 2 // month
+	LoginsPerDay    = 3 // Number of user logins each day on Daisy4wknc, a single user can have multiple logins
+	LoginsPerWeek   = 4 // week
+	LoginsPerMonth  = 5 // month
+	HitsPerDay      = 6 // Number of web page requests each day on Daisy4wknc
+	HitsPerWeek     = 7 // week
+	HitsPerMonth    = 8 // month
+	OnlineMonth     = 9 // Number of devices connected to the monitored network (WKNC) each day for a month
+)
 
 var GraphCache GraphCacheStruct
 
@@ -35,6 +51,7 @@ func (g *GraphCacheStruct) GetMax(i int) int {
 // Note: the db connection has to be initalized before this is run
 func StartGraphCache() {
 	generateGraphs() // Generate immediately so the first page request has graphs.
+	printMemoryUsage()
 
 	go func() {
 		ticker := time.NewTicker(15 * time.Minute)
@@ -42,6 +59,7 @@ func StartGraphCache() {
 
 		for range ticker.C {
 			generateGraphs()
+			printMemoryUsage()
 		}
 	}()
 }
@@ -121,4 +139,18 @@ func generateGraphs() {
 	GraphCache.Max = temp.max
 	GraphCache.Updated = time.Now()
 	GraphCache.mu.Unlock()
+}
+
+//Alloc: This is the most important one. It’s the actual amount of heap memory your Go objects are currently using.
+//Sys: This is the total amount of RAM the operating system has given to your Go program. (Go tends to hold onto memory rather than immediately giving it back to the OS, so Sys is usually higher than Alloc).
+
+func printMemoryUsage() {
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+
+	// For general understanding, we convert bytes to Megabytes (MB)
+	log.Printf("Alloc = %v MB\n", m.Alloc/1024/1024)           // RAM currently allocated
+	log.Printf("TotalAlloc = %v MB\n", m.TotalAlloc/1024/1024) // Total RAM allocated ever (even if freed)
+	log.Printf("Sys = %v MB\n", m.Sys/1024/1024)               // RAM obtained from the system
+	log.Printf("NumGC = %v\n", m.NumGC)                        // Number of garbage collection runs
 }

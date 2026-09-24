@@ -79,8 +79,8 @@ func GetHome(c *fiber.Ctx) error {
 		"bellIcon":      template.HTML(svg.GetIcon("bell")),
 		"onlineCount":   online,
 		"offlineCount":  offline,
-		"onlineSpark":   template.HTML(svg.GraphCache.GetGraph(9)),
-		"maxHitsMonth":  svg.GraphCache.GetMax(9),
+		"onlineSpark":   template.HTML(svg.GraphCache.GetGraph(svg.OnlineMonth)),
+		"maxHitsMonth":  svg.GraphCache.GetMax(svg.OnlineMonth),
 		"wizardsSelect": template.HTML(ctrls.BuildDropList("WIZARDS", "", "", false, false)),
 	}))
 }
