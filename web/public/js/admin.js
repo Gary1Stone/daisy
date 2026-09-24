@@ -189,7 +189,7 @@ function buildTable() {
     tblParts.push(`</tbody></table>`);
     document.getElementById("adminTable").innerHTML = tblParts.join('');
     
-    // Allow a short buffer for Metro or other scripts to settle before enabling save triggers
+    // Allow a short buffer for scripts to settle before enabling save triggers
     setTimeout(() => { building = false; }, 100);
 }
 
