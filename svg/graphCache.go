@@ -65,6 +65,7 @@ func StartGraphCache() {
 }
 
 // This takes 3 seconds to run (single thread) and 2 seconds to run (a thread for each individual graph using go wait routines)
+// Since this is a background operation, we can wait the three seconds, and keep the simpler (less cpu taxing) code
 func generateGraphs() {
 
 	type graphs struct {
@@ -141,16 +142,14 @@ func generateGraphs() {
 	GraphCache.mu.Unlock()
 }
 
-//Alloc: This is the most important one. It’s the actual amount of heap memory your Go objects are currently using.
-//Sys: This is the total amount of RAM the operating system has given to your Go program. (Go tends to hold onto memory rather than immediately giving it back to the OS, so Sys is usually higher than Alloc).
-
+// Alloc: This is the most important one. It’s the actual amount of heap memory your Go objects are currently using.
+// Sys: This is the total amount of RAM the operating system has given to your Go program. (Go tends to hold onto memory rather than immediately giving it back to the OS, so Sys is usually higher than Alloc).
+// For general understanding, we convert bytes to Megabytes (MB)
 func printMemoryUsage() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-
-	// For general understanding, we convert bytes to Megabytes (MB)
-	log.Printf("Alloc = %v MB\n", m.Alloc/1024/1024)           // RAM currently allocated
-	log.Printf("TotalAlloc = %v MB\n", m.TotalAlloc/1024/1024) // Total RAM allocated ever (even if freed)
-	log.Printf("Sys = %v MB\n", m.Sys/1024/1024)               // RAM obtained from the system
-	log.Printf("NumGC = %v\n", m.NumGC)                        // Number of garbage collection runs
+	log.Printf("RAM Used = %v MB\n", m.Alloc/1024/1024)         // RAM currently allocated
+	log.Printf("Max  Used = %v MB\n", m.TotalAlloc/1024/1024)   // Total RAM allocated ever (even if freed)
+	log.Printf("System RAM = %v MB\n", m.Sys/1024/1024)         // RAM obtained from the system
+	log.Printf("Number of Garbage Collections = %v\n", m.NumGC) // Number of garbage collection runs
 }
