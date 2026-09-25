@@ -304,7 +304,7 @@ func GetMidOptions(field, selected, parentCode string, withBlank bool) []Droplis
 		} else {
 			item.Selected = false
 			if item.Value == selected {
-				item.Selected = false
+				item.Selected = true
 			}
 			if source == "M30_Guest" {
 				item.Description += " (Last detected on the guest network)"

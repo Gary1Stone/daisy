@@ -23,7 +23,7 @@ func GetControl(c *fiber.Ctx) error {
 	}
 
 	return c.Render("control", addNavigationIcons(fiber.Map{
-		"title":           template.HTML(svg.GetIcon("control") + " Control"),
+		"title":           template.HTML(svg.GetIcon("control") + " Daisy Server Control"),
 		"fullName":        user.Fullname,
 		"isAdmin":         user.IsAdmin,
 		"attacksDay":      template.HTML(svg.GraphCache.GetGraph(svg.AttacksPerDay)),
