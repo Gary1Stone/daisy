@@ -396,3 +396,30 @@ function checkDropdownValid(el) {
       btnDelete.off();
     }
 }
+
+function setDropdownValue(el, value) {
+  const input = typeof el === "string" ? document.getElementById(el) : el;
+  if (!input) return false;
+
+  const container = input.closest(".custom-select-container") || input.parentElement;
+  const dropdown = container?.querySelector('details[role="list"]');
+  const options = dropdown?.querySelectorAll('ul[role="listbox"] a');
+  const option = Array.from(options || []).find(
+    opt => opt.getAttribute("data-value") === String(value)
+  );
+
+  if (!option) return false;
+
+  options.forEach(opt => opt.removeAttribute("aria-selected"));
+  option.setAttribute("aria-selected", "true");
+
+  const summary = dropdown.querySelector("summary");
+  if (summary) {
+    summary.innerHTML = option.innerHTML;
+    summary.setAttribute("aria-invalid", "false");
+  }
+
+  input.value = value;
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+  return true;
+}
