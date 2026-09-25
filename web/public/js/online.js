@@ -9,8 +9,13 @@ function loadOnlineDevices() {
 }
 
 function svgClicked(mid) {
-    openModal(document.getElementById("popup"));
-    loadMac(mid);
+    if (mid) {
+        const popup = document.getElementById("popup");
+        if (popup) {
+            openModal(popup);
+            loadMac(mid);
+        }
+    }
 }
 
 function doSave(){
@@ -21,16 +26,9 @@ function doSave(){
 
 // Fetch & Load the edit Mac dialog window values
 async function loadMac(mid) {
-    const formData = { Mid: mid };
+    const formData = { Mid: txt2Int(mid) };
     try {
-        const text = await postForm("online/getmac", formData);
-        let macInfo;
-        try {
-            macInfo = JSON.parse(text);
-        } catch (e) {
-            console.log("Non-JSON response:", text);
-            return;
-        }
+        const macInfo = await postForm("online/getmac", formData);
 
         const summary = document.getElementById('summary');
         const popupTitle = document.getElementById("popupTitle");
@@ -50,21 +48,13 @@ async function loadMac(mid) {
         if (locationInput) locationInput.value = macInfo.Location;
         if (noteInput) noteInput.value = macInfo.Note;
 
-        // Damn Metro... 
-        let plugin = Metro.getPlugin(document.getElementById('kind'), 'select');
-        if (plugin) {
-            plugin.reset();
-            if (macInfo.Kind) plugin.val(macInfo.Kind);
-        }
+        setDropdownValue("kind", macInfo.Kind);
         fillOfficeSelect(macInfo.Site, macInfo.Office); 
     } catch (error) {
         console.error("loadMac failed:", error);
     }
 }
 
-// Damn Metro, you can't just update the value of the select element, 
-// you have to reset the plugin first and then set the value through the plugin, 
-// otherwise it won't update the UI.
 let oldSite = "";
 function fillOfficeSelect(siteCode, defaultOffice) {
     const officeCtrl = document.getElementById('office');
@@ -79,11 +69,7 @@ function fillOfficeSelect(siteCode, defaultOffice) {
             });
         }
     }
-    let plugin = officeCtrl ? Metro.getPlugin(officeCtrl, 'select') : null;
-    if (plugin) {
-        plugin.reset();
-        if (defaultOffice) plugin.val(defaultOffice);
-    }
+    if (officeCtrl) officeCtrl.value = defaultOffice;
 }
 
 function validateForm() {

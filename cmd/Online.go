@@ -107,19 +107,34 @@ func PostOnlineGetMac(c *fiber.Ctx) error {
 }
 
 func buildSummary(mac db.MacInfo) string {
-	summary := ""
+	var sum strings.Builder
+	intruder := "No"
 	if mac.Intruder {
-		summary += "<p><b>Intruder:</b> Yes</p>"
+		intruder = "Yes"
 	}
-	summary += "<p><b title='Media Access Control address'>MAC:</b> " + mac.Mac + "</p>"
-	summary += "<p><b>Hostname:</b> " + mac.Hostname + "</p>"
-	summary += "<p><b>IP:</b> " + mac.Ip + "</p>"
-	summary += "<p><b>Site:</b> " + db.GetCodeDescription("SITE", mac.Site) + "</p>"
-	summary += "<p><b>OS:</b> " + mac.Os + "</p>"
-	summary += "<p><b>NIC Vendor:</b> " + mac.Vendor + "</p>"
-	summary += "<p><b>First &sol; Last Seen:</b> " + mac.Firstseen + " &sol; " + mac.Lastseen + "</p>"
-	return summary
+	sum.WriteString(`<table><tbody>`)
+	fmt.Fprintf(&sum, `<tr><td><b>MAC: </b>%s</td><td><b>Intruder: </b>%s</td></tr>`, mac.Mac, intruder)
+	fmt.Fprintf(&sum, `<tr><td><b>Hostname: </b>%s</td><td><b>IP: </b>%s</td></tr>`, mac.Hostname, mac.Ip)
+	fmt.Fprintf(&sum, `<tr><td><b>Site: </b>%s</td><td><b>OS: </b>%s</td></tr>`, mac.Site, mac.Os)
+	fmt.Fprintf(&sum, `<tr><td colspan="2"><b>NIC Vendor: </b>%s</td></tr>`, mac.Vendor)
+	fmt.Fprintf(&sum, `<tr><td colspan="2"><b>First &sol; Last Seen: </b>%s &sol; %s</td></tr>`, mac.Firstseen, mac.Lastseen)
+	sum.WriteString(`</tbody></table>`)
+	return sum.String()
+
 }
+
+// summary := ""
+// // if mac.Intruder {
+// // 	summary += "<p><b>Intruder:</b> Yes</p>"
+// // }
+// summary += "<p><b title='Media Access Control address'>MAC:</b> " + mac.Mac + "</p>"
+// summary += "<p><b>Hostname:</b> " + mac.Hostname + "</p>"
+// summary += "<p><b>IP:</b> " + mac.Ip + "</p>"
+// summary += "<p><b>Site:</b> " + db.GetCodeDescription("SITE", mac.Site) + "</p>"
+// summary += "<p><b>OS:</b> " + mac.Os + "</p>"
+// summary += "<p><b>NIC Vendor:</b> " + mac.Vendor + "</p>"
+// summary += "<p><b>First &sol; Last Seen:</b> " + mac.Firstseen + " &sol; " + mac.Lastseen + "</p>"
+//	return summary
 
 func PostOnlineSetMac(c *fiber.Ctx) error {
 	_, err := extractUserInfo(c)

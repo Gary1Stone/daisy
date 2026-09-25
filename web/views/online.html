@@ -19,7 +19,7 @@
             <input type="hidden" id="mac" name="mac" value="">
             <input type="hidden" id="site" name="site" value="">
 
-            <div id="summary" class="borderbox"></div>
+            <div id="summary"></div>
             
             <label for="name">Name</label>
             <input type="text" id="name" name="name" value=""
@@ -28,8 +28,13 @@
               {{if .Readonly }}readonly{{end}} >
             <small id="nameError" class="invalid_feedback">Mandatory name for the device</small>
 
+            <label for="kind">Device Type</label>
             {{.kindCtrl}}
-            <div id="selectOffice">{{.officeCtrl}}</div>
+
+            <div id="selectOffice">
+              <label for="office">Office</label>
+              {{.officeCtrl}}
+            </div>
             
             <label for="location">Location</label>
             <input type="text" id="location" name="location" value=""
