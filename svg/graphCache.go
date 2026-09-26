@@ -25,7 +25,7 @@ const (
 	HitsPerDay      = 6 // Number of web page requests each day on Daisy4wknc
 	HitsPerWeek     = 7 // week
 	HitsPerMonth    = 8 // month
-	OnlineMonth     = 9 // Number of devices connected to the monitored network (WKNC) each day for a month
+	OnlineMonth     = 9 // Sparkline of number of devices connected to the monitored network (WKNC) each day for a month
 )
 
 var GraphCache GraphCacheStruct
