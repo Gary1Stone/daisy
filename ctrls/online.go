@@ -1,7 +1,9 @@
 package ctrls
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/svg"
@@ -94,4 +96,19 @@ func GetAvoidChart(tzoff int, mac1, mac2 string) string {
 
 	title := "<p>" + macInfo1.Mac + " (" + macInfo1.Name + ") ↔ " + macInfo2.Mac + " (" + macInfo2.Name + ")</p>"
 	return title + svg.BuildOnlineChart(chartData, macInfo, svg.NameWithDate)
+}
+
+func GetLastOnlineDatesTable(curUid int) string {
+	var tbl strings.Builder
+	items, err := db.GetLastOnlineDates(curUid)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	tbl.WriteString(`<div style="max-height: 400px; overflow-y: auto;"><table class="striped" id="seen"><thead><tr><th>Device</th><th>Last Seen Online</th></thead><tbody>`)
+	for _, item := range items {
+		fmt.Fprintf(&tbl, `<tr><td><a href='device.html?cid=%d'>%s</a></td><td>%s</td></tr>`, item.Cid, item.Name, item.Date)
+	}
+	tbl.WriteString(`</tbody></table></div>`)
+	return tbl.String()
 }

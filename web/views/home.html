@@ -1,6 +1,6 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
-  <div class="autogrid">
+  <div class="grid">
     <article>
       <header>
         <a href="#" id="theme_switcher" style="text-decoration: none;" data-tooltip="Themes: System (🌓), Dark (🌙), Light (☀️)"></a> <span id="greeting"></span> {{ .firstName }}
@@ -13,6 +13,9 @@
       {{ .assigned }}
     </article>
   
+  </div>
+  <div class="grid">
+    
     <article>
       <header>
         {{.devicesIcon}}&nbsp;Online Devices (per day)
@@ -39,6 +42,8 @@
       </footer>
     </article>
     
+  </div>
+  <div class="grid">
     <article>
       <header class="{{ .btnColour }}">
         {{.bellIcon}} Alerts
@@ -50,7 +55,20 @@
         <a href="tickets.html" role="button">{{.ticketIcon}} {{ .btnLabel }}</a>
       </footer>
     </article>
+
+  <article>
+    <header>
+        {{.devicesIcon}}&nbsp;<span data-tooltip="Excludes devices on the GUEST network">Last Seen Online</span>
+    </header>
+    <section>
+      {{.devicesOnline}}
+    </section>
+    <footer>
+    </footer>
+  </article>
+
   </div>
+
 </main>
 <script src="js/home.js" defer></script>
 {{template "partials/bottom" .}}

@@ -82,6 +82,7 @@ func GetHome(c *fiber.Ctx) error {
 		"onlineSpark":   template.HTML(svg.GraphCache.GetGraph(svg.OnlineMonth)),
 		"maxHitsMonth":  svg.GraphCache.GetMax(svg.OnlineMonth),
 		"wizardsSelect": template.HTML(ctrls.BuildDropList("WIZARDS", "", "", false, false)),
+		"devicesOnline": template.HTML(ctrls.GetLastOnlineDatesTable(user.Uid)),
 	}))
 }
 

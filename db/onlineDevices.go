@@ -180,3 +180,71 @@ func getWhatWasOnline(prevDay, currDay, nextDay int) ([]Online, error) {
 	}
 	return scrubOnline(items)
 }
+
+type LastOnline struct {
+	Name string
+	Mac  string
+	date int
+	Date string
+	Cid  int
+}
+
+func GetLastOnlineDates(curUid int) ([]LastOnline, error) {
+	items := make([]LastOnline, 0)
+	tzoff := GetTzoff(curUid)
+
+	query := `
+		SELECT last_seen, mac, cid, name
+		FROM (
+			SELECT
+				O.date AS last_seen, O.mac, M.cid, COALESCE(M.name, M.hostname, 'Unknown') AS name,
+				ROW_NUMBER() OVER (
+					PARTITION BY M.cid
+					ORDER BY O.date DESC
+				) AS rn
+			FROM online O
+			LEFT JOIN macs M ON M.mac = O.mac
+			WHERE (O.AM > 0 OR O.PM > 0) AND M.cid > 0
+		)
+		WHERE rn = 1
+		ORDER BY name DESC
+		`
+
+	rows, err := Conn.Query(query)
+	if err != nil {
+		log.Println("Error querying online data:", err)
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var item LastOnline
+		err := rows.Scan(&item.date, &item.Mac, &item.Cid, &item.Name)
+		if err != nil {
+			log.Println("Error scanning online data:", err)
+			continue
+		}
+		item.Date = formatDate(item.date, tzoff)
+		items = append(items, item)
+	}
+	if err = rows.Err(); err != nil {
+		log.Println("Error iterating online data:", err)
+		return nil, err
+	}
+	return items, nil
+}
+
+// func convertYYYYMMDDToDate(yyyymmdd int) string {
+func formatDate(dateInt int, tzoff int) string {
+	// Extract year, month, and day
+	year := dateInt / 10000
+	month := (dateInt / 100) % 100
+	day := dateInt % 100
+
+	// Create date in UTC
+	t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+
+	// Apply timezone offset (in seconds)
+	t = t.Add(time.Duration(tzoff) * time.Second)
+
+	return t.Format("Monday 02 Jan 2006")
+}
