@@ -9,7 +9,7 @@
     </article>  
     
     <article>
-      <header>{{.devicesIcon}} Assigned Devices</header>
+      <header>{{.devicesIcon}} Your Assigned Devices</header>
       {{ .assigned }}
     </article>
   
@@ -29,6 +29,20 @@
         <a href="online.html" role="button">Online</a>
       </footer>
     </article>
+    
+    <article>
+      <header>
+          {{.devicesIcon}}&nbsp;<span data-tooltip="Excludes devices on the GUEST network">Last Seen Online</span>
+      </header>
+      <section>
+        {{.devicesOnline}}
+      </section>
+      <footer>
+      </footer>
+    </article>
+
+  </div>
+  <div class="grid">
 
     <article>
       <header>
@@ -42,8 +56,6 @@
       </footer>
     </article>
     
-  </div>
-  <div class="grid">
     <article>
       <header class="{{ .btnColour }}">
         {{.bellIcon}} Alerts
@@ -55,17 +67,6 @@
         <a href="tickets.html" role="button">{{.ticketIcon}} {{ .btnLabel }}</a>
       </footer>
     </article>
-
-  <article>
-    <header>
-        {{.devicesIcon}}&nbsp;<span data-tooltip="Excludes devices on the GUEST network">Last Seen Online</span>
-    </header>
-    <section>
-      {{.devicesOnline}}
-    </section>
-    <footer>
-    </footer>
-  </article>
 
   </div>
 
