@@ -1,7 +1,6 @@
 package svg
 
 import (
-	"log"
 	"runtime"
 	"sync"
 	"time"
@@ -148,8 +147,8 @@ func generateGraphs() {
 func printMemoryUsage() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	log.Printf("RAM Used = %v MB\n", m.Alloc/1024/1024)         // RAM currently allocated
-	log.Printf("Max  Used = %v MB\n", m.TotalAlloc/1024/1024)   // Total RAM allocated ever (even if freed)
-	log.Printf("System RAM = %v MB\n", m.Sys/1024/1024)         // RAM obtained from the system
-	log.Printf("Number of Garbage Collections = %v\n", m.NumGC) // Number of garbage collection runs
+	// log.Printf("RAM Used = %v MB\n", m.Alloc/1024/1024)         // RAM currently allocated
+	// log.Printf("Max  Used = %v MB\n", m.TotalAlloc/1024/1024)   // Total RAM allocated ever (even if freed)
+	// log.Printf("System RAM = %v MB\n", m.Sys/1024/1024)         // RAM obtained from the system
+	// log.Printf("Number of Garbage Collections = %v\n", m.NumGC) // Number of garbage collection runs
 }
