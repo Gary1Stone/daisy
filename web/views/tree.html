@@ -1,0 +1,30 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<main class="container">
+    <h1>Site: WKNC</h1>
+    {{.tree}}
+</main>
+
+<dialog id="popEdit">
+  <article>
+    <header>
+      <button type='button' aria-label="Close" rel="prev" data-target="popEdit" onclick="toggleModal(event);"></button>
+      <h4 id="name">Device Name</h4>
+    </header>
+    <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
+      <input type="hidden" id="cid" name="cid" value="">
+      <label for='kind'>Kind</label>
+      {{.kindCtrl}}
+      <label for='office'>Office</label>
+      {{.officeCtrl}}
+      <label for='parent'>Parent</label>
+      {{.parentCtrl}}
+    </form>
+    <footer>
+      <button role="button" class="outline" data-target="popEdit" onclick="toggleModal(event);">Cancel</button>
+      <button role="button" for="theForm" data-target="popEdit"  onclick="saveDetail();">Save</button>
+    </footer>
+  </article>
+</dialog>
+
+<script src="js/tree.js" defer></script>
+{{template "partials/bottom" .}}

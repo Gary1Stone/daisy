@@ -15,7 +15,6 @@
       </footer>
     </article>
 
-    
     <article>
       <header>
         {{.devicesIcon}}&nbsp;Online Overlap (%)
@@ -26,8 +25,19 @@
         </div>
       </section>
       <footer>
-        <button type='button' class="button primary js-dialog-close" onclick="goToDuplicates();">Show Duplicates...</button>
-        <button type='button' class="button secondary js-dialog-close" onclick="goToCorrealtion();">Show Correlation...</button>
+        <button type='button' class="button" onclick="goToDuplicates();">Show Duplicates...</button>
+        <button type='button' class="button secondary" onclick="goToCorrealtion();">Show Correlation...</button>
+      </footer>
+    </article>
+    
+    <article>
+      <header>
+        {{.devicesIcon}}&nbsp;Network Interconnect Tree
+      </header>
+      <section>
+        <a href="tree.html" type="button">Show Tree</a>
+      </section>
+      <footer>
       </footer>
     </article>
   

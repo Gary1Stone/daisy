@@ -1,0 +1,115 @@
+package db
+
+import (
+	"log"
+)
+
+type Node struct {
+	Cid         int    `json:"cid"`         // Computer ID
+	Name        string `json:"name"`        // Computer Name (not hostname)
+	Icon        string `json:"icon"`        // The icon for the kind (role) of the device
+	Parent      int    `json:"parent"`      // The parent device's cid
+	Office      string `json:"office"`      // The office the device is in
+	OfficeTitle string `json:"officetitle"` // User visible description of the office
+	Kind        string `json:"kind"`        // The role (switch, router, desktop...) of the device
+	KindTitle   string `json:"kindtitle"`   // User visible description of the kind
+	Model       string `json:"model"`       // Device model
+}
+
+type TreeNode struct {
+	Node
+	Children []*TreeNode `json:"children"`
+}
+
+const nodeQuery = `SELECT D.cid, D.name, D.model,
+			COALESCE(D.parent, 0) AS parent,
+			COALESCE(D.office, '') AS office, 
+			COALESCE(D.kind, '') AS kind,
+			COALESCE(I.icon2,'') AS icon, 
+			COALESCE(O.description, '') AS officetitle, 
+			COALESCE(K.description, '') AS kindtitle
+			FROM devices D
+			LEFT JOIN icons I ON D.kind = I.name
+			LEFT JOIN choices O ON D.office = O.code AND O.field='OFFICE' 
+			LEFT JOIN choices K ON D.type = K.code AND K.field='KIND' `
+
+func GetNode(cid int) (node Node, err error) {
+	query := nodeQuery + `WHERE D.cid=? AND D.active=1 AND D.status != 'STORAGE'`
+	err = Conn.QueryRow(query, cid).Scan(&node.Cid, &node.Name, &node.Model, &node.Parent, &node.Office, &node.Kind, &node.Icon, &node.OfficeTitle, &node.KindTitle)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	return node, nil
+}
+
+func GetNodes(site string) (nodes []Node, err error) {
+	query := nodeQuery + `WHERE D.site=? AND D.active=1 AND D.status != 'STORAGE' ORDER BY D.name`
+	rows, err := Conn.Query(query, site)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var node Node
+		err = rows.Scan(&node.Cid, &node.Name, &node.Model, &node.Parent, &node.Office, &node.Kind, &node.Icon, &node.OfficeTitle, &node.KindTitle)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		nodes = append(nodes, node)
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return
+	}
+
+	return
+}
+
+func GetTreeNodes(site string) (roots []*TreeNode, err error) {
+	nodes, err := GetNodes(site)
+	if err != nil {
+		return
+	}
+
+	treeNodes := make([]*TreeNode, 0, len(nodes))
+	nodeMap := make(map[int]*TreeNode)
+	for _, node := range nodes {
+		treeNode := &TreeNode{
+			Node:     node,
+			Children: []*TreeNode{},
+		}
+		treeNodes = append(treeNodes, treeNode)
+		nodeMap[treeNode.Cid] = treeNode
+	}
+	for _, node := range treeNodes {
+		if node.Parent == 0 {
+			roots = append(roots, node)
+			continue
+		}
+		if parent, exists := nodeMap[node.Parent]; exists {
+			parent.Children = append(parent.Children, node)
+		}
+	}
+	return
+}
+
+// Update the Parent field of all the Device records
+// Also update the corresponding MAC records in the database
+func SetTreeParent(cid, parent int, kind, office string) error {
+
+	_, err := Conn.Exec("UPDATE devices SET parent=?, kind=?, office=? WHERE cid=?", parent, kind, office, cid)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = Conn.Exec("UPDATE macs SET parent=?, kind=?, office=? WHERE cid=?", parent, kind, office, cid)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
