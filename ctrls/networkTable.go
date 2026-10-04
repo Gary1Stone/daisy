@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/svg"
 )
 
 func BuildNetworkTable(tzoff int, site string) string {
@@ -20,13 +21,14 @@ func BuildNetworkTable(tzoff int, site string) string {
 	tbl.WriteString("<table class='striped' id='networktable'>")
 	tbl.WriteString("<thead>")
 	tbl.WriteString("<tr>")
-	tbl.WriteString("<th>Mac</th><th>Name</th><th>Kind</th><th>IP</th><th>Office</th><th>Online</th>")
+	tbl.WriteString("<th>Name</th><th>Mac</th><th>IP</th><th>Office</th><th>Online</th>")
 	tbl.WriteString("</tr>")
 	tbl.WriteString("</thead>")
 	tbl.WriteString("<tbody>")
 
 	for _, item := range items {
-		fmt.Fprintf(&tbl, `<tr data-id="%d"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>`, item.Mid, item.Mac, item.Name, item.Kind, item.Ip, item.Office, isOnline(item.Online))
+		icon := svg.GetIcon(item.Kind)
+		fmt.Fprintf(&tbl, `<tr data-id="%d"><td><span title="%s">%s</span> %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>`, item.Mid, item.Kind, icon, item.Name, item.Mac, item.Ip, item.Office, isOnline(item.Online))
 	}
 
 	tbl.WriteString("</tbody>")
