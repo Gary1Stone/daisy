@@ -305,3 +305,14 @@ func GetMacList() ([]string, error) {
 	}
 	return items, nil
 }
+
+func GetMacs(tzoff int, site string) ([]MacInfo, error) {
+	active := 1
+	params := []any{active, site}
+	items, err := getMacInfo("WHERE active=? AND site=?", tzoff, params...)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return items, nil
+}

@@ -19,7 +19,7 @@ func GetNetwork(c *fiber.Ctx) error {
 	}
 
 	// If NO Read capababilty, send them home
-	if !user.Permissions.Admin.Read {
+	if !user.Permissions.Network.Read {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
@@ -43,5 +43,6 @@ func GetNetwork(c *fiber.Ctx) error {
 		"avoidanceList": template.HTML(ctrls.BuildAvoidListCtrl()),
 		"onlineSpark":   template.HTML(svg.BuildNetworkLoadChart(&hits)),
 		"maxHitsMonth":  hits.MaxValue,
+		"networkTable":  template.HTML(ctrls.BuildNetworkTable(user.Tzoff, "WKNC")),
 	}))
 }

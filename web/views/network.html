@@ -1,5 +1,16 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
+  <input type="hidden" id="site" name="site" value="{{.site}}" />
+  <div role="group">
+      <button type='button' onclick="pickSite();">Site</button>
+      <button type='button' onclick="goToTree();">🪾 Tree</button>
+      <button type='button' onclick="goToHistory();">📖 History</button>
+      <button type='button' onclick="goToDuplicates();">{{.devicesIcon}} Duplicates</button>
+      <button type='button' onclick="goToCorrealtion();">{{.devicesIcon}} Correlation</button>
+  </div>
+  <div>
+    {{.networkTable}}
+  </div>
 
  <div class="grid">
     
@@ -35,7 +46,7 @@
         {{.devicesIcon}}&nbsp;Network Interconnect Tree
       </header>
       <section>
-        <a href="tree.html" type="button">Show Tree</a>
+        <a href="tree.html" type="button">Edit Network Tree</a>
       </section>
       <footer>
       </footer>
@@ -65,4 +76,5 @@
 </dialog>
 
 <script src="js/network.js" defer></script>
+<script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}
