@@ -1,7 +1,8 @@
 // tree.js
 
 const UI = {
-    form: () => document.getElementById('theForm'),
+    form: () => document.getElementById("theForm"),
+    site: () => document.getElementById("site"),
     name: () => document.getElementById("name"),
     cid: () => document.getElementById("cid"),
     parent: () => document.getElementById("parent"),

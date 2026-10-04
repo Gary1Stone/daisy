@@ -30,12 +30,14 @@ const nodeQuery = `SELECT D.cid, D.name, D.model,
 			COALESCE(K.description, '') AS kindtitle
 			FROM devices D
 			LEFT JOIN icons I ON D.kind = I.name
-			LEFT JOIN choices O ON D.office = O.code AND O.field='OFFICE' 
-			LEFT JOIN choices K ON D.type = K.code AND K.field='KIND' `
+			LEFT JOIN choices O ON D.office = O.code AND O.field='OFFICE' AND O.parent=?
+			LEFT JOIN choices K ON D.type = K.code AND K.field='KIND' 
+			WHERE D.active=1 AND D.status != 'STORAGE'
+			`
 
-func GetNode(cid int) (node Node, err error) {
-	query := nodeQuery + `WHERE D.cid=? AND D.active=1 AND D.status != 'STORAGE'`
-	err = Conn.QueryRow(query, cid).Scan(&node.Cid, &node.Name, &node.Model, &node.Parent, &node.Office, &node.Kind, &node.Icon, &node.OfficeTitle, &node.KindTitle)
+func GetNode(cid int, site string) (node Node, err error) {
+	query := nodeQuery + ` AND D.cid=?`
+	err = Conn.QueryRow(query, site, cid).Scan(&node.Cid, &node.Name, &node.Model, &node.Parent, &node.Office, &node.Kind, &node.Icon, &node.OfficeTitle, &node.KindTitle)
 	if err != nil {
 		log.Println(err)
 		return
@@ -44,8 +46,8 @@ func GetNode(cid int) (node Node, err error) {
 }
 
 func GetNodes(site string) (nodes []Node, err error) {
-	query := nodeQuery + `WHERE D.site=? AND D.active=1 AND D.status != 'STORAGE' ORDER BY D.name`
-	rows, err := Conn.Query(query, site)
+	query := nodeQuery + `AND D.site=? ORDER BY D.name`
+	rows, err := Conn.Query(query, site, site)
 	if err != nil {
 		log.Println(err)
 		return
@@ -96,20 +98,32 @@ func GetTreeNodes(site string) (roots []*TreeNode, err error) {
 	return
 }
 
-// Update the Parent field of all the Device records
-// Also update the corresponding MAC records in the database
+// Update the Parent, kind, officce fields of all the Device and MAC records
 func SetTreeParent(cid, parent int, kind, office string) error {
 
-	_, err := Conn.Exec("UPDATE devices SET parent=?, kind=?, office=? WHERE cid=?", parent, kind, office, cid)
+	tx, err := Conn.Begin()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("UPDATE devices SET parent=?, kind=?, office=? WHERE cid=?", parent, kind, office, cid)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	_, err = Conn.Exec("UPDATE macs SET parent=?, kind=?, office=? WHERE cid=?", parent, kind, office, cid)
+	_, err = tx.Exec("UPDATE macs SET parent=?, kind=?, office=? WHERE cid=?", parent, kind, office, cid)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+
+	if err = tx.Commit(); err != nil {
+		log.Println(err)
+		return err
+	}
+
 	return nil
 }

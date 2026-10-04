@@ -9,8 +9,7 @@ import (
 	"github.com/gbsto/daisy/svg"
 )
 
-/* Build a html tree view of the network assets from the MAC table */
-
+/* Build a html tree view of the network assets from the DEVICES table */
 func BuildTreeView(site string) string {
 
 	nodes, err := db.GetTreeNodes(site)
@@ -20,12 +19,12 @@ func BuildTreeView(site string) string {
 
 	// Generate HTML for the tree view
 	var html strings.Builder
-	html.WriteString("<ul class='treeview'>")
+	fmt.Fprintf(&html, `<ul class='treeview'><li>%s Internet %s</li><ul>`, svg.GetIcon("internet"), htmlEscape(site))
+
 	for _, rootNode := range nodes {
 		html.WriteString(generateNodeHTML(rootNode))
 	}
-	html.WriteString("</ul>")
-
+	html.WriteString("</ul></ul>")
 	return html.String()
 }
 
@@ -63,8 +62,8 @@ func BuildParentSelect(selected int, site string, readOnly bool) string {
 	if readOnly {
 		disabled = "disabled"
 	}
-	fmt.Fprintf(&ctrl, `<select id="parent" %s ><option value=""></option>`, disabled)
 
+	fmt.Fprintf(&ctrl, `<select id="parent" name="parent" data-tooltip="Select Parent Device" %s aria-invalid="false" aria-describedby="parentErr" ><option value=""></option>`, disabled)
 	for _, item := range items {
 		txt := ""
 		if selected == item.Cid {

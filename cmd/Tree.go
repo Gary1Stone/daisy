@@ -25,26 +25,28 @@ func GetTree(c *fiber.Ctx) error {
 	site := "WKNC" // Replace this with a db routine to get a default site, or read from c (context)
 
 	return c.Render("tree", addNavigationIcons(fiber.Map{
-		"title":      template.HTML(svg.GetIcon("devices") + " Devices"),
+		"title":      template.HTML(svg.GetIcon("network") + " Edit Network"),
 		"fullName":   user.Fullname,
 		"isAdmin":    user.IsAdmin,
 		"tree":       template.HTML(ctrls.BuildTreeView(site)),
 		"parentCtrl": template.HTML(ctrls.BuildParentSelect(0, site, !user.Permissions.Network.Update)),
-		"kindCtrl":   template.HTML(ctrls.BuildDropList("KIND", "", "", true, !user.Permissions.Device.Update)),
-		"officeCtrl": template.HTML(ctrls.BuildDropList("OFFICE", "", site, true, !user.Permissions.Device.Update)),
+		"kindCtrl":   template.HTML(ctrls.BuildDropList("KIND", "", "", true, !user.Permissions.Network.Update)),
+		"officeCtrl": template.HTML(ctrls.BuildDropList("OFFICE", "", site, true, !user.Permissions.Network.Update)),
+		"site":       site,
 	}))
 }
 
 // Return the default values for the select list of a single node in the tree, given its Mid (MacId)
 func PostTreeShow(c *fiber.Ctx) error {
 	type request struct {
-		Cid int `json:"cid"` // Device ID of the device (Computer ID)
+		Cid  int    `json:"cid"`  // Device ID of the device (Computer ID)
+		Site string `json:"site"` // Device site
 	}
 	var req request
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusOK).SendString("malformed request body")
 	}
-	node, err := db.GetNode(req.Cid)
+	node, err := db.GetNode(req.Cid, req.Site)
 	if err != nil {
 		return c.Status(fiber.StatusOK).SendString("error retrieving node")
 	}
