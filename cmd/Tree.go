@@ -22,12 +22,18 @@ func GetTree(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
-	site := "WKNC" // Replace this with a db routine to get a default site, or read from c (context)
+	// Read the site from the URL, or default to 0
+	site := c.Query("site", "")
+	if site == "" {
+		site = db.GetDefaultSite()
+	}
 
 	return c.Render("tree", addNavigationIcons(fiber.Map{
 		"title":      template.HTML(svg.GetIcon("network") + " Edit Network"),
 		"fullName":   user.Fullname,
 		"isAdmin":    user.IsAdmin,
+		"officeIcon": template.HTML(svg.GetIcon("office")),
+		"parentIcon": template.HTML(svg.GetIcon("parent")),
 		"tree":       template.HTML(ctrls.BuildTreeView(site)),
 		"parentCtrl": template.HTML(ctrls.BuildParentSelect(0, site, !user.Permissions.Network.Update)),
 		"kindCtrl":   template.HTML(ctrls.BuildDropList("KIND", "", "", true, !user.Permissions.Network.Update)),

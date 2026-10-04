@@ -83,7 +83,7 @@ func GetComstat(curUid int) ([]*Comstat, error) {
 
 	query.WriteString(`
 	SELECT 
-		A.cid, A.name, A.type, E.icon2 as icon,
+		A.cid, A.name, A.type, E.icon as icon,
 		COALESCE(H.description, '') As site,
 		COALESCE(G.description, '') As office,
 		COALESCE(I.description, '') As status,

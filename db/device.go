@@ -228,7 +228,7 @@ func readDeviceTable(curUid, page int, whereClause string, params ...any) ([]*De
 		strftime('%Y-%m-%d %H:%M', A.last_updated_time-?, 'unixepoch') AS updated, 
 		A.Image, A.Speed, A.Status, A.Os, A.Serial_number, COALESCE(A.Gid, 0) AS Gid, 
 		COALESCE(B.fullname, '') AS assigned, COALESCE(colours.color, '') AS color, 
-		E.icon2, COALESCE(E.fullname, '') AS lun, 
+		E.icon, COALESCE(E.fullname, '') AS lun, 
 		COALESCE(F.description, '') As type_usr, 
 		COALESCE(G.description, '') As office_usr,
 		COALESCE(H.description, '') As site_usr,
@@ -891,7 +891,7 @@ type DevicesMeta struct {
 // 	items := make(map[int]DevicesMeta)
 // 	query := `
 // 		SELECT D.cid, D.name, coalesce(C.description, ''), coalesce(D.model, ''),
-// 		D.type, coalesce(I.icon2, 'devices')
+// 		D.type, coalesce(I.icon, 'devices')
 // 		FROM devices D
 // 		LEFT JOIN icons I ON D.type=I.name
 // 		LEFT JOIN choices C ON D.make=C.code AND C.field='MAKE'

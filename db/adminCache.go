@@ -74,7 +74,7 @@ func (a *adminStruct) loadAdmin(count int) {
 	tempSlice := make([]adminInfo, 0, count) // Initialize with capacity, not length
 	query := `
 		SELECT A.id, A.field, A.code, A.description, A.seq, A.active, A.parent, 
-		coalesce(B.icon2,"") AS icon, coalesce(C.icon2,"") AS alticon, A.cnt, A.asset_id, A.permissions, coalesce(B.color,"") AS color
+		coalesce(B.icon,"") AS icon, coalesce(C.icon,"") AS alticon, A.cnt, A.asset_id, A.permissions, coalesce(B.color,"") AS color
 		FROM choices A 
 		LEFT JOIN icons B ON A.code=B.name
 		LEFT JOIN icons C ON A.field=C.name

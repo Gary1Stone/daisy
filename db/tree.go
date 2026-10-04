@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"log"
 )
 
@@ -25,7 +26,7 @@ const nodeQuery = `SELECT D.cid, D.name, D.model,
 			COALESCE(D.parent, 0) AS parent,
 			COALESCE(D.office, '') AS office, 
 			COALESCE(D.kind, '') AS kind,
-			COALESCE(I.icon2,'') AS icon, 
+			COALESCE(I.icon,'') AS icon, 
 			COALESCE(O.description, '') AS officetitle, 
 			COALESCE(K.description, '') AS kindtitle
 			FROM devices D
@@ -126,4 +127,32 @@ func SetTreeParent(cid, parent int, kind, office string) error {
 	}
 
 	return nil
+}
+
+// Fetch the one site with the most elements
+func GetDefaultSite() string {
+	site := "WKNC"
+	query := "SELECT COUNT(*) AS cnt, site FROM devices WHERE active=1 GROUP BY site ORDER BY cnt DESC LIMIT 1"
+	err := Conn.QueryRow(query).Scan(&site)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return getChoiceSite()
+		} else {
+			log.Println(err)
+			return site
+		}
+	}
+	return site
+}
+
+// Return first site in the admin cache
+func getChoiceSite() string {
+	AdminCache.RLock()
+	defer AdminCache.RUnlock()
+	for _, item := range AdminCache.theSlice {
+		if item.Field == "SITE" {
+			return item.Code
+		}
+	}
+	return "WKNC"
 }

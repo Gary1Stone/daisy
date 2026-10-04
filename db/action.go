@@ -91,7 +91,7 @@ type Actions struct {
 // Return struct of the code/descriptions
 func GetActionCodes(onlyDevices bool) ([]Actions, error) {
 	var items []Actions
-	query := "SELECT id, name, description, color, priority, icon2, is_device FROM icons "
+	query := "SELECT id, name, description, color, priority, icon, is_device FROM icons "
 	if onlyDevices {
 		query += "WHERE is_device=1 "
 	}
@@ -167,7 +167,7 @@ func readActionTable(curUid, page int, whereClause string, params ...any) ([]*Ac
 			A.aid, A.action, coalesce(A.originator, 0) originator, coalesce(A.cid, 0) cid, A.cid_ack, coalesce(A.sid, 0) sid, 
 			A.sid_ack, A.gid, coalesce(A.uid, 0) uid, A.uid_ack, coalesce(A.inform, 0) inform, A.inform_ack, 
 			coalesce(A.impact, 0) impact, A.notes, A.active, coalesce(A.closed_by, 0) closed_by, 
-			coalesce(G.color, '') colour, coalesce(G.icon2,'') icon, 
+			coalesce(G.color, '') colour, coalesce(G.icon,'') icon, 
 			A.opened as openedInt, A.closed AS closedInt, 
 			strftime('%Y-%m-%d %H:%M', A.opened-?, 'unixepoch') AS opentime, 
 			strftime('%Y-%m-%d %H:%M', A.opened-?, 'unixepoch') AS localtime, 
@@ -517,7 +517,7 @@ func GetInstalledComputers(curUid, sid int) ([]installed, error) {
 	tzoff := GetTzoff(curUid) //Time Zone Offest in minutes
 	query := `
 		SELECT strftime('%Y-%m-%d %H:%M', scandate-?, 'unixepoch') AS scanDate, 
-		coalesce(A.cid, 0) as cid, B.name, B.model, C.icon2 FROM sw_inv A 
+		coalesce(A.cid, 0) as cid, B.name, B.model, C.icon FROM sw_inv A 
 		LEFT JOIN devices B ON B.cid=A.cid
 		LEFT JOIN icons C ON B.type=C.name
 		WHERE A.sid=? AND B.active=1 

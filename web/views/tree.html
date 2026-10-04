@@ -1,6 +1,6 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
+<input type="hidden" id="site" name="site" value="{{.site}}" />
 <main class="container">
-    <input type="hidden" id="site" name="site" value="{{.site}}" />
     {{.tree}}
 </main>
 
@@ -12,11 +12,11 @@
     </header>
     <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
       <input type="hidden" id="cid" name="cid" value="">
-      <label for='kind'>Kind</label>
+      <label for='kind'><span id="iKind">{{.devicesIcon}}</span > Kind</label>
       {{.kindCtrl}}
-      <label for='office'>Office</label>
+      <label for='office'>{{.officeIcon}} Office</label>
       {{.officeCtrl}}
-      <label for='parent'>Parent</label>
+      <label for='parent'><span id="iParent">{{.parentIcon}}</span> Parent</label>
       {{.parentCtrl}}
     </form>
     <footer>

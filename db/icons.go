@@ -24,7 +24,7 @@ func (i *iconMap) get(name string) string {
 
 // Clear any existing map, then load all icons at once while locked
 func (i *iconMap) loadIcons() {
-	rows, err := Conn.Query("SELECT name, icon2 FROM icons")
+	rows, err := Conn.Query("SELECT name, icon FROM icons")
 	if err != nil {
 		log.Println(err)
 		return
@@ -58,4 +58,13 @@ func FindIconNameByName(name string) string {
 		icons.loadIcons()
 	}
 	return icons.get(name)
+}
+
+func GetKindUsingParentCid(cid int) string {
+	kind := ""
+	err := Conn.QueryRow("SELECT kind FROM devices WHERE cid=?", cid).Scan(&kind)
+	if err != nil {
+		log.Println(err)
+	}
+	return FindIconNameByName(kind)
 }
