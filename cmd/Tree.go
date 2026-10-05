@@ -43,34 +43,34 @@ func GetTree(c *fiber.Ctx) error {
 }
 
 // Return the default values for the select list of a single node in the tree, given its Mid (MacId)
-func PostTreeShow(c *fiber.Ctx) error {
-	type request struct {
-		Cid  int    `json:"cid"`  // Device ID of the device (Computer ID)
-		Site string `json:"site"` // Device site
-	}
-	var req request
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusOK).SendString("malformed request body")
-	}
-	node, err := db.GetNode(req.Cid, req.Site)
-	if err != nil {
-		return c.Status(fiber.StatusOK).SendString("error retrieving node")
-	}
-	return c.Status(fiber.StatusOK).JSON(node)
-}
+// func PostTreeShow(c *fiber.Ctx) error {
+// 	type request struct {
+// 		Cid  int    `json:"cid"`  // Device ID of the device (Computer ID)
+// 		Site string `json:"site"` // Device site
+// 	}
+// 	var req request
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return c.Status(fiber.StatusOK).SendString("malformed request body")
+// 	}
+// 	node, err := db.GetNode(req.Cid, req.Site)
+// 	if err != nil {
+// 		return c.Status(fiber.StatusOK).SendString("error retrieving node")
+// 	}
+// 	return c.Status(fiber.StatusOK).JSON(node)
+// }
 
-// Save the updated values for a single node in the tree, given its Mid (MacId)
-func PostTreeUpdate(c *fiber.Ctx) error {
-	var req db.Node
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusOK).SendString("malformed request body")
-	}
+// // Save the updated values for a single node in the tree, given its Mid (MacId)
+// func PostTreeUpdate(c *fiber.Ctx) error {
+// 	var req db.Node
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return c.Status(fiber.StatusOK).SendString("malformed request body")
+// 	}
 
-	// Update both the device AND the MAC record in the database
-	err := db.SetTreeParent(req.Cid, req.Parent, req.Kind, req.Office)
+// 	// Update both the device AND the MAC record in the database
+// 	err := db.SetTreeParent(req.Cid, req.Parent, req.Kind, req.Office)
 
-	if err != nil {
-		return c.Status(fiber.StatusOK).SendString("error updating device")
-	}
-	return c.Status(fiber.StatusOK).SendString("OK")
-}
+// 	if err != nil {
+// 		return c.Status(fiber.StatusOK).SendString("error updating device")
+// 	}
+// 	return c.Status(fiber.StatusOK).SendString("OK")
+// }

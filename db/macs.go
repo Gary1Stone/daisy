@@ -32,6 +32,7 @@ type MacInfo struct {
 	IsSolitary  bool   `json:"IsSolitary"`  // Mac table can have other entries with identical hostnames that are not the same device as this one
 	IsRandomMac bool   `json:"IsRandomMac"` // Mac address is random generated
 	IsIgnore    bool   `json:"IsIgnore"`    // Ignore this mac for online overlap correlations
+	Parent      int    `json:"Parent"`      // who this mac is attached to in the treeview
 }
 
 func getMacInfo(whereclause string, tzoff int, params ...any) ([]MacInfo, error) {
@@ -40,13 +41,14 @@ func getMacInfo(whereclause string, tzoff int, params ...any) ([]MacInfo, error)
 	params = append(prependValues, params...) // add any additional params that were passed in
 
 	query := `
-		SELECT Mid, Mac, Created, Name, Hostname, Ip, Kind, Os,
-		User, Site, Office, Location, Note, Vendor, 
-		Online, Scanned, Source, Intruder, Updated, Active, coalesce(cid, 0) AS cid,
-		isSolitary, isRandomMac, isIgnore,		
-		strftime('%Y-%m-%d', created-?, 'unixepoch') AS firstseen,
-		strftime('%Y-%m-%d', scanned-?, 'unixepoch') AS lastseen
-		FROM macs ` + whereclause
+		SELECT M.Mid, M.Mac, M.Created, M.Name, M.Hostname, M.Ip, M.Kind, M.Os,
+		M.User, M.Site, M.Office, M.Location, M.Note, M.Vendor, 
+		M.Online, M.Scanned, M.Source, M.Intruder, M.Updated, M.Active, coalesce(M.cid, 0) AS cid,
+		M.isSolitary, M.isRandomMac, M.isIgnore,		
+		strftime('%Y-%m-%d', M.created-?, 'unixepoch') AS firstseen,
+		strftime('%Y-%m-%d', M.scanned-?, 'unixepoch') AS lastseen,
+		coalesce(M.Parent, 0) as parent
+		FROM macs M ` + whereclause
 	rows, err := Conn.Query(query, params...)
 	if err != nil {
 		log.Println("Error querying mac info:", err)
@@ -60,7 +62,8 @@ func getMacInfo(whereclause string, tzoff int, params ...any) ([]MacInfo, error)
 			&item.Ip, &item.Kind, &item.Os, &item.User, &item.Site, &item.Office,
 			&item.Location, &item.Note, &item.Vendor, &item.Online, &item.Scanned,
 			&item.Source, &item.Intruder, &item.Updated, &item.Active, &item.Cid,
-			&item.IsSolitary, &item.IsRandomMac, &item.IsIgnore, &item.Firstseen, &item.Lastseen)
+			&item.IsSolitary, &item.IsRandomMac, &item.IsIgnore, &item.Firstseen,
+			&item.Lastseen, &item.Parent)
 		if err != nil {
 			log.Println("Error scanning mac info:", err)
 			continue
@@ -145,7 +148,7 @@ func UpdateMac(item MacInfo) error {
 func GetMacInfoByMid(tzoff, mid int) (MacInfo, error) {
 	var item MacInfo
 	params := []any{mid}
-	items, err := getMacInfo("WHERE mid=?", tzoff, params...)
+	items, err := getMacInfo("WHERE M.active=1 AND M.mid=?", tzoff, params...)
 	if err != nil {
 		log.Println(err)
 		return item, err
@@ -160,7 +163,7 @@ func GetMacInfoByMac(tzoff int, mac string) (MacInfo, error) {
 	var item MacInfo
 	params := []any{mac}
 	//	params = append(params, mac)
-	items, err := getMacInfo("WHERE mac=?", tzoff, params...)
+	items, err := getMacInfo("WHERE M.active=1 AND M.mac=?", tzoff, params...)
 	if err != nil {
 		log.Println(err)
 		return item, err
@@ -238,15 +241,8 @@ func GetHostnames() ([]string, error) {
 // Only include the hostnames where their macs are not in the alias table
 func GetDuplicateHostnames() ([]string, error) {
 	items := make([]string, 0)
-	query := `SELECT m.mac
-		FROM macs AS m
-		JOIN (
-			SELECT hostname
-			FROM macs
-			GROUP BY hostname
-			HAVING COUNT(*) > 1
-		) AS d
-			ON m.hostname = d.hostname
+	query := `SELECT m.mac FROM macs AS m
+		JOIN (SELECT hostname FROM macs GROUP BY hostname HAVING COUNT(*) > 1) AS d ON m.hostname = d.hostname
 		LEFT JOIN aliases a1 ON m.mac = a1.mac
 		LEFT JOIN aliases a2 ON m.mac = a2.alias
 		WHERE m.active = 1 AND m.isSolitary = 0 AND m.isIgnore = 0
@@ -306,13 +302,41 @@ func GetMacList() ([]string, error) {
 	return items, nil
 }
 
+// ADD ICON TO THIS
 func GetMacs(tzoff int, site string) ([]MacInfo, error) {
-	active := 1
-	params := []any{active, site}
-	items, err := getMacInfo("WHERE active=? AND site=?", tzoff, params...)
+	items := make([]MacInfo, 0)
+	query := `
+		SELECT Mid, Mac, Created, Name, Hostname, Ip, Kind, Os,
+		User, Site, Office, Location, Note, Vendor, 
+		Online, Scanned, Source, Intruder, Updated, Active, coalesce(cid, 0) AS cid,
+		isSolitary, isRandomMac, isIgnore,		
+		strftime('%Y-%m-%d', created-?, 'unixepoch') AS firstseen,
+		strftime('%Y-%m-%d', scanned-?, 'unixepoch') AS lastseen,
+		coalesce(parent, 0) AS parent
+		FROM macs WHERE active=1 AND site=? ORDER BY cid, hostname`
+	rows, err := Conn.Query(query, tzoff, tzoff, site)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error querying mac info:", err)
 		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item MacInfo
+		err := rows.Scan(&item.Mid, &item.Mac, &item.Created, &item.Name, &item.Hostname,
+			&item.Ip, &item.Kind, &item.Os, &item.User, &item.Site, &item.Office,
+			&item.Location, &item.Note, &item.Vendor, &item.Online, &item.Scanned,
+			&item.Source, &item.Intruder, &item.Updated, &item.Active, &item.Cid,
+			&item.IsSolitary, &item.IsRandomMac, &item.IsIgnore, &item.Firstseen, &item.Lastseen)
+		if err != nil {
+			log.Println("Error scanning mac info:", err)
+			continue
+		}
+		items = append(items, item)
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return items, err
 	}
 	return items, nil
 }
