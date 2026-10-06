@@ -11,15 +11,14 @@ import (
 
 /* Build a html tree view of the network assets from the DEVICES table */
 func BuildTreeView(site string) string {
-
 	nodes, err := db.GetTreeNodes(site)
 	if err != nil {
-		return ""
+		return "Server Error: Unable to build tree view."
 	}
 
 	// Generate HTML for the tree view
 	var html strings.Builder
-	fmt.Fprintf(&html, `<ul class='treeview'><li><a href='#' data-target="siteSelect" onclick="toggleModal(event)"> %s Internet %s</a></li><ul>`, svg.GetIcon("internet"), htmlEscape(site))
+	fmt.Fprintf(&html, `<ul><li><a href='#' data-target="siteSelect" onclick="toggleModal(event)"> %s Internet %s</a></li><ul>`, svg.GetIcon("internet"), htmlEscape(site))
 
 	for _, rootNode := range nodes {
 		html.WriteString(generateNodeHTML(rootNode))
@@ -28,11 +27,10 @@ func BuildTreeView(site string) string {
 	return html.String()
 }
 
-// Possible enhancement, consider displaying current user instead of office for LAPTOPS, if it has a user, else office
 func generateNodeHTML(node *db.TreeNode) string {
 	var html strings.Builder
-	fmt.Fprintf(&html, "<li data-id='%d'> %s <a href='#' onclick='showDetail(%d)'>%s</a> %s (%s) %s",
-		node.Cid, svg.GetIcon(node.Icon), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle), isOnline(node.IsOnline))
+	fmt.Fprintf(&html, "<li data-id='%d'> %s <a href='#' onclick='showDetail(%d)'>%s</a> %s (%s)",
+		node.Cid, setIconColor(node.Icon, node.IsOnline), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle))
 
 	if len(node.Children) > 0 {
 		html.WriteString("<ul>")
@@ -75,9 +73,12 @@ func BuildParentSelect(selected int, site string, readOnly bool) string {
 	return ctrl.String()
 }
 
-func isOnline(online bool) string {
+func setIconColor(iconName string, online bool) string {
+	class := "fg-red"
+	tip := "offline"
 	if online {
-		return "<span data-tooltip='online'>🟢</span>"
+		class = "fg-green"
+		tip = "online"
 	}
-	return "<span data-tooltip='offline'>🔴</span>"
+	return fmt.Sprintf(`<span class="%s" data-tooltip="%s">%s</span>`, class, tip, svg.GetIcon(iconName))
 }
