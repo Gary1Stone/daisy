@@ -241,14 +241,16 @@ func GetHostnames() ([]string, error) {
 // Only include the hostnames where their macs are not in the alias table
 func GetDuplicateHostnames() ([]string, error) {
 	items := make([]string, 0)
-	query := `SELECT m.mac FROM macs AS m
-		JOIN (SELECT hostname FROM macs GROUP BY hostname HAVING COUNT(*) > 1) AS d ON m.hostname = d.hostname
-		LEFT JOIN aliases a1 ON m.mac = a1.mac
-		LEFT JOIN aliases a2 ON m.mac = a2.alias
-		WHERE m.active = 1 AND m.isSolitary = 0 AND m.isIgnore = 0
+	// Okay, the aliases table holds the already matched MACs, mac is the device's MAC and alias is the master MAC
+	// This query should list all the repeated hostnames, but not for cellphones,... 
+	query := `SELECT M.mac FROM macs AS M
+		JOIN (SELECT hostname FROM macs GROUP BY hostname HAVING COUNT(*) > 1) AS D ON M.hostname = D.hostname
+		LEFT JOIN aliases a1 ON M.mac = a1.mac
+		LEFT JOIN aliases a2 ON M.mac = a2.alias
+		WHERE M.active = 1 AND M.isSolitary = 0 AND M.isIgnore = 0 AND M.kind NOT IN ('IPHONE', 'CELLPHONE', 'TABLET', 'WATCH', '')
 		AND a1.mac IS NULL
 		AND a2.alias IS NULL
-		ORDER BY m.hostname`
+		ORDER BY M.hostname`
 	rows, err := Conn.Query(query)
 	if err != nil {
 		log.Println(err)

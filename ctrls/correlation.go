@@ -95,6 +95,10 @@ func BuildMacCorrelationTable(filter db.MacCorrelationFilter) string {
 		return ""
 	}
 
+	if len(items) == 0 {
+		return "No matches found for the correlation filter settings."
+	}
+
 	ctrl.WriteString(`<table class='striped' id="alerttable">
     <thead><tr>
 	<th>Device1</th><th>Device2</th><th>Jaccard</th><th>Pearsons</th><th>&nbsp;</th>

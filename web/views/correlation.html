@@ -112,8 +112,8 @@
         <p class="fg-red">This cannot be undone.</p>
     </section>
     <footer>
+        <button type='button' class="outline" data-target="linkDialog" onclick="toggleModal(event)">Cancel</button>
         <button type='button'  data-target="linkDialog" onclick="recordLink();">Apply</button>
-        <button type='button' class="secondary" data-target="linkDialog" onclick="toggleModal(event)">Cancel</button>
     </footer>
   </article>
 </dialog>
@@ -159,8 +159,8 @@
         </div>
     </section>
     <footer>
-        <button type='button' data-target="searchDialog" onclick="reloadTable();">Apply</button>
-        <button type='button' class="secondary" data-target="searchDialog" onclick="toggleModal(event)">Cancel</button>
+        <button type='button' class="outline" data-target="searchDialog" onclick="toggleModal(event)">Cancel</button>
+        <button type='button' data-target="searchDialog" onclick="reloadTable();toggleModal(event);">Apply</button>
     </footer>
   </article>
 </dialog>
