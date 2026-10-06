@@ -142,8 +142,8 @@
     </header>
     <section id="pop"><p>message contents</p></section>
     <footer>
+        <button type='button' class="outline" data-target="NotesDialog" onclick="toggleModal(event)">Cancel</button>
         <button type='button' id="cmd" onclick="acceptAction();">Accept</button>
-        <button type='button' class="secondary" data-target="NotesDialog" onclick="toggleModal(event)">Cancel</button>
     </footer>
   </article>
 </dialog>
@@ -162,8 +162,8 @@
       <div id="matchCount">0 matches</div>
     </section>
     <footer>
+      <button type='button' class="outline" data-target="matchDialog" onclick="toggleModal(event)">Cancel</button>
       <button type='button' onclick="closeDialog();">Okay</button>
-      <button type='button' class="secondary" data-target="matchDialog" onclick="toggleModal(event)">Cancel</button>
     </footer>
   </article>
 </dialog>
@@ -180,8 +180,8 @@
       <p>Are you sure you want to delete the <span id="softwareName"></span> record?</p>
     </section>
     <footer>
+      <button type='button' class="outline" data-target="deleteDialog" onclick="toggleModal(event)">Cancel</button>
       <button type='button' onclick="confirmDelete();">Delete</button>
-      <button type='button' class="secondary" data-target="deleteDialog" onclick="toggleModal(event)">Cancel</button>
     </footer>
   </article>
 </dialog>

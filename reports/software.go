@@ -36,7 +36,7 @@ func TrackedSoftware() string {
 	icon := svg.GetIcon("software")
 
 	for _, item := range items {
-		btn := fmt.Sprintf(`<a class='button' href='software.html?sid=%d' role='button' >%s&nbsp;%s</a>`, item.Sid, icon, item.Name)
+		btn := fmt.Sprintf(`<a href='software.html?sid=%d' role='button' >%s&nbsp;%s</a>`, item.Sid, icon, item.Name)
 		fmt.Fprintf(&report, `<tr><td>%s</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td></tr>`, btn, item.Licenses, item.CountActiveInstalls, item.CountDecomissionedInstalls, item.Manual, item.Manual_inactive)
 	}
 	fmt.Fprintf(&report, `</tbody></table>`)

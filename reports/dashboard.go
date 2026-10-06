@@ -167,7 +167,7 @@ func GetDeviceReport(curUid int, devType string) string {
  * Generate the link button to the device record with color
  *
  */
-// <a class='button alert' href='device.html?cid=21' role='button' ><span>icon</span>&nbsp;WKNC-20</a>
+// <a class='alert' href='device.html?cid=21' role='button' ><span>icon</span>&nbsp;WKNC-20</a>
 func getButtonCtrl(cid, days int, devType, icon, name string) string {
 	if len(icon) == 0 {
 		icon = svg.GetIcon(db.FindIconNameByName(devType))

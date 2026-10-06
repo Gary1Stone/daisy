@@ -48,7 +48,7 @@ func GetProfile(c *fiber.Ctx) error {
 	ipBanned := ""
 	// Check if user was banned by their IP address
 	if db.CheckUsersLastIpBanned(profile.Uid) {
-		ipBanned = "<span id='bttn'><button type='button' class='button alert' onclick='resetBanned(" + strconv.Itoa(profile.Uid) + ");'>Reset Banned</button></span>"
+		ipBanned = "<span id='bttn'><button type='button' class='alert' onclick='resetBanned(" + strconv.Itoa(profile.Uid) + ");'>Reset Banned</button></span>"
 	}
 
 	return c.Render("profile", addNavigationIcons(fiber.Map{

@@ -63,5 +63,5 @@ func MakeButton(name string, permission bool) string {
 	if !permission {
 		return fmt.Sprintf("<span id='%s' data-allowed='0'></span>", btn.id)
 	}
-	return fmt.Sprintf(`<button type='button' id='%s' class='outline secondary' aria-label='%s' data-tooltip='%s' data-allowed='1' %s onclick='%s'>%s</button>`, btn.id, btn.tooltip, btn.tooltip, btn.style, btn.function, btn.icon)
+	return fmt.Sprintf(`<button type='button' id='%s' class='outline' aria-label='%s' data-tooltip='%s' data-allowed='1' %s onclick='%s'>%s</button>`, btn.id, btn.tooltip, btn.tooltip, btn.style, btn.function, btn.icon)
 }

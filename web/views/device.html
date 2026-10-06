@@ -196,8 +196,8 @@
       <p>Are you sure you want to delete the <span id="deviceName"></span> record?</p>
     </section>
     <footer>
+      <button type='button' class="outline" data-target="deleteDialog" onclick="toggleModal(event)">Cancel</button>
       <button type='button' onclick="confirmDelete();">Delete</button>
-      <button type='button' class="secondary" data-target="deleteDialog" onclick="toggleModal(event)">Cancel</button>
     </footer>
   </article>
 </dialog>
@@ -215,9 +215,9 @@
     <input type="hidden" id="actionID" value="">
     <input type="hidden" id="actionName" value="">
     <footer>
+      <button type='button' class="outline" data-target="NotesDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="secondary" id="details" onclick="goTicket();">Details...</button>
       <button type='button' id="cmd" onclick="acceptAction();">Accept</button>
-      <button type='button' id="details" class="secondary" onclick="goTicket();">Details...</button>
-      <button type='button' class="secondary" data-target="NotesDialog" onclick="toggleModal(event)">Cancel</button>
     </footer>
   </article>
 </dialog>
@@ -239,8 +239,8 @@
           If you do not agree, do not upload your photo.</p>
     </section>
     <footer>
+      <button type='button' class="outline" data-target="uploadDialog" onclick="toggleModal(event)">Cancel</button>
       <button type='button' id="cmd" onclick="uploadFile();">Upload</button>
-      <button type='button' class="secondary" data-target="uploadDialog" onclick="toggleModal(event)">Cancel</button>
     </footer>
   </article>
 </dialog>
