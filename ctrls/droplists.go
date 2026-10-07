@@ -36,12 +36,13 @@ func buildCtrl(field string, readOnly bool, options []db.DroplistOption) string 
 
 	// TEMPORARY COMMENT OUT USING ICONS AND COLOURS IN SELECTS
 
-	// for option := range options {
-	// 	if len(options[option].Icon) > 0 || len(options[option].Colour) > 0 {
-	// 		isDropDown = true
-	// 		break
-	// 	}
-	// }
+	for option := range options {
+		if len(options[option].Icon) > 0 || len(options[option].Colour) > 0 {
+			isDropDown = true
+			break
+		}
+	}
+
 	onchange := ""
 	if len(droplist.Action) > 0 {
 		onchange = `onchange="` + droplist.Action + `"`
