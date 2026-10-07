@@ -43,7 +43,8 @@ function showDetail(cid) {
         return;
     }
     try {
-        postJSON("/tree/show", {cid: cid}, (response) => {
+        site = document.getElementById("site").value;
+        postJSON("/tree/show", {cid: cid, site: site}, (response) => {
             UI.cid.value = response.cid || "";
             UI.name.innerText = response.name || "";
             UI.parent.value = response.parent || "";

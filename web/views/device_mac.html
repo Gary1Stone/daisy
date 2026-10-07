@@ -1,0 +1,77 @@
+{{template "partials/top" .}} {{template "partials/navbar" .}}
+<!--
+┌─────────────────────────────────────────────────────────────────────┐
+│ Device / MAC Association                                            │
+├───────────────────────┬─────────────────────────────────────────────┤
+│ DEVICES               │ Selected Device: Office PC #3               │
+│                       │                                             │
+│ 🔎 Search devices     │ Device information                         │
+│                       │ Name: Office PC #3                         │
+│ ○ Office PC #1        │ CID: 103                                   │
+│ ○ Office PC #2        │ Type: Computer                             │
+│ ● Office PC #3        │ Office: Kitchen                            │
+│ ○ Printer #1          │                                            │
+│ ○ Router              │ ─── Associated MAC addresses ──────────── │
+│                       │                                           │
+│                       │  ☑ 00:11:22:33:44:55  Wi-Fi               │
+│                       │  ☑ AA:BB:CC:DD:EE:FF  Ethernet            │
+│                       │  ☐ 12:34:56:78:90:AB  Wi-Fi               │
+│                       │                                            │
+│                       │ [+ Add MAC]                                │
+│                       │                                            │
+│                       │ ─── Related MACs ───────────────────────── │
+│                       │                                            │
+│                       │ 00:11:22:33:44:55                          │
+│                       │    ├── 98:76:54:32:10:AA                   │
+│                       │    └── 98:76:54:32:10:BB                   │
+│                       │                                            │
+│                       │ [Save Changes]                             │
+└───────────────────────┴────────────────────────────────────────────┘
+-->
+
+<main class="container">
+  <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
+    <input type="hidden" id="site" name="site" value="{{.site}}" />
+    <input type="hidden" id="cid" name="cid" value="" />
+
+    {{.deviceList}}
+    
+    <p><b>Device Information</b></p>
+    <label for="name">Name</label>
+    <span id="name"></span>
+    <label for="model">Model</label>
+    <span id="model"></span>
+    <p>Kind: <span id="kind"></span></p>
+    <p>Office: <span id="office"></span></p>
+    <hr>
+    <p><b>Associated MAC addresses</b></p>
+    <div id="associated"></div>
+    Add Remove
+    <hr>
+    <p><b>Related MACs</b></p>
+    <div id="related"></div>
+
+  </form>
+    
+</main>
+
+
+
+<dialog id="popEdit">
+  <article>
+    <header>
+      <button type='button' aria-label="Close" rel="prev" data-target="popEdit" onclick="toggleModal(event);"></button>
+      <h4 id="name">Device Name</h4>
+    </header>
+    <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
+      
+
+    <footer>
+      <button type="button" class="outline" data-target="popEdit" onclick="toggleModal(event);">Cancel</button>
+      <button type="button" for="theForm" data-target="popEdit"  onclick="saveDetail();">Save</button>
+    </footer>
+  </article>
+</dialog>
+
+<script src="js/device_mac.js" defer></script>
+{{template "partials/bottom" .}}
