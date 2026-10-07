@@ -36,6 +36,10 @@ function kindChanged() {
     htmx("/icons", {ctrl: "kind", selected: selected}, 'iKind');
 }
 
+function getOfficeCtrl() {
+    return;
+}
+
 function showDetail(cid) {
     if (!cid) {
         alert("Missing id parameter");
@@ -48,8 +52,10 @@ function showDetail(cid) {
             UI.cid.value = response.cid || "";
             UI.name.innerText = response.name || "";
             UI.parent.value = response.parent || "";
-            UI.kind.value = response.kind || "";
-            UI.office.value = response.office || "";
+            setDropdownValue('kind', response.kind || "");
+            setDropdownValue('office', response.office || "");
+            // UI.kind.value = response.kind || "";
+            // UI.office.value = response.office || "";
             openModal(UI.popEdit);
             parentChanged();
             kindChanged();

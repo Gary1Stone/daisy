@@ -34,8 +34,6 @@ func buildCtrl(field string, readOnly bool, options []db.DroplistOption) string 
 	droplist := db.GetDroplistInfo(field)
 	isDropDown := false
 
-	// TEMPORARY COMMENT OUT USING ICONS AND COLOURS IN SELECTS
-
 	for option := range options {
 		if len(options[option].Icon) > 0 || len(options[option].Colour) > 0 {
 			isDropDown = true
@@ -57,7 +55,7 @@ func buildCtrl(field string, readOnly bool, options []db.DroplistOption) string 
 	return buildSelect(droplist, options, readOnly, onchange, required)
 }
 
-// Dropdown with icons and colors
+// Dropdown with icons with colors
 func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly bool, onchange, required string) string {
 	var ctrl strings.Builder
 	selected := ""
@@ -83,14 +81,16 @@ func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly b
 	ctrl.WriteString(`<ul role="listbox">`)
 	for _, option := range options {
 		icon := ""
-		if len(option.Icon) > 0 {
+		if len(option.Icon) > 0 && len(option.Colour) > 0 {
+			icon = setIconColor(option.Icon, option.Colour, option.Tip)
+		} else if len(option.Icon) > 0 {
 			icon = svg.GetIcon(option.Icon)
 		}
 		description := "&nbsp;"
 		if len(option.Description) > 0 {
 			description = option.Description
 		}
-		fmt.Fprintf(&ctrl, `<li><a href="#" class="%s" data-value="%s">%s %s</a></li>`, xlateColor(option.Colour), option.Value, icon, description)
+		fmt.Fprintf(&ctrl, `<li><a href="#" data-value="%s">%s %s</a></li>`, option.Value, icon, description)
 	}
 	ctrl.WriteString(`</ul></details></div>`)
 	return ctrl.String()
@@ -138,4 +138,9 @@ func xlateColor(colour string) string {
 		fgColor = "fg-yellow"
 	}
 	return fgColor
+}
+
+func setIconColor(iconName string, colour string, tip string) string {
+	class := xlateColor(colour)
+	return fmt.Sprintf(`<span class="%s" data-tooltip="%s">%s</span>`, class, tip, svg.GetIcon(iconName))
 }

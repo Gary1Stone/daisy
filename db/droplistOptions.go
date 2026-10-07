@@ -15,6 +15,7 @@ type DroplistOption struct {
 	Description string
 	Icon        string
 	Colour      string
+	Tip         string
 	Selected    bool
 }
 

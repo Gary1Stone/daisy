@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/svg"
 )
@@ -29,8 +30,14 @@ func BuildTreeView(site string) string {
 
 func generateNodeHTML(node *db.TreeNode) string {
 	var html strings.Builder
+	color := colors.Alert
+	tip := "offline"
+	if node.IsOnline {
+		color = colors.Success
+		tip = "online"
+	}
 	fmt.Fprintf(&html, "<li data-id='%d'> %s <a href='#' onclick='showDetail(%d)'>%s</a> %s (%s)",
-		node.Cid, setIconColor(node.Icon, node.IsOnline), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle))
+		node.Cid, setIconColor(node.Icon, color, tip), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle))
 
 	if len(node.Children) > 0 {
 		html.WriteString("<ul>")
@@ -50,35 +57,47 @@ func htmlEscape(s string) string {
 }
 
 func BuildParentSelect(selected int, site string, readOnly bool) string {
-	var ctrl strings.Builder
 	items, err := db.GetNodes(site)
 	if err != nil {
 		log.Println(err)
 		return ""
 	}
-	disabled := ""
-	if readOnly {
-		disabled = "disabled"
-	}
 
-	fmt.Fprintf(&ctrl, `<select id="parent" name="parent" data-tooltip="Select Parent Device" %s aria-invalid="false" aria-describedby="parentErr" ><option value=""></option>`, disabled)
+	var droplist db.Droplist
+	droplist.Label = "Parent"
+	droplist.Id = "parent"
+	droplist.Name = "parent"
+	droplist.Title = "Select Parent Device"
+	droplist.ReadOnly = false
+	droplist.ErrMsg = "A parent can be selected"
+	droplist.Action = ""
+
+	var options []db.DroplistOption
 	for _, item := range items {
-		txt := ""
-		if selected == item.Cid {
-			txt = "selected"
+		var opt db.DroplistOption
+		opt.Value = fmt.Sprintf(`%d`, item.Cid)
+		opt.Description = fmt.Sprintf(`%s %s (%s)`, item.Name, item.Model, item.OfficeTitle)
+		opt.Icon = item.Icon
+		opt.Selected = false
+		opt.Colour = "fg-red"
+		opt.Tip = "offline"
+		if item.IsOnline {
+			opt.Colour = "fg-green"
+			opt.Tip = "online"
 		}
-		fmt.Fprintf(&ctrl, `<option value='%d' %s>%s %s (%s)</option>`, item.Cid, txt, item.Name, item.Model, item.Office)
+		options = append(options, opt)
 	}
-	ctrl.WriteString("</select>")
-	return ctrl.String()
-}
 
-func setIconColor(iconName string, online bool) string {
-	class := "fg-red"
-	tip := "offline"
-	if online {
-		class = "fg-green"
-		tip = "online"
-	}
-	return fmt.Sprintf(`<span class="%s" data-tooltip="%s">%s</span>`, class, tip, svg.GetIcon(iconName))
+	return buildDropdown(droplist, options, readOnly, "", "")
+
+	// fmt.Fprintf(&ctrl, `<select id="parent" name="parent" data-tooltip="Select Parent Device" %s aria-invalid="false" aria-describedby="parentErr" ><option value=""></option>`, disabled)
+	// for _, item := range items {
+	// 	txt := ""
+	// 	if selected == item.Cid {
+	// 		txt = "selected"
+	// 	}
+	// 	fmt.Fprintf(&ctrl, `<option value='%d' %s>%s %s %s (%s)</option>`, item.Cid, txt, setIconColor(item.Icon, item.IsOnline), item.Name, item.Model, item.Office)
+	// }
+	// ctrl.WriteString("</select>")
+	// return ctrl.String()
 }
