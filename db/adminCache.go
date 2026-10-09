@@ -207,6 +207,17 @@ func GetCodeDescription(field string, code any) string {
 	return ""
 }
 
+func GetOfficeDescription(officeCode string, siteCode string) string {
+	AdminCache.RLock()
+	defer AdminCache.RUnlock()
+	for _, item := range AdminCache.theSlice {
+		if item.Field == "OFFICE" && item.Code == officeCode && item.Parent == siteCode {
+			return item.Description
+		}
+	}
+	return ""
+}
+
 // Return the asset for a device type
 func getAssetIdByDeviceType(deviceType string) string {
 	for _, item := range AdminCache.theSlice {
