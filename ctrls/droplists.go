@@ -65,19 +65,39 @@ func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly b
 			break
 		}
 	}
-	disabled := "false"
+	disabled := ""
 	if readOnly {
-		disabled = "true"
+		disabled = "disabled"
 	}
-	ariaRequired := ""
+	ariaRequired := "false"
 	if required != "" {
-		ariaRequired = `aria-required="true"`
+		ariaRequired = "true"
 	}
+
+	//Test if the expermintal feature is enabled
+	// fmt.Fprintf(&ctrl, `<select id="%s" name="%s" data-tooltip="%s" %s aria-required="%s" %s %s aria-invalid="false" aria-describedby="%sErr" >`, droplist.Id, droplist.Id, droplist.Title, disabled, ariaRequired, onchange, required, droplist.Id)
+	// ctrl.WriteString(`<button><selectedcontent></selectedcontent></button>`)
+	// for _, option := range options {
+	// 	selected := ""
+	// 	if option.Selected {
+	// 		selected = "selected"
+	// 	}
+	// 	icon := ""
+	// 	if len(option.Icon) > 0 && len(option.Colour) > 0 {
+	// 		icon = setIconColor(option.Icon, option.Colour, option.Tip)
+	// 	} else if len(option.Icon) > 0 {
+	// 		icon = svg.GetIcon(option.Icon)
+	// 	}
+	// 	fmt.Fprintf(&ctrl, `<option value="%s" %s>%s %s</option>`, option.Value, selected, icon, option.Description)
+	// }
+	// ctrl.WriteString("</select>")
+	// return ctrl.String()
+
 	ctrl.WriteString(`<div class="custom-select-container">`)
-	// Use type="text" but visually hidden to support native validation and onchange handlers
+	// We use type="text" but visually hidden to support native validation and onchange handlers
 	fmt.Fprintf(&ctrl, `<input type="text" class="droplist-input" id="%s" name="%s" value="%s" %s %s tabindex="-1" aria-hidden="true" />`, droplist.Id, droplist.Id, selected, onchange, required)
 	ctrl.WriteString(`<details role="list" class="dropdown">`)
-	fmt.Fprintf(&ctrl, `<summary aria-haspopup="listbox" aria-invalid="false" aria-disabled="%s" %s aria-describedby="%sErr" >%s</summary>`, disabled, ariaRequired, droplist.Id, droplist.Title)
+	fmt.Fprintf(&ctrl, `<summary aria-haspopup="listbox" aria-invalid="false" aria-disabled="%s" aria-required="%s" aria-describedby="%sErr" >%s</summary>`, disabled, ariaRequired, droplist.Id, droplist.Title)
 	ctrl.WriteString(`<ul role="listbox">`)
 	for _, option := range options {
 		icon := ""
