@@ -338,7 +338,7 @@ func updateDevice(curUid int, wiz *wizFormData) (string, int) {
 	}
 	if len(wiz.Office) > 0 {
 		dev.Office = wiz.Office
-		note += ": " + db.GetCodeDescription("OFFICE", wiz.Office)
+		note += ": " + db.GetOfficeDescription(wiz.Office, wiz.Site)
 	}
 	if len(wiz.Location) > 0 {
 		dev.Location = wiz.Location

@@ -145,7 +145,7 @@ func GetDeviceReport(curUid int, devType string) string {
 			os = fmt.Sprintf("<li>%s</li>", db.GetCodeDescription("OS", item.Os))
 		}
 		site := db.GetCodeDescription("SITE", item.Site)
-		office := db.GetCodeDescription("OFFICE", item.Office)
+		office := db.GetOfficeDescription(item.Office, item.Site)
 		location := ""
 		if len(item.Location) > 0 {
 			location = fmt.Sprintf("<p>%s</p>", item.Location)
