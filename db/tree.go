@@ -30,12 +30,12 @@ COALESCE(D.office, '') AS office,
 COALESCE(D.kind, '') AS kind,
 COALESCE(I.icon,'') AS icon, 
 COALESCE(O.description, '') AS officetitle, 
-COALESCE(K.description, '') AS kindtitle,
+COALESCE(K.description, D.kind, '') AS kindtitle,
 COALESCE(online, 0) AS online
 FROM devices D
 LEFT JOIN icons I ON D.kind = I.name
 LEFT JOIN choices O ON D.office = O.code AND O.field='OFFICE' AND O.parent=?
-LEFT JOIN choices K ON D.type = K.code AND K.field='KIND' 
+LEFT JOIN choices K ON D.kind = K.code AND K.field='KIND' 
 LEFT JOIN (SELECT cid, MAX(online) AS online FROM macs GROUP BY cid) M2 ON D.cid = M2.cid
 WHERE D.active=1 AND D.status != 'STORAGE' `
 

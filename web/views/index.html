@@ -1,49 +1,27 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="auto">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=10.0, user-scalable=yes">
-    <meta name="color-scheme" content="light dark">
-    <meta name="author" content="StoneSoft">
-    <meta name="description" content="Device Asset Information SYstem DAISY">
-    <meta name="keywords" content="DAISY Device Asset Information SYstem">
-    <meta name="robots" content="noindex">
-    <link rel="shortcut icon" HREF="favicon.ico" >
-    <link rel="stylesheet" href="css/oat.min.css">
-    <script src="js/oat.min.js" defer></script>
-    <title>DAISY</title>
-</head>
-<body>
+{{template "partials/top" .}}
 <main class="container">
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <article class="card">
-                <header>
-                    <h3><span style="font-size:2rem">&#127809;</span> Device Asset Information System</h3>
-                    <p class="mt-5">Welcome {{ .username }}</p>
-                </header>
-                <section>
-                    <p>For access to this web application you agree to the following:
-                        <ul>
-                            <li><a href="#" data-target="Terms" onclick="toggleModal(event)">Terms&nbsp;&amp;&nbsp;Conditions</a></li>
-                            <li><a href="#" data-target="Privacy" onclick="toggleModal(event)">Privacy Policy</a></li>
-                            <li><a href="#" data-target="Location" onclick="toggleModal(event)">Location Collection</a></li>
-                        </ul> 
-                    </p>
-                    <p><span id="msg"></span></p>
-                    <p>All Rights reserved.</p>
-                    <p>For further information contact: webmaster@wknc.ca</p>
-                    <input type="hidden" id="nextpage" name="nextpage" value="{{.nextpage}}">
-                </section>
-                <footer>
-                    <button type='button' id="btn" onclick="doAccept()" aria-busy="false">Accept</button>
-                </footer>
-            </article>
-        </div>
-        <div class="col-3"></div>
-    </div>
-
+    <article style="max-width: 30rem;">>
+        <header>
+            <h3><span style="font-size:2rem">&#127809;</span> Device Asset Information System</h3>
+            <p class="mt-5">Welcome {{ .username }}</p>
+        </header>
+        <section>
+            <p>For access to this web application you agree to the following:
+                <ul>
+                    <li><a href="#" data-target="Terms" onclick="toggleModal(event)">Terms&nbsp;&amp;&nbsp;Conditions</a></li>
+                    <li><a href="#" data-target="Privacy" onclick="toggleModal(event)">Privacy Policy</a></li>
+                    <li><a href="#" data-target="Location" onclick="toggleModal(event)">Location Collection</a></li>
+                </ul> 
+            </p>
+            <p><span id="msg"></span></p>
+            <p>All Rights reserved.</p>
+            <p>For further information contact: webmaster@wknc.ca</p>
+            <input type="hidden" id="nextpage" name="nextpage" value="{{.nextpage}}">
+        </section>
+        <footer>
+            <button type='button' id="btn" onclick="doAccept()" aria-busy="false">Accept</button>
+        </footer>
+    </article>
 </main>
 
 <dialog id="Terms">
