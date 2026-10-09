@@ -76,7 +76,7 @@ func buildLastSeenOrBackup(item *db.Device, isSeen bool) string {
 
 func buildLocation(item *db.Device) string {
 	var location strings.Builder
-	fmt.Fprintf(&location, `%s %s`, db.GetCodeDescription("SITE", item.Site), db.GetCodeDescription("OFFICE", item.Office))
+	fmt.Fprintf(&location, `%s %s`, db.GetCodeDescription("SITE", item.Site), db.GetOfficeDescription(item.Office, item.Site))
 	if len(item.Location) > 0 {
 		fmt.Fprintf(&location, `<p>%s</p>`, item.Location)
 	}
