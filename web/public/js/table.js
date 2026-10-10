@@ -87,10 +87,10 @@ function tableChangeWatcher(tableId) {
     if (!tableId) return;
     const targetNode = document.getElementById(tableId);
     if (!targetNode) return;
-    const observer = new MutationObserver((mutationsList, observer) => {
+    const observer = new MutationObserver(mutationsList => {
       for (let mutation of mutationsList) {
           if (mutation.type === 'childList') {
-              addRowClick();
+              addRowClick(tableId);
           }
       }
     });
@@ -104,11 +104,9 @@ function tableChangeWatcher(tableId) {
 function addRowClick(tableId) {
     if (!tableId) return;
     const table = document.getElementById(tableId);
-    const rows = table.getElementsByTagName('tr');
+    if (!table) return;
+    const rows = table.querySelectorAll('tbody tr[data-id]');
     Array.from(rows).forEach(row => {
-        if (row.parentNode.tagName.toLowerCase() === 'thead') {
-        return;
-        }
         row.removeEventListener('click', handleRowClick);
         row.addEventListener('click', handleRowClick);
     });
@@ -117,8 +115,8 @@ function addRowClick(tableId) {
 // Add a onclick event to each row of the table
 // To navigate to the profile
 function handleRowClick(event) {
-  const row = event.currentTarget;
-  const id = row.dataset.id;
-  if (!id) return;
-  addRecord(id);
+    const row = event.currentTarget;
+    const id = row.dataset.id;
+    if (!id) return;
+    addRecord(id);
 }

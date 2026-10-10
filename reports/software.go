@@ -53,8 +53,9 @@ func OtherSoftware() string {
 		</tr>
 		</thead>
 		<tbody>`)
+		var otherSoftware db.OtherSoftware
 
-	items, err := db.GetOtherSoftware()
+	items, err := otherSoftware.List()
 	if err != nil {
 		log.Println(err)
 		report.WriteString(`</tbody></table>`)
@@ -62,7 +63,7 @@ func OtherSoftware() string {
 	}
 
 	for _, item := range items {
-		cnt := item.CountActiveInstalls + item.CountDecomissionedInstalls
+		cnt := item.ActiveInstalls + item.DecomissionedInstalls
 		fmt.Fprintf(&report, `<tr><td>%s</td><td>%d</td></tr>`, item.Name, cnt)
 	}
 	fmt.Fprintf(&report, "</tbody></table>")

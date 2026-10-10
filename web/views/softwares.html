@@ -1,6 +1,21 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
-    {{ .softwaresTable }}
+
+    <details open>
+        <summary role="button" >Tracked Software</summary>
+        {{ .trackedSoftware }}
+    </details>
+
+    <details>
+        <summary role="button" > Unwanted Software 👎</summary>
+        <div id="unwantedDiv">{{ .unwantedSoftware}}</div>
+    </details>
+
+    <details>
+        <summary role="button" >Other Installed Software</summary>
+        {{ .otherSoftware}}
+    </details>
+
 </main>
 <script src="js/softwares.js" defer></script>
 <script src="js/table.js" defer></script>

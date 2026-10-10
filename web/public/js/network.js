@@ -78,7 +78,7 @@ function saveDetail() {
     };
     
     try {
-        htmx("/tree/update", formData, "treeview")
+        htmx("/tree/update", formData, "treeview");
         closeModal(UI.popEdit);
     } catch (error) {
         alert("Failed to update device details: " + error);

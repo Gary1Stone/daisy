@@ -163,44 +163,6 @@ func GetManuallyTrackedSoftwareOnComputers(cid int) ([]SoftwareOnComputers, erro
 	return items, err
 }
 
-// Get the software list not being tracked
-func GetOtherSoftware() ([]Sw_inv, error) {
-	items := make([]Sw_inv, 0)
-	query := `
-		SELECT count(*) as cnt, A.name, B.active FROM sw_inv A
-		LEFT JOIN devices B ON B.cid=A.cid
-		WHERE sid IS NULL
-		GROUP BY A.Name
-		ORDER BY A.Name
-	`
-	rows, err := Conn.Query(query)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-		return items, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var item Sw_inv
-		var active, cnt int
-		err := rows.Scan(&cnt, &item.Name, &active)
-		if err != nil {
-			log.Println(err)
-		} else {
-			if active == 1 {
-				item.CountActiveInstalls = cnt
-			} else {
-				item.CountDecomissionedInstalls = cnt
-			}
-			items = append(items, item)
-		}
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Println(err)
-	}
-	return items, err
-}
-
 // Get a MAP of the tracked software (in the software table)
 // And the counts of installs (from inventory and from action_log)
 func GetTrackedSoftware() (map[int]Sw_inv, error) {

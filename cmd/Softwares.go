@@ -14,6 +14,7 @@ import (
 )
 
 func GetSoftwares(c *fiber.Ctx) error {
+
 	user, err := extractUserInfo(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
@@ -29,11 +30,13 @@ func GetSoftwares(c *fiber.Ctx) error {
 
 	//Render the page
 	return c.Render("softwares", addNavigationIcons(fiber.Map{
-		"title":          template.HTML(svg.GetIcon("software") + " Software"),
-		"fullName":       user.Fullname,
-		"isAdmin":        user.IsAdmin,
-		"cmd_one":        template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
-		"softwaresTable": template.HTML(ctrls.SoftwaresTable(user.Uid, filter)),
+		"title":            template.HTML(svg.GetIcon("software") + " Software"),
+		"fullName":         user.Fullname,
+		"isAdmin":          user.IsAdmin,
+		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
+		"trackedSoftware":  template.HTML(ctrls.SoftwaresTable(user.Uid, filter)),
+		"otherSoftware":    template.HTML(ctrls.BuildOtherSoftwareTable()),
+		"unwantedSoftware": template.HTML(ctrls.BuildUnwantedTable()),
 	}))
 }
 
@@ -65,4 +68,40 @@ func PostPreInstalled(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
 	return c.Status(fiber.StatusOK).SendString(db.SetPreInstalled(data))
+}
+
+func PostUnwantedAdd(c *fiber.Ctx) error {
+	user, err := extractUserInfo(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
+	}
+
+	if !user.Permissions.Admin.Update {
+		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
+	}
+
+	var rcvd db.Unwanted
+	if err := json.Unmarshal(c.Body(), &rcvd); err != nil {
+		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
+	}
+	rcvd.Add()
+	return c.Status(fiber.StatusOK).SendString(ctrls.BuildUnwantedTable())
+}
+
+func PostUnwantedDelete(c *fiber.Ctx) error {
+	user, err := extractUserInfo(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
+	}
+
+	if !user.Permissions.Admin.Update {
+		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
+	}
+
+	var rcvd db.Unwanted
+	if err := json.Unmarshal(c.Body(), &rcvd); err != nil {
+		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
+	}
+	rcvd.Delete()
+	return c.Status(fiber.StatusOK).SendString(ctrls.BuildUnwantedTable())
 }

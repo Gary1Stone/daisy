@@ -1,8 +1,7 @@
 // tree.js
 
 const UI = {
-    site: null, cid: null, selected: null, name: null, hostname: null, devicelist: null, model: null, hostname: null,
-    kind: null, office: null
+    site: null, cid: null, selected: null, name: null, devicelist: null, model: null, kind: null, office: null
 };
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -10,13 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     UI.cid = document.getElementById("cid");
     UI.selected = document.getElementById("selected");
     UI.name = document.getElementById("name");
-    UI.hostname = document.getElementById("hostname");
-    UI.devicelist = document.getElementById("devicelist");
     UI.model = document.getElementById("model");
-    UI.hostname = document.getElementById("hostname");
     UI.kind = document.getElementById("kind");
     UI.office = document.getElementById("office");
 
+    UI.devicelist = document.getElementById("devicelist");
     // if (UI.parent) {
     //     UI.parent.addEventListener("change", parentChanged);
     // }

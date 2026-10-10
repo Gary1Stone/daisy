@@ -143,35 +143,3 @@ func calculateStatus(act *db.Action) string {
 	}
 	return retVal
 }
-
-// Generate profile table for wide screens
-func BuildUnwantedSoftwareTable() string {
-	var table strings.Builder
-
-	// Build the table header with search
-	table.WriteString(`<table class='striped' id="unwantedtable">
-    <thead>
-    <tr>
-        <th aria-sort='ascending' data-sort='asc'>Computer</th>
-        <th aria-sort='none'>Site</th>
-        <th aria-sort='none'>Office</th>
-        <th aria-sort='none'>Unwanted Software</th>
-    </tr>
-    </thead>
-    <tbody>`)
-
-	// Fetch software items
-	items, err := db.GetUnwantedSoftware()
-	if err != nil {
-		log.Println(err)
-		return err.Error()
-	}
-
-	// Build table rows
-	for _, item := range items {
-		fmt.Fprintf(&table, `<tr data-id='%d'><td><a href='computer.html?cid=%d'>%s %s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>`, item.Cid, item.Cid, svg.GetIcon(item.Icon), item.Computer, item.SiteName, item.OfficeName, item.Software)
-	}
-
-	table.WriteString("</tbody></table>")
-	return table.String()
-}
