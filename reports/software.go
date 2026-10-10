@@ -172,7 +172,8 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 		auditLate = 28
 	}
 
-	items, err := db.GetLastTracks(curUid)
+	var tracks db.Tracks
+	items, err := tracks.GetLastTracks(curUid)
 	if err != nil {
 		log.Println(err)
 		report.WriteString(`</tbody></table>`)

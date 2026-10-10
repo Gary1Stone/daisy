@@ -15,7 +15,7 @@ type Tracks struct {
 	Days      int     `json:"days"` // Days since last checkin
 }
 
-func GetLastTracks(curUid int) ([]Tracks, error) {
+func (t *Tracks) GetLastTracks(curUid int) ([]Tracks, error) {
 	var items []Tracks
 	tzoff := GetTzoff(curUid)
 	query := `
