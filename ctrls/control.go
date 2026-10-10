@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 func BuildActiveUsersTable(curUid int) string {
@@ -28,7 +28,7 @@ func BuildActiveUsersTable(curUid int) string {
     </thead>
     <tbody>`)
 
-	logoutIcon := svg.GetIcon("logout")
+	logoutIcon := icons.GetIcon("logout")
 
 	for _, item := range items {
 

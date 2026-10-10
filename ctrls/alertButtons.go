@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/wizards"
 )
 
@@ -32,8 +32,8 @@ func GetAlertTable(uid int) string {
 		if len(deviceName) > 10 {
 			deviceName = deviceName[:10]
 		}
-		fmt.Fprintf(&table, `<tr><td>%s %s</td>`, svg.GetIcon(item.DeviceIcon), deviceName)
-		fmt.Fprintf(&table, `<td>%s %s</td>`, svg.GetIcon(item.ActionIcon), xlateAction(item.Action, item.Uid_ack))
+		fmt.Fprintf(&table, `<tr><td>%s %s</td>`, icons.GetIcon(item.DeviceIcon), deviceName)
+		fmt.Fprintf(&table, `<td>%s %s</td>`, icons.GetIcon(item.ActionIcon), xlateAction(item.Action, item.Uid_ack))
 		fmt.Fprintf(&table, `<td><button type="button" onclick="ackAlert('%d');">Dismiss</button></td></tr>`, item.Alert.Aid)
 	}
 	table.WriteString("</tbody></table>")

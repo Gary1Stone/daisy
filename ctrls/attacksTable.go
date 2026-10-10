@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 func BuildAttacksTable(curUid, duration int) string {
@@ -25,7 +25,7 @@ func BuildAttacksTable(curUid, duration int) string {
 	}
 
 	// Build table rows
-	icon := svg.GetIcon("map")
+	icon := icons.GetIcon("map")
 	for _, item := range items {
 		table.WriteString(buildAttacksTableRow(&item, icon))
 	}
@@ -36,7 +36,7 @@ func BuildAttacksTable(curUid, duration int) string {
 
 // Helper function to build the table header
 func buildAttacksTableHeader() string {
-	icon := svg.GetIcon("user")
+	icon := icons.GetIcon("user")
 	return fmt.Sprintf(`<table class='striped' id="attackstable" >
     <thead>
     <tr>

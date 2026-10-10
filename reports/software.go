@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 func TrackedSoftware() string {
@@ -33,7 +33,7 @@ func TrackedSoftware() string {
 		report.WriteString(`</tbody></table>`)
 		return report.String()
 	}
-	icon := svg.GetIcon("software")
+	icon := icons.GetIcon("software")
 
 	for _, item := range items {
 		btn := fmt.Sprintf(`<a href='software.html?sid=%d' role='button' >%s&nbsp;%s</a>`, item.Sid, icon, item.Name)
@@ -53,7 +53,7 @@ func OtherSoftware() string {
 		</tr>
 		</thead>
 		<tbody>`)
-		var otherSoftware db.OtherSoftware
+	var otherSoftware db.OtherSoftware
 
 	items, err := otherSoftware.List()
 	if err != nil {
@@ -178,7 +178,7 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 		report.WriteString(`</tbody></table>`)
 		return report.String()
 	}
-	icon := svg.GetIcon("map")
+	icon := icons.GetIcon("map")
 
 	for _, item := range items {
 		colour := "green"

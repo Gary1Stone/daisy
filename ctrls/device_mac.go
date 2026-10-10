@@ -9,6 +9,8 @@ import (
 	"github.com/gbsto/daisy/db"
 )
 
+
+// Device 2 MAC
 func BuildD2MDeviceList(site string) string {
 
 	items, err := db.GetD2MDevices(site)

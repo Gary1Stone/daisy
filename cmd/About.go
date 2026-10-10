@@ -3,7 +3,7 @@ package cmd
 import (
 	"html/template"
 
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,7 +14,7 @@ func GetAbout(c *fiber.Ctx) error {
 	}
 
 	return c.Render("about", addNavigationIcons(fiber.Map{
-		"title":     template.HTML(svg.GetIcon("about") + " About"),
+		"title":     template.HTML(icons.GetIcon("about") + " About"),
 		"fullName":  user.Fullname,
 		"isAdmin":   user.IsAdmin,
 		"cmd_one":   "",

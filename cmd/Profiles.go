@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gbsto/daisy/db"
 
@@ -29,12 +29,12 @@ func GetProfiles(c *fiber.Ctx) error {
 	}
 
 	return c.Render("profiles", addNavigationIcons(fiber.Map{
-		"title":         template.HTML(svg.GetIcon("profiles") + " Profiles"),
+		"title":         template.HTML(icons.GetIcon("profiles") + " Profiles"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"cmd_one":       template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Profile.Create)),
 		"profilesTable": template.HTML(ctrls.ProfilesTable(user.Uid, filter)),
-		"bellIcon":      template.HTML(svg.GetIcon("bell")),
+		"bellIcon":      template.HTML(icons.GetIcon("bell")),
 	}))
 }
 

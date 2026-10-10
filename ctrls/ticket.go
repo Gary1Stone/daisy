@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 func BuildDeviceCtrl(dev db.Device) string {
@@ -16,7 +16,7 @@ func BuildDeviceCtrl(dev db.Device) string {
 	if dev.Cid != 0 {
 		year = " (" + strconv.Itoa(dev.Year) + ")"
 	} else {
-		dev.Icon = svg.GetIcon("computer")
+		dev.Icon = icons.GetIcon("computer")
 	}
 
 	var builder strings.Builder
@@ -38,7 +38,7 @@ func BuildRouteButton(canUpdate bool) string {
 	if canUpdate {
 		var btn strings.Builder
 		btn.WriteString(`<button type='button' onclick="showRouteDialog();" id="btnSave" title="Save Record" style="border: none; outline: none; background: none; cursor: pointer;">`)
-		fmt.Fprintf(&btn, `<span style:"color:white;">%s</span></button><input type="hidden" id="canSave" value="1" >`, svg.GetIcon("save"))
+		fmt.Fprintf(&btn, `<span style:"color:white;">%s</span></button><input type="hidden" id="canSave" value="1" >`, icons.GetIcon("save"))
 		return btn.String()
 	}
 	return `<span id="btnSave"></span><input type="hidden" id="canSave" value="0" >`

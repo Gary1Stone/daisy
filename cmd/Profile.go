@@ -9,7 +9,7 @@ import (
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -52,7 +52,7 @@ func GetProfile(c *fiber.Ctx) error {
 	}
 
 	return c.Render("profile", addNavigationIcons(fiber.Map{
-		"title":             template.HTML(svg.GetIcon("profiles") + " Profile"),
+		"title":             template.HTML(icons.GetIcon("profiles") + " Profile"),
 		"fullName":          user.Fullname,
 		"isAdmin":           user.IsAdmin,
 		"cmd_one":           template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Profile.Update)),
@@ -78,9 +78,9 @@ func GetProfile(c *fiber.Ctx) error {
 		"chkNotify":         template.HTML(ctrls.BuildNotifyCheckbox(profile.Notify, !user.Permissions.Profile.Update)),
 		"userAlerts":        template.HTML(ctrls.GetAlertTable(uid)),
 		"loginHistory":      template.HTML(ctrls.GetProfileLogins(user.Uid, uid)),
-		"groupIcon":         template.HTML(svg.GetIcon("group")),
-		"locationIcon":      template.HTML(svg.GetIcon("location")),
-		"bellIcon":          template.HTML(svg.GetIcon("bell")),
+		"groupIcon":         template.HTML(icons.GetIcon("group")),
+		"locationIcon":      template.HTML(icons.GetIcon("location")),
+		"bellIcon":          template.HTML(icons.GetIcon("bell")),
 	}))
 }
 

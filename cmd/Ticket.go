@@ -10,7 +10,7 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gofiber/fiber/v2"
@@ -86,7 +86,7 @@ func GetTicket(c *fiber.Ctx) error {
 	}
 
 	return c.Render("ticket", addNavigationIcons(fiber.Map{
-		"title":         template.HTML(svg.GetIcon("news") + " Ticket"),
+		"title":         template.HTML(icons.GetIcon("news") + " Ticket"),
 		"fullName":      user.Fullname,
 		"cmd_one":       template.HTML(ctrls.BuildRouteButton(user.Permissions.Ticket.Update)),
 		"isAdmin":       user.IsAdmin,
@@ -120,9 +120,9 @@ func GetTicket(c *fiber.Ctx) error {
 		"assignGroup":   action.AssignedGroupName,
 		"assignUser":    action.AssignedUserName,
 		"informList":    template.HTML(ctrls.BuildInformList(aid)),
-		"plusIcon":      template.HTML(svg.GetIcon("plus")),
-		"deleteIcon":    template.HTML(svg.GetIcon("delete")),
-		"newsIcon":      template.HTML(svg.GetIcon("news")),
+		"plusIcon":      template.HTML(icons.GetIcon("plus")),
+		"deleteIcon":    template.HTML(icons.GetIcon("delete")),
+		"newsIcon":      template.HTML(icons.GetIcon("news")),
 	}))
 }
 

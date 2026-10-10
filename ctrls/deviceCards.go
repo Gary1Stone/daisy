@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 // Device cards for the devices.html screen and the wizard.html screen
@@ -30,7 +30,7 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 		if item.Last_seen_days >= 0 {
 			detail = "Last Seen: " + strconv.Itoa(item.Last_seen_days) + " days ago"
 		}
-		eyeIcon := fmt.Sprintf("<span class='%s' data-tooltip='Last Seen'>%s</span> %s", color, svg.GetIcon("eye"), detail)
+		eyeIcon := fmt.Sprintf("<span class='%s' data-tooltip='Last Seen'>%s</span> %s", color, icons.GetIcon("eye"), detail)
 
 		if item.Type == "Laptop" || item.Type == "Desktop" {
 			color = ""
@@ -41,18 +41,18 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 			if item.Last_backup_days >= 0 {
 				detail = "Backed up " + strconv.Itoa(item.Last_seen_days) + " days ago"
 			}
-			backupIcon = fmt.Sprintf("<span class='%s' data-tooltip='Backup'`>%s</span>%s", color, svg.GetIcon("copy"), detail)
+			backupIcon = fmt.Sprintf("<span class='%s' data-tooltip='Backup'`>%s</span>%s", color, icons.GetIcon("copy"), detail)
 		}
 
 		// If assigend to a user or group
 		if item.Uid > 0 {
-			assigned = "<span data-tooltip='Assigned to person' >" + svg.GetIcon("user") + "</span> " + item.Assigned
+			assigned = "<span data-tooltip='Assigned to person' >" + icons.GetIcon("user") + "</span> " + item.Assigned
 		} else if item.Gid > 0 {
-			assigned = "<span data-tooltip='Assigned to group'>" + svg.GetIcon("profiles") + "</span> " + item.Gid_usr
+			assigned = "<span data-tooltip='Assigned to group'>" + icons.GetIcon("profiles") + "</span> " + item.Gid_usr
 		}
 		// Broken Icon
 		if item.IsBroken {
-			brokenIcon = "<span class='fg-red' data-tooltip='Broken'>" + svg.GetIcon("broken") + "</span>"
+			brokenIcon = "<span class='fg-red' data-tooltip='Broken'>" + icons.GetIcon("broken") + "</span>"
 		}
 
 		// Build the card contents - HEADER
@@ -60,11 +60,11 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 		if item.IsMissing || item.IsLate || item.IsBroken {
 			color = "fg-red"
 		}
-		fmt.Fprintf(&card, "<article><header><span class='%s' >%s</span> %s ", color, svg.GetIcon(item.Icon), mxl25(item.Name))
+		fmt.Fprintf(&card, "<article><header><span class='%s' >%s</span> %s ", color, icons.GetIcon(item.Icon), mxl25(item.Name))
 
 		// LHS of title - Alert Icon
 		if len(item.Color) > 0 {
-			fmt.Fprintf(&card, "<span style='color: red; float: right !important;' data-tooltip='Alert'>%s</span></header>", svg.GetIcon("bell"))
+			fmt.Fprintf(&card, "<span style='color: red; float: right !important;' data-tooltip='Alert'>%s</span></header>", icons.GetIcon("bell"))
 		} else {
 			card.WriteString("&nbsp;</header>")
 		}
@@ -79,7 +79,7 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 
 		//BODY
 		fmt.Fprintf(&card, "<section><p>%s (%d)</p><p>%s</p><p>%s %s</p>", item.Make, item.Year, mxl25(item.Model), brokenIcon, item.Status)
-		fmt.Fprintf(&card, "<p>%s %s</p><p>%s %s</p>", svg.GetIcon("site"), item.Site_usr, svg.GetIcon("office"), item.Office_usr)
+		fmt.Fprintf(&card, "<p>%s %s</p><p>%s %s</p>", icons.GetIcon("site"), item.Site_usr, icons.GetIcon("office"), item.Office_usr)
 		fmt.Fprintf(&card, "<p>%s</p><p>%s</p><p>%s</p></section>", assigned, eyeIcon, backupIcon)
 
 		//FOOTER
@@ -92,7 +92,7 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 			fmt.Fprintf(&card, `<div style='display: none;' id='cid%d'>%s</div>`, item.Cid, string(deviceJson))
 		} else {
 			fmt.Fprintf(&card, `<button title='Create Report' class='secondary' onclick="popWizards('%d', '%s', '%s');">`, item.Cid, mxl25(item.Name), item.Type)
-			fmt.Fprintf(&card, `%s&nbsp;Report&hellip; </button>`, svg.GetIcon("news"))
+			fmt.Fprintf(&card, `%s&nbsp;Report&hellip; </button>`, icons.GetIcon("news"))
 		}
 		card.WriteString("</footer></article>")
 	}

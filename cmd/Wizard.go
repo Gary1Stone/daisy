@@ -10,7 +10,7 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/wizards"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -86,7 +86,7 @@ func GetWizard(c *fiber.Ctx) error {
 	}
 
 	return c.Render("wizard", addNavigationIcons(fiber.Map{
-		"title":            template.HTML(svg.GetIcon("wizard") + " " + title),
+		"title":            template.HTML(icons.GetIcon("wizard") + " " + title),
 		"fullName":         user.Fullname,
 		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnFilter, user.Permissions.Device.Read)),
 		"isAdmin":          user.IsAdmin,

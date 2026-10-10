@@ -6,7 +6,7 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool) string {
@@ -86,7 +86,7 @@ func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly b
 	// 	if len(option.Icon) > 0 && len(option.Colour) > 0 {
 	// 		icon = setIconColor(option.Icon, option.Colour, option.Tip)
 	// 	} else if len(option.Icon) > 0 {
-	// 		icon = svg.GetIcon(option.Icon)
+	// 		icon = icons.GetIcon(option.Icon)
 	// 	}
 	// 	fmt.Fprintf(&ctrl, `<option value="%s" %s>%s %s</option>`, option.Value, selected, icon, option.Description)
 	// }
@@ -104,7 +104,7 @@ func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly b
 		if len(option.Icon) > 0 && len(option.Colour) > 0 {
 			icon = setIconColor(option.Icon, option.Colour, option.Tip)
 		} else if len(option.Icon) > 0 {
-			icon = svg.GetIcon(option.Icon)
+			icon = icons.GetIcon(option.Icon)
 		}
 		description := "&nbsp;"
 		if len(option.Description) > 0 {
@@ -162,5 +162,5 @@ func xlateColor(colour string) string {
 
 func setIconColor(iconName string, colour string, tip string) string {
 	class := xlateColor(colour)
-	return fmt.Sprintf(`<span class="%s" data-tooltip="%s">%s</span>`, class, tip, svg.GetIcon(iconName))
+	return fmt.Sprintf(`<span class="%s" data-tooltip="%s">%s</span>`, class, tip, icons.GetIcon(iconName))
 }

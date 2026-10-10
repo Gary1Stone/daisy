@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gbsto/daisy/db"
 
@@ -30,7 +30,7 @@ func GetDuplicates(c *fiber.Ctx) error {
 	}
 
 	return c.Render("duplicates", addNavigationIcons(fiber.Map{
-		"title":       template.HTML(svg.GetIcon("devices") + " Network"),
+		"title":       template.HTML(icons.GetIcon("devices") + " Network"),
 		"fullName":    user.Fullname,
 		"isAdmin":     user.IsAdmin,
 		"isReadonly":  !user.Permissions.Device.Update,

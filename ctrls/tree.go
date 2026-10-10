@@ -7,7 +7,7 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 /* Build a html tree view of the network assets from the DEVICES table */
@@ -19,7 +19,7 @@ func BuildTreeView(site string) string {
 
 	// Generate HTML for the tree view
 	var html strings.Builder
-	fmt.Fprintf(&html, `<ul><li><a href='#' data-target="siteSelect" onclick="toggleModal(event)"> %s Internet %s</a></li><ul>`, svg.GetIcon("internet"), htmlEscape(site))
+	fmt.Fprintf(&html, `<ul><li><a href='#' data-target="siteSelect" onclick="toggleModal(event)"> %s Internet %s</a></li><ul>`, icons.GetIcon("internet"), htmlEscape(site))
 
 	for _, rootNode := range nodes {
 		html.WriteString(generateNodeHTML(rootNode))

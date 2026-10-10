@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gbsto/daisy/db"
 
@@ -44,7 +44,7 @@ func GetSoftware(c *fiber.Ctx) error {
 	}
 
 	return c.Render("software", addNavigationIcons(fiber.Map{
-		"title":          template.HTML(svg.GetIcon("software") + " Software"),
+		"title":          template.HTML(icons.GetIcon("software") + " Software"),
 		"fullName":       user.Fullname,
 		"isAdmin":        user.IsAdmin,
 		"cmd_one":        template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Software.Update)),

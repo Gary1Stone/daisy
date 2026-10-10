@@ -12,6 +12,7 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/svg"
 	"github.com/gbsto/daisy/util"
@@ -74,9 +75,9 @@ func GetHome(c *fiber.Ctx) error {
 		"btnColour":        btnColour,
 		"btnLabel":         btnLabel,
 		"myAlerts":         template.HTML(ctrls.GetAlertTable(user.Uid)),
-		"wizardIcon":       template.HTML(svg.GetIcon("wizard")),
-		"checkIcon":        template.HTML(svg.GetIcon("check")),
-		"bellIcon":         template.HTML(svg.GetIcon("bell")),
+		"wizardIcon":       template.HTML(icons.GetIcon("wizard")),
+		"checkIcon":        template.HTML(icons.GetIcon("check")),
+		"bellIcon":         template.HTML(icons.GetIcon("bell")),
 		"onlineCount":      online,
 		"offlineCount":     offline,
 		"onlineSpark":      template.HTML(svg.GraphCache.GetGraph(svg.OnlineMonth)),
@@ -99,7 +100,7 @@ func getAssignedDevices(curUid int) (string, error) {
 	missing := db.GetMissingDevices()
 	var i int = 0
 	var cnt int = 0
-	icon := svg.GetIcon("search")
+	icon := icons.GetIcon("search")
 
 	for _, item := range items {
 		fmt.Fprintf(&msg, `<p>%s %s `, item.Name, item.Model)
@@ -214,19 +215,19 @@ func extractUserInfo(c *fiber.Ctx) (userInfo, error) {
 
 // addNavigationIcons populates a fiber.Map with navigation icons.
 func addNavigationIcons(m fiber.Map) fiber.Map {
-	m["menuIcon"] = template.HTML(svg.GetIcon("menu"))
-	m["homeIcon"] = template.HTML(svg.GetIcon("home"))
-	m["ticketIcon"] = template.HTML(svg.GetIcon("ticket"))
-	m["devicesIcon"] = template.HTML(svg.GetIcon("devices"))
-	m["softwareIcon"] = template.HTML(svg.GetIcon("software"))
-	m["profilesIcon"] = template.HTML(svg.GetIcon("profiles"))
-	m["reportsIcon"] = template.HTML(svg.GetIcon("reports"))
-	m["controlIcon"] = template.HTML(svg.GetIcon("control"))
-	m["networkIcon"] = template.HTML(svg.GetIcon("network"))
-	m["settingsIcon"] = template.HTML(svg.GetIcon("settings"))
-	m["aboutIcon"] = template.HTML(svg.GetIcon("about"))
-	m["logoutIcon"] = template.HTML(svg.GetIcon("logout"))
-	m["userIcon"] = template.HTML(svg.GetIcon("user"))
+	m["menuIcon"] = template.HTML(icons.GetIcon("menu"))
+	m["homeIcon"] = template.HTML(icons.GetIcon("home"))
+	m["ticketIcon"] = template.HTML(icons.GetIcon("ticket"))
+	m["devicesIcon"] = template.HTML(icons.GetIcon("devices"))
+	m["softwareIcon"] = template.HTML(icons.GetIcon("software"))
+	m["profilesIcon"] = template.HTML(icons.GetIcon("profiles"))
+	m["reportsIcon"] = template.HTML(icons.GetIcon("reports"))
+	m["controlIcon"] = template.HTML(icons.GetIcon("control"))
+	m["networkIcon"] = template.HTML(icons.GetIcon("network"))
+	m["settingsIcon"] = template.HTML(icons.GetIcon("settings"))
+	m["aboutIcon"] = template.HTML(icons.GetIcon("about"))
+	m["logoutIcon"] = template.HTML(icons.GetIcon("logout"))
+	m["userIcon"] = template.HTML(icons.GetIcon("user"))
 	return m
 }
 

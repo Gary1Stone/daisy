@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 // Button identifiers as constants to prevent typos and improve maintainability.
@@ -38,17 +38,17 @@ var (
 
 func loadBtnInfo() {
 	btnInfoMap = map[string]buttonInfo{
-		BtnSave:      {"btnSave", "Save Record", "", "saveRecord(event);", svg.GetIcon("save")},
-		BtnNew:       {"btnNew", "Create Record", "", "addRecord(event);", svg.GetIcon("add")},
-		BtnDelete:    {"btnDelete", "Delete Record", "", "deleteRecord(event);", svg.GetIcon("delete")},
-		BtnSeen:      {"btnSeen", "Not Seen in 90+ days", "style='color:red;'", "seenClick();", svg.GetIcon("eye")},
-		BtnBackup:    {"btnBackup", "Not Backed up in 90+ days", "style='color:red;'", "backupClick();", svg.GetIcon("copy")},
-		BtnHelp:      {"btnHelp", "Help", "", "showHelp();", svg.GetIcon("help")},
-		BtnTables:    {"btnTables", "Select Admin Table", "", "showTableSelect();", svg.GetIcon("factory")},
-		BtnFilter:    {"btnFilter", "Filter...", "", "popFilters();", svg.GetIcon("filter")},
-		BtnOnline:    {"btnOnline", "Device Online History", "", `goto("online.html");`, svg.GetIcon("history")},
-		BtnDuplicate: {"btnDuplicate", "Find Duplicate devices (MACs)", "", `goto("duplicates.html");`, svg.GetIcon("clone")},
-		BtnCorrelate: {"btnCorrelate", "Associate MACs to Devices", "", `goto("correlation.html");`, svg.GetIcon("equals")},
+		BtnSave:      {"btnSave", "Save Record", "", "saveRecord(event);", icons.GetIcon("save")},
+		BtnNew:       {"btnNew", "Create Record", "", "addRecord(event);", icons.GetIcon("add")},
+		BtnDelete:    {"btnDelete", "Delete Record", "", "deleteRecord(event);", icons.GetIcon("delete")},
+		BtnSeen:      {"btnSeen", "Not Seen in 90+ days", "style='color:red;'", "seenClick();", icons.GetIcon("eye")},
+		BtnBackup:    {"btnBackup", "Not Backed up in 90+ days", "style='color:red;'", "backupClick();", icons.GetIcon("copy")},
+		BtnHelp:      {"btnHelp", "Help", "", "showHelp();", icons.GetIcon("help")},
+		BtnTables:    {"btnTables", "Select Admin Table", "", "showTableSelect();", icons.GetIcon("factory")},
+		BtnFilter:    {"btnFilter", "Filter...", "", "popFilters();", icons.GetIcon("filter")},
+		BtnOnline:    {"btnOnline", "Device Online History", "", `goto("online.html");`, icons.GetIcon("history")},
+		BtnDuplicate: {"btnDuplicate", "Find Duplicate devices (MACs)", "", `goto("duplicates.html");`, icons.GetIcon("clone")},
+		BtnCorrelate: {"btnCorrelate", "Associate MACs to Devices", "", `goto("correlation.html");`, icons.GetIcon("equals")},
 	}
 }
 

@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -39,5 +39,5 @@ func PostIcon(c *fiber.Ctx) error {
 
 	}
 
-	return c.Status(fiber.StatusOK).SendString(svg.GetIcon(iconName))
+	return c.Status(fiber.StatusOK).SendString(icons.GetIcon(iconName))
 }

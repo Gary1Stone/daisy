@@ -3,6 +3,7 @@ package cmd
 import (
 	"html/template"
 
+	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/ctrls"
@@ -23,7 +24,7 @@ func GetControl(c *fiber.Ctx) error {
 	}
 
 	return c.Render("control", addNavigationIcons(fiber.Map{
-		"title":           template.HTML(svg.GetIcon("control") + " Daisy Server Control"),
+		"title":           template.HTML(icons.GetIcon("control") + " Daisy Server Control"),
 		"fullName":        user.Fullname,
 		"isAdmin":         user.IsAdmin,
 		"attacksDay":      template.HTML(svg.GraphCache.GetGraph(svg.AttacksPerDay)),

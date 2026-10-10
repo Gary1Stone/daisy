@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/util"
 )
 
@@ -30,7 +30,7 @@ func GetDashboardReport() string {
 		if item.PendingAction > 0 {
 			pendingAction = fmt.Sprintf(`<a href="#" onclick="getReport('ISSUES_REPORT', '%s');">%d</a>", item.Type, item.PendingAction'`, item.Type, item.PendingAction)
 		}
-		fmt.Fprintf(&report, `<tr><td><a href="#" onclick="getReport('DEVICES_REPORT', '%s');">%s %s</a></td>`, item.Type, svg.GetIcon(item.Icon), item.Label)
+		fmt.Fprintf(&report, `<tr><td><a href="#" onclick="getReport('DEVICES_REPORT', '%s');">%s %s</a></td>`, item.Type, icons.GetIcon(item.Icon), item.Label)
 		fmt.Fprintf(&report, `<td>%d</td><td>%d</td><td>%s</td><td>%d</td></tr>`, item.Count, item.Unavailable, pendingAction, item.Instorage)
 	}
 	report.WriteString("</tbody></table>")
@@ -51,7 +51,7 @@ func GetDeviceCounts() string {
     </thead>
     <tbody>`)
 	for _, item := range items {
-		fmt.Fprintf(&report, `<tr><td>%s %s</td><td>%d</td><td>%d</td><td>%d</td></tr>`, svg.GetIcon(item.Icon), item.Label, item.Count, item.PendingAction, item.Instorage)
+		fmt.Fprintf(&report, `<tr><td>%s %s</td><td>%d</td><td>%d</td><td>%d</td></tr>`, icons.GetIcon(item.Icon), item.Label, item.Count, item.PendingAction, item.Instorage)
 	}
 	report.WriteString("</tbody></table>")
 	return report.String()
@@ -170,9 +170,9 @@ func GetDeviceReport(curUid int, devType string) string {
 // <a class='alert' href='device.html?cid=21' role='button' ><span>icon</span>&nbsp;WKNC-20</a>
 func getButtonCtrl(cid, days int, devType, icon, name string) string {
 	if len(icon) == 0 {
-		icon = svg.GetIcon(db.FindIconNameByName(devType))
+		icon = icons.GetIcon(db.FindIconNameByName(devType))
 	} else {
-		icon = svg.GetIcon(icon)
+		icon = icons.GetIcon(icon)
 	}
 	if days > 90 {
 		icon = "<span style='color:red;`>" + icon + "</span>"

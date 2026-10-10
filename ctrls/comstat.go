@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 func ComstatTable(uid int) string {
@@ -88,7 +88,7 @@ func ComstatTable(uid int) string {
 
 		//<tr data-id='%d' item.Cid //(This causes the whole row to be clickable, eliminating the ability to show the community MAP)
 		fmt.Fprintf(&table, `<tr><td><span style="color:%s;">%s</span><a href='device.html?cid=%d'>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>`,
-			colorIcon, svg.GetIcon(item.Icon), item.Cid, item.Name, item.Site, item.Office, assigned, item.Status)
+			colorIcon, icons.GetIcon(item.Icon), item.Cid, item.Name, item.Site, item.Office, assigned, item.Status)
 
 		if item.SeenDate == BEGININGOFTIME {
 			item.SeenDate = "never"

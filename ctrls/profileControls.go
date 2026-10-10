@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 /*
@@ -67,7 +67,7 @@ func BuildAssignedDevices(curUid, uid int) string {
 	var ctrl strings.Builder
 	ctrl.WriteString(`<div class="scrollarea">`)
 	for _, item := range devices {
-		fmt.Fprintf(&ctrl, `<p style="text-decoration: none;"><a href='device.html?cid=%d'>%s %s %s</a></p>`, item.Cid, svg.GetIcon(item.Icon), item.Name, item.Model)
+		fmt.Fprintf(&ctrl, `<p style="text-decoration: none;"><a href='device.html?cid=%d'>%s %s %s</a></p>`, item.Cid, icons.GetIcon(item.Icon), item.Name, item.Model)
 	}
 	ctrl.WriteString(`</div>`)
 

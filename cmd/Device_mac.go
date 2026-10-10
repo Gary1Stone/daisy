@@ -5,7 +5,7 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -29,14 +29,13 @@ func GetDevice_Mac(c *fiber.Ctx) error {
 	}
 
 	return c.Render("device_mac", addNavigationIcons(fiber.Map{
-		"title":         template.HTML(svg.GetIcon("network") + " Device / MAC association"),
-		"fullName":      user.Fullname,
-		"isAdmin":       user.IsAdmin,
-		"deviceList":   template.HTML(ctrls.BuildD2MDeviceList(site)),
-		"site":          site,
+		"title":      template.HTML(icons.GetIcon("network") + " Device / MAC association"),
+		"fullName":   user.Fullname,
+		"isAdmin":    user.IsAdmin,
+		"deviceList": template.HTML(ctrls.BuildD2MDeviceList(site)),
+		"site":       site,
 	}))
 }
-
 
 // Return the default values for the select list of a single node in the tree, given its Mid (MacId)
 func PostFetchD2MDevice(c *fiber.Ctx) error {
@@ -54,4 +53,3 @@ func PostFetchD2MDevice(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(node)
 }
-

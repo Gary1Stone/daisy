@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gbsto/daisy/db"
 
@@ -34,7 +34,7 @@ func GetDevices(c *fiber.Ctx) error {
 	filter.Page = 0 // Reset the page to 0
 
 	return c.Render("devices", addNavigationIcons(fiber.Map{
-		"title":            template.HTML(svg.GetIcon("devices") + " Devices"),
+		"title":            template.HTML(icons.GetIcon("devices") + " Devices"),
 		"fullName":         user.Fullname,
 		"isAdmin":          user.IsAdmin,
 		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Device.Create)),
@@ -47,21 +47,21 @@ func GetDevices(c *fiber.Ctx) error {
 		"isLate":           filter.IsLate,
 		"isMissing":        filter.IsMissing,
 		"cards":            template.HTML(ctrls.DeviceCards(user.Uid, &filter, false)),
-		"devicesIcon":      template.HTML(svg.GetIcon("devices")),
-		"groupIcon":        template.HTML(svg.GetIcon("group")),
-		"siteIcon":         template.HTML(svg.GetIcon("site")),
-		"officeIcon":       template.HTML(svg.GetIcon("office")),
-		"searchIcon":       template.HTML(svg.GetIcon("search")),
-		"sightingIcon":     template.HTML(svg.GetIcon("eye")),
-		"backupIcon":       template.HTML(svg.GetIcon("copy")),
-		"careIcon":         template.HTML(svg.GetIcon("wrench")),
-		"brokenIcon":       template.HTML(svg.GetIcon("broken")),
-		"diedIcon":         template.HTML(svg.GetIcon("stethoscope")),
-		"lostIcon":         template.HTML(svg.GetIcon("steps")),
-		"usingIcon":        template.HTML(svg.GetIcon("tag")),
-		"claimingIcon":     template.HTML(svg.GetIcon("tag")),
-		"givingIcon":       template.HTML(svg.GetIcon("tag")),
-		"removeIcon":       template.HTML(svg.GetIcon("software")),
+		"devicesIcon":      template.HTML(icons.GetIcon("devices")),
+		"groupIcon":        template.HTML(icons.GetIcon("group")),
+		"siteIcon":         template.HTML(icons.GetIcon("site")),
+		"officeIcon":       template.HTML(icons.GetIcon("office")),
+		"searchIcon":       template.HTML(icons.GetIcon("search")),
+		"sightingIcon":     template.HTML(icons.GetIcon("eye")),
+		"backupIcon":       template.HTML(icons.GetIcon("copy")),
+		"careIcon":         template.HTML(icons.GetIcon("wrench")),
+		"brokenIcon":       template.HTML(icons.GetIcon("broken")),
+		"diedIcon":         template.HTML(icons.GetIcon("stethoscope")),
+		"lostIcon":         template.HTML(icons.GetIcon("steps")),
+		"usingIcon":        template.HTML(icons.GetIcon("tag")),
+		"claimingIcon":     template.HTML(icons.GetIcon("tag")),
+		"givingIcon":       template.HTML(icons.GetIcon("tag")),
+		"removeIcon":       template.HTML(icons.GetIcon("software")),
 	}))
 }
 

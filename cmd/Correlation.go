@@ -4,7 +4,7 @@ import (
 	"html/template"
 
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gbsto/daisy/db"
 
@@ -33,7 +33,7 @@ func GetCorrelation(c *fiber.Ctx) error {
 	}
 
 	return c.Render("correlation", addNavigationIcons(fiber.Map{
-		"title":        template.HTML(svg.GetIcon("computer") + " Device"),
+		"title":        template.HTML(icons.GetIcon("computer") + " Device"),
 		"fullName":     user.Fullname,
 		"isAdmin":      user.IsAdmin,
 		"isReadonly":   user.Permissions.Admin.Update,

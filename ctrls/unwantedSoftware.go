@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 // Build table for Software page
@@ -52,7 +52,7 @@ func BuildUnwantedSoftwareTable() string {
 
 	// Build table rows
 	for _, item := range items {
-		fmt.Fprintf(&table, `<tr><td><a href='computer.html?cid=%d'>%s %s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>`, item.Cid, svg.GetIcon(item.Icon), item.Computer, item.SiteName, item.OfficeName, item.Software)
+		fmt.Fprintf(&table, `<tr><td><a href='computer.html?cid=%d'>%s %s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>`, item.Cid, icons.GetIcon(item.Icon), item.Computer, item.SiteName, item.OfficeName, item.Software)
 	}
 
 	table.WriteString("</tbody></table>")

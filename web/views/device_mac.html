@@ -35,14 +35,34 @@
     <input type="hidden" id="cid" name="cid" value="" />
 
     {{.deviceList}}
-    
-    <p><b>Device Information</b></p>
-    <label for="name">Name</label>
-    <span id="name"></span>
-    <label for="model">Model</label>
-    <span id="model"></span>
-    <p>Kind: <span id="kind"></span></p>
-    <p>Office: <span id="office"></span></p>
+  
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Device Information</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Name: </td>
+          <td id="name" aria-readonly="true"></td>
+        </tr>
+        <tr>
+          <td>Model: </td>
+          <td id="model" aria-readonly="true"></td>
+        </tr>
+        <tr>
+          <td>Kind: </td>
+          <td id="kind" aria-readonly="true"></td>
+        </tr>
+        <tr>
+          <td>Office: </td>
+          <td id="office" aria-readonly="true"></td>
+        </tr>
+      </tbody>
+    </table>
+
+
     <hr>
     <p><b>Associated MAC addresses</b></p>
     <div id="associated"></div>

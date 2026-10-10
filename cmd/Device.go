@@ -8,7 +8,7 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gbsto/daisy/db"
 
@@ -58,7 +58,7 @@ func GetDevice(c *fiber.Ctx) error {
 	//	log.Printf("GetDevice took %s", time.Since(start))
 	// Render the page
 	return c.Render("device", addNavigationIcons(fiber.Map{
-		"title":             template.HTML(svg.GetIcon("devices") + " Devices"),
+		"title":             template.HTML(icons.GetIcon("devices") + " Devices"),
 		"fullName":          user.Fullname,
 		"isAdmin":           user.IsAdmin,
 		"cmd_one":           template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Device.Update)),

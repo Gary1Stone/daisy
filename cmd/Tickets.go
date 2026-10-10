@@ -4,7 +4,7 @@ import (
 	"html/template"
 
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -23,7 +23,7 @@ func GetTickets(c *fiber.Ctx) error {
 
 	//Render the page
 	return c.Render("tickets", addNavigationIcons(fiber.Map{
-		"title":        template.HTML(svg.GetIcon("ticket") + " Tickets"),
+		"title":        template.HTML(icons.GetIcon("ticket") + " Tickets"),
 		"fullName":     user.Fullname,
 		"isAdmin":      isAdmin,
 		"cmd_one":      template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Ticket.Create)),

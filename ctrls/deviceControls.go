@@ -10,7 +10,7 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 func MakeImageCtrl(dev *db.Device, isUpdatePerm bool) string {
@@ -60,8 +60,8 @@ func BuildSoftwareList(curUid, cid int) string {
 		</tr></thead>
 		<tbody>`)
 
-	appIcon := svg.GetIcon("software")
-	stepsIcon := svg.GetIcon("steps")
+	appIcon := icons.GetIcon("software")
+	stepsIcon := icons.GetIcon("steps")
 
 	for _, item := range items {
 		tracked := ""
@@ -176,7 +176,7 @@ func buildButton(button db.Popbutton) string {
 	if button.Active == 0 {
 		color = `class="secondary"`
 	}
-	fmt.Fprintf(&btn, `<a href="#" onclick="pop('%d');" role="button" %s >%s %s</a>`, button.Aid, color, svg.GetIcon(button.Icon), button.Label)
+	fmt.Fprintf(&btn, `<a href="#" onclick="pop('%d');" role="button" %s >%s %s</a>`, button.Aid, color, icons.GetIcon(button.Icon), button.Label)
 	fmt.Fprintf(&btn, `<input type='hidden' id='aid%d' value='%s' >`, button.Aid, string(btnJason))
 	return btn.String()
 }

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gbsto/daisy/db"
@@ -40,7 +40,7 @@ func GetOnline(c *fiber.Ctx) error {
 	minDate, maxDate := db.MinMaxHistoryDate(user.Uid)
 
 	return c.Render("online", addNavigationIcons(fiber.Map{
-		"title":         template.HTML(svg.GetIcon("user") + " Online"),
+		"title":         template.HTML(icons.GetIcon("user") + " Online"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Profile.Update,

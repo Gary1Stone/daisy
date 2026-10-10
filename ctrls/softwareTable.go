@@ -8,7 +8,7 @@ import (
 
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/svg"
+	"github.com/gbsto/daisy/icons"
 )
 
 // Generate profile table for wide screens
@@ -34,7 +34,7 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 		return err.Error()
 	}
 
-	icon := svg.GetIcon("software")
+	icon := icons.GetIcon("software")
 
 	// Build table rows
 	for _, item := range items {
@@ -68,7 +68,7 @@ func BuildInstalledList(curUid, sid int) string {
 		<thead><tr><th aria-sort='ascending' data-sort='asc'>Device</th></tr></thead>
 		<tbody>`)
 	for _, item := range items {
-		fmt.Fprintf(&table, "<tr><td><a href='device.html?cid=%d'>%s %s %s</a></td></tr>", item.Cid, svg.GetIcon(item.Icon), item.Name, item.Model)
+		fmt.Fprintf(&table, "<tr><td><a href='device.html?cid=%d'>%s %s %s</a></td></tr>", item.Cid, icons.GetIcon(item.Icon), item.Name, item.Model)
 	}
 	table.WriteString("</tbody></table></div>")
 	return table.String()

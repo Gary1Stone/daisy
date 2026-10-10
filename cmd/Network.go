@@ -3,9 +3,8 @@ package cmd
 import (
 	"html/template"
 
-	"github.com/gbsto/daisy/svg"
-
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/icons"
 
 	"github.com/gbsto/daisy/db"
 
@@ -31,7 +30,7 @@ func GetNetwork(c *fiber.Ctx) error {
 	// If the count is greater than 0, then we need to show the site select list, otherwise just use a hidden field for the site
 
 	return c.Render("network", addNavigationIcons(fiber.Map{
-		"title":        template.HTML(svg.GetIcon("network") + " Network"),
+		"title":        template.HTML(icons.GetIcon("network") + " Network"),
 		"fullName":     user.Fullname,
 		"isAdmin":      user.IsAdmin,
 		"isReadonly":   !user.Permissions.Admin.Update,
@@ -41,11 +40,11 @@ func GetNetwork(c *fiber.Ctx) error {
 		"cmd_three":    template.HTML(ctrls.MakeButton(ctrls.BtnCorrelate, true)),
 		"cmd_four":     template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"networkImage": "/images/wknc-network.png",
-		"officeIcon":   template.HTML(svg.GetIcon("office")),
-		"parentIcon":   template.HTML(svg.GetIcon("parent")),
-		"historyIcon":  template.HTML(svg.GetIcon("history")),
-		"cloneIcon":    template.HTML(svg.GetIcon("clone")),
-		"equalsIcon":   template.HTML(svg.GetIcon("equals")),
+		"officeIcon":   template.HTML(icons.GetIcon("office")),
+		"parentIcon":   template.HTML(icons.GetIcon("parent")),
+		"historyIcon":  template.HTML(icons.GetIcon("history")),
+		"cloneIcon":    template.HTML(icons.GetIcon("clone")),
+		"equalsIcon":   template.HTML(icons.GetIcon("equals")),
 		"tree":         template.HTML(ctrls.BuildTreeView(site)),
 		"siteCtrl":     template.HTML(ctrls.BuildDropList("SITE", site, "", false, !user.Permissions.Network.Read)),
 		"parentCtrl":   template.HTML(ctrls.BuildParentSelect(0, site, !user.Permissions.Network.Update)),
