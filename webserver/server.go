@@ -101,7 +101,13 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 			ip = ips[0]
 		}
 		// Record the attack
-		db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
+		var attack db.AttackInfo
+		attack.Ip = ip
+		attack.Method = c.Method()
+		attack.Path = c.Path()
+		attack.Browser = c.Get("User-Agent")
+		attack.RecordAttack()
+		//db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
 		// Set the status code to 404 Not Found
 		c.Status(fiber.StatusNotFound)
 		return c.Render("404", fiber.Map{ // HTML template is named "404.html"

@@ -40,9 +40,10 @@ type AttackInfo struct {
 }
 
 // Record when external user asks for a file that does not exist.
-func RecordAttack(ipAddress, method, path, browser string) {
+// ipAddress, method, path, browser
+func (a *AttackInfo) RecordAttack() {
 	query := "INSERT INTO attacks (ip, method, path, browser) VALUES (?,?,?,?)"
-	result, err := Conn.Exec(query, ipAddress, method, path, browser)
+	result, err := Conn.Exec(query, a.Ip, a.Method, a.Path, a.Browser)
 	if err != nil {
 		log.Println(err)
 		return // Don't proceed if insert fails
@@ -57,41 +58,42 @@ func RecordAttack(ipAddress, method, path, browser string) {
 		log.Println("Bad attack record ID")
 		return // Don't proceed
 	}
+	a.Id = recId
 
-	var loc = AttackInfo{
-		Id:      recId,
-		Ip:      ipAddress,
-		Method:  method,
-		Path:    path,
-		Browser: browser,
-	}
+	// var loc = AttackInfo{
+	// 	Id:      recId,
+	// 	Ip:      a.Ip,
+	// 	Method:  a.Method,
+	// 	Path:    a.Path,
+	// 	Browser: a.Browser,
+	// }
 
-	go findAndUpdateLocation(&loc)
+	go a.findAndUpdateLocation()
 }
 
 // findAndUpdateLocation orchestrates finding the location and updating the attacks table.
-func findAndUpdateLocation(loc *AttackInfo) {
-	if loc.Id < 1 || loc.Ip == "" {
+func (a *AttackInfo) findAndUpdateLocation() {
+	if a.Id < 1 || a.Ip == "" {
 		return
 	}
 
-	if !findLocationInAttacks(loc) { // Check if we already have it in attacks
-		if !findLocationInLogins(loc) { // Check if we already have it in logins
-			if !geolocation(loc) { // geolocation is fully free
+	if !a.findLocationInAttacks() { // Check if we already have it in attacks
+		if !a.findLocationInLogins() { // Check if we already have it in logins
+			if !a.geolocation() { // geolocation is fully free
 				return // never found
 			}
 		}
 	}
 
-	if loc.Longitude == 0.0 && loc.Latitude == 0.0 {
+	if a.Longitude == 0.0 && a.Latitude == 0.0 {
 		return // No results found, can't do anything
 	}
-	loc.City_id, loc.Community_id = SearchNearestPlace(loc.Longitude, loc.Latitude)
-	updateAttacks(loc)
+	a.City_id, a.Community_id = SearchNearestPlace(a.Longitude, a.Latitude)
+	a.updateAttacks()
 }
 
 // Search the attacks table for previous matches
-func findLocationInAttacks(loc *AttackInfo) bool {
+func (a *AttackInfo) findLocationInAttacks() bool {
 	query := `SELECT uid, longitude, latitude, city_id, community_id,
 		business_name, business_website, ip_name, ip_type, isp, org
 		FROM attacks 
@@ -101,25 +103,25 @@ func findLocationInAttacks(loc *AttackInfo) bool {
 			WHERE ip=? AND id<>? AND longitude<>0.0 AND latitude<>0.0 
 			AND city_id>0 AND timestamp > strftime('%s', 'now', '-7 days')
 		) LIMIT 1`
-	err := Conn.QueryRow(query, loc.Ip, loc.Id).Scan(&loc.Uid, &loc.Longitude, &loc.Latitude,
-		&loc.City_id, &loc.Community_id, &loc.Business_name, &loc.Business_website, &loc.Ip_name,
-		&loc.Ip_type, &loc.Isp, &loc.Org)
-	if loc.Uid > 0 {
-		log.Println("User session ended because of hacking.", loc.Fullname)
-		EndSession(loc.Uid) // Kick out user for hacking
+	err := Conn.QueryRow(query, a.Ip, a.Id).Scan(&a.Uid, &a.Longitude, &a.Latitude,
+		&a.City_id, &a.Community_id, &a.Business_name, &a.Business_website, &a.Ip_name,
+		&a.Ip_type, &a.Isp, &a.Org)
+	if a.Uid > 0 {
+		log.Println("User session ended because of hacking.", a.Fullname)
+		EndSession(a.Uid) // Kick out user for hacking
 	}
 	return err == nil
 }
 
 // Search the logins table for previous matches
-func findLocationInLogins(loc *AttackInfo) bool {
+func (a *AttackInfo) findLocationInLogins() bool {
 	query := `SELECT uid, longitude, latitude, city_id, community_id FROM logins 
 		WHERE timestamp=(SELECT MAX(timestamp) FROM logins 
 		WHERE ip=? AND timestamp > strftime('%s', 'now', '-1 days')) LIMIT 1`
-	err := Conn.QueryRow(query, loc.Ip, loc.Id).Scan(&loc.Uid, &loc.Longitude, &loc.Latitude, &loc.City_id, &loc.Community_id)
-	if loc.Uid > 0 {
-		log.Println("User session ended because of hacking.", loc.Fullname)
-		EndSession(loc.Uid) // Kick out user for hacking
+	err := Conn.QueryRow(query, a.Ip, a.Id).Scan(&a.Uid, &a.Longitude, &a.Latitude, &a.City_id, &a.Community_id)
+	if a.Uid > 0 {
+		log.Println("User session ended because of hacking.", a.Fullname)
+		EndSession(a.Uid) // Kick out user for hacking
 	}
 	return err == nil
 }
@@ -129,9 +131,9 @@ var httpClient = &http.Client{
 	Timeout: 60 * time.Second, // Example: 60-second timeout
 }
 
-func updateAttacks(loc *AttackInfo) {
+func (a *AttackInfo) updateAttacks() {
 	query := `UPDATE attacks SET uid=?, longitude=?, latitude=?, city_id=?, community_id=? WHERE id=?`
-	_, err := Conn.Exec(query, foreignKey(loc.Uid), loc.Longitude, loc.Latitude, foreignKey(loc.City_id), foreignKey(loc.Community_id), loc.Id)
+	_, err := Conn.Exec(query, foreignKey(a.Uid), a.Longitude, a.Latitude, foreignKey(a.City_id), foreignKey(a.Community_id), a.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -139,8 +141,8 @@ func updateAttacks(loc *AttackInfo) {
 
 // Geolocation-db.com
 // Our IP geolocation API is completely free and unlimited requests per day are allowed.
-func geolocation(loc *AttackInfo) bool {
-	url := os.Getenv("GEOLOCATION_URL") + os.Getenv("GEOLOCATION_KEY") + "/" + loc.Ip
+func (a *AttackInfo) geolocation() bool {
+	url := os.Getenv("GEOLOCATION_URL") + os.Getenv("GEOLOCATION_KEY") + "/" + a.Ip
 
 	// Notes: This API JSON can contain null for some items,
 	// so we have to use pointers when defining the struct
@@ -163,7 +165,7 @@ func geolocation(loc *AttackInfo) bool {
 
 	resp, err := httpClient.Do(req) // Use the client
 	if err != nil {
-		log.Printf("Error performing lookup for %s: %v", loc.Ip, err)
+		log.Printf("Error performing lookup for %s: %v", a.Ip, err)
 		return false
 	}
 	defer resp.Body.Close()
@@ -183,12 +185,12 @@ func geolocation(loc *AttackInfo) bool {
 		return false
 	}
 
-	loc.Latitude = geo.Latitude
-	loc.Longitude = geo.Longitude
+	a.Latitude = geo.Latitude
+	a.Longitude = geo.Longitude
 	return true
 }
 
-func GetAttacksDetails(curUid, duration int) ([]AttackInfo, error) {
+func (a *AttackInfo) GetAttacksDetails(curUid, duration int) ([]AttackInfo, error) {
 	items := make([]AttackInfo, 0)
 	tzoff := GetTzoff(curUid)
 	days := "'-1 days'"
