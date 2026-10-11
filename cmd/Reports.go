@@ -54,8 +54,6 @@ func PostReports(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(reports.GetUsersReport(curUid))
 	case "TRACKED_SOFTWARE":
 		return c.Status(fiber.StatusOK).SendString(reports.TrackedSoftware())
-	case "OTHER_SOFTWARE":
-		return c.Status(fiber.StatusOK).SendString(reports.OtherSoftware())
 	case "USERS_COMPUTERS":
 		return c.Status(fiber.StatusOK).SendString(reports.UsersAssignedDevices())
 	case "NETWORK_GAPS":
