@@ -1,7 +1,7 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
 <main class="container">
   <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
-    <div class="autogrid">
+    <div class="grid">
 
       <article>
         <header>
@@ -65,6 +65,21 @@
           </span>
         </section>
       </article>
+
+    </div>
+    <div class="grid">
+
+      <article>
+        <header> 
+          MACs
+        </header>
+        <section>
+          {{.macs}}
+        </section>
+        <footer>
+          <button>Manage...</button>
+        </footer>
+      </article>
       
       <article>
         <header>
@@ -91,6 +106,9 @@
         </section>
       </article>
       
+    </div>
+    <div class="grid">
+
       <article id="computerOnly">
         <header>
           Computer Details
@@ -141,6 +159,9 @@
         </section>
       </article>
 
+    </div>
+    <div class="grid">
+
       <article>
         <header>
           Notes
@@ -161,8 +182,9 @@
             {{ .backups }}
         </section>
       </article>
-
+      
     </div>
+
 
     <article>
       <header>

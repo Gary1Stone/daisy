@@ -180,3 +180,18 @@ func buildButton(button db.Popbutton) string {
 	fmt.Fprintf(&btn, `<input type='hidden' id='aid%d' value='%s' >`, button.Aid, string(btnJason))
 	return btn.String()
 }
+
+func BuildMacs(curUid, cid int) string {
+	items, err := db.GetMacInfoByCid(curUid, cid)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	var tbl strings.Builder
+	tbl.WriteString("<table><thead><tr><td>MAC</td><td>IP</td><td>Hostname</td><td>Online</td></tr></thead><tbody>")
+	for _, item := range items {
+		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%s</td><td>%s</td><td>%v</td></tr>`, item.Mac, item.Ip, item.Hostname, item.Online)
+	}
+	tbl.WriteString("</tbody></table>")
+	return tbl.String()
+}

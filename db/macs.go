@@ -159,6 +159,17 @@ func GetMacInfoByMid(tzoff, mid int) (MacInfo, error) {
 	return items[0], nil
 }
 
+func GetMacInfoByCid(tzoff, cid int) ([]MacInfo, error) {
+	var items []MacInfo
+	params := []any{cid}
+	items, err := getMacInfo("WHERE M.active=1 AND M.cid=?", tzoff, params...)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return items, nil
+}
+
 func GetMacInfoByMac(tzoff int, mac string) (MacInfo, error) {
 	var item MacInfo
 	params := []any{mac}

@@ -34,3 +34,4 @@ func BuildD2MDeviceList(site string) string {
 
 	return ctrl.String()
 }
+

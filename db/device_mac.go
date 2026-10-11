@@ -55,7 +55,6 @@ type D2M struct {
 	Site        string `json:"site"`        // The node's site
 }
 
-
 func GetD2MDevices(site string) (items []D2MDevice, err error) {
 	query := `SELECT D.cid, D.name, D.model, COALESCE(D.kind, '') AS kind, COALESCE(I.icon,'') AS icon, COALESCE(M.cid, 0) AS linked
 		FROM devices D
