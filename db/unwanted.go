@@ -24,7 +24,7 @@ type UnwantedDevices struct {
 
 func (u *Unwanted) ListDevicesWithUnwantedSoftware() ([]UnwantedDevices, error) {
 	var items []UnwantedDevices
-	const query = `SELECT D.cid, D.name AS computer, D.Site, D.Office, S.name AS software, 
+	const query = `SELECT D.cid, D.name AS computer, D.Site, D.Office, S.name AS software,
 		COALESCE(I.icon,'') AS icon,
 		COALESCE(O.description, '') AS sitename,
 		COALESCE(P.description, '') AS officename

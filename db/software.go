@@ -229,7 +229,7 @@ func (s *Software) UpdateRecord(curUid int, tzoff int) bool {
 	UPDATE software SET
 		name=?, licenses=?, active=?, purchased=?, reuseable=?,
 		last_updated_by=?, last_updated_time=strftime('%s','now'),
-		source=?, license_key=?, product=?, link=?, notes=?, 
+		source=?, license_key=?, product=?, link=?, notes=?,
 		color=?, inv_name=?, pre_installed=?, free=?
 	WHERE sid=?
 	`

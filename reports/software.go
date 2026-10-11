@@ -43,33 +43,6 @@ func TrackedSoftware() string {
 	return report.String()
 }
 
-func OtherSoftware() string {
-	var report strings.Builder
-	report.WriteString(`<table class='striped' id='other_table'>
-		<thead>
-		<tr>
-		<th aria-sort="ascending" data-sort="asc">Software</th>
-		<th aria-sort="none">Installs</th>
-		</tr>
-		</thead>
-		<tbody>`)
-	var otherSoftware db.OtherSoftware
-
-	items, err := otherSoftware.List()
-	if err != nil {
-		log.Println(err)
-		report.WriteString(`</tbody></table>`)
-		return report.String()
-	}
-
-	for _, item := range items {
-		cnt := item.ActiveInstalls + item.DecomissionedInstalls
-		fmt.Fprintf(&report, `<tr><td>%s</td><td>%d</td></tr>`, item.Name, cnt)
-	}
-	fmt.Fprintf(&report, "</tbody></table>")
-	return report.String()
-}
-
 func UsersAssignedDevices() string {
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id='assigned_table'>
