@@ -20,7 +20,7 @@ type Alert struct {
 }
 
 type AlertDetails struct {
-	Alert        Alert  `json:"alert"`        // Alert struct
+	Alert
 	Action       string `json:"action"`       // Action (CLAIMING, SIGHTING...)
 	Notes        string `json:"notes"`        // Description of the alert
 	Cid          int    `json:"cid"`          // Computer ID
