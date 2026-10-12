@@ -108,8 +108,8 @@ func SaveLogin(dto *Logins) error {
 		community, timezone) 
 		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 	`
-	_, err = Conn.Exec(query, foreignKey(dto.Uid), dto.Tzoff, dto.Longitude,
-		dto.Latitude, foreignKey(dto.Community_id), foreignKey(dto.City_id),
+	_, err = Conn.Exec(query, ForeignKey(dto.Uid), dto.Tzoff, dto.Longitude,
+		dto.Latitude, ForeignKey(dto.Community_id), ForeignKey(dto.City_id),
 		dto.Ip, dto.Success, dto.Session, dto.Distance, dto.Home, dto.Country,
 		dto.State, dto.City, dto.Community, dto.Timezone)
 	if err != nil {

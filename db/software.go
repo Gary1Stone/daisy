@@ -235,7 +235,7 @@ func (s *Software) UpdateRecord(curUid int, tzoff int) bool {
 	`
 	_, err := Conn.Exec(query, s.Name, s.Licenses, s.Active,
 		util.ToUnixSeconds(s.Purchased, tzoff), s.Reuseable,
-		foreignKey(s.Last_updated_by), s.Source,
+		ForeignKey(s.Last_updated_by), s.Source,
 		s.License_key, s.Product, s.Link, s.Notes,
 		s.Color, s.Inv_name, s.Pre_installed, s.Free, s.Sid)
 	if err != nil {
@@ -260,7 +260,7 @@ func (s *Software) AddRecord(uid, tzoff int) bool {
 		) VALUES (?,?,?,?,strftime('%s','now'),?,?,?,?,?,?,?,?,?,?,?,"")
 	`
 	result, err := Conn.Exec(query, s.Name, s.Licenses, s.Active,
-		foreignKey(s.Last_updated_by), util.ToUnixSeconds(s.Purchased, tzoff),
+		ForeignKey(s.Last_updated_by), util.ToUnixSeconds(s.Purchased, tzoff),
 		s.Reuseable, s.Source, s.License_key, s.Product, s.Link,
 		s.Notes, s.Color, s.Inv_name, s.Pre_installed, s.Free)
 	if err != nil {

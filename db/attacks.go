@@ -133,7 +133,7 @@ var httpClient = &http.Client{
 
 func (a *AttackInfo) updateAttacks() {
 	query := `UPDATE attacks SET uid=?, longitude=?, latitude=?, city_id=?, community_id=? WHERE id=?`
-	_, err := Conn.Exec(query, foreignKey(a.Uid), a.Longitude, a.Latitude, foreignKey(a.City_id), foreignKey(a.Community_id), a.Id)
+	_, err := Conn.Exec(query, ForeignKey(a.Uid), a.Longitude, a.Latitude, ForeignKey(a.City_id), ForeignKey(a.Community_id), a.Id)
 	if err != nil {
 		log.Println(err)
 	}

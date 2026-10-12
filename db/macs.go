@@ -101,7 +101,7 @@ func SaveMacs(items []MacInfo) error {
 	for _, item := range items {
 		_, err := stmt.Exec(item.Name, item.Ip, item.Kind, item.Os, item.User,
 			item.Site, item.Office, item.Location, item.Note, item.Intruder,
-			item.Active, foreignKey(item.Cid), item.Mid)
+			item.Active, ForeignKey(item.Cid), item.Mid)
 		if err != nil {
 			log.Printf("Error saving macs to database for %v. Rolling back transaction. Error: %v", item, err)
 			return err

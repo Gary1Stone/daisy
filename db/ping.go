@@ -25,6 +25,6 @@ func (p *PingInfo) AddRecord() error {
 
 	// add the check-in
 	query := "INSERT INTO pings (cid) VALUES (?)"
-	_, err = Conn.Exec(query, foreignKey(cid))
+	_, err = Conn.Exec(query, ForeignKey(cid))
 	return err
 }

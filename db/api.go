@@ -181,7 +181,7 @@ func UpdateSysInfo(cid int, sysInfo *SysInfo) error {
 	`
 	if !isDeviceLocked(curUid, cid) {
 		_, err := Conn.Exec(query, sysInfo.OS_Name, sysInfo.OS_Version, sysInfo.OS_Manufacturer, sysInfo.OS_Configuration, sysInfo.OS_Build_Type,
-			sysInfo.Registered_Owner, foreignKey(sysInfo.Registered_Organization), sysInfo.Product_ID, sysInfo.Original_Install_Date,
+			sysInfo.Registered_Owner, ForeignKey(sysInfo.Registered_Organization), sysInfo.Product_ID, sysInfo.Original_Install_Date,
 			sysInfo.System_Boot_Time, sysInfo.System_Manufacturer, sysInfo.System_Model, sysInfo.System_Type, sysInfo.Processors,
 			sysInfo.BIOS_Version, sysInfo.Windows_Directory, sysInfo.System_Directory, sysInfo.Boot_Device, sysInfo.System_Locale,
 			sysInfo.Input_Locale, sysInfo.Time_Zone, sysInfo.Total_Physical_Memory, sysInfo.Available_Physical_Memory,
@@ -351,7 +351,7 @@ func recordDeviceLocation(cid int, sysInfo *SysInfo) {
 		VALUES (?,?,?,?,?,?)
 		`
 	_, err = Conn.Exec(query, cid, dto.Longitude, dto.Latitude, sysInfo.IP_Address,
-		foreignKey(dto.City_id), foreignKey(dto.Community_id))
+		ForeignKey(dto.City_id), ForeignKey(dto.Community_id))
 	if err != nil {
 		log.Println(err)
 	}
@@ -418,7 +418,7 @@ func SetMacAddress(cid int, sysInfo *SysInfo) error {
 	valueArgs := make([]any, 0, numMacs*2)
 	for _, mac := range sysInfo.Mac_Addresses {
 		mac = strings.ToUpper(strings.ReplaceAll(mac, "-", ":"))
-		valueArgs = append(valueArgs, foreignKey(cid)) // Use foreignKey for cid
+		valueArgs = append(valueArgs, ForeignKey(cid)) // Use ForeignKey for cid
 		valueArgs = append(valueArgs, mac)
 	}
 

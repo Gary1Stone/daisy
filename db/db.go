@@ -118,7 +118,7 @@ func Close() error {
 // to set a child table's foreign keys to null.
 // ForeignKey converts zero-equivalent values (empty strings, non-positive numbers)
 // to nil so they can be inserted as NULL into the database.
-func foreignKey(value any) any {
+func ForeignKey(value any) any {
 	switch v := value.(type) {
 	case string:
 		if len(v) == 0 {

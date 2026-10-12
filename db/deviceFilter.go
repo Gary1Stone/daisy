@@ -74,8 +74,8 @@ func (filter *DeviceFilter) SetDeviceFilter(curUid int) error {
 		islate=excluded.islate, 
 		ismissing=excluded.ismissing
 	`
-	_, err := Conn.Exec(query, foreignKey(curUid), filter.Task, filter.Page,
-		foreignKey(filter.Cid), filter.DevType, filter.Site, filter.Office, filter.Gid, foreignKey(filter.Uid),
+	_, err := Conn.Exec(query, ForeignKey(curUid), filter.Task, filter.Page,
+		ForeignKey(filter.Cid), filter.DevType, filter.Site, filter.Office, filter.Gid, ForeignKey(filter.Uid),
 		filter.SearchTxt, late, missing)
 	if err != nil {
 		log.Println(err)

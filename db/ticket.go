@@ -99,10 +99,10 @@ func SetTicket(curUid int, tkt *Ticket) error {
 		impact=?, trouble=?, report=? 
 		WHERE aid=?
 	`
-	_, err := Conn.Exec(query, foreignKey(tkt.Cid), tkt.Cid_ack,
-		foreignKey(tkt.Sid), tkt.Sid_ack, foreignKey(tkt.Gid),
-		foreignKey(tkt.Uid), tkt.Uid_ack, foreignKey(tkt.Inform_gid),
-		foreignKey(tkt.Inform), tkt.Inform_ack, tkt.Impact,
+	_, err := Conn.Exec(query, ForeignKey(tkt.Cid), tkt.Cid_ack,
+		ForeignKey(tkt.Sid), tkt.Sid_ack, ForeignKey(tkt.Gid),
+		ForeignKey(tkt.Uid), tkt.Uid_ack, ForeignKey(tkt.Inform_gid),
+		ForeignKey(tkt.Inform), tkt.Inform_ack, tkt.Impact,
 		tkt.Trouble, tkt.Report, tkt.Aid)
 	if err != nil {
 		log.Println(err)
@@ -180,8 +180,8 @@ func AddLog(curUid int, tkt *Ticket) error {
 		return nil
 	}
 	const query = "INSERT INTO wlog (aid, uid, cid, cmd, notes) VALUES (?,?,?,?,?)"
-	_, err := Conn.Exec(query, foreignKey(tkt.Aid), foreignKey(curUid),
-		foreignKey(tkt.Cid), tkt.Cmd, tkt.Log)
+	_, err := Conn.Exec(query, ForeignKey(tkt.Aid), ForeignKey(curUid),
+		ForeignKey(tkt.Cid), tkt.Cmd, tkt.Log)
 	if err != nil {
 		log.Println(err)
 		return err

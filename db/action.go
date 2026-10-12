@@ -395,10 +395,10 @@ func (act *Action) insertAction() error {
 			closed, closed_by, report, trouble
 		) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 	`
-	result, err := Conn.Exec(query, act.OpenedInt, act.Impact, act.Active, foreignKey(act.Originator),
-		act.Gid, foreignKey(act.Cid), foreignKey(act.Sid), foreignKey(act.Uid),
-		foreignKey(act.Inform), act.Inform_gid, act.Cid_ack, act.Sid_ack, act.Uid_ack, act.Inform_ack, act.Action,
-		act.Notes, act.ClosedInt, foreignKey(act.Closed_by), act.Report, act.Trouble)
+	result, err := Conn.Exec(query, act.OpenedInt, act.Impact, act.Active, ForeignKey(act.Originator),
+		act.Gid, ForeignKey(act.Cid), ForeignKey(act.Sid), ForeignKey(act.Uid),
+		ForeignKey(act.Inform), act.Inform_gid, act.Cid_ack, act.Sid_ack, act.Uid_ack, act.Inform_ack, act.Action,
+		act.Notes, act.ClosedInt, ForeignKey(act.Closed_by), act.Report, act.Trouble)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -425,7 +425,7 @@ func (act *Action) updateAction(curUid int) error {
 		WHERE aid=?
 	`
 	_, err := Conn.Exec(query, act.Uid_ack, act.Inform_ack, act.Cid_ack,
-		act.Sid_ack, act.Active, foreignKey(act.Closed_by),
+		act.Sid_ack, act.Active, ForeignKey(act.Closed_by),
 		act.ClosedInt, act.Wlog, act.Report, act.Trouble, act.Aid)
 	if err != nil {
 		log.Println(err)

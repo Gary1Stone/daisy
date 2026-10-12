@@ -1,11 +1,15 @@
-package db
+package software
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"strings"
+
+	"github.com/gbsto/daisy/db"
 )
 
-type OtherSoftware struct {
+type Other struct {
 	Id                    int    `json:"id"`
 	Name                  string `json:"name"`
 	Installs              int    `json:"installs"`
@@ -16,8 +20,8 @@ type OtherSoftware struct {
 }
 
 // Get the software list not being tracked
-func (o *OtherSoftware) List() ([]OtherSoftware, error) {
-	items := make([]OtherSoftware, 0)
+func (o *Other) List() ([]Other, error) {
+	items := make([]Other, 0)
 	query := `SELECT COUNT(*) AS cnt, A.name, D.active,
 			CASE
 				WHEN EXISTS (SELECT 1 FROM sw_bad B WHERE B.name = A.name) THEN 1 ELSE 0
@@ -28,14 +32,14 @@ func (o *OtherSoftware) List() ([]OtherSoftware, error) {
 		GROUP BY A.name
 		ORDER BY A.name
 	`
-	rows, err := Conn.Query(query)
+	rows, err := db.Conn.Query(query)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
 		return items, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var item OtherSoftware
+		var item Other
 		var active, cnt int
 		err := rows.Scan(&cnt, &item.Name, &active, &item.IsBad)
 		if err != nil {
@@ -54,4 +58,32 @@ func (o *OtherSoftware) List() ([]OtherSoftware, error) {
 		log.Println(err)
 	}
 	return items, err
+}
+
+func (o *Other) BuildOtherTable() string {
+	var tbl strings.Builder
+	tbl.WriteString(`<table class='striped' id='other_table'><thead><tr>
+		<th aria-sort="ascending" data-sort="asc">Software</th>
+		<th aria-sort="none">Installs</th>
+		<th aria-sort="none">Unwanted?</th>
+		</tr></thead><tbody>`)
+	items, err := o.List()
+	//items, err := o.List()
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+
+	row := 0
+	for _, item := range items {
+		row++
+		cnt := item.ActiveInstalls + item.DecomissionedInstalls
+		if item.IsBad {
+			fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%d</td><td>👎</td></tr>`, item.Name, cnt)
+		} else {
+			fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%d</td><td id="%d"><a href="#" style="text-decoration: none;"  title="add to unwanted software list" onclick='addUnwanted(%d,"%s");'>➕</a></td></tr>`, item.Name, cnt, row, row, item.Name)
+		}
+	}
+	fmt.Fprintf(&tbl, "</tbody></table>")
+	return tbl.String()
 }

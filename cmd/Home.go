@@ -14,6 +14,7 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/passkey"
+	"github.com/gbsto/daisy/software"
 	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/util"
@@ -65,6 +66,7 @@ func GetHome(c *fiber.Ctx) error {
 	}
 
 	online, offline := db.GetCurrentOnOffCounts()
+	var unwanted software.Unwanted
 
 	return c.Render("home", addNavigationIcons(fiber.Map{
 		"title":            template.HTML("&#127809; Daisy"),
@@ -85,7 +87,7 @@ func GetHome(c *fiber.Ctx) error {
 		"maxHitsMonth":     svg.GraphCache.GetMax(svg.OnlineMonth),
 		"wizardsSelect":    template.HTML(ctrls.BuildDropList("WIZARDS", "", "", false, false)),
 		"devicesOnline":    template.HTML(ctrls.GetLastOnlineDatesTable(user.Uid)),
-		"unwantedSoftware": template.HTML(ctrls.BuildUnwantedSoftwareTable()),
+		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedTable()),
 	}))
 }
 

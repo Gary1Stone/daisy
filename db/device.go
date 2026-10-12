@@ -454,8 +454,8 @@ func SetDevice(curUid int, dto *Device) bool {
 	`
 	_, err := Conn.Exec(query, dto.Name, dto.Type, dto.Site, dto.Office, dto.Location, dto.Year,
 		dto.Make, dto.Model, dto.Cpu, dto.Cores, dto.Ram, dto.Drivetype, dto.Drivesize, dto.Notes, dto.Gpu,
-		dto.Cd, dto.Wifi, dto.Ethernet, dto.Usb, dto.Active, dto.Image, dto.Color, dto.Speed, foreignKey(dto.Uid), dto.Status, dto.Os,
-		dto.Serial_number, dto.Gid, foreignKey(dto.Last_updated_by), dto.Cid)
+		dto.Cd, dto.Wifi, dto.Ethernet, dto.Usb, dto.Active, dto.Image, dto.Color, dto.Speed, ForeignKey(dto.Uid), dto.Status, dto.Os,
+		dto.Serial_number, dto.Gid, ForeignKey(dto.Last_updated_by), dto.Cid)
 	if err != nil {
 		log.Println(err)
 		return false
@@ -586,8 +586,8 @@ func AddDevice(dto *Device) bool {
 		`
 	result, err := Conn.Exec(query, dto.Name, dto.Type, dto.Site, dto.Office, dto.Location, dto.Year,
 		dto.Make, dto.Model, dto.Cpu, dto.Cores, dto.Ram, dto.Drivetype, dto.Drivesize, dto.Notes, dto.Gpu,
-		dto.Cd, dto.Wifi, dto.Ethernet, dto.Usb, dto.Active, dto.Image, dto.Color, dto.Speed, foreignKey(dto.Uid),
-		dto.Status, dto.Os, dto.Serial_number, dto.Gid, foreignKey(dto.Last_updated_by))
+		dto.Cd, dto.Wifi, dto.Ethernet, dto.Usb, dto.Active, dto.Image, dto.Color, dto.Speed, ForeignKey(dto.Uid),
+		dto.Status, dto.Os, dto.Serial_number, dto.Gid, ForeignKey(dto.Last_updated_by))
 	if err != nil {
 		log.Println(err)
 		return false

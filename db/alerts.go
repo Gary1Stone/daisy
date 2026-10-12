@@ -133,7 +133,7 @@ func GetAlerts(filter Alert) ([]*AlertDetails, error) {
 
 func SetAlert(alert Alert) error {
 	var query = "UPDATE alerts SET aid=?, uid=?, ack=?, wait=? WHERE id=?"
-	_, err := Conn.Exec(query, foreignKey(alert.Aid), foreignKey(alert.Uid), foreignKey(alert.Ack), alert.Wait, alert.Id)
+	_, err := Conn.Exec(query, ForeignKey(alert.Aid), ForeignKey(alert.Uid), ForeignKey(alert.Ack), alert.Wait, alert.Id)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -143,7 +143,7 @@ func SetAlert(alert Alert) error {
 
 func AddAlert(alert *Alert) {
 	query := "INSERT INTO alerts (aid, uid, gid, ack, wait) VALUES (?,?,?,?,?)"
-	result, err := Conn.Exec(query, foreignKey(alert.Aid), foreignKey(alert.Uid), alert.Gid, foreignKey(alert.Ack), alert.Wait)
+	result, err := Conn.Exec(query, ForeignKey(alert.Aid), ForeignKey(alert.Uid), alert.Gid, ForeignKey(alert.Ack), alert.Wait)
 	if err != nil {
 		log.Println(err)
 		return
@@ -160,7 +160,7 @@ func AddAlert(alert *Alert) {
 // At ticket closing, run this to activate waiting alerts
 func RemoveAlertWait(aid int) error {
 	query := "UPDATE alerts set wait=0 WHERE aid=?"
-	_, err := Conn.Exec(query, foreignKey(aid))
+	_, err := Conn.Exec(query, ForeignKey(aid))
 	if err != nil {
 		log.Println(err)
 		return err
@@ -177,7 +177,7 @@ func AckAlert(curUid, uid, aid int, uid_ack, cid_ack, sid_ack bool) error {
 
 	// Ack this alert
 	query := "UPDATE alerts SET ack=? WHERE uid=? and aid=?"
-	_, err := Conn.Exec(query, foreignKey(curUid), foreignKey(uid), foreignKey(aid))
+	_, err := Conn.Exec(query, ForeignKey(curUid), ForeignKey(uid), ForeignKey(aid))
 	if err != nil {
 		log.Println(err)
 		return err
@@ -186,7 +186,7 @@ func AckAlert(curUid, uid, aid int, uid_ack, cid_ack, sid_ack bool) error {
 	// Check if there are any remaining pending alerts for this aid
 	query = "SELECT count(*) FROM alerts WHERE aid=? AND ack IS NULL"
 	cnt := 0
-	err = Conn.QueryRow(query, foreignKey(aid)).Scan(&cnt)
+	err = Conn.QueryRow(query, ForeignKey(aid)).Scan(&cnt)
 	if err != nil {
 		log.Println(err)
 		return err

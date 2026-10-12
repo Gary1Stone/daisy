@@ -7,6 +7,7 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/software"
 
 	"github.com/gbsto/daisy/db"
 
@@ -25,6 +26,8 @@ func GetSoftwares(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
+	var unwanted software.Unwanted
+	var other software.Other
 	var filter db.SoftwareFilter
 	filter.Init()
 
@@ -35,8 +38,8 @@ func GetSoftwares(c *fiber.Ctx) error {
 		"isAdmin":          user.IsAdmin,
 		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
 		"trackedSoftware":  template.HTML(ctrls.SoftwaresTable(user.Uid, filter)),
-		"otherSoftware":    template.HTML(ctrls.BuildOtherSoftwareTable()),
-		"unwantedSoftware": template.HTML(ctrls.BuildUnwantedTable()),
+		"otherSoftware":    template.HTML(other.BuildOtherTable()),
+		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedEditTable()),
 	}))
 }
 
@@ -80,12 +83,12 @@ func PostUnwantedAdd(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
 
-	var rcvd db.Unwanted
+	var rcvd software.Unwanted
 	if err := json.Unmarshal(c.Body(), &rcvd); err != nil {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
 	rcvd.Add()
-	return c.Status(fiber.StatusOK).SendString(ctrls.BuildUnwantedTable())
+	return c.Status(fiber.StatusOK).SendString(rcvd.BuildUnwantedTable())
 }
 
 func PostUnwantedDelete(c *fiber.Ctx) error {
@@ -98,10 +101,10 @@ func PostUnwantedDelete(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
 
-	var rcvd db.Unwanted
+	var rcvd software.Unwanted
 	if err := json.Unmarshal(c.Body(), &rcvd); err != nil {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
 	rcvd.Delete()
-	return c.Status(fiber.StatusOK).SendString(ctrls.BuildUnwantedTable())
+	return c.Status(fiber.StatusOK).SendString(rcvd.BuildUnwantedTable())
 }
