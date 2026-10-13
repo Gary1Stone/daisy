@@ -1,7 +1,9 @@
-package db
+package backups
 
 import (
 	"log"
+
+	"github.com/gbsto/daisy/db"
 )
 
 type BackupInfo struct {
@@ -20,22 +22,39 @@ type BackupInfo struct {
 	Days      int    `json:"days"`
 }
 
+type LatestBackups struct {
+	Cid        int    `json:"cid"`
+	Computer   string `json:"computer"`
+	FileDate   string `json:"filedate"`
+	FileDays   int    `json:"filedays"`
+	FileSize   int    `json:"filesize"`
+	SystemDate string `json:"systemdate"`
+	SystemDays int    `json:"systemdays"`
+	SystemSize int    `json:"systemsize"`
+	DiskDate   string `json:"diskdate"`
+	DiskDays   int    `json:"diskdays"`
+	DiskSize   int    `json:"disksize"`
+	Make       string `json:"make"`
+	Model      string `json:"model"`
+	Type       string `json:"type"`
+}
+
 // API sends listings of all the existing backup files to SaveBackups
-func SaveBackups(backups []BackupInfo, source string) error {
+func (b *BackupInfo) SaveBackups(backups []BackupInfo, source string) error {
 
 	if len(backups) == 0 {
 		return nil
 	}
 
 	query := "DELETE FROM backups WHERE source=?"
-	_, err := Conn.Exec(query, source)
+	_, err := db.Conn.Exec(query, source)
 	if err != nil {
 		log.Println(err)
 	}
 
 	query = "INSERT INTO backups (source, volume, computer, date, size, method, what) VALUES (?, ?, ?, ?, ?, ?, ?)"
 	for _, backup := range backups {
-		_, err := Conn.Exec(query, source, backup.Volume, backup.Computer, backup.Date, backup.Size, backup.Method, backup.What)
+		_, err := db.Conn.Exec(query, source, backup.Volume, backup.Computer, backup.Date, backup.Size, backup.Method, backup.What)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -48,7 +67,7 @@ func SaveBackups(backups []BackupInfo, source string) error {
 		SET cid = (SELECT Devices.cid FROM Devices WHERE Devices.name=Backups.computer)
 		WHERE Backups.computer IN (SELECT name FROM Devices)
 	`
-	_, err = Conn.Exec(query)
+	_, err = db.Conn.Exec(query)
 	if err != nil {
 		log.Println(err)
 	}
@@ -59,7 +78,7 @@ func SaveBackups(backups []BackupInfo, source string) error {
 		WHERE cid IS NULL
 		AND computer='WKNC-63'
 	`
-	_, err = Conn.Exec(query)
+	_, err = db.Conn.Exec(query)
 	if err != nil {
 		log.Println(err)
 	}
@@ -67,15 +86,15 @@ func SaveBackups(backups []BackupInfo, source string) error {
 	return nil
 }
 
-func GetBackups(curUid, cid int) ([]BackupInfo, error) {
+func (b *BackupInfo) GetBackups(curUid, cid int) ([]BackupInfo, error) {
 	items := make([]BackupInfo, 0)
-	tzoff := GetTzoff(curUid) // Adjust for user's timezone
+	tzoff := db.GetTzoff(curUid) // Adjust for user's timezone
 	query := `
 		SELECT cid, source, timestamp, strftime('%Y-%m-%d %H:%M', timestamp-?, 'unixepoch') AS created, 
 		volume, computer, date, strftime('%Y-%m-%d', date-?, 'unixepoch') AS dated, 
 		size, method, what FROM backups WHERE cid=?
 		ORDER by date DESC`
-	rows, err := Conn.Query(query, tzoff, tzoff, cid)
+	rows, err := db.Conn.Query(query, tzoff, tzoff, cid)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -103,28 +122,12 @@ func GetBackups(curUid, cid int) ([]BackupInfo, error) {
 	return items, nil
 }
 
-type LatestBackups struct {
-	Cid        int    `json:"cid"`
-	Computer   string `json:"computer"`
-	FileDate   string `json:"filedate"`
-	FileDays   int    `json:"filedays"`
-	FileSize   int    `json:"filesize"`
-	SystemDate string `json:"systemdate"`
-	SystemDays int    `json:"systemdays"`
-	SystemSize int    `json:"systemsize"`
-	DiskDate   string `json:"diskdate"`
-	DiskDays   int    `json:"diskdays"`
-	DiskSize   int    `json:"disksize"`
-	Make       string `json:"make"`
-	Model      string `json:"model"`
-	Type       string `json:"type"`
-}
 
 // List all the most recent backups for all the computers, both FILE and SYSTEM
 // Flatten the Files row and System row into a single row
-func GetLatestBackups(curUid int) ([]LatestBackups, error) {
+func (b *BackupInfo) GetLatestBackups(curUid int) ([]LatestBackups, error) {
 	items := make([]LatestBackups, 0)
-	tzoff := GetTzoff(curUid) // Adjust for user's timezone
+	tzoff := db.GetTzoff(curUid) // Adjust for user's timezone
 
 	query := `
 		WITH RankedBackups AS (
@@ -150,7 +153,7 @@ func GetLatestBackups(curUid int) ([]LatestBackups, error) {
 		GROUP BY rb.cid, rb.computer
 		ORDER BY rb.computer
 	`
-	rows, err := Conn.Query(query, tzoff, tzoff, tzoff)
+	rows, err := db.Conn.Query(query, tzoff, tzoff, tzoff)
 	if err != nil {
 		log.Println(err)
 		return nil, err

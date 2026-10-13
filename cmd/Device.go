@@ -6,6 +6,7 @@ import (
 	"math"
 	"strconv"
 
+	"github.com/gbsto/daisy/backups"
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
@@ -52,10 +53,12 @@ func GetDevice(c *fiber.Ctx) error {
 	if deleteAble {
 		deleteAble = db.IsDeletableDevice(cid)
 	}
+	var backs backups.BackupInfo
 
 	// page state: empty (cid=0), with record (cid>0); affects type control, if cid=0 then user must select, with blank included but not selectable
 
 	//	log.Printf("GetDevice took %s", time.Since(start))
+
 	// Render the page
 	return c.Render("device", addNavigationIcons(fiber.Map{
 		"title":             template.HTML(icons.GetIcon("devices") + " Devices"),
@@ -99,7 +102,7 @@ func GetDevice(c *fiber.Ctx) error {
 		"fullname":          device.Lun,
 		"software":          template.HTML(ctrls.BuildSoftwareList(user.Uid, device.Cid)),
 		"actionLog":         template.HTML(ctrls.BuildDeviceLog(user.Uid, cid, 0)),
-		"backups":           template.HTML(ctrls.BuildBackups(user.Uid, cid)),
+		"backups":           template.HTML(backs.BuildBackupsTable(user.Uid, cid)),
 		"macs":              template.HTML(ctrls.BuildMacs(user.Uid, cid)),
 	}))
 }

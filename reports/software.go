@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gbsto/daisy/backups"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
 )
@@ -198,7 +199,8 @@ func Backups(curUid int, devInfo map[int]db.DevicesMeta) string {
 	}
 
 	// Get the latest backup info
-	items, err := db.GetLatestBackups(curUid)
+	var b backups.BackupInfo
+	items, err := b.GetLatestBackups(curUid)
 	if err != nil {
 		log.Println(err)
 		report.WriteString("</tbody></table>")
