@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/register"
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -51,7 +52,12 @@ func BeginRegistration(c *fiber.Ctx) error {
 	if ips := c.IPs(); len(ips) > 0 {
 		ip = ips[0]
 	}
-	if !db.IsApiCode(usrInfo.Apicode, ip) {
+
+	//Check if the code and IP are the sqme as the original request
+	var r register.RegisterCode
+	r.Apicode = usrInfo.Apicode
+	r.Ip = ip
+	if !r.IsApiCode() {
 		return handleError(c, fiber.StatusUnauthorized, "Unauthorized request", nil)
 	}
 

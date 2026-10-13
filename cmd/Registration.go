@@ -3,25 +3,26 @@ package cmd
 import (
 	"html/template"
 
-	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/register"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetRegistration(c *fiber.Ctx) error {
-	ip := c.IP()
+	var r register.RegisterCode
+	r.Ip = c.IP()
 	ips := c.IPs()
 	if len(ips) > 0 {
-		ip = ips[0]
+		r.Ip = ips[0]
 	}
-	apicode := util.GetRandomPassword()
-	db.SetApiCode(apicode, ip)
+	r.Apicode = util.GetRandomPassword()
+	r.SetApiCode()
 
 	return c.Render("registration", fiber.Map{
 		"user":     "",
-		"apicode":  apicode,
+		"apicode":  r.Apicode,
 		"userIcon": template.HTML(icons.GetIcon("user")),
 	})
 }

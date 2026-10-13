@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/register"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -35,7 +36,10 @@ func RequestCode(c *fiber.Ctx) error {
 	if len(ips) > 0 {
 		ip = ips[0]
 	}
-	if !db.IsApiCode(usr.Apicode, ip) {
+	var r register.RegisterCode
+	r.Apicode = usr.Apicode
+	r.Ip = ip
+	if !r.IsApiCode() {
 		reply.Msg = "Unknown user"
 		return c.Status(fiber.StatusBadRequest).JSON(reply)
 	}

@@ -2,9 +2,7 @@ package software
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
-	"strings"
 
 	"github.com/gbsto/daisy/db"
 )
@@ -58,32 +56,4 @@ func (o *Other) List() ([]Other, error) {
 		log.Println(err)
 	}
 	return items, err
-}
-
-func (o *Other) BuildOtherTable() string {
-	var tbl strings.Builder
-	tbl.WriteString(`<table class='striped' id='other_table'><thead><tr>
-		<th aria-sort="ascending" data-sort="asc">Software</th>
-		<th aria-sort="none">Installs</th>
-		<th aria-sort="none">Unwanted?</th>
-		</tr></thead><tbody>`)
-	items, err := o.List()
-	//items, err := o.List()
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-
-	row := 0
-	for _, item := range items {
-		row++
-		cnt := item.ActiveInstalls + item.DecomissionedInstalls
-		if item.IsBad {
-			fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%d</td><td>👎</td></tr>`, item.Name, cnt)
-		} else {
-			fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%d</td><td id="%d"><a href="#" style="text-decoration: none;"  title="add to unwanted software list" onclick='addUnwanted(%d,"%s");'>➕</a></td></tr>`, item.Name, cnt, row, row, item.Name)
-		}
-	}
-	fmt.Fprintf(&tbl, "</tbody></table>")
-	return tbl.String()
 }
