@@ -1,4 +1,4 @@
-package db
+package attacks
 
 import (
 	"database/sql"
@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/gbsto/daisy/db"
 )
 
 type AttackInfo struct {
@@ -43,7 +45,7 @@ type AttackInfo struct {
 // ipAddress, method, path, browser
 func (a *AttackInfo) RecordAttack() {
 	query := "INSERT INTO attacks (ip, method, path, browser) VALUES (?,?,?,?)"
-	result, err := Conn.Exec(query, a.Ip, a.Method, a.Path, a.Browser)
+	result, err := db.Conn.Exec(query, a.Ip, a.Method, a.Path, a.Browser)
 	if err != nil {
 		log.Println(err)
 		return // Don't proceed if insert fails
@@ -88,7 +90,7 @@ func (a *AttackInfo) findAndUpdateLocation() {
 	if a.Longitude == 0.0 && a.Latitude == 0.0 {
 		return // No results found, can't do anything
 	}
-	a.City_id, a.Community_id = SearchNearestPlace(a.Longitude, a.Latitude)
+	a.City_id, a.Community_id = db.SearchNearestPlace(a.Longitude, a.Latitude)
 	a.updateAttacks()
 }
 
@@ -103,12 +105,12 @@ func (a *AttackInfo) findLocationInAttacks() bool {
 			WHERE ip=? AND id<>? AND longitude<>0.0 AND latitude<>0.0 
 			AND city_id>0 AND timestamp > strftime('%s', 'now', '-7 days')
 		) LIMIT 1`
-	err := Conn.QueryRow(query, a.Ip, a.Id).Scan(&a.Uid, &a.Longitude, &a.Latitude,
+	err := db.Conn.QueryRow(query, a.Ip, a.Id).Scan(&a.Uid, &a.Longitude, &a.Latitude,
 		&a.City_id, &a.Community_id, &a.Business_name, &a.Business_website, &a.Ip_name,
 		&a.Ip_type, &a.Isp, &a.Org)
 	if a.Uid > 0 {
 		log.Println("User session ended because of hacking.", a.Fullname)
-		EndSession(a.Uid) // Kick out user for hacking
+		db.EndSession(a.Uid) // Kick out user for hacking
 	}
 	return err == nil
 }
@@ -118,10 +120,10 @@ func (a *AttackInfo) findLocationInLogins() bool {
 	query := `SELECT uid, longitude, latitude, city_id, community_id FROM logins 
 		WHERE timestamp=(SELECT MAX(timestamp) FROM logins 
 		WHERE ip=? AND timestamp > strftime('%s', 'now', '-1 days')) LIMIT 1`
-	err := Conn.QueryRow(query, a.Ip, a.Id).Scan(&a.Uid, &a.Longitude, &a.Latitude, &a.City_id, &a.Community_id)
+	err := db.Conn.QueryRow(query, a.Ip, a.Id).Scan(&a.Uid, &a.Longitude, &a.Latitude, &a.City_id, &a.Community_id)
 	if a.Uid > 0 {
 		log.Println("User session ended because of hacking.", a.Fullname)
-		EndSession(a.Uid) // Kick out user for hacking
+		db.EndSession(a.Uid) // Kick out user for hacking
 	}
 	return err == nil
 }
@@ -133,7 +135,7 @@ var httpClient = &http.Client{
 
 func (a *AttackInfo) updateAttacks() {
 	query := `UPDATE attacks SET uid=?, longitude=?, latitude=?, city_id=?, community_id=? WHERE id=?`
-	_, err := Conn.Exec(query, ForeignKey(a.Uid), a.Longitude, a.Latitude, ForeignKey(a.City_id), ForeignKey(a.Community_id), a.Id)
+	_, err := db.Conn.Exec(query, db.ForeignKey(a.Uid), a.Longitude, a.Latitude, db.ForeignKey(a.City_id), db.ForeignKey(a.Community_id), a.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -192,7 +194,7 @@ func (a *AttackInfo) geolocation() bool {
 
 func (a *AttackInfo) GetAttacksDetails(curUid, duration int) ([]AttackInfo, error) {
 	items := make([]AttackInfo, 0)
-	tzoff := GetTzoff(curUid)
+	tzoff := db.GetTzoff(curUid)
 	days := "'-1 days'"
 	switch duration {
 	case 7:
@@ -214,7 +216,7 @@ func (a *AttackInfo) GetAttacksDetails(curUid, duration int) ([]AttackInfo, erro
 		LEFT JOIN profiles D ON A.uid=D.uid
 		WHERE A.timestamp >= strftime('%s', 'now', ` + days + `) 
 		GROUP BY ip, first_browser ORDER BY timestamp DESC`
-	rows, err := Conn.Query(query, tzoff)
+	rows, err := db.Conn.Query(query, tzoff)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
 	}
@@ -257,7 +259,7 @@ func (a *AttackInfo) GetAttacksDetails(curUid, duration int) ([]AttackInfo, erro
 	FROM Attacking
 	GROUP BY ip, first_browser`
 
-	rows, err = Conn.Query(query)
+	rows, err = db.Conn.Query(query)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
 	}

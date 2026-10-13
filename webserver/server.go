@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gbsto/daisy/attacks"
 	"github.com/gbsto/daisy/db"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -101,7 +102,7 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 			ip = ips[0]
 		}
 		// Record the attack
-		var attack db.AttackInfo
+		var attack attacks.AttackInfo
 		attack.Ip = ip
 		attack.Method = c.Method()
 		attack.Path = c.Path()

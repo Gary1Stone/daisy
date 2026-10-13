@@ -3,6 +3,7 @@ package cmd
 import (
 	"html/template"
 
+	"github.com/gbsto/daisy/attacks"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/svg"
 
@@ -82,7 +83,8 @@ func PostControl(c *fiber.Ctx) error {
 	case "get_server_load":
 		reply = ctrls.BuildActiveUsersTable(user.Uid)
 	case "get_attacks":
-		reply = ctrls.BuildAttacksTable(user.Uid, recvd.Id)
+		var a attacks.AttackInfo
+		reply = a.BuildAttacksTable(user.Uid, recvd.Id)
 	}
 	return c.Status(fiber.StatusOK).SendString(reply)
 }

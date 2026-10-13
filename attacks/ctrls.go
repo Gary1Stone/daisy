@@ -1,4 +1,4 @@
-package ctrls
+package attacks
 
 import (
 	"fmt"
@@ -6,18 +6,26 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
 )
 
-func BuildAttacksTable(curUid, duration int) string {
+func (a *AttackInfo) BuildAttacksTable(curUid, duration int) string {
 	var table strings.Builder
 
 	// Build the table header
-	table.WriteString(buildAttacksTableHeader())
+	//table.WriteString(buildAttacksTableHeader())
+	table.WriteString(fmt.Sprintf(`<table class='striped' id="attackstable" ><thead><tr>
+        <th aria-sort="ascending" data-sort="asc">Occurred</th>
+        <th aria-sort="none">Attacking IP</th>
+        <th aria-sort="none">Attacks</th>
+        <th aria-sort="none">Browser</th>
+        <th aria-sort="none">Location</th>
+		<th aria-sort="none">%s</th>
+		<th aria-sort="none">Map</th>
+    </tr></thead><tbody>`, icons.GetIcon("user")))
 
 	// Fetch attacks items
-	var attacks db.AttackInfo
+	var attacks AttackInfo
 	items, err := attacks.GetAttacksDetails(curUid, duration)
 	if err != nil {
 		log.Println(err)
@@ -28,33 +36,15 @@ func BuildAttacksTable(curUid, duration int) string {
 	// Build table rows
 	icon := icons.GetIcon("map")
 	for _, item := range items {
-		table.WriteString(buildAttacksTableRow(&item, icon))
+		table.WriteString(a.buildAttacksTableRow(&item, icon))
 	}
 
 	table.WriteString("</tbody></table>")
 	return table.String()
 }
 
-// Helper function to build the table header
-func buildAttacksTableHeader() string {
-	icon := icons.GetIcon("user")
-	return fmt.Sprintf(`<table class='striped' id="attackstable" >
-    <thead>
-    <tr>
-        <th aria-sort="ascending" data-sort="asc">Occurred</th>
-        <th aria-sort="none">Attacking IP</th>
-        <th aria-sort="none">Attacks</th>
-        <th aria-sort="none">Browser</th>
-        <th aria-sort="none">Location</th>
-		<th aria-sort="none">%s</th>
-		<th aria-sort="none">Map</th>
-    </tr>
-    </thead>
-    <tbody>`, icon)
-}
-
 // Helper function to build a single table row
-func buildAttacksTableRow(item *db.AttackInfo, icon string) string {
+func (a *AttackInfo) buildAttacksTableRow(item *AttackInfo, icon string) string {
 	var row strings.Builder
 
 	place := "<p>" + item.Country + "</p><p>" + item.State + " / " + item.City + "</p>"
