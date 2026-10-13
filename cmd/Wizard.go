@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
@@ -289,13 +290,13 @@ func setProfileColor(uid int, color string) (string, int) {
 }
 
 // Save the alerts (max 2 alerts per action, so confusing optimization not needed)
-func saveAlerts(curUid, aid, active int, alerts []db.Alert) {
-	for _, alert := range alerts {
-		alert.Aid = aid
+func saveAlerts(curUid, aid, active int, alerts []alerts.Alert) {
+	for _, item := range alerts {
+		item.Aid = aid
 		if active == 0 {
-			alert.Ack = curUid
+			item.Ack = curUid
 		}
-		db.AddAlert(&alert)
+		item.AddAlert()
 	}
 }
 
@@ -351,7 +352,7 @@ func updateDevice(curUid int, wiz *wizFormData) (string, int) {
 }
 
 // Set the user's profile color and return an alert for them
-func createAlert(uid int, msg string, act *db.Action) db.Alert {
+func createAlert(uid int, msg string, act *db.Action) alerts.Alert {
 	wait := 0
 	colour := "info"
 	switch act.Action {
@@ -365,7 +366,11 @@ func createAlert(uid int, msg string, act *db.Action) db.Alert {
 	}
 	fullname, gid := setProfileColor(uid, colour)
 	act.Notes += msg + fullname + ". "
-	return db.Alert{Uid: uid, Gid: gid, Wait: wait}
+	var alert alerts.Alert
+	alert.Uid = uid
+	alert.Gid = gid
+	alert.Wait = wait
+	return alert
 }
 
 // ***********************************************************************************
@@ -385,7 +390,7 @@ func sighting(curUid int, wiz *wizFormData) {
 	act.Active = 0
 
 	// Remember any alerts until after AID is assigned and then they can be saved
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	// If self assigned, ack the computer flag
 	if act.Cid > 0 && wiz.Uid == curUid {
@@ -428,7 +433,7 @@ func claiming(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
 
 	// Save any alerts until after AID is assigned
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	// Self assigned, no need to ack the computer
 	act.Cid_ack = curUid
@@ -484,7 +489,7 @@ func using(curUid int, wiz *wizFormData) {
 // GIVING (Alert)   --> CID y, SID n, UID n, INFORM y (new owner)
 func giving(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	assignUser(curUid, 0, 0, &act)
 
@@ -517,7 +522,7 @@ func giving(curUid int, wiz *wizFormData) {
 func broken(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
 	assignedFullName, _ := assignUser(curUid, wiz.Uid, wiz.Gid, &act)
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	// Stop from assigning device to this user
 	wiz.Uid = 0
@@ -550,7 +555,7 @@ func broken(curUid int, wiz *wizFormData) {
 func lost(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
 	fullname, _ := assignUser(curUid, wiz.Uid, wiz.Gid, &act)
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	// Do Not assign device to this user
 	wiz.Uid = 0
@@ -580,7 +585,7 @@ func lost(curUid int, wiz *wizFormData) {
 func died(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
 	fullname, _ := assignUser(curUid, wiz.Uid, wiz.Gid, &act)
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	// Do Not assign device to this user
 	wiz.Uid = 0
@@ -628,7 +633,7 @@ func backup(curUid int, wiz *wizFormData) {
 // INSTALL (Alert) --> CID y, SID y, UID n, INFORM y (device current owner)
 func install(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	act.OpenedInt = wiz.Installed // When installed, in seconds since 1970 GMT
 	if wiz.Sid > 0 {
@@ -663,7 +668,7 @@ func install(curUid int, wiz *wizFormData) {
 // REMOVE (Alert)  --> CID y, SID y, UID n, INFORM y (device current owner)
 func remove(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	act.OpenedInt = wiz.Installed
 	if wiz.Sid > 0 {
@@ -696,7 +701,7 @@ func remove(curUid int, wiz *wizFormData) {
 // REQUEST (Ticket) --> CID y, SID y, UID y, INFORM y (person requesting the software) -> NEEDS WORK LOG TO BE CLOSED!
 func request(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	if wiz.Sid > 0 {
 		software, _ := db.GetSoftware(curUid, wiz.Sid)
@@ -723,7 +728,7 @@ func request(curUid int, wiz *wizFormData) {
 // CARE (Ticket) --> CID y, SID n, UID y (who will fix), INFORM Y (current owner) -> NEEDS WORK LOG TO BE CLOSED!
 func care(curUid int, wiz *wizFormData) {
 	act := newAction(curUid, wiz)
-	var alerts []db.Alert
+	var alerts []alerts.Alert
 
 	fullName, _ := assignUser(curUid, wiz.Uid, wiz.Gid, &act)
 	wiz.Uid = 0

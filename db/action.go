@@ -414,7 +414,7 @@ func (act *Action) insertAction() error {
 }
 
 // Update existing actions
-func (act *Action) updateAction(curUid int) error {
+func (act *Action) UpdateAction(curUid int) error {
 	if isActionLocked(curUid, act.Aid) {
 		return errors.New("record was updated by someone else before you tried to save")
 	}

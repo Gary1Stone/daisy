@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
@@ -67,6 +68,8 @@ func GetHome(c *fiber.Ctx) error {
 
 	online, offline := db.GetCurrentOnOffCounts()
 	var unwanted software.Unwanted
+	var alerts alerts.Alert
+	alerts.Uid = user.Uid
 
 	return c.Render("home", addNavigationIcons(fiber.Map{
 		"title":            template.HTML("&#127809; Daisy"),
@@ -77,7 +80,7 @@ func GetHome(c *fiber.Ctx) error {
 		"assigned":         template.HTML(assigned),
 		"btnColour":        btnColour,
 		"btnLabel":         btnLabel,
-		"myAlerts":         template.HTML(ctrls.GetAlertTable(user.Uid)),
+		"myAlerts":         template.HTML(alerts.GetAlertTable()),
 		"wizardIcon":       template.HTML(icons.GetIcon("wizard")),
 		"checkIcon":        template.HTML(icons.GetIcon("check")),
 		"bellIcon":         template.HTML(icons.GetIcon("bell")),
@@ -261,14 +264,16 @@ func PostHome(c *fiber.Ctx) error {
 	var response string
 	switch recvd.Task {
 	case "get_alerts": // NOTE: this is used by HOME and PROFILE pages
+		var alerts alerts.Alert
 		if recvd.Uid == 0 {
 			recvd.Uid = user.Uid
+			alerts.Uid = user.Uid
 		}
 		if recvd.Aid > 0 {
-			db.AckAlert(user.Uid, recvd.Uid, recvd.Aid, true, true, true)
+			alerts.AckAlert(user.Uid, recvd.Uid, recvd.Aid, true, true, true)
 			db.AckAction(user.Uid, recvd.Aid, true, true, true)
 		}
-		response = ctrls.GetAlertTable(recvd.Uid)
+		response = alerts.GetAlertTable()
 	case "save_lon_lat":
 		ip := c.IP()
 		ips := c.IPs()

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
@@ -181,8 +182,9 @@ func PostTicket(c *fiber.Ctx) error {
 			log.Println(err)
 		}
 		if recvd.Cmd == "CLOSED" {
+			var alerts alerts.Alert
 			db.AckAction(user.Uid, recvd.Aid, true, true, true)
-			db.AckAlert(user.Uid, user.Uid, recvd.Aid, true, true, false)
+			alerts.AckAlert(user.Uid, user.Uid, recvd.Aid, true, true, false)
 			// TODO: Close ticket or mark as closed and notify user ???????????????????
 			// Concept: have a notify at close flag in Alerts table DONE
 

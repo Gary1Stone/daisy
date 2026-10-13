@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
 )
@@ -136,35 +137,11 @@ func BuildReportCtrl(report string, readonly bool) string {
 
 func BuildInformList(aid int) string {
 	// Define the filter for fetching alerts
-	filter := db.Alert{
-		Aid:  aid, // Get alerts for this ticket
-		Gid:  -1,  // Get any group
-		Uid:  -1,  // Get any user
-		Ack:  0,   // Not acknowledged
-		Wait: 1,   // Waiting for closure (0 = not waiting, 1 = waiting, -1 = all)
-	}
-
-	// Fetch alerts from the database
-	items, err := db.GetAlerts(filter)
-	if err != nil {
-		log.Println(err)
-		return "<p class='fg-red'>Error loading inform list</p>"
-	}
-
-	// Start building the select element
-	var ctrl strings.Builder
-	ctrl.WriteString(`<select id="informs" size="5" style="width:100%; border:1px solid Gainsboro">`)
-
-	// Populate the select options with alert items
-	for _, item := range items {
-		ctrl.WriteString(`<option value="`)
-		ctrl.WriteString(strconv.Itoa(item.Alert.Uid)) // Escape the UID
-		ctrl.WriteString(`">`)
-		ctrl.WriteString(html.EscapeString(item.Fullname)) // Escape the Fullname to prevent XSS
-		ctrl.WriteString(`</option>`)
-	}
-
-	// Close the select element
-	ctrl.WriteString("</select>")
-	return ctrl.String()
+	var filter alerts.Alert
+	filter.Aid = aid // Get alerts for this ticket
+	filter.Gid = -1  // Get any group
+	filter.Uid = -1  // Get any user
+	filter.Ack = 0   // Not acknowledged
+	filter.Wait = 1  // Waiting for closure (0 = not waiting, 1 = waiting, -1 = all)
+	return filter.BuildInformList()
 }

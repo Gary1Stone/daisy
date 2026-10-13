@@ -6,6 +6,7 @@ import (
 	"math"
 	"strconv"
 
+	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
@@ -50,6 +51,8 @@ func GetProfile(c *fiber.Ctx) error {
 	if db.CheckUsersLastIpBanned(profile.Uid) {
 		ipBanned = "<span id='bttn'><button type='button' class='alert' onclick='resetBanned(" + strconv.Itoa(profile.Uid) + ");'>Reset Banned</button></span>"
 	}
+	var alerts alerts.Alert
+	alerts.Uid = uid
 
 	return c.Render("profile", addNavigationIcons(fiber.Map{
 		"title":             template.HTML(icons.GetIcon("profiles") + " Profile"),
@@ -76,7 +79,7 @@ func GetProfile(c *fiber.Ctx) error {
 		"banned":            template.HTML(ipBanned),
 		"chkActive":         template.HTML(ctrls.BuildActiveCheckbox(profile.Active, !user.Permissions.Profile.Update)),
 		"chkNotify":         template.HTML(ctrls.BuildNotifyCheckbox(profile.Notify, !user.Permissions.Profile.Update)),
-		"userAlerts":        template.HTML(ctrls.GetAlertTable(uid)),
+		"userAlerts":        template.HTML(alerts.GetAlertTable()),
 		"loginHistory":      template.HTML(ctrls.GetProfileLogins(user.Uid, uid)),
 		"groupIcon":         template.HTML(icons.GetIcon("group")),
 		"locationIcon":      template.HTML(icons.GetIcon("location")),
