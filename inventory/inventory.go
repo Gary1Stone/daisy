@@ -1,6 +1,6 @@
 package inventory
 
-/* Softare inventory installed on the omputers */
+/* Softare inventory installed on the computers */
 
 import (
 	"database/sql"

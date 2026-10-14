@@ -210,7 +210,7 @@
 <dialog id="deleteDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="deleteDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="deleteDialog" onclick="toggleModal(event);"></button>
         <h3>Delete this device record?</h3>
     </header>
     <section>
@@ -218,7 +218,7 @@
       <p>Are you sure you want to delete the <span id="deviceName"></span> record?</p>
     </section>
     <footer>
-      <button type='button' class="outline" data-target="deleteDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="outline" data-target="deleteDialog" onclick="toggleModal(event);">Cancel</button>
       <button type='button' onclick="confirmDelete();">Delete</button>
     </footer>
   </article>
@@ -228,7 +228,7 @@
 <dialog id="NotesDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="NotesDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="NotesDialog" onclick="toggleModal(event);"></button>
         <h3>Notes</h3>
     </header>
     <section id="pop">
@@ -237,7 +237,7 @@
     <input type="hidden" id="actionID" value="">
     <input type="hidden" id="actionName" value="">
     <footer>
-      <button type='button' class="outline" data-target="NotesDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="outline" data-target="NotesDialog" onclick="toggleModal(event);">Cancel</button>
       <button type='button' class="secondary" id="details" onclick="goTicket();">Details...</button>
       <button type='button' id="cmd" onclick="acceptAction();">Accept</button>
     </footer>
@@ -248,7 +248,7 @@
 <dialog id="uploadDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="uploadDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="uploadDialog" onclick="toggleModal(event);"></button>
         <h3>Upload a device photo (.jpg)</h3>
     </header>
     <section id="uploadMessage">
@@ -261,7 +261,7 @@
           If you do not agree, do not upload your photo.</p>
     </section>
     <footer>
-      <button type='button' class="outline" data-target="uploadDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="outline" data-target="uploadDialog" onclick="toggleModal(event);">Cancel</button>
       <button type='button' id="cmd" onclick="uploadFile();">Upload</button>
     </footer>
   </article>

@@ -7,7 +7,7 @@ import (
 	"github.com/gbsto/daisy/db"
 )
 
-type DashDeviceInfo struct {
+type DashInfo struct {
 	Type          string `json:"type"`  //i.e. DESKTOP, LAPTOP, TABLET, PHONE...
 	Label         string `json:"label"` //i.e. Desktop
 	Icon          string `json:"icon"`
@@ -18,18 +18,18 @@ type DashDeviceInfo struct {
 }
 
 // Generate the dashboard device types and counts
-func GetDashboard() []DashDeviceInfo {
-	dashInfo := make([]DashDeviceInfo, 0)
-	if err := countDashboardDeviceTypes(&dashInfo); err != nil {
+func (d *DashInfo) GetDashboard() []DashInfo {
+	dashInfo := make([]DashInfo, 0)
+	if err := d.countDashboardDeviceTypes(&dashInfo); err != nil {
 		log.Println(err)
 	}
-	if err := countDashboardLostDevices(&dashInfo); err != nil {
+	if err := d.countDashboardLostDevices(&dashInfo); err != nil {
 		log.Println(err)
 	}
-	if err := coundDashboardStoredDevices(&dashInfo); err != nil {
+	if err := d.coundDashboardStoredDevices(&dashInfo); err != nil {
 		log.Println(err)
 	}
-	if err := countDashboardIssues(&dashInfo); err != nil {
+	if err := d.countDashboardIssues(&dashInfo); err != nil {
 		log.Println(err)
 	}
 	return dashInfo
@@ -37,7 +37,7 @@ func GetDashboard() []DashDeviceInfo {
 
 // Count the device types
 // Slices are passed by reference, so don't need pointers much
-func countDashboardDeviceTypes(dash *[]DashDeviceInfo) error {
+func (d *DashInfo) countDashboardDeviceTypes(dash *[]DashInfo) error {
 	query := `
 		SELECT count(*) as cnt, A.type, B.description, B.icon 
 		FROM devices A 
@@ -50,7 +50,7 @@ func countDashboardDeviceTypes(dash *[]DashDeviceInfo) error {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var item DashDeviceInfo
+		var item DashInfo
 		err := rows.Scan(&item.Count, &item.Type, &item.Label, &item.Icon)
 		if err != nil {
 			log.Println(err)
@@ -63,7 +63,7 @@ func countDashboardDeviceTypes(dash *[]DashDeviceInfo) error {
 }
 
 // Get count of devices that were lost or died or stolen
-func countDashboardLostDevices(dash *[]DashDeviceInfo) error {
+func (d *DashInfo) countDashboardLostDevices(dash *[]DashInfo) error {
 	query := `
 		SELECT COUNT(cid) AS cnt, type 
 		FROM devices 
@@ -77,7 +77,7 @@ func countDashboardLostDevices(dash *[]DashDeviceInfo) error {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var ddi DashDeviceInfo
+		var ddi DashInfo
 		err := rows.Scan(&ddi.Unavailable, &ddi.Type)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println(err)
@@ -95,7 +95,7 @@ func countDashboardLostDevices(dash *[]DashDeviceInfo) error {
 }
 
 // Get count of devices in storage
-func coundDashboardStoredDevices(dash *[]DashDeviceInfo) error {
+func (d *DashInfo) coundDashboardStoredDevices(dash *[]DashInfo) error {
 	query := `
 		SELECT count(*) as cnt, type 
 		FROM devices 
@@ -108,7 +108,7 @@ func coundDashboardStoredDevices(dash *[]DashDeviceInfo) error {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var ddi DashDeviceInfo
+		var ddi DashInfo
 		err := rows.Scan(&ddi.Instorage, &ddi.Type)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println(err)
@@ -126,7 +126,7 @@ func coundDashboardStoredDevices(dash *[]DashDeviceInfo) error {
 }
 
 // get pending actions that are issues
-func countDashboardIssues(dash *[]DashDeviceInfo) error {
+func (d *DashInfo) countDashboardIssues(dash *[]DashInfo) error {
 	query := `
 		SELECT count(*) AS cnt, B.type 
 		FROM action_log A 
@@ -142,7 +142,7 @@ func countDashboardIssues(dash *[]DashDeviceInfo) error {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var ddi DashDeviceInfo
+		var ddi DashInfo
 		err := rows.Scan(&ddi.PendingAction, &ddi.Type)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println(err)

@@ -119,7 +119,7 @@
 <dialog id="routeDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="routeDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="routeDialog" onclick="toggleModal(event);"></button>
         <h3>Route</h3>
     </header>
     <section>
@@ -141,7 +141,7 @@
         </div>
     </section>
     <footer>
-        <button type='button' class="outline" data-target="routeDialog" onclick="toggleModal(event)">Cancel</button>
+        <button type='button' class="outline" data-target="routeDialog" onclick="toggleModal(event);">Cancel</button>
         <button type='button' onclick="route();">Okay</button>
     </footer>
   </article>
@@ -151,7 +151,7 @@
 <dialog id="addInform">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="addInform" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="addInform" onclick="toggleModal(event);"></button>
         <h3>Notify At Close</h3>
     </header>
     <section>
@@ -161,7 +161,7 @@
         </div>
     </section>
     <footer>
-        <button type='button' class="outline" data-target="addInform" onclick="toggleModal(event)">Cancel</button>
+        <button type='button' class="outline" data-target="addInform" onclick="toggleModal(event);">Cancel</button>
         <button type='button' onclick="addInform();">Add</button>
     </footer>
   </article>

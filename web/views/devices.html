@@ -6,7 +6,7 @@
 <dialog id="filterDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="filterDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="filterDialog" onclick="toggleModal(event);"></button>
         <h3>Filter Devices</h3>
     </header>
     <section>
@@ -43,7 +43,7 @@
       <div id="dialogMsg" class="fg-red"></div>
     </section>
     <footer>
-      <button type='button' class="outline" data-target="filterDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="outline" data-target="filterDialog" onclick="toggleModal(event);">Cancel</button>
       <button type='button' autofocus data-target="filterDialog" onclick="search();">Search</button>
     </footer>
   </article>
@@ -52,7 +52,7 @@
 <dialog id="wizardDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="wizardDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="wizardDialog" onclick="toggleModal(event);"></button>
         <h3>Report on <span id="deviceName"></span><input type="hidden" id="wizcid" value=""></h3>
     </header>
       <div class="dialog-content" style="overflow-y: scroll; height: 12rem; ">
@@ -70,7 +70,7 @@
           </ul>
       </div>
     <footer>
-      <button type='button' class="outline" data-target="wizardDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="outline" data-target="wizardDialog" onclick="toggleModal(event);">Cancel</button>
     </footer>
   </article>
 </dialog>

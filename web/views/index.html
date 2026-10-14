@@ -8,9 +8,9 @@
         <section>
             <p>For access to this web application you agree to the following:
                 <ul>
-                    <li><a href="#" data-target="Terms" onclick="toggleModal(event)">Terms&nbsp;&amp;&nbsp;Conditions</a></li>
-                    <li><a href="#" data-target="Privacy" onclick="toggleModal(event)">Privacy Policy</a></li>
-                    <li><a href="#" data-target="Location" onclick="toggleModal(event)">Location Collection</a></li>
+                    <li><a href="#" data-target="Terms" onclick="toggleModal(event);">Terms&nbsp;&amp;&nbsp;Conditions</a></li>
+                    <li><a href="#" data-target="Privacy" onclick="toggleModal(event);">Privacy Policy</a></li>
+                    <li><a href="#" data-target="Location" onclick="toggleModal(event);">Location Collection</a></li>
                 </ul> 
             </p>
             <p><span id="msg"></span></p>
@@ -27,7 +27,7 @@
 <dialog id="Terms">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="Terms" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="Terms" onclick="toggleModal(event);"></button>
         <h3>Terms&nbsp;&amp;&nbsp;Conditions</h3>
     </header>
     <p>Please read these Terms and Conditions carefully before using this website.</p>
@@ -148,7 +148,7 @@
     </p>
     </details>
     <footer>
-      <button type='button' autofocus data-target="Terms" onclick="toggleModal(event)">Confirm</button>
+      <button type='button' autofocus data-target="Terms" onclick="toggleModal(event);">Confirm</button>
     </footer>
   </article>
 </dialog>
@@ -156,7 +156,7 @@
 <dialog id="Privacy">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="Privacy" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="Privacy" onclick="toggleModal(event);"></button>
         <h3>Privacy Policy</h3>
     </header>
     <p>
@@ -273,7 +273,7 @@
         </p>
     </details>
     <footer>
-      <button type='button' autofocus data-target="Privacy" onclick="toggleModal(event)">Confirm</button>
+      <button type='button' autofocus data-target="Privacy" onclick="toggleModal(event);">Confirm</button>
     </footer>
   </article>
 </dialog>
@@ -281,14 +281,14 @@
 <dialog id="Location">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="Location" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="Location" onclick="toggleModal(event);"></button>
         <h3>Location Collection</h3>
     </header>
     <p>Your current location is essential for application security and Geo-fencing.</p>
     <p>It is collected every time you start to use this website application.</p>
     <p>If you deny permission to collect your location, you will not be permitted to access this web application.</p>
     <footer>
-      <button type='button' autofocus data-target="Location" onclick="toggleModal(event)">Confirm</button>
+      <button type='button' autofocus data-target="Location" onclick="toggleModal(event);">Confirm</button>
     </footer>
   </article>
 </dialog>

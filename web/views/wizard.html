@@ -250,12 +250,12 @@
 <dialog id="helpDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event);"></button>
         <h3>help</h3>
     </header>
     <section id="helpMsg"></section>
     <footer>
-      <button type='button' data-target="helpDialog" onclick="toggleModal(event)">Okay</button>
+      <button type='button' data-target="helpDialog" onclick="toggleModal(event);">Okay</button>
     </footer>
   </article>
 </dialog>
@@ -264,7 +264,7 @@
 <dialog id="filterDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="filterDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="filterDialog" onclick="toggleModal(event);"></button>
         <h3>Filter Devices</h3>
     </header>
     <section>
@@ -301,7 +301,7 @@
       <div id="dialogMsg" class="fg-red"></div>
     </section>
     <footer>
-      <button type='button' class="outline" data-target="filterDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' class="outline" data-target="filterDialog" onclick="toggleModal(event);">Cancel</button>
       <button type='button' autofocus data-target="filterDialog" onclick="search();">Search</button>
     </footer>
   </article>
@@ -343,7 +343,7 @@
 <dialog id="thanksDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="thanksDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="thanksDialog" onclick="toggleModal(event);"></button>
         <h3>Thanks</h3>
     </header>
     <section>

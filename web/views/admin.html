@@ -10,7 +10,7 @@
 <dialog id="helpDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="helpDialog" onclick="toggleModal(event);"></button>
         <h3>Select List Administration</h3>
     </header>
     <p>The Codes/Descriptions are used in the select lists for users to make a choice, such as the names of the offices.</p>
@@ -25,7 +25,7 @@
     <p>These prefixes can be used to help identify the type of the device</p>
     <p>For example, if the prefix is "LAPTOP", the Asset ID will be "LAPTOP-123456"</p>
     <footer>
-      <button type='button' autofocus data-target="helpDialog" onclick="toggleModal(event)">Okay</button>
+      <button type='button' autofocus data-target="helpDialog" onclick="toggleModal(event);">Okay</button>
     </footer>
   </article>
 </dialog>
@@ -33,7 +33,7 @@
 <dialog id="tableDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="tableDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="tableDialog" onclick="toggleModal(event);"></button>
         <h3>Select a Table</h3>
     </header>
     <div class="dialog-content" style="overflow-y: scroll; height: 12rem; ">
@@ -54,7 +54,7 @@
         </ul>
     </div>
     <footer>
-      <button type='button' autofocus data-target="tableDialog" onclick="toggleModal(event)">Cancel</button>
+      <button type='button' autofocus data-target="tableDialog" onclick="toggleModal(event);">Cancel</button>
     </footer>
   </article>
 </dialog>
@@ -62,7 +62,7 @@
 <dialog id="permissionsDialog">
   <article>
     <header>
-        <button type='button' aria-label="Close" rel="prev" data-target="permissionsDialog" onclick="toggleModal(event)"></button>
+        <button type='button' aria-label="Close" rel="prev" data-target="permissionsDialog" onclick="toggleModal(event);"></button>
         <h3><span id="GroupName"></span> Permissions</h3>
     </header>
     <input type="hidden" id="permRowId" value="" >

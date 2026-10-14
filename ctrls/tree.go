@@ -20,7 +20,7 @@ func BuildTreeView(site string) string {
 
 	// Generate HTML for the tree view
 	var html strings.Builder
-	fmt.Fprintf(&html, `<ul><li><a href='#' data-target="siteSelect" onclick="toggleModal(event)"> %s Internet %s</a></li><ul>`, icons.GetIcon("internet"), htmlEscape(site))
+	fmt.Fprintf(&html, `<ul><li><a href='#' data-target="siteSelect" onclick="toggleModal(event);"> %s Internet %s</a></li><ul>`, icons.GetIcon("internet"), htmlEscape(site))
 
 	for _, rootNode := range nodes {
 		html.WriteString(generateNodeHTML(rootNode))

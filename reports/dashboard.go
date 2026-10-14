@@ -14,7 +14,8 @@ import (
 )
 
 func GetDashboardReport() string {
-	items := dashboards.GetDashboard()
+	var d dashboards.DashInfo
+	items := d.GetDashboard()
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id="dashboardTable">
     <thead>
@@ -41,7 +42,8 @@ func GetDashboardReport() string {
 }
 
 func GetDeviceCounts() string {
-	items := dashboards.GetDashboard()
+	var d dashboards.DashInfo
+	items := d.GetDashboard()
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id="dash_table">
     <thead>
