@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/logins"
 	"github.com/gbsto/daisy/register"
 
 	"github.com/go-webauthn/webauthn/protocol"
@@ -253,7 +253,7 @@ func FinishRegistration(c *fiber.Ctx) error {
 	if ips := c.IPs(); len(ips) > 0 {
 		ip = ips[0]
 	}
-	var loginInfo db.Logins
+	var loginInfo logins.Logins
 	loginInfo.Uid = usr.Uid
 	loginInfo.User = usr.Username
 	loginInfo.Fullname = usr.Fullname
@@ -283,7 +283,7 @@ func FinishRegistration(c *fiber.Ctx) error {
 	})
 
 	// Record the login
-	_ = db.SaveLogin(&loginInfo)
+	_ = logins.SaveLogin(&loginInfo)
 
 	cid := bytesToBase64String(credential.ID)
 	c.Cookie(&fiber.Cookie{

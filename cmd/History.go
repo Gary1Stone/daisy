@@ -6,8 +6,7 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -34,7 +33,7 @@ func GetHistory(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
-	macInfo, err := db.GetMacInfoByMid(user.Tzoff, mid)
+	macInfo, err := macs.GetMacInfoByMid(user.Tzoff, mid)
 	if err != nil {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}

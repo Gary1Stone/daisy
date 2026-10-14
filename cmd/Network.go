@@ -5,8 +5,7 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/tree"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -25,7 +24,7 @@ func GetNetwork(c *fiber.Ctx) error {
 	// Read the site from the URL, or default to 0
 	site := c.Query("site", "")
 	if site == "" {
-		site = db.GetDefaultSite()
+		site = tree.GetDefaultSite()
 	}
 	// If the count is greater than 0, then we need to show the site select list, otherwise just use a hidden field for the site
 
@@ -64,7 +63,7 @@ func PostTreeShow(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusOK).SendString("malformed request body")
 	}
-	node, err := db.GetNode(req.Cid, req.Site)
+	node, err := tree.GetNode(req.Cid, req.Site)
 	if err != nil {
 		return c.Status(fiber.StatusOK).SendString("error retrieving node")
 	}
@@ -73,13 +72,13 @@ func PostTreeShow(c *fiber.Ctx) error {
 
 // Save the updated values for a single node in the tree, given its Mid (MacId)
 func PostTreeUpdate(c *fiber.Ctx) error {
-	var req db.Node
+	var req tree.Node
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusOK).SendString("malformed request body")
 	}
 
 	// Update both the device AND the MAC record in the database
-	err := db.SetTreeParent(req.Cid, req.Parent, req.Kind, req.Office)
+	err := tree.SetTreeParent(req.Cid, req.Parent, req.Kind, req.Office)
 
 	if err != nil {
 		return c.Status(fiber.StatusOK).SendString("error updating device")

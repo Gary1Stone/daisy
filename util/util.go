@@ -77,3 +77,19 @@ func CalcDuration(opened, closed int64) string {
 	}
 	return response
 }
+
+// set string to max length of 25 characters
+func Mx25(str string) string {
+	if len(str) > 25 {
+		return str[:25] + "&hellip;"
+	}
+	return str
+}
+
+// set string to max length of 50 characters
+func Mx50(str string) string {
+	if len(str) > 50 {
+		str = str[:50] + "&hellip;"
+	}
+	return str
+}

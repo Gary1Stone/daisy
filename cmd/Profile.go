@@ -11,6 +11,8 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/logins"
+	"github.com/gbsto/daisy/profiles"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -33,7 +35,8 @@ func GetProfile(c *fiber.Ctx) error {
 	}
 
 	// get profile record
-	profile, err := db.GetProfile(user.Uid, uid)
+	var p profiles.Profile
+	profile, err := p.GetProfile(user.Uid, uid)
 	if err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).Redirect("index.html")
@@ -48,7 +51,7 @@ func GetProfile(c *fiber.Ctx) error {
 
 	ipBanned := ""
 	// Check if user was banned by their IP address
-	if db.CheckUsersLastIpBanned(profile.Uid) {
+	if logins.CheckUsersLastIpBanned(profile.Uid) {
 		ipBanned = "<span id='bttn'><button type='button' class='alert' onclick='resetBanned(" + strconv.Itoa(profile.Uid) + ");'>Reset Banned</button></span>"
 	}
 	var alerts alerts.Alert
@@ -75,7 +78,7 @@ func GetProfile(c *fiber.Ctx) error {
 		"last_updated_by":   profile.Lun,
 		"last_updated_time": profile.Last_updated_time,
 		"curUid":            user.Uid,
-		"assigned_devices":  template.HTML(ctrls.BuildAssignedDevices(user.Uid, uid)),
+		"assigned_devices":  template.HTML(ctrls.BuildAssignedDevices(user.Uid, user.Tzoff, uid)),
 		"banned":            template.HTML(ipBanned),
 		"chkActive":         template.HTML(ctrls.BuildActiveCheckbox(profile.Active, !user.Permissions.Profile.Update)),
 		"chkNotify":         template.HTML(ctrls.BuildNotifyCheckbox(profile.Notify, !user.Permissions.Profile.Update)),
@@ -103,7 +106,7 @@ func PostProfile(c *fiber.Ctx) error {
 		Msg:     "ERROR: Processing Error",
 	}
 
-	recvd := new(db.Profile) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
+	recvd := new(profiles.ProfileInfo) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
 	if err := c.BodyParser(recvd); err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).JSON(reply)
@@ -143,7 +146,8 @@ func PostProfile(c *fiber.Ctx) error {
 		if user.Permissions.Profile.Update {
 			//reply.Success = false
 			reply.Msg = "ERROR: The profile was NOT saved."
-			usr, err := db.GetProfile(user.Uid, recvd.Uid)
+			var p profiles.Profile
+			usr, err := p.GetProfile(user.Uid, recvd.Uid)
 			if err == nil {
 				usr.User = recvd.User
 				usr.First = recvd.First
@@ -187,7 +191,7 @@ func PostProfile(c *fiber.Ctx) error {
 		reply.Success = true
 		reply.Uid = recvd.Uid
 		reply.Msg = "Okay"
-		err := db.UnBanUser(recvd.Uid)
+		err := logins.UnBanUser(recvd.Uid)
 		if err != nil {
 			reply.Success = false
 			reply.Msg = err.Error()

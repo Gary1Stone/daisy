@@ -5,8 +5,9 @@ import (
 	"html/template"
 	"log"
 
+	"github.com/gbsto/daisy/actions"
+	"github.com/gbsto/daisy/choices"
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
 
 	"github.com/gofiber/fiber/v2"
@@ -23,7 +24,7 @@ func GetAdmin(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
-	actionCodes, err := db.GetActionCodes(true)
+	actionCodes, err := actions.GetActionCodes(true)
 	if err != nil {
 		log.Println(err)
 	}
@@ -82,7 +83,7 @@ func PostAdmin(c *fiber.Ctx) error {
 
 	//If the user wanted to save anything
 	if adminForm.Task == "save_table" {
-		var items []db.ChoiceAdmin
+		var items []choices.Choices
 		err := json.Unmarshal([]byte(adminForm.AdminData), &items)
 		if err != nil {
 			log.Println(err)
@@ -107,6 +108,7 @@ func PostAdmin(c *fiber.Ctx) error {
 	}
 
 	//Always send back the selected admin data from the choices table
-	items := db.GetChoicesAdmin(adminForm.Field)
+	var a choices.Choices
+	items := a.GetChoicesAdmin(adminForm.Field)
 	return c.Status(fiber.StatusOK).JSON(items)
 }

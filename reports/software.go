@@ -8,9 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gbsto/daisy/api"
 	"github.com/gbsto/daisy/backups"
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/inventory"
+	"github.com/gbsto/daisy/tracks"
 )
 
 func TrackedSoftware() string {
@@ -28,7 +32,7 @@ func TrackedSoftware() string {
 		</thead>
 		<tbody>`)
 
-	items, err := db.GetTrackedSoftware()
+	items, err := inventory.GetTrackedSoftware()
 	if err != nil {
 		log.Println(err)
 		report.WriteString(`</tbody></table>`)
@@ -55,7 +59,8 @@ func UsersAssignedDevices() string {
 		</tr>
 		</thead>
 		<tbody>`)
-	items, err := db.ListUsersDevices()
+	var d devices.Device
+	items, err := d.ListUsersDevices()
 	if err != nil {
 		log.Println(err)
 
@@ -80,7 +85,7 @@ func NetworkGaps() string {
 		</tr>
 		</thead>
 		<tbody>`)
-	items, err := db.NetworkGaps()
+	items, err := NetworkGap()
 	if err != nil {
 		log.Println(err)
 		report.WriteString(`</tbody></table>`)
@@ -93,7 +98,7 @@ func NetworkGaps() string {
 	return report.String()
 }
 
-func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
+func LastSeenDevices(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id='last_table' >
 		<thead>
@@ -109,7 +114,7 @@ func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
 		seenLate = 90
 	}
 
-	items, err := db.GetLastSeenDevices(curUid)
+	items, err := GetLastSeenDevices(curUid)
 	if err != nil {
 		log.Println(err)
 		report.WriteString(`</tbody></table>`)
@@ -129,7 +134,7 @@ func LastSeenDevices(curUid int, devInfo map[int]db.DevicesMeta) string {
 	return report.String()
 }
 
-func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
+func Checkins(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id='last_table'>
 		<thead>
@@ -146,8 +151,8 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 		auditLate = 28
 	}
 
-	var tracks db.Tracks
-	items, err := tracks.GetLastTracks(curUid)
+	var tracks tracks.Tracks
+	items, err := tracks.GetLastTracks(curUid, db.GetTzoff(curUid))
 	if err != nil {
 		log.Println(err)
 		report.WriteString(`</tbody></table>`)
@@ -172,7 +177,7 @@ func Checkins(curUid int, devInfo map[int]db.DevicesMeta) string {
 	return report.String()
 }
 
-func Backups(curUid int, devInfo map[int]db.DevicesMeta) string {
+func Backups(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id='last_table' >
 		<thead>
@@ -236,7 +241,7 @@ func Backups(curUid int, devInfo map[int]db.DevicesMeta) string {
 	return report.String()
 }
 
-func Drivespace(curUid int, devInfo map[int]db.DevicesMeta) string {
+func Drivespace(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id='drive_table'>
 		<thead>
@@ -249,7 +254,7 @@ func Drivespace(curUid int, devInfo map[int]db.DevicesMeta) string {
 		<tbody>`)
 
 	// Get the latest drive space info
-	items, err := db.GetDiskInfo(curUid, -1)
+	items, err := api.GetDiskInfo(curUid, -1)
 	if err != nil {
 		log.Println(err)
 		report.WriteString("</tbody></table>")

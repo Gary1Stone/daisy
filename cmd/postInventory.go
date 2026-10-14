@@ -2,8 +2,7 @@ package cmd
 
 import (
 	"github.com/gbsto/daisy/ctrls"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/inventory"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -28,7 +27,7 @@ func PostInventory(c *fiber.Ctx) error {
 	}
 	if invForm.Task == "get_software_inventory" {
 		reply.Inv_table = ctrls.BuildInventoryList()
-		reply.Used_names, _ = db.GetUsedInventoryNames()
+		reply.Used_names, _ = inventory.GetUsedInventoryNames()
 		reply.Success = true
 		reply.Msg = "Okay"
 	}

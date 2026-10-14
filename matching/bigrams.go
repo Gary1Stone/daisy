@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 )
 
 // Word association
@@ -12,7 +12,7 @@ import (
 func GetStarted() {
 	fmt.Println("Matching package initialized")
 
-	hostnameList, err := db.GetHostnames()
+	hostnameList, err := macs.GetHostnames()
 	if err != nil {
 		fmt.Println("Error getting hostnames:", err)
 		return

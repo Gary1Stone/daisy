@@ -6,12 +6,13 @@ import (
 	"math"
 	"strconv"
 
+	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/backups"
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/profiles"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -36,7 +37,8 @@ func GetDevice(c *fiber.Ctx) error {
 	}
 
 	// Get device record
-	device, err := db.GetDevice(user.Uid, cid)
+	var d devices.Device
+	device, err := d.GetDevice(user.Uid, user.Tzoff, cid)
 	if err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).Redirect("index.html")
@@ -51,7 +53,8 @@ func GetDevice(c *fiber.Ctx) error {
 	// Delete button enabled only if the device has no open action log entries. // maybe future: nor tracked software
 	deleteAble := user.Permissions.Device.Delete
 	if deleteAble {
-		deleteAble = db.IsDeletableDevice(cid)
+		var d devices.Device
+		deleteAble = d.IsDeletableDevice(cid)
 	}
 	var backs backups.BackupInfo
 
@@ -107,14 +110,15 @@ func GetDevice(c *fiber.Ctx) error {
 	}))
 }
 
-func guessAssignedGroupDefault(curUid int, dev *db.Device) string {
+func guessAssignedGroupDefault(curUid int, dev *devices.Device) string {
 	if dev.Gid > 0 {
 		return strconv.Itoa(dev.Gid)
 	}
 	if dev.Uid == 0 {
 		return "0"
 	}
-	assignedPerson, err := db.GetProfile(curUid, dev.Uid)
+	var p profiles.Profile
+	assignedPerson, err := p.GetProfile(curUid, dev.Uid)
 	if err != nil {
 		log.Println(err)
 		return "0"
@@ -139,7 +143,7 @@ func PostDevice(c *fiber.Ctx) error {
 		Msg:     "ERROR: Processing Error",
 	}
 
-	recvd := new(db.Device) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
+	recvd := new(devices.Device) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
 	if err := c.BodyParser(recvd); err != nil {
 		return c.Status(fiber.StatusOK).JSON(reply)
 	}
@@ -156,13 +160,15 @@ func PostDevice(c *fiber.Ctx) error {
 		var err error
 		reply.Cid = recvd.Cid
 		reply.Success = true
-		reply.Msg, err = db.GetNextAssetId(recvd.Cid, recvd.Type)
+		var d devices.Device
+		reply.Msg, err = d.GetNextAssetId(recvd.Cid, recvd.Type)
 		if err != nil {
 			reply.Success = false
 			reply.Msg = err.Error()
 		}
 	case "unique":
-		reply.Success = db.IsUniqueDevice(recvd.Cid, recvd.Name)
+		var d devices.Device
+		reply.Success = d.IsUniqueDevice(recvd.Cid, recvd.Name)
 		reply.Cid = recvd.Cid
 		reply.Msg = "The name " + recvd.Name + " is available."
 		if !reply.Success {
@@ -175,14 +181,15 @@ func PostDevice(c *fiber.Ctx) error {
 	case "getactionlog":
 		if recvd.Aid > 0 { //set_accept_cid_by_aid
 			//	db.AckAlert(curUid, 0, recvd.Aid, true, true, false)
-			db.AckAction(user.Uid, recvd.Aid, true, true, false)
+			actions.AckAction(user.Uid, recvd.Aid, true, true, false)
 		}
 		return c.Status(fiber.StatusOK).SendString(ctrls.BuildDeviceLog(user.Uid, recvd.Cid, recvd.ShowHistory))
 	case "delete":
 		reply.Success = false
 		reply.Msg = "ERROR: You do not have permission to delete device records."
 		if user.Permissions.Device.Delete {
-			reply.Success = db.MarkDeviceAsDeleted(user.Uid, recvd.Cid)
+			var d devices.Device
+			reply.Success = d.MarkDeviceAsDeleted(user.Uid, recvd.Cid)
 			reply.Cid = recvd.Cid
 			reply.Msg = "The device " + recvd.Name + " was deleted."
 			if !reply.Success {
@@ -193,7 +200,8 @@ func PostDevice(c *fiber.Ctx) error {
 		reply.Success = false
 		reply.Msg = "ERROR: You do not have permission to update device records."
 		if user.Permissions.Device.Update {
-			dto, err := db.GetDevice(user.Uid, recvd.Cid)
+			var d devices.Device
+			dto, err := d.GetDevice(user.Uid, user.Tzoff, recvd.Cid)
 			if err != nil {
 				log.Println(err)
 			} else {
@@ -249,7 +257,8 @@ func PostDevice(c *fiber.Ctx) error {
 				dto.Os = recvd.Os
 				dto.Serial_number = recvd.Serial_number
 				dto.Gid = recvd.Gid
-				reply.Success = db.SetDevice(user.Uid, &dto)
+				var d devices.Device
+				reply.Success = d.SetDevice(user.Uid, &dto)
 				reply.Cid = dto.Cid
 				reply.Msg = "The device record was saved"
 				if !reply.Success {
@@ -264,7 +273,8 @@ func PostDevice(c *fiber.Ctx) error {
 			recvd.Active = 1
 			recvd.Last_updated_by = user.Uid
 			recvd.Color = colors.Light
-			reply.Success = db.AddDevice(recvd)
+			var d devices.Device
+			reply.Success = d.AddDevice(recvd)
 			reply.Cid = recvd.Cid
 			reply.Msg = "The device record was created"
 			if !reply.Success {

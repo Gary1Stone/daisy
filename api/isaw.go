@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/choices"
+	"github.com/gbsto/daisy/emails"
+	"github.com/gbsto/daisy/wizards"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,7 +35,7 @@ func PostiSawApi(c *fiber.Ctx) error {
 
 	switch request.Command {
 	case "GET_PROFILES":
-		profiles, err := db.GetProfiles()
+		profiles, err := wizards.GetProfiles()
 		if err != nil {
 			log.Println("API: Failure getting profiles", err)
 			return c.Status(fiber.StatusOK).SendString(response)
@@ -45,7 +47,7 @@ func PostiSawApi(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusOK).SendString(string(reply))
 	case "GET_COMPUTERS":
-		computers, err := db.GetComputers()
+		computers, err := wizards.GetComputers()
 		if err != nil {
 			log.Println("API: Failure getting profiles", err)
 			return c.Status(fiber.StatusOK).SendString(response)
@@ -57,7 +59,8 @@ func PostiSawApi(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusOK).SendString(string(reply))
 	case "GET_CHOICES":
-		choices, err := db.GetApiChoices()
+		var a choices.Choices
+		choices, err := a.GetApiChoices()
 		if err != nil {
 			log.Println("API: Failure getting choices", err)
 			return c.Status(fiber.StatusOK).SendString(response)
@@ -69,7 +72,8 @@ func PostiSawApi(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusOK).SendString(string(reply))
 	case "SET_PIN":
-		err := db.EmailNewPin(request.Email, request.Pin)
+		var e emails.Emails
+		err := e.EmailNewPin(request.Email, request.Pin)
 		if err != nil {
 			log.Println(err)
 			return c.Status(fiber.StatusOK).SendString("Error")

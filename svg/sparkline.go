@@ -4,7 +4,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/activeusers"
+	"github.com/gbsto/daisy/tree"
 )
 
 const (
@@ -28,7 +29,7 @@ type SparklineOptions struct {
 func BuildAttackChart(opts *SparklineOptions) string {
 	var err error
 	setChartSize(opts)
-	opts.points, err = db.GetAttacks(opts.Duration, opts.Width)
+	opts.points, err = GetAttacks(opts.Duration, opts.Width)
 	if err != nil {
 		return "Server Error"
 	}
@@ -40,12 +41,13 @@ func BuildLoginsChart(opts *SparklineOptions) string {
 	opts.points = nil
 	setChartSize(opts)
 	var err error
-	opts.points, err = db.GetLoginCounts(opts.Duration, opts.Width)
+	var ausr activeusers.ActiveUsers
+	opts.points, err = ausr.GetLoginCounts(opts.Duration, opts.Width)
 	if err != nil {
 		return "Server Error"
 	}
 	// Don't use auto-ranging the y-axis scale
-	opts.MaxValue, err = db.GetActiveUserCount()
+	opts.MaxValue, err = ausr.GetActiveUserCount()
 	if err != nil {
 		return "Server Error"
 	}
@@ -57,7 +59,8 @@ func BuildHitsChart(opts *SparklineOptions) string {
 	opts.points = nil
 	setChartSize(opts)
 	var err error
-	opts.points, err = db.GetHitsCounts(opts.Duration, opts.Width)
+	var ausr activeusers.ActiveUsers
+	opts.points, err = ausr.GetHitsCounts(opts.Duration, opts.Width)
 	if err != nil {
 		return "Server Error"
 	}
@@ -69,7 +72,7 @@ func BuildNetworkLoadChart(opts *SparklineOptions) string {
 	opts.points = nil
 	setChartSize(opts)
 	var err error
-	opts.points, err = db.GetNetworkDeviceCountsPerDay(opts.Duration, opts.Width)
+	opts.points, err = tree.GetNetworkDeviceCountsPerDay(opts.Duration, opts.Width)
 	if err != nil {
 		return "Server Error"
 	}

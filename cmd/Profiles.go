@@ -6,8 +6,7 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/profiles"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,7 +18,7 @@ func GetProfiles(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	var filter db.ProfileFilter
+	var filter profiles.Profile
 	filter.Init()
 	filter.Uid = 0 // get all profiles
 
@@ -44,7 +43,7 @@ func PostProfiles(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	var filter db.ProfileFilter
+	var filter profiles.Profile
 	if err := c.BodyParser(&filter); err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")

@@ -5,13 +5,16 @@ import (
 	"log"
 	"strings"
 
+	"github.com/gbsto/daisy/actions"
+	"github.com/gbsto/daisy/dashboards"
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/util"
+	"github.com/gbsto/daisy/photos"
 )
 
 func GetDashboardReport() string {
-	items := db.GetDashboard()
+	items := dashboards.GetDashboard()
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id="dashboardTable">
     <thead>
@@ -38,7 +41,7 @@ func GetDashboardReport() string {
 }
 
 func GetDeviceCounts() string {
-	items := db.GetDashboard()
+	items := dashboards.GetDashboard()
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id="dash_table">
     <thead>
@@ -63,7 +66,7 @@ func GetDeviceCounts() string {
  */
 func GetIssuesReport(curUid int, devType string) string {
 	var report strings.Builder
-	items, err := db.GetDeviceIssues(curUid, devType)
+	items, err := actions.GetDeviceIssues(curUid, devType)
 	if err != nil {
 		log.Println(err)
 		return "ERROR: Cannot Generate Issues Report"
@@ -91,9 +94,10 @@ func GetIssuesReport(curUid int, devType string) string {
  * Devices Report
  *
  */
-func GetDeviceReport(curUid int, devType string) string {
+func GetDeviceReport(curUid, tzoff int, devType string) string {
 	var report strings.Builder
-	items, err := db.GetDevicesByType(curUid, devType)
+	var d devices.Device
+	items, err := d.GetDevicesByType(curUid, tzoff, devType)
 	if err != nil {
 		log.Println(err)
 	}
@@ -112,7 +116,7 @@ func GetDeviceReport(curUid int, devType string) string {
 
 	for _, item := range items {
 
-		img := util.GetThumbnail(item.Image)
+		img := photos.GetThumbnail(item.Image)
 		bttn := getButtonCtrl(item.Cid, 0, item.Type, item.Icon, item.Name)
 		make := db.GetCodeDescription("MAKE", item.Make) + " " + item.Model
 		status := db.GetCodeDescription("STATUS", item.Status)
@@ -170,7 +174,7 @@ func GetDeviceReport(curUid int, devType string) string {
 // <a class='alert' href='device.html?cid=21' role='button' ><span>icon</span>&nbsp;WKNC-20</a>
 func getButtonCtrl(cid, days int, devType, icon, name string) string {
 	if len(icon) == 0 {
-		icon = icons.GetIcon(db.FindIconNameByName(devType))
+		icon = icons.GetIcon(icons.FindIconNameByName(devType))
 	} else {
 		icon = icons.GetIcon(icon)
 	}

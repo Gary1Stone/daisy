@@ -7,14 +7,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/util"
 )
 
 // Device cards for the devices.html screen and the wizard.html screen
-func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
+func DeviceCards(curUid, tzoff int, filter *devices.DeviceFilter, isWiz bool) string {
 	var card strings.Builder
-	items, err := db.SearchDevices(curUid, filter)
+	var d devices.Device
+	items, err := d.SearchDevices(curUid, tzoff, filter)
 	if err != nil {
 		log.Println(err)
 	}
@@ -60,7 +62,7 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 		if item.IsMissing || item.IsLate || item.IsBroken {
 			color = "fg-red"
 		}
-		fmt.Fprintf(&card, "<article><header><span class='%s' >%s</span> %s ", color, icons.GetIcon(item.Icon), mxl25(item.Name))
+		fmt.Fprintf(&card, "<article><header><span class='%s' >%s</span> %s ", color, icons.GetIcon(item.Icon), util.Mx25(item.Name))
 
 		// LHS of title - Alert Icon
 		if len(item.Color) > 0 {
@@ -78,7 +80,7 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 		fmt.Fprintf(&card, "<img src='images/%s' alt='device photo' width='100%%'></a>", item.Small_image)
 
 		//BODY
-		fmt.Fprintf(&card, "<section><p>%s (%d)</p><p>%s</p><p>%s %s</p>", item.Make, item.Year, mxl25(item.Model), brokenIcon, item.Status)
+		fmt.Fprintf(&card, "<section><p>%s (%d)</p><p>%s</p><p>%s %s</p>", item.Make, item.Year, util.Mx25(item.Model), brokenIcon, item.Status)
 		fmt.Fprintf(&card, "<p>%s %s</p><p>%s %s</p>", icons.GetIcon("site"), item.Site_usr, icons.GetIcon("office"), item.Office_usr)
 		fmt.Fprintf(&card, "<p>%s</p><p>%s</p><p>%s</p></section>", assigned, eyeIcon, backupIcon)
 
@@ -91,7 +93,7 @@ func DeviceCards(curUid int, filter *db.DeviceFilter, isWiz bool) string {
 			}
 			fmt.Fprintf(&card, `<div style='display: none;' id='cid%d'>%s</div>`, item.Cid, string(deviceJson))
 		} else {
-			fmt.Fprintf(&card, `<button title='Create Report' class='secondary' onclick="popWizards('%d', '%s', '%s');">`, item.Cid, mxl25(item.Name), item.Type)
+			fmt.Fprintf(&card, `<button title='Create Report' class='secondary' onclick="popWizards('%d', '%s', '%s');">`, item.Cid, util.Mx25(item.Name), item.Type)
 			fmt.Fprintf(&card, `%s&nbsp;Report&hellip; </button>`, icons.GetIcon("news"))
 		}
 		card.WriteString("</footer></article>")

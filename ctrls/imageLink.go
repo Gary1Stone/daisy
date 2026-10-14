@@ -1,13 +1,15 @@
 package ctrls
 
 import (
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
 )
 
 func ImageLink(cid int) string {
-	return "images/" + db.GetImage(cid)
+	var d devices.Device
+	return "images/" + d.GetImage(cid)
 }
 
 func SmallImageLink(cid int) (string, error) {
-	return "images/" + db.GetSmallImage(cid), nil
+	var d devices.Device
+	return "images/" + d.GetSmallImage(cid), nil
 }

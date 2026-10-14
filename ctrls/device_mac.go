@@ -6,14 +6,13 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 )
-
 
 // Device 2 MAC
 func BuildD2MDeviceList(site string) string {
 
-	items, err := db.GetD2MDevices(site)
+	items, err := macs.GetD2MDevices(site)
 	if err != nil {
 		log.Println(err)
 		return err.Error()
@@ -34,4 +33,3 @@ func BuildD2MDeviceList(site string) string {
 
 	return ctrl.String()
 }
-

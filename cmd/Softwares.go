@@ -7,9 +7,8 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/inventory"
 	"github.com/gbsto/daisy/software"
-
-	"github.com/gbsto/daisy/db"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -28,7 +27,7 @@ func GetSoftwares(c *fiber.Ctx) error {
 
 	var unwanted software.Unwanted
 	var other software.Other
-	var filter db.SoftwareFilter
+	var filter software.SoftwareFilter
 	filter.Init()
 
 	//Render the page
@@ -37,7 +36,7 @@ func GetSoftwares(c *fiber.Ctx) error {
 		"fullName":         user.Fullname,
 		"isAdmin":          user.IsAdmin,
 		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
-		"trackedSoftware":  template.HTML(ctrls.SoftwaresTable(user.Uid, filter)),
+		"trackedSoftware":  template.HTML(ctrls.SoftwaresTable(user.Uid, user.Tzoff, filter)),
 		"otherSoftware":    template.HTML(other.BuildOtherTable()),
 		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedEditTable()),
 	}))
@@ -49,13 +48,13 @@ func PostSoftwares(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	var filter db.SoftwareFilter
+	var filter software.SoftwareFilter
 	if err := c.BodyParser(&filter); err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
 
-	return c.Status(fiber.StatusOK).SendString(ctrls.SoftwaresTable(user.Uid, filter))
+	return c.Status(fiber.StatusOK).SendString(ctrls.SoftwaresTable(user.Uid, user.Tzoff, filter))
 }
 
 func PostPreInstalled(c *fiber.Ctx) error {
@@ -66,11 +65,11 @@ func PostPreInstalled(c *fiber.Ctx) error {
 	if !user.Permissions.Device.Update {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
-	var data []db.PreInstalled
+	var data []inventory.PreInstalled
 	if err := json.Unmarshal(c.Body(), &data); err != nil {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
-	return c.Status(fiber.StatusOK).SendString(db.SetPreInstalled(data))
+	return c.Status(fiber.StatusOK).SendString(inventory.SetPreInstalled(data))
 }
 
 func PostUnwantedAdd(c *fiber.Ctx) error {

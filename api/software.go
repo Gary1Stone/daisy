@@ -4,12 +4,12 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gofiber/fiber/v2"
 )
 
 func PostSoftwareApi(c *fiber.Ctx) error {
-	sysInfo := new(db.SysInfo) // Allocate on heap (address of)
+	sysInfo := new(SysInfo) // Allocate on heap (address of)
 	resp := "CRITICAL SERVER ERROR!"
 	if err := c.BodyParser(sysInfo); err != nil {
 		log.Println("API: parser ", err)
@@ -24,9 +24,10 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 
 	// Check the hostname of the computer is in the database
 	// If this computer is not registered, automatically add it
-	cid, err := db.GetCidByName(sysInfo.Hostname)
+	var d devices.Device
+	cid, err := d.GetCidByName(sysInfo.Hostname)
 	if err == sql.ErrNoRows {
-		cid, err = db.ApiNewComputer(sysInfo)
+		cid, err = ApiNewComputer(sysInfo)
 		if err != nil {
 			log.Println("API: hostname not registered")
 			return c.Status(fiber.StatusOK).SendString(resp)
@@ -37,7 +38,7 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 	}
 
 	// Save the device info and track the location
-	err = db.UpdateSysInfo(cid, sysInfo)
+	err = UpdateSysInfo(cid, sysInfo)
 	if err != nil {
 		log.Println("API: Failure adding device information", err)
 		return c.Status(fiber.StatusOK).SendString(resp)
@@ -53,21 +54,21 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 	// After adding the Operating System name to it
 	// Simplifies queries later on
 	sysInfo.SoftwareList = append(sysInfo.SoftwareList, sysInfo.OS_Name)
-	err = db.AddSoftwareList(cid, sysInfo)
+	err = AddSoftwareList(cid, sysInfo)
 	if err != nil {
 		log.Println("API: Failure adding software", err)
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}
 
 	// Add the mac addresses
-	err = db.SetMacAddress(cid, sysInfo)
+	err = SetMacAddress(cid, sysInfo)
 	if err != nil {
 		log.Println("API: Failure adding mac address information", err)
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}
 
 	// Add the Drive Information
-	err = db.SetDiskInfo(cid, sysInfo.Disk_Info)
+	err = SetDiskInfo(cid, sysInfo.Disk_Info)
 	if err != nil {
 		log.Println("API: Failure adding drive information", err)
 		return c.Status(fiber.StatusOK).SendString(resp)

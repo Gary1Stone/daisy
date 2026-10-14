@@ -4,8 +4,8 @@ import (
 	"html/template"
 
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/tree"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,7 +25,7 @@ func GetDevice_Mac(c *fiber.Ctx) error {
 	// Read the site from the URL, or default to 0
 	site := c.Query("site", "")
 	if site == "" {
-		site = db.GetDefaultSite()
+		site = tree.GetDefaultSite()
 	}
 
 	return c.Render("device_mac", addNavigationIcons(fiber.Map{
@@ -47,7 +47,7 @@ func PostFetchD2MDevice(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusOK).SendString("malformed request body")
 	}
-	node, err := db.GetNode(req.Cid, req.Site)
+	node, err := tree.GetNode(req.Cid, req.Site)
 	if err != nil {
 		return c.Status(fiber.StatusOK).SendString("error retrieving node")
 	}

@@ -6,12 +6,16 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/profiles"
+	"github.com/gbsto/daisy/software"
 	"github.com/gbsto/daisy/wizards"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -33,7 +37,8 @@ func GetWizard(c *fiber.Ctx) error {
 	}
 
 	// Read the database to get the user's previous filter settings
-	filter, err := db.GetDeviceFilter(user.Uid)
+	var filter devices.DeviceFilter
+	err = filter.GetDeviceFilter(user.Uid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -66,11 +71,12 @@ func GetWizard(c *fiber.Ctx) error {
 	userGroup := ""
 	if wizkey == wizards.Broken || wizkey == wizards.Died || wizkey == wizards.Care || wizkey == wizards.Request {
 		grpBlank = false
-		userGroup = db.GetDefaultGroup()
+		userGroup = droplists.GetDefaultGroup()
 	}
+	var d devices.Device
 
 	if cid > 0 {
-		device, err := db.GetDevice(user.Uid, cid)
+		device, err := d.GetDevice(user.Uid, user.Tzoff, cid)
 		if err != nil {
 			cid = 0
 		}
@@ -83,7 +89,7 @@ func GetWizard(c *fiber.Ctx) error {
 			device.Model = device.Model[0:25]
 		}
 		devDetails += device.Model
-		site, office = db.GetDeviceAssignedSiteOffice(user.Uid, cid)
+		site, office = d.GetDeviceAssignedSiteOffice(user.Uid, cid)
 	}
 
 	return c.Render("wizard", addNavigationIcons(fiber.Map{
@@ -108,8 +114,8 @@ func GetWizard(c *fiber.Ctx) error {
 		"troubleCtrl":      template.HTML(ctrls.BuildDropList("TROUBLE", "0", defaultType, false, false)),
 		"siteCtrl":         template.HTML(ctrls.BuildDropList("SITE", site, "", false, false)),
 		"officeCtrl":       template.HTML(ctrls.BuildDropList("OFFICE", office, site, false, false)),
-		"locationCtrl":     template.HTML(ctrls.LocationCtrl(user.Uid, cid)),
-		"cards":            template.HTML(ctrls.DeviceCards(user.Uid, &filter, true)),
+		"locationCtrl":     template.HTML(ctrls.LocationCtrl(user.Uid, user.Tzoff, cid)),
+		"cards":            template.HTML(ctrls.DeviceCards(user.Uid, user.Tzoff, &filter, true)),
 	}))
 }
 
@@ -143,6 +149,7 @@ func PostWizard(c *fiber.Ctx) error {
 	if err := c.BodyParser(recvd); err != nil {
 		return c.Status(fiber.StatusOK).SendString("Server Error")
 	}
+	var d devices.Device
 
 	switch recvd.Task {
 	case wizards.Sighting:
@@ -170,11 +177,11 @@ func PostWizard(c *fiber.Ctx) error {
 	case wizards.Care:
 		care(user.Uid, recvd)
 	case "get_location_from_device":
-		reply = ctrls.LocationCtrl(user.Uid, recvd.Cid)
+		reply = ctrls.LocationCtrl(user.Uid, user.Tzoff, recvd.Cid)
 	case "get_site_control":
 		// If we have a computer, use the computer's assigned site
 		if recvd.Cid > 0 {
-			site, _ := db.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
+			site, _ := d.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
 			if len(site) > 0 {
 				recvd.Site = site
 			}
@@ -183,7 +190,7 @@ func PostWizard(c *fiber.Ctx) error {
 	case "get_office_control":
 		// If the computer is in the selected site (recvd.Site), set the default office
 		if recvd.Cid > 0 {
-			site, office := db.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
+			site, office := d.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
 			if recvd.Site == site {
 				recvd.Office = office
 			}
@@ -199,7 +206,9 @@ func PostWizard(c *fiber.Ctx) error {
 			defaultToCurUser = true
 		}
 		if recvd.Gid == 0 {
-			recvd.Gid = db.FindGroupID(user.Uid, recvd.Cid, defaultToCurUser)
+			gid := profiles.GetGid(user.Uid)
+			dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(user.Uid, 0)
+			recvd.Gid = droplists.FindGroupID(user.Uid, gid, recvd.Cid, dev_uid, dev_gid, defaultToCurUser)
 		}
 		reply = ctrls.BuildDropList("GROUP", strconv.Itoa(recvd.Gid), "", withBlank, false)
 	case "get_person_control":
@@ -213,7 +222,7 @@ func PostWizard(c *fiber.Ctx) error {
 		}
 		// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
-			defaultUid, _ = db.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+			defaultUid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
 		}
 		reply = ctrls.BuildDropList("USER", strconv.Itoa(defaultUid), strconv.Itoa(recvd.Gid), includeBlankOption, false)
 	case "get_impact_control":
@@ -253,8 +262,8 @@ func StatusSelect() string {
 // REQUEST (Ticket) --> CID y, SID y, UID y, INFORM y (person requesting the software) -> NEEDS WORK LOG TO BE CLOSED! (Wait until closed to notify INFORM)
 
 // Initialize and return a new db.Action with common fields
-func newAction(curUid int, wiz *wizFormData) db.Action {
-	var act db.Action
+func newAction(curUid int, wiz *wizFormData) actions.Action {
+	var act actions.Action
 	act.Active = 1
 	act.Action = wiz.Task
 	act.Originator = curUid
@@ -267,11 +276,11 @@ func newAction(curUid int, wiz *wizFormData) db.Action {
 }
 
 // Set the person to look at the ticket, return user's full name and group id
-func assignUser(curUid, uid, gid int, act *db.Action) (string, int) {
+func assignUser(curUid, uid, gid int, act *actions.Action) (string, int) {
 	act.Uid = uid
 	// If gid missing, look up the user's group
 	if uid > 0 && gid == 0 {
-		gid = db.GetGid(uid)
+		gid = profiles.GetGid(uid)
 	}
 	act.Gid = gid
 	// If closed, and there is a group or user, mark as acknowledged
@@ -286,7 +295,7 @@ func setProfileColor(uid int, color string) (string, int) {
 	if uid < 1 {
 		return "", 0
 	}
-	return db.SetProfileColor(uid, color)
+	return profiles.SetProfileColor(uid, color)
 }
 
 // Save the alerts (max 2 alerts per action, so confusing optimization not needed)
@@ -302,7 +311,8 @@ func saveAlerts(curUid, aid, active int, alerts []alerts.Alert) {
 
 // Update device record to say device was seen
 func saveSeenDevice(cid int) {
-	db.SetLastSeen(cid)
+	var d devices.Device
+	d.SetLastSeen(cid)
 }
 
 // Update device record and returns note comment and previous assigned Uid
@@ -310,7 +320,9 @@ func updateDevice(curUid int, wiz *wizFormData) (string, int) {
 	if wiz.Cid < 1 {
 		return "", 0
 	}
-	dev, err := db.GetDevice(curUid, wiz.Cid)
+	tzoff := db.GetTzoff(curUid)
+	var d devices.Device
+	dev, err := d.GetDevice(curUid, tzoff, wiz.Cid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -326,7 +338,7 @@ func updateDevice(curUid int, wiz *wizFormData) (string, int) {
 	if wiz.Task == "CLAIMING" || wiz.Task == "GIVING" || wiz.Task == "SIGHTING" {
 		dev.Uid = wiz.Uid
 		if wiz.Uid > 0 {
-			dev.Gid = db.GetGid(wiz.Uid) // The user's Group
+			dev.Gid = profiles.GetGid(wiz.Uid) // The user's Group
 		} else {
 			dev.Gid = wiz.Gid // New group assigned, no user selected
 		}
@@ -345,14 +357,14 @@ func updateDevice(curUid int, wiz *wizFormData) (string, int) {
 		dev.Location = wiz.Location
 		note += ": " + wiz.Location
 	}
-	if !db.SetDevice(curUid, &dev) {
+	if !d.SetDevice(curUid, &dev) {
 		log.Println("ERROR: Cannot save device record")
 	}
 	return note, devUid
 }
 
 // Set the user's profile color and return an alert for them
-func createAlert(uid int, msg string, act *db.Action) alerts.Alert {
+func createAlert(uid int, msg string, act *actions.Action) alerts.Alert {
 	wait := 0
 	colour := "info"
 	switch act.Action {
@@ -637,7 +649,7 @@ func install(curUid int, wiz *wizFormData) {
 
 	act.OpenedInt = wiz.Installed // When installed, in seconds since 1970 GMT
 	if wiz.Sid > 0 {
-		software, _ := db.GetSoftware(curUid, wiz.Sid)
+		software, _ := software.GetSoftware(curUid, db.GetTzoff(curUid), wiz.Sid)
 		act.Notes = "<a href='software.html?sid=" + strconv.Itoa(act.Sid) + "' >" + software.Name + "</a> was "
 	}
 	wiz.Uid = 0
@@ -672,7 +684,7 @@ func remove(curUid int, wiz *wizFormData) {
 
 	act.OpenedInt = wiz.Installed
 	if wiz.Sid > 0 {
-		software, _ := db.GetSoftware(curUid, wiz.Sid)
+		software, _ := software.GetSoftware(curUid, db.GetTzoff(curUid), wiz.Sid)
 		act.Notes = "<a href='software.html?sid=" + strconv.Itoa(act.Sid) + "' >" + software.Name + "</a> was "
 	}
 	wiz.Uid = 0
@@ -704,7 +716,7 @@ func request(curUid int, wiz *wizFormData) {
 	var alerts []alerts.Alert
 
 	if wiz.Sid > 0 {
-		software, _ := db.GetSoftware(curUid, wiz.Sid)
+		software, _ := software.GetSoftware(curUid, db.GetTzoff(curUid), wiz.Sid)
 		act.Notes = "<a href='software.html?sid=" + strconv.Itoa(act.Sid) + "' >" + software.Name + "</a> "
 	}
 	assignedFullName, _ := assignUser(curUid, wiz.Uid, wiz.Gid, &act)

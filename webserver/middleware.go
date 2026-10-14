@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/logins"
 	"github.com/gbsto/daisy/passkey"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -43,7 +44,7 @@ func addProtection(app *fiber.App) {
 			ip = ips[0]
 		}
 
-		if db.IsBanned(ip) {
+		if logins.IsBanned(ip) {
 			log.Printf("The user at %v is banned\n", ip)
 			return c.Status(fiber.StatusForbidden).Redirect("banned.html")
 		}
@@ -74,7 +75,7 @@ func checkToken(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("index.html")
 	}
 
-	oldSession, oldIP, err := db.GetLastSessionByUid(jwtInfo.Uid)
+	oldSession, oldIP, err := logins.GetLastSessionByUid(jwtInfo.Uid)
 	if err != nil {
 		log.Println(err)
 	}

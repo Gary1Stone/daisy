@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 )
 
 func BuildAvoidListCtrl() string {
@@ -60,9 +60,9 @@ func BuildAvoidSelectCtrl() (string, string, string) {
 }
 
 // Build the avoid select/list pair data
-func getAvoidData() ([]db.PairInfo, error) {
+func getAvoidData() ([]macs.PairInfo, error) {
 	// First find any duplicate hostnames
-	macList, err := db.GetDuplicateHostnames()
+	macList, err := macs.GetDuplicateHostnames()
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -70,7 +70,7 @@ func getAvoidData() ([]db.PairInfo, error) {
 
 	// If no duplicates, try all macs
 	if len(macList) == 0 {
-		macList, err = db.GetMacList()
+		macList, err = macs.GetMacList()
 		if err != nil {
 			log.Println(err)
 			return nil, err
@@ -78,7 +78,7 @@ func getAvoidData() ([]db.PairInfo, error) {
 	}
 
 	// Get correlations only for the macs we're interested in
-	items, err := db.GetMacCorrelations(false, macList)
+	items, err := macs.GetMacCorrelations(false, macList)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -87,9 +87,9 @@ func getAvoidData() ([]db.PairInfo, error) {
 	return items, nil
 }
 
-func BuildMacCorrelationTable(filter db.MacCorrelationFilter) string {
+func BuildMacCorrelationTable(filter macs.MacCorrelationFilter) string {
 	var ctrl strings.Builder
-	items, err := db.GetMacCorrelation(filter)
+	items, err := macs.GetMacCorrelation(filter)
 	if err != nil {
 		log.Println(err)
 		return ""

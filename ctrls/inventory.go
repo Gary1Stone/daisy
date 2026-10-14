@@ -4,11 +4,11 @@ import (
 	"log"
 	"strings"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/inventory"
 )
 
 func BuildInventoryList() string {
-	list, err := db.GetInventoryList()
+	list, err := inventory.GetInventoryList()
 	if err != nil {
 		log.Println(err)
 		return ""

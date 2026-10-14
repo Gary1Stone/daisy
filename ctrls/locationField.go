@@ -3,13 +3,14 @@ package ctrls
 import (
 	"log"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
 )
 
-func LocationCtrl(curUid, cid int) string {
+func LocationCtrl(curUid, tzoff, cid int) string {
 	var location string
 	if cid > 0 {
-		if dev, err := db.GetDevice(curUid, cid); err == nil {
+		var d devices.Device
+		if dev, err := d.GetDevice(curUid, tzoff, cid); err == nil {
 			location = dev.Location
 		} else {
 			log.Println(err)

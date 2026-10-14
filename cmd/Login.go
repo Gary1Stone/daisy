@@ -5,7 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/activeusers"
+	"github.com/gbsto/daisy/logins"
 	"github.com/gbsto/daisy/passkey"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,7 +16,7 @@ import (
 // There may be a short lived cid token if the user registered (1 hr token)
 // If neither, then the user has start over
 func GetLogin(c *fiber.Ctx) error {
-	var usrInfo db.Logins
+	var usrInfo logins.Logins
 	usrInfo.User = ""
 	usrInfo.Fullname = ""
 
@@ -44,7 +45,8 @@ func GetLogout(c *fiber.Ctx) error {
 	if err != nil {
 		curUid = 0
 	}
-	db.EndSession(curUid)
+	var ausr activeusers.ActiveUsers
+	ausr.EndSession(curUid)
 	cookieName := os.Getenv("JWT")
 	c.ClearCookie(cookieName)
 

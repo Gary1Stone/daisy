@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 )
 
-func BuildOnlineChart(items []db.Online, macInfo map[string]db.ChartMacInfo, barTitle string) string {
+func BuildOnlineChart(items []macs.Online, macInfo map[string]macs.ChartMacInfo, barTitle string) string {
 	if len(items) == 0 {
 		return ""
 	}
@@ -39,7 +39,7 @@ func writeTimeLabels(chart *strings.Builder) {
 	}
 }
 
-func writeRows(chart *strings.Builder, items []db.Online, macInfo map[string]db.ChartMacInfo, barTitle string) {
+func writeRows(chart *strings.Builder, items []macs.Online, macInfo map[string]macs.ChartMacInfo, barTitle string) {
 	for i, item := range items {
 		mid, name := lookupMac(item.Mac, macInfo)
 		y := (i * barHeight) + headerHeight
@@ -130,7 +130,7 @@ func formatDate(date int64) string {
 	return fmt.Sprintf("%04d-%02d-%02d", year, month, day)
 }
 
-func lookupMac(mac string, macInfo map[string]db.ChartMacInfo) (mid int, name string) {
+func lookupMac(mac string, macInfo map[string]macs.ChartMacInfo) (mid int, name string) {
 	if macInfo == nil {
 		return 0, ""
 	}

@@ -149,7 +149,7 @@ function saveRecord() {
 
 function buildTable() {
     building = true;
-    if (adminData) adminData.sort(getSortOrder("sequence"));
+    if (adminData) adminData.sort(getSortOrder("seq"));
     const tableSelectedControl = document.getElementById("tableSelected");
     const tableSelected = tableSelectedControl ? tableSelectedControl.value : "";
     const title = (adminData && adminData.length > 0) ? menuLabels.get(adminData[0].field) : "Admin Table";
@@ -170,10 +170,10 @@ function buildTable() {
         activeItems.forEach((item, index) => {
             const descriptionControl = buildDescriptionControl(item.description, item.id);
             const activeControl = buildActiveControl(item.active, item.id);
-            const extraColumn = setRowExtraColumn(tableSelected, item.parent, item.assetid, item.id);
-            const moveUp = (index > 0) ? `<a href="javascript:moveRowUp('${item.id}');">⬆️</a>` : "&nbsp;";
-            const moveDown = (index < cnt - 1) ? `<a href="javascript:moveRowDown('${item.id}');">⬇️</a>` : "&nbsp;";
-            const notInUse = item.inuse !== true ? `<a href="javascript:deleteRow('${item.id}');">❌</a>` : "&nbsp;";
+            const extraColumn = setRowExtraColumn(tableSelected, item.parent, item.asset_id, item.id);
+            const moveUp = (index > 0) ? `<a href="#" onclick="moveRowUp('${item.id}');">⬆️</a>` : "&nbsp;";
+            const moveDown = (index < cnt - 1) ? `<a href="#" onclick="moveRowDown('${item.id}');">⬇️</a>` : "&nbsp;";
+            const notInUse = item.inuse !== true ? `<a href="#" onclick="deleteRow('${item.id}');">❌</a>` : "&nbsp;";
             tblParts.push(`<tr><td>${item.code}</td><td>${descriptionControl}</td>${extraColumn}<td>${activeControl}</td><td>${moveUp}</td><td>${moveDown}</td><td>${notInUse}</td></tr>`);
         });
     }
@@ -204,12 +204,12 @@ function setHeaderExtraColumn(tableSelected) {
     }
 }
 
-function setRowExtraColumn(tableSelected, parent, assetid, id) {
+function setRowExtraColumn(tableSelected, parent, asset_id, id) {
     switch (tableSelected) {
         case "OFFICE": return `<td>${buildParentControl(parent, id)}</td>`;
         case "TROUBLE": return `<td>${buildTroubleParentControl(parent, id)}</td>`;
         case "GROUP": return `<td>${buildGroupPermissionsControl(id)}</td>`;
-        case "TYPE": return `<td>${buildAssetIdControl(assetid, id)}</td>`;
+        case "TYPE": return `<td>${buildAssetIdControl(asset_id, id)}</td>`;
         default: return "";
     }
 }
@@ -348,8 +348,8 @@ function doAssetId(rowId) {
     if (!reply.valid) return;
     let idx = adminData.findIndex((item => item.id === id));
     if (idx >= 0 && idx < adminData.length) {
-        if (adminData[idx].assetid !== reply.value) {
-            adminData[idx].assetid = reply.value;
+        if (adminData[idx].asset_id !== reply.value) {
+            adminData[idx].asset_id = reply.value;
             adminData[idx].update = true; // Flag server to update this record
         }
     }
@@ -366,10 +366,10 @@ function doParentSelect(rowId) {
     }
 }
 
-function moveRowUp(rowId) {
+ function moveRowUp(rowId) {
     const id = txt2Int(rowId);
     const idx = adminData.findIndex((item => item.id === id));
-    const seq = adminData[idx].sequence;
+    const seq = adminData[idx].seq;
     let prevRow = idx - 1;
 
     while (prevRow >= 0 && adminData[prevRow].delete === true) {    //skip past deleted rows
@@ -379,9 +379,9 @@ function moveRowUp(rowId) {
     }
 
     if (prevRow >= 0) {
-        adminData[idx].sequence = adminData[prevRow].sequence;
+        adminData[idx].seq = adminData[prevRow].seq;
         adminData[idx].update = true;
-        adminData[prevRow].sequence = seq;
+        adminData[prevRow].seq = seq;
         adminData[prevRow].update = true;
     }
     btnSave.on();
@@ -391,7 +391,7 @@ function moveRowUp(rowId) {
 function moveRowDown(rowId) {
     const id = txt2Int(rowId);
     const idx = adminData.findIndex((item => item.id === id));
-    const seq = adminData[idx].sequence;
+    const seq = adminData[idx].seq;
     let nextRow = idx + 1;
 
     while (nextRow < adminData.length && adminData[nextRow].delete === true) {    //skip past deleted rows
@@ -401,9 +401,9 @@ function moveRowDown(rowId) {
     }
 
     if (nextRow < adminData.length) {
-        adminData[idx].sequence = adminData[nextRow].sequence;
+        adminData[idx].seq = adminData[nextRow].seq;
         adminData[idx].update = true;
-        adminData[nextRow].sequence = seq;
+        adminData[nextRow].seq = seq;
         adminData[nextRow].update = true;
     }
     btnSave.on();
@@ -484,13 +484,13 @@ function addRow() {
     // Its just a placeholder. Database will assign id when insert occurs
     const maxId = adminData.reduce((prev, current) => (prev.id > current.id) ? prev : current, {id: 0});
     // Find the item with the maximum sequence in the array
-    const maxSeq = adminData.reduce((prev, current) => (prev.sequence > current.sequence) ? prev : current, {sequence: 0});
+    const maxSeq = adminData.reduce((prev, current) => (prev.seq > current.seq) ? prev : current, {seq: 0});
     // Create the item to be added
-    let newItem = {id: 0, description: "", code: "", parent: "", sequence: 1, field: "", active: 1, update: false, add: true, delete: false, inuse: false, task: ""};
+    let newItem = {id: 0, description: "", code: "", parent: "", seq: 1, field: "", active: 1, update: false, add: true, delete: false, inuse: false, task: ""};
     // Optimized single-pass reduction for metadata
     const stats = adminData.reduce((acc, curr) => {
         if (curr.id > acc.maxId) acc.maxId = curr.id;
-        if (curr.sequence > acc.maxSeq) acc.maxSeq = curr.sequence;
+        if (curr.seq > acc.maxSeq) acc.maxSeq = curr.seq;
         return acc;
     }, {maxId: 0, maxSeq: 0});
 
@@ -503,7 +503,7 @@ function addRow() {
     } else if (tableSelected === "GROUP") {
         newItem.permissions = permissions;
     }
-    newItem.sequence = stats.maxSeq + 1;
+    newItem.seq = stats.maxSeq + 1;
     newItem.field = adminData[0].field;
     newItem.active = active;
     adminData.push(newItem);

@@ -8,15 +8,16 @@ import (
 
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
-	"github.com/gbsto/daisy/util"
+	"github.com/gbsto/daisy/photos"
 )
 
 /*
  * Last Seen Report and Last Backed Up Report
  */
 
-func GetLastSeenReport(curUid int, isSeen bool) string {
-	items, err := db.GetDevices(curUid, 0, -1)
+func GetLastSeenReport(curUid, tzoff int, isSeen bool) string {
+	var d devices.Device
+	items, err := d.GetDevices(curUid, tzoff, 0, -1)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -52,29 +53,29 @@ func buildTableHeader(isSeen bool) string {
 		</tr></thead><tbody>`
 }
 
-func buildTableRow(item *db.Device, isSeen bool) string {
+func buildTableRow(item *devices.Device, isSeen bool) string {
 	var row strings.Builder
-	fmt.Fprintf(&row, `<tr><td>%s</td><td>%s</td>`, util.GetThumbnail(item.Image), getButtonCtrl(item.Cid, getLastDays(item, isSeen), item.Type, item.Icon, item.Name))
+	fmt.Fprintf(&row, `<tr><td>%s</td><td>%s</td>`, photos.GetThumbnail(item.Image), getButtonCtrl(item.Cid, getLastDays(item, isSeen), item.Type, item.Icon, item.Name))
 	fmt.Fprintf(&row, `<td>%s</td><td>%s</td>`, buildLastSeenOrBackup(item, isSeen), buildLocation(item))
 	fmt.Fprintf(&row, `<td>%s</td><td>%s</td></tr>`, item.Assigned, item.Model)
 	return row.String()
 }
 
-func getLastDays(item *db.Device, isSeen bool) int {
+func getLastDays(item *devices.Device, isSeen bool) int {
 	if isSeen {
 		return item.Last_seen_days
 	}
 	return item.Last_backup_days
 }
 
-func buildLastSeenOrBackup(item *db.Device, isSeen bool) string {
+func buildLastSeenOrBackup(item *devices.Device, isSeen bool) string {
 	if isSeen {
 		return item.Last_seen_date + " by " + item.Last_seen_by + " (" + strconv.Itoa(item.Last_seen_days) + " days ago)"
 	}
 	return item.Last_backup_date + " by " + item.Last_backup_by + " (" + strconv.Itoa(item.Last_backup_days) + " days ago)"
 }
 
-func buildLocation(item *db.Device) string {
+func buildLocation(item *devices.Device) string {
 	var location strings.Builder
 	fmt.Fprintf(&location, `%s %s`, db.GetCodeDescription("SITE", item.Site), db.GetOfficeDescription(item.Office, item.Site))
 	if len(item.Location) > 0 {

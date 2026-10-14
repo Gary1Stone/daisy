@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/db"
 )
 
@@ -216,7 +217,7 @@ func (a *Alert) AckAlert(curUid, uid, aid int, uid_ack, cid_ack, sid_ack bool) e
 	}
 	// To not get here means device and software highlights stay on until everyone ack'd their alerts.
 	// Now check if the action can be closed
-	act, err := db.GetAction(curUid, aid)
+	act, err := actions.GetAction(curUid, aid)
 	if err != nil {
 		return err
 	}

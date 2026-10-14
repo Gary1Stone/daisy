@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/photos"
 	"github.com/gbsto/daisy/webserver"
 )
 
@@ -45,7 +46,7 @@ func everyQuarterHour() {
 				lastRunDate = today
 
 				// Remove unused photos from the images directory
-				if err := db.RemoveOldPhotos(); err != nil {
+				if err := photos.RemoveOldPhotos(); err != nil {
 					log.Printf("ERROR: Failed to remove old photos: %v", err)
 				}
 

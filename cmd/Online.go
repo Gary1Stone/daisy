@@ -9,6 +9,7 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gbsto/daisy/db"
@@ -37,7 +38,7 @@ func GetOnline(c *fiber.Ctx) error {
 	searchDate := strings.ReplaceAll(dateParam, "-", "")
 
 	// set the date picker limits
-	minDate, maxDate := db.MinMaxHistoryDate(user.Uid)
+	minDate, maxDate := macs.MinMaxHistoryDate(user.Uid, user.Tzoff)
 
 	return c.Render("online", addNavigationIcons(fiber.Map{
 		"title":         template.HTML(icons.GetIcon("user") + " Online"),
@@ -88,13 +89,13 @@ func PostOnlineGetMac(c *fiber.Ctx) error {
 	}
 
 	// Get the device information
-	macInfo, err := db.GetMacInfoByMid(user.Tzoff, recvd.Mid)
+	macInfo, err := macs.GetMacInfoByMid(user.Tzoff, recvd.Mid)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(reply)
 	}
 
 	type MacInfoView struct {
-		db.MacInfo
+		macs.MacInfo
 		Summary string `json:"Summary"` // Text summary for display
 
 	}
@@ -106,7 +107,7 @@ func PostOnlineGetMac(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(view)
 }
 
-func buildSummary(mac db.MacInfo) string {
+func buildSummary(mac macs.MacInfo) string {
 	var sum strings.Builder
 	intruder := "No"
 	if mac.Intruder {
@@ -142,7 +143,7 @@ func PostOnlineSetMac(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	recvd := new(db.MacInfo) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
+	recvd := new(macs.MacInfo) // The new() allocates HEAP to create the variable/struct, therefore must use address operator(*) in functions
 	if err := c.BodyParser(recvd); err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("CRITICAL SERVER ERROR!")
 	}
@@ -157,7 +158,7 @@ func PostOnlineSetMac(c *fiber.Ctx) error {
 	}
 
 	// Do processing and saves
-	err = db.UpdateMac(*recvd)
+	err = macs.UpdateMac(*recvd)
 	if err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusInternalServerError).SendString("CRITICAL SERVER ERROR!")

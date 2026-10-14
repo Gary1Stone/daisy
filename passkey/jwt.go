@@ -7,7 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/logins"
+	"github.com/gbsto/daisy/profiles"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -15,8 +16,8 @@ import (
 // When saving the cookie, it is set to expire in 60 days
 // Which gives several weeks to just log in to reset the token
 // Otherwise the user has to re-register with emailed passcode
-func CreateJWTToken(jwtInfo db.Logins) (string, time.Time, error) {
-	permissions, err := db.GetUidPermissions(jwtInfo.Uid)
+func CreateJWTToken(jwtInfo logins.Logins) (string, time.Time, error) {
+	permissions, err := profiles.GetUidPermissions(jwtInfo.Uid)
 	if err != nil {
 		log.Println("cannot get permissions", err)
 	}
@@ -42,8 +43,8 @@ func CreateJWTToken(jwtInfo db.Logins) (string, time.Time, error) {
 }
 
 // Check the JSON Web Token (JWT) to ensure it is valid
-func DecodeJwtToken(tokenString string) (db.Logins, bool, error) {
-	var jwtInfo db.Logins
+func DecodeJwtToken(tokenString string) (logins.Logins, bool, error) {
+	var jwtInfo logins.Logins
 	expired := true
 	jwtInfo.Uid = 0
 	if len(tokenString) == 0 {

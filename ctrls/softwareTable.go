@@ -6,13 +6,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/software"
+	"github.com/gbsto/daisy/util"
 )
 
 // Generate profile table for wide screens
-func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
+func SoftwaresTable(curUid, tzoff int, filter software.SoftwareFilter) string {
 	var table strings.Builder
 
 	// Build the table header with search
@@ -28,7 +30,7 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
     <tbody>`)
 
 	// Fetch software items
-	items, err := filter.GetSoftwares(curUid)
+	items, err := filter.GetSoftwares(curUid, tzoff)
 	if err != nil {
 		log.Println(err)
 		return err.Error()
@@ -44,7 +46,7 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 		} else {
 			licenses = strconv.Itoa(item.Licenses)
 		}
-		fmt.Fprintf(&table, `<tr data-id='%d'><td><a href='software.html?sid=%d'>%s %s</a></td><td>%s</td><td>%s &sol; %d</td><td>%d</td></tr>`, item.Sid, item.Sid, icon, item.Name, mxl25(item.Source), licenses, item.Installed, item.Installed)
+		fmt.Fprintf(&table, `<tr data-id='%d'><td><a href='software.html?sid=%d'>%s %s</a></td><td>%s</td><td>%s &sol; %d</td><td>%d</td></tr>`, item.Sid, item.Sid, icon, item.Name, util.Mx25(item.Source), licenses, item.Installed, item.Installed)
 	}
 
 	table.WriteString("</tbody></table>")
@@ -53,7 +55,7 @@ func SoftwaresTable(curUid int, filter db.SoftwareFilter) string {
 
 // On the Device page, list all the installed software
 func BuildInstalledList(curUid, sid int) string {
-	items, err := db.GetInstalledComputers(curUid, sid)
+	items, err := actions.GetInstalledComputers(curUid, sid)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -85,14 +87,14 @@ func BuildSoftwareLog(curUid, sid, hist int) string {
 	<th aria-sort='none'>Status</th>
 	</tr></thead><tbody>`)
 	//table body
-	filter := new(db.ActionFilter)
+	filter := new(actions.ActionFilter)
 	filter.Active = -1    // -1 = Dont care if opened or closed
 	filter.Pending = hist // Show or not not acknowledged actions
 	filter.Cid = 0
 	filter.Uid = 0
 	filter.Sid = sid
-	actions, _ := filter.GetActions(curUid)
-	for _, act := range actions {
+	actionList, _ := filter.GetActions(curUid)
+	for _, act := range actionList {
 		btnColor := colors.Light
 		if act.Active == 1 {
 			btnColor = act.Color
@@ -101,7 +103,7 @@ func BuildSoftwareLog(curUid, sid, hist int) string {
 		if len(btnLabel) > 15 {
 			btnLabel = string(btnLabel[0:12]) + "..."
 		}
-		var button db.Popbutton
+		var button actions.Popbutton
 		button.Color = btnColor
 		button.Action = act.Action
 		button.Label = btnLabel
@@ -120,7 +122,7 @@ func BuildSoftwareLog(curUid, sid, hist int) string {
 	return table.String()
 }
 
-func calculateStatus(act *db.Action) string {
+func calculateStatus(act *actions.Action) string {
 	retVal := ""
 	if act.Uid > 0 && act.Uid_ack == 0 {
 		retVal += ": User"

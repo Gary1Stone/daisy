@@ -4,8 +4,6 @@ import (
 	"log"
 	"strconv"
 	"strings"
-
-	"github.com/gbsto/daisy/db"
 )
 
 /*
@@ -14,7 +12,7 @@ import (
  *
  */
 func GetUsersReport(curUid int) string {
-	items, err := db.GetUsersReport(curUid)
+	items, err := GetUsersReports(curUid)
 	if err != nil {
 		log.Println(err)
 		return ""

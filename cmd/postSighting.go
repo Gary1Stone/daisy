@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/db"
-
 	"github.com/gofiber/fiber/v2"
 )
 

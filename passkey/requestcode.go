@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/emails"
 	"github.com/gbsto/daisy/register"
 
 	"github.com/gofiber/fiber/v2"
@@ -76,7 +76,8 @@ func RequestCode(c *fiber.Ctx) error {
 
 	if !isDirectlogin {
 		reply.Msg = "passcode emailed"
-		if err := db.SendOneTimePassword(uid); err != nil {
+		var e emails.Emails
+		if err := e.SendOneTimePassword(uid); err != nil {
 			log.Println(err)
 			reply.Msg = "passcode email error"
 		}

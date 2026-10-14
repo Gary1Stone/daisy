@@ -6,9 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
-
-	"github.com/gbsto/daisy/db"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,7 +26,8 @@ func GetDevices(c *fiber.Ctx) error {
 	}
 
 	// Read the database to get the user's previous filter settings
-	filter, err := db.GetDeviceFilter(user.Uid)
+	var filter devices.DeviceFilter
+	err = filter.GetDeviceFilter(user.Uid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -46,7 +46,7 @@ func GetDevices(c *fiber.Ctx) error {
 		"userSearchCtrl":   template.HTML(ctrls.BuildDropList("USERSEARCH", strconv.Itoa(filter.Uid), strconv.Itoa(filter.Gid), true, false)),
 		"isLate":           filter.IsLate,
 		"isMissing":        filter.IsMissing,
-		"cards":            template.HTML(ctrls.DeviceCards(user.Uid, &filter, false)),
+		"cards":            template.HTML(ctrls.DeviceCards(user.Uid, user.Tzoff, &filter, false)),
 		"devicesIcon":      template.HTML(icons.GetIcon("devices")),
 		"groupIcon":        template.HTML(icons.GetIcon("group")),
 		"siteIcon":         template.HTML(icons.GetIcon("site")),
@@ -72,7 +72,7 @@ func PostDevices(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	filter := new(db.DeviceFilter)
+	filter := new(devices.DeviceFilter)
 	if err := c.BodyParser(filter); err != nil {
 		return c.Status(fiber.StatusOK).SendString("ERROR")
 	}
@@ -85,13 +85,13 @@ func PostDevices(c *fiber.Ctx) error {
 		if err != nil {
 			log.Println(err)
 		}
-		response = ctrls.DeviceCards(user.Uid, filter, false)
+		response = ctrls.DeviceCards(user.Uid, user.Tzoff, filter, false)
 	case "search_for_devices": // wizard search for devices
 		err := filter.SetDeviceFilter(user.Uid) // Remember the device filter settings
 		if err != nil {
 			log.Println(err)
 		}
-		response = ctrls.DeviceCards(user.Uid, filter, true)
+		response = ctrls.DeviceCards(user.Uid, user.Tzoff, filter, true)
 	}
 	return c.Status(fiber.StatusOK).SendString(response)
 }

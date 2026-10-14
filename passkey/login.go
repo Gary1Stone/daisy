@@ -8,8 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/gbsto/daisy/db"
-
+	"github.com/gbsto/daisy/logins"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/gofiber/fiber/v2"
@@ -221,7 +220,7 @@ func FinishLogin(c *fiber.Ctx) error {
 	if len(ips) > 0 {
 		ip = ips[0]
 	}
-	var loginInfo db.Logins
+	var loginInfo logins.Logins
 	loginInfo.Uid = usr.Uid
 	loginInfo.User = usr.Username
 	loginInfo.Fullname = usr.Fullname
@@ -251,7 +250,7 @@ func FinishLogin(c *fiber.Ctx) error {
 	})
 
 	// save login info
-	err = db.SaveLogin(&loginInfo)
+	err = logins.SaveLogin(&loginInfo)
 	if err != nil {
 		log.Println(err)
 	}

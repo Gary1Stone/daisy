@@ -79,7 +79,7 @@ func (recLock Locks) isLocked() bool {
 	return locked
 }
 
-func isProfileLocked(curUid, uid int) bool {
+func IsProfileLocked(curUid, uid int) bool {
 	recLock := Locks{
 		Uid:        curUid,
 		Record_id:  uid,
@@ -89,7 +89,7 @@ func isProfileLocked(curUid, uid int) bool {
 	return recLock.isLocked()
 }
 
-func addProfileLock(curUid, uid int) {
+func AddProfileLock(curUid, uid int) {
 	recLock := Locks{
 		Uid:        curUid,
 		Record_id:  uid,
@@ -99,7 +99,7 @@ func addProfileLock(curUid, uid int) {
 	recLock.AddLock()
 }
 
-func isSoftwareLocked(curUid, sid int) bool {
+func IsSoftwareLocked(curUid, sid int) bool {
 	recLock := Locks{
 		Uid:        curUid,
 		Record_id:  sid,
@@ -109,7 +109,7 @@ func isSoftwareLocked(curUid, sid int) bool {
 	return recLock.isLocked()
 }
 
-func addSoftwareLock(curUid, sid int) {
+func AddSoftwareLock(curUid, sid int) {
 	recLock := Locks{
 		Uid:        curUid,
 		Record_id:  sid,
@@ -119,7 +119,7 @@ func addSoftwareLock(curUid, sid int) {
 	recLock.AddLock()
 }
 
-func addDeviceLock(curUid, cid int) {
+func AddDeviceLock(curUid, cid int) {
 	recLock := Locks{
 		Uid:        curUid,
 		Record_id:  cid,
@@ -129,7 +129,7 @@ func addDeviceLock(curUid, cid int) {
 	recLock.AddLock()
 }
 
-func isDeviceLocked(curUid, cid int) bool {
+func IsDeviceLocked(curUid, cid int) bool {
 	recLock := Locks{
 		Uid:        curUid,
 		Record_id:  cid,
@@ -139,7 +139,7 @@ func isDeviceLocked(curUid, cid int) bool {
 	return recLock.isLocked()
 }
 
-func addActionLock(curUid, aid int) {
+func AddActionLock(curUid, aid int) {
 	recLock := Locks{
 		Uid:        curUid,
 		Record_id:  aid,
@@ -149,7 +149,7 @@ func addActionLock(curUid, aid int) {
 	recLock.AddLock()
 }
 
-func isActionLocked(curUid, aid int) bool {
+func IsActionLocked(curUid, aid int) bool {
 	recLock := Locks{
 		Uid:        curUid,
 		Record_id:  aid,

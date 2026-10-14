@@ -6,10 +6,11 @@ import (
 	"math"
 	"strconv"
 
+	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/inventory"
+	"github.com/gbsto/daisy/software"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,7 +33,7 @@ func GetSoftware(c *fiber.Ctx) error {
 	}
 
 	// Get the software record
-	software, err := db.GetSoftware(user.Uid, sid)
+	software, err := software.GetSoftware(user.Uid, user.Tzoff, sid)
 	if err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).Redirect("index.html")
@@ -90,7 +91,7 @@ func PostSoftware(c *fiber.Ctx) error {
 		Msg:     "ERROR: Processing Error",
 	}
 
-	recvd := new(db.Software)
+	recvd := new(software.Software)
 	if err := c.BodyParser(recvd); err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).JSON(reply)
@@ -106,7 +107,7 @@ func PostSoftware(c *fiber.Ctx) error {
 	switch recvd.Task {
 	case "getactionlog":
 		if recvd.Aid > 0 {
-			db.AckAction(user.Uid, recvd.Aid, true, false, true)
+			actions.AckAction(user.Uid, recvd.Aid, true, false, true)
 		}
 		return c.Status(fiber.StatusOK).SendString(ctrls.BuildSoftwareLog(user.Uid, recvd.Sid, recvd.Showhistory))
 	case "unique":
@@ -131,7 +132,7 @@ func PostSoftware(c *fiber.Ctx) error {
 		reply.Success = false
 		reply.Msg = "ERROR: You do not have permission to update a software record."
 		if user.Permissions.Software.Update {
-			dto, err := db.GetSoftware(user.Uid, recvd.Sid)
+			dto, err := software.GetSoftware(user.Uid, user.Tzoff, recvd.Sid)
 			if err != nil {
 				log.Println(err)
 			} else {
@@ -160,7 +161,7 @@ func PostSoftware(c *fiber.Ctx) error {
 					reply.Msg = "ERROR: The software record was NOT saved"
 				}
 				if fullScanMatchFlag {
-					err := db.MatchSoftwareToInventory(dto.Sid)
+					err := inventory.MatchSoftwareToInventory(dto.Sid)
 					if err != nil {
 						log.Println(err)
 					}
@@ -181,7 +182,7 @@ func PostSoftware(c *fiber.Ctx) error {
 				reply.Msg = "ERROR: The software record was NOT created"
 			}
 			if len(recvd.Inv_name) > 0 {
-				err := db.MatchSoftwareToInventory(recvd.Sid)
+				err := inventory.MatchSoftwareToInventory(recvd.Sid)
 				if err != nil {
 					log.Println(err)
 				}

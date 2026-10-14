@@ -5,33 +5,33 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
 )
 
 func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool) string {
-	var options []db.DroplistOption
+	var options []droplists.DroplistOption
 	switch field {
 	case "SOFTWARE":
-		options = db.GetSoftwareList(withBlank)
+		options = droplists.GetSoftwareList(withBlank)
 	case "USER", "USERSEARCH", "USERINFORM": // Profile table search, "GROUPINFORM"
-		options = db.GetUserList(field, selected, parentCode, withBlank)
+		options = droplists.GetUserList(field, selected, parentCode, withBlank)
 	case "TYPE", "TYPESEARCH": // parent = wizard, so TYPE needs special processing
-		options = db.GetTypeOptions(field, selected, parentCode, withBlank)
+		options = droplists.GetTypeOptions(field, selected, parentCode, withBlank)
 	case "KIND":
-		options = db.GetKindOptions(field, selected, parentCode, withBlank)
+		options = droplists.GetKindOptions(field, selected, parentCode, withBlank)
 	case "MID":
-		options = db.GetMidOptions(field, selected, parentCode, withBlank)
+		options = droplists.GetMidOptions(field, selected, parentCode, withBlank)
 	case "WIZARDS":
-		options = db.GetWizardOptions(field, selected, withBlank)
+		options = droplists.GetWizardOptions(field, selected, withBlank)
 	default:
-		options = db.GetOptions(field, selected, parentCode, withBlank)
+		options = droplists.GetOptions(field, selected, parentCode, withBlank)
 	}
 	return buildCtrl(field, readOnly, options)
 }
 
-func buildCtrl(field string, readOnly bool, options []db.DroplistOption) string {
-	droplist := db.GetDroplistInfo(field)
+func buildCtrl(field string, readOnly bool, options []droplists.DroplistOption) string {
+	droplist := droplists.GetDroplistInfo(field)
 	isDropDown := false
 
 	for option := range options {
@@ -56,7 +56,7 @@ func buildCtrl(field string, readOnly bool, options []db.DroplistOption) string 
 }
 
 // Dropdown with icons with colors
-func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly bool, onchange, required string) string {
+func buildDropdown(droplist droplists.Droplist, options []droplists.DroplistOption, readOnly bool, onchange, required string) string {
 	var ctrl strings.Builder
 	selected := ""
 	for option := range options {
@@ -117,7 +117,7 @@ func buildDropdown(droplist db.Droplist, options []db.DroplistOption, readOnly b
 }
 
 // Standard select list, no icons, no colors
-func buildSelect(droplist db.Droplist, options []db.DroplistOption, readOnly bool, onchange, required string) string {
+func buildSelect(droplist droplists.Droplist, options []droplists.DroplistOption, readOnly bool, onchange, required string) string {
 	var ctrl strings.Builder
 	disabled := ""
 	if readOnly {

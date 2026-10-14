@@ -4,10 +4,10 @@ import (
 	"html/template"
 	"log"
 
+	"github.com/gbsto/daisy/aliases"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -87,19 +87,20 @@ func PostDuplicatesJoin(c *fiber.Ctx) error {
 	}
 
 	if recvd.IsSame {
-		err = db.AddAliasPair(recvd.Mac1, recvd.Mac2)
+		var a aliases.Aliases
+		err = a.AddAliasPair(recvd.Mac1, recvd.Mac2)
 		if err != nil {
 			log.Println(err)
 			return c.Status(fiber.StatusInternalServerError).SendString("CRITICAL SERVER ERROR!")
 		}
 	} else if recvd.IsIgnore {
-		err = db.SetIsIgnoreDevices(recvd.Mac1, recvd.Mac2)
+		err = macs.SetIsIgnoreDevices(recvd.Mac1, recvd.Mac2)
 		if err != nil {
 			log.Println(err)
 			return c.Status(fiber.StatusInternalServerError).SendString("CRITICAL SERVER ERROR!")
 		}
 	} else {
-		err = db.SetIsSolitaryDevices(recvd.Mac1, recvd.Mac2)
+		err = macs.SetIsSolitaryDevices(recvd.Mac1, recvd.Mac2)
 		if err != nil {
 			log.Println(err)
 			return c.Status(fiber.StatusInternalServerError).SendString("CRITICAL SERVER ERROR!")

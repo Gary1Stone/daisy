@@ -6,13 +6,14 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/tree"
 )
 
 /* Build a html tree view of the network assets from the DEVICES table */
 func BuildTreeView(site string) string {
-	nodes, err := db.GetTreeNodes(site)
+	nodes, err := tree.GetTreeNodes(site)
 	if err != nil {
 		return "Server Error: Unable to build tree view."
 	}
@@ -28,7 +29,7 @@ func BuildTreeView(site string) string {
 	return html.String()
 }
 
-func generateNodeHTML(node *db.TreeNode) string {
+func generateNodeHTML(node *tree.TreeNode) string {
 	var html strings.Builder
 	color := colors.Alert
 	tip := "offline"
@@ -57,13 +58,13 @@ func htmlEscape(s string) string {
 }
 
 func BuildParentSelect(selected int, site string, readOnly bool) string {
-	items, err := db.GetNodes(site)
+	items, err := tree.GetNodes(site)
 	if err != nil {
 		log.Println(err)
 		return ""
 	}
 
-	var droplist db.Droplist
+	var droplist droplists.Droplist
 	droplist.Label = "Parent"
 	droplist.Id = "parent"
 	droplist.Name = "parent"
@@ -72,9 +73,9 @@ func BuildParentSelect(selected int, site string, readOnly bool) string {
 	droplist.ErrMsg = "A parent can be selected"
 	droplist.Action = ""
 
-	var options []db.DroplistOption
+	var options []droplists.DroplistOption
 	for _, item := range items {
-		var opt db.DroplistOption
+		var opt droplists.DroplistOption
 		opt.Value = fmt.Sprintf(`%d`, item.Cid)
 		opt.Description = fmt.Sprintf(`%s %s (%s)`, item.Name, item.Model, item.OfficeTitle)
 		opt.Icon = item.Icon

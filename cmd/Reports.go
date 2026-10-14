@@ -1,11 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"html/template"
-	"strconv"
 
-	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/comstat"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/reports"
 	"github.com/gofiber/fiber/v2"
@@ -26,32 +24,36 @@ func GetReports(c *fiber.Ctx) error {
 }
 
 func PostReports(c *fiber.Ctx) error {
+	user, err := extractUserInfo(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
+	}
 	type reportsForm struct {
 		Task    string `json:"task"`
 		DevType string `json:"devtype"`
 	}
 	var request reportsForm
-	curUid, err := strconv.Atoi(fmt.Sprint(c.Locals("curUid")))
-	if err != nil || curUid < 1 {
-		return c.Status(fiber.StatusOK).Redirect("index.html")
-	}
-
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusOK).SendString("ERROR: ")
 	}
+	// curUid, err := strconv.Atoi(fmt.Sprint(c.Locals("curUid")))
+	// if err != nil || curUid < 1 {
+	// 	return c.Status(fiber.StatusOK).Redirect("index.html")
+	// }
+
 	switch request.Task {
 	case "DASHBOARD_REPORT":
 		return c.Status(fiber.StatusOK).SendString(reports.GetDashboardReport())
 	case "ISSUES_REPORT":
-		return c.Status(fiber.StatusOK).SendString(reports.GetIssuesReport(curUid, request.DevType))
+		return c.Status(fiber.StatusOK).SendString(reports.GetIssuesReport(user.Uid, request.DevType))
 	case "DEVICES_REPORT":
-		return c.Status(fiber.StatusOK).SendString(reports.GetDeviceReport(curUid, request.DevType))
+		return c.Status(fiber.StatusOK).SendString(reports.GetDeviceReport(user.Uid, user.Tzoff, request.DevType))
 	case "LAST_SEEN_REPORT":
-		return c.Status(fiber.StatusOK).SendString(reports.GetLastSeenReport(curUid, true))
+		return c.Status(fiber.StatusOK).SendString(reports.GetLastSeenReport(user.Uid, user.Tzoff, true))
 	case "BACKUP_REPORT":
-		return c.Status(fiber.StatusOK).SendString(reports.GetLastSeenReport(curUid, false))
+		return c.Status(fiber.StatusOK).SendString(reports.GetLastSeenReport(user.Uid, user.Tzoff, false))
 	case "USERS_REPORT":
-		return c.Status(fiber.StatusOK).SendString(reports.GetUsersReport(curUid))
+		return c.Status(fiber.StatusOK).SendString(reports.GetUsersReport(user.Uid))
 	case "TRACKED_SOFTWARE":
 		return c.Status(fiber.StatusOK).SendString(reports.TrackedSoftware())
 	case "USERS_COMPUTERS":
@@ -59,7 +61,7 @@ func PostReports(c *fiber.Ctx) error {
 	case "NETWORK_GAPS":
 		return c.Status(fiber.StatusOK).SendString(reports.NetworkGaps())
 	case "COMSTAT":
-		return c.Status(fiber.StatusOK).SendString(ctrls.ComstatTable(curUid))
+		return c.Status(fiber.StatusOK).SendString(comstat.ComstatTable(user.Uid, user.Tzoff))
 	}
 	return c.Status(fiber.StatusOK).SendString("ERROR: Unknown report")
 }

@@ -122,7 +122,6 @@ func (b *BackupInfo) GetBackups(curUid, cid int) ([]BackupInfo, error) {
 	return items, nil
 }
 
-
 // List all the most recent backups for all the computers, both FILE and SYSTEM
 // Flatten the Files row and System row into a single row
 func (b *BackupInfo) GetLatestBackups(curUid int) ([]LatestBackups, error) {

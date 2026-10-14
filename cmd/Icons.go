@@ -3,7 +3,6 @@ package cmd
 import (
 	"strconv"
 
-	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gofiber/fiber/v2"
 )
@@ -31,7 +30,7 @@ func PostIcon(c *fiber.Ctx) error {
 		if err != nil {
 			iconName = ""
 		} else {
-			iconName = db.GetKindUsingParentCid(cid)
+			iconName = icons.GetKindUsingParentCid(cid)
 		}
 	case "kind":
 		iconName = request.Selected

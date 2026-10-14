@@ -10,17 +10,20 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/logins"
+	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/software"
 	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/util"
-
-	"github.com/gbsto/daisy/db"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -57,7 +60,7 @@ func GetHome(c *fiber.Ctx) error {
 	// Count the number of pending tickets this person has
 	btnColour := colors.Secondary
 	btnLabel := "Tickets"
-	cnt := db.CountPendingTickets(user.Uid)
+	cnt := actions.CountPendingTickets(user.Uid)
 	if cnt > 0 {
 		btnColour = colors.Warning
 		btnLabel = strconv.Itoa(cnt) + " Ticket"
@@ -66,7 +69,7 @@ func GetHome(c *fiber.Ctx) error {
 		}
 	}
 
-	online, offline := db.GetCurrentOnOffCounts()
+	online, offline := macs.GetCurrentOnOffCounts()
 	var unwanted software.Unwanted
 	var alerts alerts.Alert
 	alerts.Uid = user.Uid
@@ -89,7 +92,7 @@ func GetHome(c *fiber.Ctx) error {
 		"onlineSpark":      template.HTML(svg.GraphCache.GetGraph(svg.OnlineMonth)),
 		"maxHitsMonth":     svg.GraphCache.GetMax(svg.OnlineMonth),
 		"wizardsSelect":    template.HTML(ctrls.BuildDropList("WIZARDS", "", "", false, false)),
-		"devicesOnline":    template.HTML(ctrls.GetLastOnlineDatesTable(user.Uid)),
+		"devicesOnline":    template.HTML(ctrls.GetLastOnlineDatesTable(user.Uid, user.Tzoff)),
 		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedTable()),
 	}))
 }
@@ -97,13 +100,15 @@ func GetHome(c *fiber.Ctx) error {
 // Return a list of devices this person is assigned
 func getAssignedDevices(curUid int) (string, error) {
 	var msg strings.Builder
-	items, err := db.GetAssignedDevices(curUid, curUid)
+	tzoff := db.GetTzoff(curUid)
+	var d devices.Device
+	items, err := d.GetAssignedDevices(curUid, tzoff, curUid)
 	if err != nil {
 		log.Println("No assigned devices")
 		return "", err
 	}
 
-	missing := db.GetMissingDevices()
+	missing := d.GetMissingDevices()
 	var i int = 0
 	var cnt int = 0
 	icon := icons.GetIcon("search")
@@ -127,7 +132,7 @@ func getAssignedDevices(curUid int) (string, error) {
 
 // Build the last Login Message: when, from where and how far
 func getLastLoginMsg(curUid int) (string, error) {
-	item, err := db.GetLastLogin(curUid)
+	item, err := logins.GetLastLogin(curUid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -271,7 +276,7 @@ func PostHome(c *fiber.Ctx) error {
 		}
 		if recvd.Aid > 0 {
 			alerts.AckAlert(user.Uid, recvd.Uid, recvd.Aid, true, true, true)
-			db.AckAction(user.Uid, recvd.Aid, true, true, true)
+			actions.AckAction(user.Uid, recvd.Aid, true, true, true)
 		}
 		response = alerts.GetAlertTable()
 	case "save_lon_lat":
@@ -293,7 +298,7 @@ func PostHome(c *fiber.Ctx) error {
 			loginInfo.Ip = ip
 			loginInfo.Success = 1
 			loginInfo.Timezone = recvd.Timezone
-			err = db.SaveLogin(&loginInfo)
+			err = logins.SaveLogin(&loginInfo)
 			if err != nil {
 				log.Println(err)
 			}

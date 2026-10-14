@@ -11,7 +11,7 @@ import (
 // Cache of admin table codes and icons
 type adminStruct struct {
 	sync.RWMutex
-	theSlice []adminInfo
+	TheSlice []adminInfo
 }
 
 var AdminCache adminStruct
@@ -109,7 +109,7 @@ func (a *adminStruct) loadAdmin(count int) {
 	// Lock the slice while we replace it
 	a.Lock()
 	defer a.Unlock()
-	a.theSlice = tempSlice
+	a.TheSlice = tempSlice
 }
 
 func (a *adminStruct) resetCacheFlag() {
@@ -182,7 +182,7 @@ func buildAdminCache() {
 
 // Use a timer function to reload the cache, allowing for
 // Many updates to happen before starting the cache reload
-func scheduleCacheReload() {
+func ScheduleCacheReload() {
 	reloadMutex.Lock()
 	defer reloadMutex.Unlock()
 	if isReloading {
@@ -199,7 +199,7 @@ func GetCodeDescription(field string, code any) string {
 	AdminCache.RLock()
 	defer AdminCache.RUnlock()
 	codeStr := fmt.Sprint(code)
-	for _, item := range AdminCache.theSlice {
+	for _, item := range AdminCache.TheSlice {
 		if item.Field == field && item.Code == codeStr {
 			return item.Description
 		}
@@ -210,7 +210,7 @@ func GetCodeDescription(field string, code any) string {
 func GetOfficeDescription(officeCode string, siteCode string) string {
 	AdminCache.RLock()
 	defer AdminCache.RUnlock()
-	for _, item := range AdminCache.theSlice {
+	for _, item := range AdminCache.TheSlice {
 		if item.Field == "OFFICE" && item.Code == officeCode && item.Parent == siteCode {
 			return item.Description
 		}
@@ -219,8 +219,8 @@ func GetOfficeDescription(officeCode string, siteCode string) string {
 }
 
 // Return the asset for a device type
-func getAssetIdByDeviceType(deviceType string) string {
-	for _, item := range AdminCache.theSlice {
+func GetAssetIdByDeviceType(deviceType string) string {
+	for _, item := range AdminCache.TheSlice {
 		if item.Field == "TYPE" && item.Code == deviceType {
 			return item.AssetId
 		}
@@ -232,14 +232,14 @@ func getAssetIdByDeviceType(deviceType string) string {
 // and set the is_dirty flag.
 // If count transitions from 0 to positive, or if count transitions
 // from positive to zero, set is_dirty flag
-func checkAdminCache() {
+func CheckAdminCache() {
 	var isDirty bool
 	err := Conn.QueryRow("SELECT is_dirty FROM cache_dirty WHERE id = 1").Scan(&isDirty)
 	if err != nil {
 		log.Println("Error checking cache dirty flag:", err)
 	}
 	if isDirty {
-		scheduleCacheReload() // Reload data from DB
+		ScheduleCacheReload() // Reload data from DB
 	}
 }
 
@@ -271,7 +271,7 @@ func readFromCache(field string) []FieldInfo {
 	AdminCache.RLock()
 	defer AdminCache.RUnlock()
 
-	for _, item := range AdminCache.theSlice {
+	for _, item := range AdminCache.TheSlice {
 		if item.Field != field || item.Active != 1 {
 			continue
 		}

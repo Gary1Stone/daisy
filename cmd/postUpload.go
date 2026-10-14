@@ -5,8 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gbsto/daisy/util"
-
+	"github.com/gbsto/daisy/photos"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,7 +22,7 @@ func UploadImage(c *fiber.Ctx) error {
 	fileLocation := filepath.Join(serverDir, "web", "public", "images", file.Filename)
 	c.SaveFile(file, fileLocation)
 
-	util.InitialPhotoUploadResizer(file.Filename)
-	go util.ShrinkPhotos() //process entire images directory and create thumbnails of photos
+	photos.InitialPhotoUploadResizer(file.Filename)
+	go photos.ShrinkPhotos() //process entire images directory and create thumbnails of photos
 	return c.Status(fiber.StatusOK).SendString("success")
 }

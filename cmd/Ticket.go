@@ -8,10 +8,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/ctrls"
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/profiles"
+	"github.com/gbsto/daisy/tickets"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gofiber/fiber/v2"
@@ -41,13 +45,14 @@ func GetTicket(c *fiber.Ctx) error {
 		log.Println(err)
 		aid = 0
 	}
-	action, err := db.GetAction(user.Uid, aid)
+	action, err := actions.GetAction(user.Uid, aid)
 	if err != nil {
 		log.Println(err)
 	}
 
 	// What to do if CID = 0 (No Device)
-	dev, err := db.GetDevice(user.Uid, action.Cid)
+	var d devices.Device
+	dev, err := d.GetDevice(user.Uid, user.Tzoff, action.Cid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -74,16 +79,20 @@ func GetTicket(c *fiber.Ctx) error {
 	}
 
 	if action.Inform_gid == 0 {
-		action.Inform_gid = db.FindGroupID(0, 0, false)
+		usr_gid := profiles.GetGid(user.Uid)
+		dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(user.Uid, 0)
+		action.Inform_gid = droplists.FindGroupID(0, usr_gid, 0, dev_uid, dev_gid, false)
 	}
 
 	// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 	if action.Gid > 0 && action.Uid == 0 && action.Cid > 0 {
-		action.Uid, _ = db.GetDeviceAssignedUserGroup(user.Uid, action.Cid)
+		action.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, action.Cid)
 	}
 
 	if action.Gid == 0 {
-		action.Gid = db.FindGroupID(user.Uid, action.Gid, true)
+		usr_gid := profiles.GetGid(user.Uid)
+		dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(user.Uid, action.Gid)
+		action.Gid = droplists.FindGroupID(user.Uid, usr_gid, action.Gid, dev_uid, dev_gid, true)
 	}
 
 	return c.Render("ticket", addNavigationIcons(fiber.Map{
@@ -146,23 +155,24 @@ func PostTicket(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
 	}
 
-	recvd := new(db.Ticket)
+	recvd := new(tickets.Ticket)
 	if err := c.BodyParser(recvd); err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).SendString(response)
 	}
-
+	var d devices.Device
+	
 	switch recvd.Task {
 	case "get_person_control":
 		// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
-			recvd.Uid, _ = db.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+			recvd.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
 		}
 		response = ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
 	case "get_inform_person_control":
 		// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
-			recvd.Uid, _ = db.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+			recvd.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
 		}
 		response = ctrls.BuildDropList("USERINFORM", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Inform_gid), true, false)
 	case "route_ticket":
@@ -171,19 +181,19 @@ func PostTicket(c *fiber.Ctx) error {
 			recvd.Log += " Reassigned from: " + recvd.OldGroup + ", " + recvd.OldUser
 			recvd.Log = strings.TrimSpace(recvd.Log)
 		}
-		err := db.SetTicket(user.Uid, recvd)
+		err := tickets.SetTicket(user.Uid, recvd)
 		if err != nil {
 			log.Println(err)
 		}
 		response = ctrls.BuildWorklog(user.Uid, recvd.Aid)
 	case "add_log":
-		err := db.AddLog(user.Uid, recvd)
+		err := tickets.AddLog(user.Uid, recvd)
 		if err != nil {
 			log.Println(err)
 		}
 		if recvd.Cmd == "CLOSED" {
 			var alerts alerts.Alert
-			db.AckAction(user.Uid, recvd.Aid, true, true, true)
+			actions.AckAction(user.Uid, recvd.Aid, true, true, true)
 			alerts.AckAlert(user.Uid, user.Uid, recvd.Aid, true, true, false)
 			// TODO: Close ticket or mark as closed and notify user ???????????????????
 			// Concept: have a notify at close flag in Alerts table DONE

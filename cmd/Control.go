@@ -3,13 +3,10 @@ package cmd
 import (
 	"html/template"
 
+	"github.com/gbsto/daisy/activeusers"
 	"github.com/gbsto/daisy/attacks"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/svg"
-
-	"github.com/gbsto/daisy/ctrls"
-
-	"github.com/gbsto/daisy/db"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -74,14 +71,15 @@ func PostControl(c *fiber.Ctx) error {
 	//Do processing and saves
 	switch recvd.Task {
 	case "get_active_users":
-		reply = ctrls.BuildActiveUsersTable(user.Uid)
+		reply = activeusers.BuildActiveUsersTable(user.Uid, user.Tzoff)
 	case "end_session":
-		db.EndSession(recvd.Id)
-		reply = ctrls.BuildActiveUsersTable(user.Uid)
+		var ausr activeusers.ActiveUsers
+		ausr.EndSession(recvd.Id)
+		reply = activeusers.BuildActiveUsersTable(user.Uid, user.Tzoff)
 	case "end_session_all":
-		reply = ctrls.BuildActiveUsersTable(user.Uid)
+		reply = activeusers.BuildActiveUsersTable(user.Uid, user.Tzoff)
 	case "get_server_load":
-		reply = ctrls.BuildActiveUsersTable(user.Uid)
+		reply = activeusers.BuildActiveUsersTable(user.Uid, user.Tzoff)
 	case "get_attacks":
 		var a attacks.AttackInfo
 		reply = a.BuildAttacksTable(user.Uid, recvd.Id)

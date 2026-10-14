@@ -5,8 +5,7 @@ import (
 
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,7 +21,7 @@ func GetCorrelation(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).Redirect("home.html")
 	}
 
-	filter := db.MacCorrelationFilter{
+	filter := macs.MacCorrelationFilter{
 		Jaccard:   70,    // Jaccard number x100
 		Pearson:   85,    // Pearsons number x100
 		Fixed:     true,  // false=dont care, true=Fixed MACs only
@@ -52,7 +51,7 @@ func PostCorrelation(c *fiber.Ctx) error {
 	if !user.Permissions.Admin.Update {
 		return c.Status(fiber.StatusUnauthorized).Redirect("home.html")
 	}
-	var filter db.MacCorrelationFilter
+	var filter macs.MacCorrelationFilter
 	if err := c.BodyParser(&filter); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("CRITICAL SERVER ERROR!")
 	}

@@ -3,12 +3,12 @@ package api
 import (
 	"log"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gofiber/fiber/v2"
 )
 
 func PostPingApi(c *fiber.Ctx) error {
-	pingInfo := new(db.PingInfo) // Allocate on heap (address of)
+	pingInfo := new(devices.PingInfo) // Allocate on heap (address of)
 	resp := "CRITICAL SERVER ERROR!"
 	if err := c.BodyParser(pingInfo); err != nil {
 		log.Println("API: parser ", err)

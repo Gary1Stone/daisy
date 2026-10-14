@@ -5,12 +5,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/svg"
 )
 
 func GetOnlineDevices(tzoff int, theDay string) string {
-	chartData, err := db.GetOnlineDay(tzoff, theDay)
+	chartData, err := macs.GetOnlineDay(tzoff, theDay)
 	if err != nil {
 		log.Println(err)
 		return "error getting online details"
@@ -22,7 +22,7 @@ func GetOnlineDevices(tzoff int, theDay string) string {
 	if len(macList) == 0 {
 		return "no devices online for date selected"
 	}
-	macInfo, err := db.GetChartInfo4WhatWasOnline(macList)
+	macInfo, err := macs.GetChartInfo4WhatWasOnline(macList)
 	if err != nil {
 		log.Println("Error in GetChartInfo4WhatWasOnline:", err)
 		return "missing mac info for online devices"
@@ -31,14 +31,14 @@ func GetOnlineDevices(tzoff int, theDay string) string {
 }
 
 func GetOnlineDeviceHistory(tzoff int, mac string) string {
-	chartData, err := db.GetDeviceHistory(tzoff, mac)
+	chartData, err := macs.GetDeviceHistory(tzoff, mac)
 	if err != nil {
 		log.Println(err)
 		return "error getting online details"
 	}
 	macList := make([]string, 0, len(chartData))
 	macList = append(macList, mac)
-	macInfo, err := db.GetChartInfo4WhatWasOnline(macList)
+	macInfo, err := macs.GetChartInfo4WhatWasOnline(macList)
 	if err != nil {
 		log.Println("Error in GetChartInfo4WhatWasOnline:", err)
 		return "missing mac info for online devices"
@@ -52,23 +52,23 @@ func GetAvoidChart(tzoff int, mac1, mac2 string) string {
 	}
 
 	// get the macInfo for each device
-	macInfo1, err := db.GetMacInfoByMac(tzoff, mac1)
+	macInfo1, err := macs.GetMacInfoByMac(tzoff, mac1)
 	if err != nil {
 		log.Println(err)
 		return "error getting mac1 info"
 	}
-	macInfo2, err := db.GetMacInfoByMac(tzoff, mac2)
+	macInfo2, err := macs.GetMacInfoByMac(tzoff, mac2)
 	if err != nil {
 		log.Println(err)
 		return "missing mac info for online devices"
 	}
 
-	chartData1, err := db.GetDeviceHistory(tzoff, macInfo1.Mac)
+	chartData1, err := macs.GetDeviceHistory(tzoff, macInfo1.Mac)
 	if err != nil {
 		log.Println(err)
 		return "missing mac info for online devices"
 	}
-	chartData2, err := db.GetDeviceHistory(tzoff, macInfo2.Mac)
+	chartData2, err := macs.GetDeviceHistory(tzoff, macInfo2.Mac)
 	if err != nil {
 		log.Println(err)
 		return "error getting online details"
@@ -76,7 +76,7 @@ func GetAvoidChart(tzoff int, mac1, mac2 string) string {
 
 	macList := make([]string, 0, 2)
 	macList = append(macList, macInfo1.Mac, macInfo2.Mac)
-	macInfo, err := db.GetChartInfo4WhatWasOnline(macList)
+	macInfo, err := macs.GetChartInfo4WhatWasOnline(macList)
 	if err != nil {
 		log.Println("Error in GetChartInfo4WhatWasOnline:", err)
 		return "missing mac info for online devices"
@@ -98,9 +98,9 @@ func GetAvoidChart(tzoff int, mac1, mac2 string) string {
 	return title + svg.BuildOnlineChart(chartData, macInfo, svg.NameWithDate)
 }
 
-func GetLastOnlineDatesTable(curUid int) string {
+func GetLastOnlineDatesTable(curUid, tzoff int) string {
 	var tbl strings.Builder
-	items, err := db.GetLastOnlineDates(curUid)
+	items, err := macs.GetLastOnlineDates(curUid, tzoff)
 	if err != nil {
 		log.Println(err)
 		return ""

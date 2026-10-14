@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/aliases"
+	"github.com/gbsto/daisy/macs"
 	"github.com/gofiber/fiber/v2"
 )
 
 func PostOnlineApi(c *fiber.Ctx) error {
 	response := "CRITICAL SERVER ERROR!"
 
-	request := new(db.OnlineAPI) // Allocate on heap (address of)
+	request := new(OnlineAPI) // Allocate on heap (address of)
 	if err := c.BodyParser(request); err != nil {
 		log.Println("API: parser ", err)
 		return c.Status(fiber.StatusOK).SendString(response)
@@ -25,7 +26,7 @@ func PostOnlineApi(c *fiber.Ctx) error {
 
 	switch request.Command {
 	case "GET_HIGH_WATER_MARKS":
-		thedates := db.GetLastUpdated()
+		thedates := GetLastUpdated()
 		reply, err := json.Marshal(thedates)
 		if err != nil {
 			log.Println("API: Failure marshalling dates", err)
@@ -34,7 +35,8 @@ func PostOnlineApi(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(string(reply)) // Notice that JSON can be sent in string format
 
 	case "GET_NEW_ALIASES":
-		newAliases, err := db.GetAliases(true)
+		var a aliases.Aliases
+		newAliases, err := a.GetAliases(true)
 		if err != nil {
 			log.Println("API: Failure getting aliases", err)
 			return c.Status(fiber.StatusOK).SendString(response)
@@ -47,29 +49,30 @@ func PostOnlineApi(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(string(reply)) // Notice that JSON can be sent in string format
 
 	case "SAVE_ONLINE_HISTORY":
-		err := db.SaveOnline(request.OnlineInfo)
+		err := SaveOnline(request.OnlineInfo)
 		if err != nil {
 			log.Println("API: Failure saving online history", err)
 			return c.Status(fiber.StatusOK).SendString(err.Error())
 		}
-		site, err := db.SaveScanInfo(request.ScanInfo)
+		site, err := SaveScanInfo(request.ScanInfo)
 		if err != nil {
 			log.Println("API: Failure saving mac table", err)
 			return c.Status(fiber.StatusOK).SendString(err.Error())
 		}
-		err = db.SaveAliases(request.Aliases)
+		var a aliases.Aliases
+		err = a.SaveAliases(request.Aliases)
 		if err != nil {
 			log.Println("API: Failure saving aliases", err)
 			return c.Status(fiber.StatusOK).SendString(err.Error())
 		}
-		err = db.GuessMacInfo()
+		err = macs.GuessMacInfo()
 		if err != nil {
 			log.Println("API: Failure guessing mac info", err)
 		}
 
 		go func() {
-			db.BuildMacCorrelationTable(site) // ~360 msec
-			db.PopulateVendors()              // Sequential start to avoid DB lock contention
+			macs.BuildMacCorrelationTable(site) // ~360 msec
+			macs.PopulateVendors()              // Sequential start to avoid DB lock contention
 		}()
 	}
 	return c.Status(fiber.StatusOK).SendString("OKAY")

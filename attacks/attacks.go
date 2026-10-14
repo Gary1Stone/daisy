@@ -9,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/gbsto/daisy/activeusers"
+	"github.com/gbsto/daisy/cities"
 	"github.com/gbsto/daisy/db"
 )
 
@@ -90,7 +92,7 @@ func (a *AttackInfo) findAndUpdateLocation() {
 	if a.Longitude == 0.0 && a.Latitude == 0.0 {
 		return // No results found, can't do anything
 	}
-	a.City_id, a.Community_id = db.SearchNearestPlace(a.Longitude, a.Latitude)
+	a.City_id, a.Community_id = cities.SearchNearestPlace(a.Longitude, a.Latitude)
 	a.updateAttacks()
 }
 
@@ -110,7 +112,8 @@ func (a *AttackInfo) findLocationInAttacks() bool {
 		&a.Ip_type, &a.Isp, &a.Org)
 	if a.Uid > 0 {
 		log.Println("User session ended because of hacking.", a.Fullname)
-		db.EndSession(a.Uid) // Kick out user for hacking
+		var ausr activeusers.ActiveUsers
+		ausr.EndSession(a.Uid) // Kick out user for hacking
 	}
 	return err == nil
 }
@@ -123,7 +126,8 @@ func (a *AttackInfo) findLocationInLogins() bool {
 	err := db.Conn.QueryRow(query, a.Ip, a.Id).Scan(&a.Uid, &a.Longitude, &a.Latitude, &a.City_id, &a.Community_id)
 	if a.Uid > 0 {
 		log.Println("User session ended because of hacking.", a.Fullname)
-		db.EndSession(a.Uid) // Kick out user for hacking
+		var ausr activeusers.ActiveUsers
+		ausr.EndSession(a.Uid) // Kick out user for hacking
 	}
 	return err == nil
 }

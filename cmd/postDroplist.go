@@ -4,8 +4,9 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/ctrls"
-
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
+	"github.com/gbsto/daisy/droplists"
+	"github.com/gbsto/daisy/profiles"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -37,6 +38,7 @@ func PostDroplist(c *fiber.Ctx) error {
 	if err := c.BodyParser(recvd); err != nil {
 		return c.Status(fiber.StatusOK).SendString("Server Error")
 	}
+	var d devices.Device
 
 	switch recvd.Task {
 
@@ -45,7 +47,7 @@ func PostDroplist(c *fiber.Ctx) error {
 		if recvd.IsWizard {
 			// If we have a computer, use the computer's assigned site
 			if recvd.Cid > 0 {
-				site, _ := db.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
+				site, _ := d.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
 				if len(site) > 0 {
 					recvd.Site = site
 				}
@@ -60,7 +62,7 @@ func PostDroplist(c *fiber.Ctx) error {
 		if recvd.IsWizard {
 			recvd.IsReadonly = false
 			if recvd.Cid > 0 {
-				site, office := db.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
+				site, office := d.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
 				if recvd.Site == site {
 					recvd.Office = office
 				}
@@ -80,7 +82,10 @@ func PostDroplist(c *fiber.Ctx) error {
 				defaultToCurUser = true
 			}
 			if recvd.Gid == 0 {
-				recvd.Gid = db.FindGroupID(user.Uid, recvd.Cid, defaultToCurUser)
+				usr_gid := profiles.GetGid(user.Uid)
+				var d devices.Device
+				dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+				recvd.Gid = droplists.FindGroupID(user.Uid, usr_gid, recvd.Cid, dev_uid, dev_gid, defaultToCurUser)
 			}
 		}
 		reply = ctrls.BuildDropList("GROUP", strconv.Itoa(recvd.Gid), "", withBlank, false)
@@ -99,7 +104,8 @@ func PostDroplist(c *fiber.Ctx) error {
 			recvd.IsReadonly = false
 			// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 			if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
-				recvd.Uid, _ = db.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+				var d devices.Device
+				recvd.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
 			}
 		}
 		reply = ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), withBlank, recvd.IsReadonly)
@@ -123,7 +129,8 @@ func PostDroplist(c *fiber.Ctx) error {
 		if recvd.IsTicket {
 			// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 			if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
-				recvd.Uid, _ = db.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+				var d devices.Device
+				recvd.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
 			}
 		}
 		reply = ctrls.BuildDropList("USERINFORM", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Inform_gid), true, false)

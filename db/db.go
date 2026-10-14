@@ -17,6 +17,12 @@ var schemaSQL string
 
 // Make the database connection globally available
 var Conn *sql.DB
+var SYS_PROFILE SysUser
+
+type SysUser struct {
+	Uid  int    `json:"uid"`
+	User string `json:"user"`
+}
 
 const (
 	PROFILE_TABLE  int = 2
@@ -29,7 +35,7 @@ const (
 func StartServer() {
 	connectToDatabase()
 	buildAdminCache()
-	setupSystemProfile()
+	setSystemProfile()
 }
 
 // Create connection to the database
@@ -112,32 +118,16 @@ func Close() error {
 	return nil
 }
 
-// Foreign Key handing!
-// Go does not support setting ints and strings to nil
-// Database foreign keys (usually ints) absolutley require being able
-// to set a child table's foreign keys to null.
-// ForeignKey converts zero-equivalent values (empty strings, non-positive numbers)
-// to nil so they can be inserted as NULL into the database.
-func ForeignKey(value any) any {
-	switch v := value.(type) {
-	case string:
-		if len(v) == 0 {
-			return nil
-		}
-	case int:
-		if v <= 0 {
-			return nil
-		}
-	case int64:
-		if v <= 0 {
-			return nil
-		}
-	case float64:
-		if v == 0.0 {
-			return nil
-		}
+// Initialize one user to be the Global system profile
+func setSystemProfile() {
+	sysUser := os.Getenv("SYS_USER")
+	if sysUser == "" {
+		log.Panic("FATAL: Environment variable SYS_USER not set in .env file")
 	}
-	return value
+	err := Conn.QueryRow("SELECT uid, user FROM profiles WHERE user=? AND active=1 LIMIT 1", sysUser).Scan(&SYS_PROFILE.Uid, &SYS_PROFILE.User)
+	if err != nil || SYS_PROFILE.User == "" {
+		log.Panicf("FATAL: System User %v is not configured in the database profiles table. Error: %v", sysUser, err)
+	}
 }
 
 // TwoAmBackup schedules a backup of the database every day at 2 AM.
@@ -187,13 +177,4 @@ func TwoAmBackup() error {
 	}
 
 	return nil
-}
-
-func GetSqlVersion() string {
-	var version string
-	err := Conn.QueryRow("SELECT sqlite_version()").Scan(&version)
-	if err != nil {
-		return "unknown"
-	}
-	return version
 }

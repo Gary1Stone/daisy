@@ -8,12 +8,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/devices"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/macs"
 )
 
-func MakeImageCtrl(dev *db.Device, isUpdatePerm bool) string {
+func MakeImageCtrl(dev *devices.Device, isUpdatePerm bool) string {
 	var ctrl strings.Builder
 	if dev.Cid == 0 {
 		ctrl.WriteString(`<img src="images/missing.jpg" alt="photo" width="338px" height="253px" id="displayedImage" >`)
@@ -40,7 +43,7 @@ func MakeImageCtrl(dev *db.Device, isUpdatePerm bool) string {
 
 // On the Device page, list all the installed software
 func BuildSoftwareList(curUid, cid int) string {
-	items, err := db.GetInstalledSoftware(curUid, cid)
+	items, err := actions.GetInstalledSoftware(curUid, cid)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -92,9 +95,9 @@ func BuildSoftwareList(curUid, cid int) string {
 
 func BuildYearsSelect(selected int) string {
 	year := time.Now().Year()
-	var items []db.DroplistOption
+	var items []droplists.DroplistOption
 	for i := year; i > year-25; i-- {
-		var item db.DroplistOption
+		var item droplists.DroplistOption
 		item.Value = strconv.Itoa(i)
 		item.Description = strconv.Itoa(i)
 		if i == selected {
@@ -126,14 +129,14 @@ func BuildDeviceLog(curUid, cid, hist int) string {
 		<th aria-sort="none">Status</th>
 		</tr></thead>
 		<tbody>`)
-	filter := new(db.ActionFilter)
+	filter := new(actions.ActionFilter)
 	filter.Active = -1    // Disable Active filter: -1=Don't care if opened or closed
 	filter.Pending = hist // Show/don't show not acknowledged actions
 	filter.Cid = cid
 	filter.Uid = 0
 	filter.Sid = 0
-	actions, _ := filter.GetActions(curUid)
-	for _, act := range actions {
+	actionList, _ := filter.GetActions(curUid)
+	for _, act := range actionList {
 		btnColor := colors.Light
 		if act.Active == 1 {
 			btnColor = act.Color
@@ -147,7 +150,7 @@ func BuildDeviceLog(curUid, cid, hist int) string {
 			btnLabel = string(btnLabel[0:12]) + "..."
 
 		}
-		var button db.Popbutton
+		var button actions.Popbutton
 		button.Color = btnColor
 		button.Action = act.Action
 		button.Label = btnLabel
@@ -166,7 +169,7 @@ func BuildDeviceLog(curUid, cid, hist int) string {
 }
 
 // Button to pop up the modal dialog with JSON object of the paramenters to use when the button is pressed
-func buildButton(button db.Popbutton) string {
+func buildButton(button actions.Popbutton) string {
 	var btn strings.Builder
 	btnJason, err := json.Marshal(button)
 	if err != nil {
@@ -182,7 +185,7 @@ func buildButton(button db.Popbutton) string {
 }
 
 func BuildMacs(curUid, cid int) string {
-	items, err := db.GetMacInfoByCid(curUid, cid)
+	items, err := macs.GetMacInfoByCid(curUid, cid)
 	if err != nil {
 		log.Println(err)
 		return ""

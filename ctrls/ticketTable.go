@@ -5,7 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/actions"
+	"github.com/gbsto/daisy/profiles"
 	"github.com/gbsto/daisy/util"
 	"github.com/gbsto/daisy/wizards"
 )
@@ -15,21 +16,22 @@ import (
 // Generate tickets table for wide screens
 func BuildTicketsTable(curUid int) string {
 	var tbl strings.Builder
-	var filter db.ActionFilter
+	var filter actions.ActionFilter
 	filter.Page = 0
 
 	// Build the table header
 	tbl.WriteString(buildTicketsTableHeader())
 
 	// Fetch profile and handle errors
-	profile, err := db.GetProfile(curUid, curUid)
+	var p profiles.Profile
+	profile, err := p.GetProfile(curUid, curUid)
 	if err != nil {
 		log.Println(err)
 		profile.Gid = 0
 	}
 
 	// Fetch actionable actions and handle errors
-	items, err := db.GetAllActionableActions(curUid)
+	items, err := actions.GetAllActionableActions(curUid)
 	if err != nil {
 		log.Println(err)
 		tbl.WriteString("</tbody></table>")
@@ -65,7 +67,7 @@ func buildTicketsTableHeader() string {
 }
 
 // Helper function to build a single table row
-func buildTicketsTableRow(curUid int, item *db.Action, profile *db.Profile, filter *db.ActionFilter) string {
+func buildTicketsTableRow(curUid int, item *actions.Action, profile *profiles.ProfileInfo, filter *actions.ActionFilter) string {
 	var row strings.Builder
 
 	row.WriteString("<tr class='row-hover'>")
@@ -73,9 +75,9 @@ func buildTicketsTableRow(curUid int, item *db.Action, profile *db.Profile, filt
 	row.WriteString(buildDeviceCell(item))
 	row.WriteString(buildTableCell("QUEUE", item.AssignedGroupName))
 	row.WriteString(buildTableCell("ASSIGNED", item.AssignedUserName))
-	row.WriteString(buildTableCell("TROUBLE", mxl25(item.TroubleDescription)))
-	row.WriteString(buildTableCell("REPORT", mxl50(item.Report)))
-	row.WriteString(buildTableCell("ORIGIN", mxl25(item.OriginatorName)))
+	row.WriteString(buildTableCell("TROUBLE", util.Mx25(item.TroubleDescription)))
+	row.WriteString(buildTableCell("REPORT", util.Mx50(item.Report)))
+	row.WriteString(buildTableCell("ORIGIN", util.Mx25(item.OriginatorName)))
 	row.WriteString(buildTableCell("DURATION", util.CalcDuration(item.OpenedInt, item.ClosedInt)))
 	row.WriteString(buildAckCell(curUid, item, profile, filter))
 	row.WriteString("</tr>")
@@ -89,7 +91,7 @@ func buildTableCell(label, content string) string {
 }
 
 // Helper function to build the device cell
-func buildDeviceCell(item *db.Action) string {
+func buildDeviceCell(item *actions.Action) string {
 	var cell strings.Builder
 	cell.WriteString("<td data-label='DEVICE'>")
 	if len(item.Action) > 0 {
@@ -102,13 +104,13 @@ func buildDeviceCell(item *db.Action) string {
 	cell.WriteString("<span class='")
 	cell.WriteString(item.DeviceIcon)
 	cell.WriteString("'></span> ")
-	cell.WriteString(mxl25(item.Devicename))
+	cell.WriteString(util.Mx25(item.Devicename))
 	cell.WriteString("</td>")
 	return cell.String()
 }
 
 // Helper function to build the ACK cell
-func buildAckCell(curUid int, item *db.Action, profile *db.Profile, filter *db.ActionFilter) string {
+func buildAckCell(curUid int, item *actions.Action, profile *profiles.ProfileInfo, filter *actions.ActionFilter) string {
 	var cell strings.Builder
 	cell.WriteString("<td data-label='ACK'>")
 	if isInformAck(curUid, item, profile, filter) || isAssignedAck(curUid, item, profile, filter) {
@@ -122,7 +124,7 @@ func buildAckCell(curUid int, item *db.Action, profile *db.Profile, filter *db.A
 
 // Show the ack button to the inform person
 // Check the inform flag to see if this user can acknowledge this alert
-func isInformAck(curUid int, act *db.Action, profile *db.Profile, filter *db.ActionFilter) bool {
+func isInformAck(curUid int, act *actions.Action, profile *profiles.ProfileInfo, filter *actions.ActionFilter) bool {
 	// Already acknowledged, don't show the button
 	if act.Inform_ack > 0 {
 		return false
@@ -155,7 +157,7 @@ func isInformAck(curUid int, act *db.Action, profile *db.Profile, filter *db.Act
 // Show the ack button to the assigned person's (UID) GROUP after they close the worklog (do something) if  BROKEN,LOST,DIED,CARE,REQUEST
 // Show the ack button to the assigned person's (UID) GROUP if NOT:  BROKEN,LOST,DIED,CARE,REQUEST
 // Determine if the UID field for notification needs to be acknowledged by this person
-func isAssignedAck(curUid int, act *db.Action, profile *db.Profile, filter *db.ActionFilter) bool {
+func isAssignedAck(curUid int, act *actions.Action, profile *profiles.ProfileInfo, filter *actions.ActionFilter) bool {
 
 	// Already acknowledged, don't show the button
 	if act.Uid_ack > 0 {

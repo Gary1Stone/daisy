@@ -4,16 +4,15 @@ import (
 	"log"
 	"os"
 
+	"github.com/gbsto/daisy/logins"
 	"github.com/gbsto/daisy/passkey"
-
-	"github.com/gbsto/daisy/db"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 // Check the Auth cookie to see if we can get the user details
 func GetIndex(c *fiber.Ctx) error {
-	var jwtInfo db.Logins
+	var jwtInfo logins.Logins
 	expired := false
 	var err error
 	nextpage := "registration.html"
