@@ -25,7 +25,7 @@ func BuildDeviceList(site string) string {
 	<th aria-sort="none">Office</th>
 	</tr></thead><tbody>`)
 	for _, item := range items {
-		fmt.Fprintf(&tbl, `<tr data-id="%d"><td><a href="device_mac.html?cid=%d">%s %s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>`, item.Cid, item.Cid, icons.GetIcon(item.Icon), item.Name, item.Model, item.KindName, item.OfficeName)
+		fmt.Fprintf(&tbl, `<tr data-id="%d"><td><a href="devmacs.html?cid=%d">%s %s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>`, item.Cid, item.Cid, icons.GetIcon(item.Icon), item.Name, item.Model, item.KindName, item.OfficeName)
 	}
 	tbl.WriteString(`</tbody></table>`)
 	return tbl.String()
