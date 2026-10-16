@@ -58,8 +58,8 @@ func BuildDeviceList(site string) string {
 
 // List all the macs belonging to the specified computer
 // Contains self-reported MACs and network Scan Macs
-func BuildDevMacs(cid int, canEdit bool) string {
-	items, err := GetMacInfoByCid(cid)
+func BuildDevMacs(cid, tzoff int, canEdit bool) string {
+	items, err := GetMacInfoByCid(cid, tzoff)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -91,5 +91,44 @@ func BuildDevMacs(cid int, canEdit bool) string {
 		}
 	}
 	tbl.WriteString("</tbody></table>")
+	return tbl.String()
+}
+
+func BuildUnmatchedMacs(cid, tzoff int, site string) string {
+
+	if len(site) == 0 {
+		site = tree.GetDefaultSite()
+	}
+
+	items, err := GetUnmatchedMacs(cid, tzoff, site)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	smallx := icons.GetIcon("smallx")
+	smallcheck := icons.GetIcon("smallcheck")
+
+	var tbl strings.Builder
+	tbl.WriteString(`<table class='striped' id="unmatchedlist">
+		<thead><tr>
+		<th aria-sort="ascending" data-sort="asc">MAC</th>
+		<th aria-sort="none">IP</th>
+		<th aria-sort="none">Hostname</th>
+		<th aria-sort="none">Kind</th>
+		<th aria-sort="none">Online</th>
+		<th aria-sort="none">First Seen</th>
+		<th aria-sort="none">Last Seen</th>
+		</tr></thead>
+		<tbody>`)
+	for _, item := range items {
+		ico := smallx
+		if item.IsOnline {
+			ico = smallcheck
+		}
+		fmt.Fprintf(&tbl, `<tr><td><a href="#" onclick="register(%d, %d);">%v %s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%v</td><td>%s</td><td>%s</td></tr>`,
+			cid, item.Mid, icons.GetIcon(item.Icon), item.Mac, item.Ip, item.Hostname, item.KindName, ico, item.FirstSeen, item.LastSeen)
+	}
+	tbl.WriteString("</tbody></table>")
+
 	return tbl.String()
 }

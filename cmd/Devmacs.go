@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"strconv"
 
-	"github.com/gbsto/daisy/device_mac"
 	"github.com/gbsto/daisy/devmacs"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
@@ -36,8 +35,9 @@ func GetDevMacs(c *fiber.Ctx) error {
 	officeName := ""
 	deviceIcon := ""
 	associated := ""
+	macTable := ""
 	if cid > 0 {
-		device, err := device_mac.GetDevice(cid)
+		device, err := devmacs.GetDevice(cid)
 		if err == nil {
 			site = device.Site
 			siteName = device.SiteName
@@ -45,12 +45,13 @@ func GetDevMacs(c *fiber.Ctx) error {
 			model = device.Model
 			kindName = device.KindName
 			officeName = device.OfficeName
-			associated = devmacs.BuildDevMacs(cid, user.Permissions.Device.Update)
+			associated = devmacs.BuildDevMacs(cid, user.Tzoff, user.Permissions.Device.Update)
 			deviceIcon = icons.GetIcon(device.Icon)
+			macTable = devmacs.BuildUnmatchedMacs(cid, user.Tzoff, site)
 		}
 	}
 
-	return c.Render("device_mac", addNavigationIcons(fiber.Map{
+	return c.Render("devmacs", addNavigationIcons(fiber.Map{
 		"title":      template.HTML(icons.GetIcon("devices") + " Device / MAC association"),
 		"fullName":   user.Fullname,
 		"isAdmin":    user.IsAdmin,
@@ -64,7 +65,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 		"model":      model,
 		"kindName":   kindName,
 		"officeName": officeName,
-		"macTable":   "one two three",
+		"macTable":   template.HTML(macTable),
 	}))
 }
 
@@ -120,5 +121,5 @@ func PostRemoveMac(c *fiber.Ctx) error {
 	m.Mid = recvd.Mid
 	m.Unassociate()
 
-	return c.Status(fiber.StatusOK).SendString(devmacs.BuildDevMacs(recvd.Cid, false))
+	return c.Status(fiber.StatusOK).SendString(devmacs.BuildDevMacs(recvd.Cid, user.Tzoff, false))
 }

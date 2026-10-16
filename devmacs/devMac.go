@@ -24,6 +24,16 @@ type DeviceInfo struct {
 	IsOnline   bool   `json:"isonline"`   // Is the device currently online
 }
 
+const deviceQuery = `SELECT D.cid, D.name, D.model, COALESCE(D.kind, '') AS kind, COALESCE(K.description, '') AS kindname, 
+		site, COALESCE(S.description, "") AS sitename, Office, COALESCE(O.description, '') AS officeName,  
+		COALESCE(I.icon,'') AS icon
+		FROM devices D
+		LEFT JOIN choices AS S ON S.field='SITE' AND S.code=D.SITE
+		LEFT JOIN choices AS O ON O.field='OFFICE' AND O.code=D.OFFICE AND O.parent=D.site
+		LEFT JOIN choices AS K ON K.field='KIND' AND K.code=D.kind
+		LEFT JOIN icons AS I ON I.name=D.kind
+		WHERE D.active=1 `
+
 type MacInfo struct {
 	Mid         int    `json:"mid"`         // MAC ID
 	Mac         string `json:"mac"`         //
@@ -52,16 +62,6 @@ type MacInfo struct {
 	IsIgnore    bool   `json:"isignore"`    //
 	Icon        string `json:"icon"`
 }
-
-const deviceQuery = `SELECT D.cid, D.name, D.model, COALESCE(D.kind, '') AS kind, COALESCE(K.description, '') AS kindname, 
-		site, COALESCE(S.description, "") AS sitename, Office, COALESCE(O.description, '') AS officeName,  
-		COALESCE(I.icon,'') AS icon
-		FROM devices D
-		LEFT JOIN choices AS S ON S.field='SITE' AND S.code=D.SITE
-		LEFT JOIN choices AS O ON O.field='OFFICE' AND O.code=D.OFFICE AND O.parent=D.site
-		LEFT JOIN choices AS K ON K.field='KIND' AND K.code=D.kind
-		LEFT JOIN icons AS I ON I.name=D.kind
-		WHERE D.active=1 `
 
 func GetDevice(cid int) (item DeviceInfo, err error) {
 	if cid < 1 {
@@ -103,17 +103,6 @@ func GetDevices(site string) (items []DeviceInfo, err error) {
 	return
 }
 
-// func GetMacInfoByCid(tzoff, cid int) ([]MacInfo, error) {
-// 	var items []MacInfo
-// 	params := []any{cid}
-// 	items, err := getMacInfo("WHERE M.active=1 AND M.cid=?", tzoff, params...)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return nil, err
-// 	}
-// 	return items, nil
-// }
-
 type DeviceMacs struct {
 	Mac         string `json:"mac"`            // MAC  address
 	Mid         int    `json:"mid"`            //    // If = 0, then it is not not in the MACS table, only the self-reporting table
@@ -124,9 +113,23 @@ type DeviceMacs struct {
 	Icon        string `json:"icon"`           //
 	IsOnline    bool   `json:"isonline"`       // // Seen online in the last 15 minutes
 	IsDeletable bool   `json:"isnotdeletable"` //
+	FirstSeen   string `json:"firstseen"`      //
+	LastSeen    string `json:"lastseen"`       //
 }
 
-func GetMacInfoByCid(cid int) (items []DeviceMacs, err error) {
+const DeviceMacsQuery = `
+		SELECT M.mid, M.mac, COALESCE(M.hostname, '') AS hostname, 
+		COALESCE(M.ip, '') AS ip, 
+		COALESCE(M.kind, '') AS kind,  COALESCE(K.description, '') AS kindname,
+		COALESCE(I.icon, '') AS icon, 
+		COALESCE(M.online, 0) AS online,
+		strftime('%Y-%m-%d', M.created-?, 'unixepoch') AS firstseen,
+		strftime('%Y-%m-%d', M.scanned-?, 'unixepoch') AS lastseen
+		FROM macs M
+		LEFT JOIN icons AS I ON I.name = M.kind
+		LEFT JOIN choices AS K ON K.field='KIND' AND K.code=M.kind `
+
+func GetMacInfoByCid(cid, tzoff int) (items []DeviceMacs, err error) {
 	// First read all the macs for the computer that are in the self-reporting (audit.exe) table
 	query := `
 		SELECT COALESCE(M.mid, 0) AS mid, D.mac, COALESCE(M.hostname, '') AS hostname, 
@@ -161,18 +164,8 @@ func GetMacInfoByCid(cid int) (items []DeviceMacs, err error) {
 	}
 
 	//Second, find all cid macs in the Macs table that are not in the mac_device table
-	query = `
-		SELECT M.mid, M.mac, COALESCE(M.hostname, '') AS hostname, 
-		COALESCE(M.ip, '') AS ip, 
-		COALESCE(M.kind, '') AS kind,  COALESCE(K.description, '') AS kindname,
-		COALESCE(I.icon, '') AS icon, 
-		COALESCE(M.online, 0) AS online
-		FROM macs M
-		LEFT JOIN icons AS I ON I.name = M.kind
-		LEFT JOIN choices AS K ON K.field='KIND' AND K.code=M.kind
-		WHERE M.cid=? AND M.mac NOT IN (SELECT mac FROM device_mac WHERE cid=?)
-		`
-	rows, err = db.Conn.Query(query, cid, cid)
+	query = DeviceMacsQuery + "WHERE M.cid=? AND M.mac NOT IN (SELECT mac FROM device_mac WHERE cid=?)"
+	rows, err = db.Conn.Query(query, tzoff, tzoff, cid, cid)
 	if err != nil {
 		log.Println(err)
 		return
@@ -180,7 +173,7 @@ func GetMacInfoByCid(cid int) (items []DeviceMacs, err error) {
 	defer rows.Close()
 	for rows.Next() {
 		var item DeviceMacs
-		err = rows.Scan(&item.Mac, &item.Hostname, &item.Ip, &item.Kind, &item.KindName, &item.Icon, &item.IsOnline)
+		err = rows.Scan(&item.Mid, &item.Mac, &item.Hostname, &item.Ip, &item.Kind, &item.KindName, &item.Icon, &item.IsOnline, &item.FirstSeen, &item.LastSeen)
 		if err != nil {
 			log.Println(err)
 			return
@@ -201,38 +194,29 @@ func GetMacInfoByCid(cid int) (items []DeviceMacs, err error) {
 	return
 }
 
-// func GetMacs(site string) (items []MacInfo, err error) {
-// 	query := `SELECT D.cid, D.name, COALESCE(D.kind, '') AS kind, COALESCE(I.icon,'') AS icon, COALESCE(M.cid, 0) AS linked
-// 		FROM devices D
-// 		LEFT JOIN icons AS I ON D.kind = I.name
-// 		LEFT JOIN macs AS M ON D.cid = M.cid
-// 		WHERE D.active=1 AND D.site='?' GROUP BY M.cid ORDER BY D.name`
-// 	rows, err := db.Conn.Query(query, site)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return
-// 	}
-// 	defer rows.Close()
-// 	for rows.Next() {
-// 		var item MacInfo
-// 		link := 0
-// 		err = rows.Scan(&item.Mid, &item.MacName, &item.Model, &item.Kind, &item.Icon, &link)
-// 		if err != nil {
-// 			log.Println(err)
-// 			return
-// 		}
-// 		item.IsLinked = false
-// 		if link > 0 {
-// 			item.IsLinked = true
-// 		}
-// 		items = append(items, item)
-// 	}
-// 	if err = rows.Err(); err != nil {
-// 		log.Println(err)
-// 		return
-// 	}
-// 	return
-// }
+func GetUnmatchedMacs(cid, tzoff int, site string) (items []DeviceMacs, err error) {
+	query := DeviceMacsQuery + "WHERE M.cid IS NULL AND site=? AND M.mac NOT IN (SELECT mac FROM device_mac WHERE cid=?) AND M.kind NOT IN ('CELLPHONE', 'TABLET', 'WATCH', 'PTR')"
+	rows, err := db.Conn.Query(query, tzoff, tzoff, site, cid)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var item DeviceMacs
+		err = rows.Scan(&item.Mid, &item.Mac, &item.Hostname, &item.Ip, &item.Kind, &item.KindName, &item.Icon, &item.IsOnline, &item.FirstSeen, &item.LastSeen)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		items = append(items, item)
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return
+	}
+	return
+}
 
 // const d2mQuery = `SELECT D.cid, D.name, D.model,
 // COALESCE(D.parent, 0) AS parent,

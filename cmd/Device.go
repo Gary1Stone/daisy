@@ -107,7 +107,7 @@ func GetDevice(c *fiber.Ctx) error {
 		"software":          template.HTML(ctrls.BuildSoftwareList(user.Uid, device.Cid)),
 		"actionLog":         template.HTML(ctrls.BuildDeviceLog(user.Uid, cid, 0)),
 		"backups":           template.HTML(backs.BuildBackupsTable(user.Uid, cid)),
-		"macs":              template.HTML(devmacs.BuildDevMacs(cid, false)),
+		"macs":              template.HTML(devmacs.BuildDevMacs(cid, user.Tzoff, false)),
 	}))
 }
 
