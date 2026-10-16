@@ -11,8 +11,8 @@ import (
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/devices"
+	"github.com/gbsto/daisy/devmacs"
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/profiles"
 
 	"github.com/gofiber/fiber/v2"
@@ -107,7 +107,7 @@ func GetDevice(c *fiber.Ctx) error {
 		"software":          template.HTML(ctrls.BuildSoftwareList(user.Uid, device.Cid)),
 		"actionLog":         template.HTML(ctrls.BuildDeviceLog(user.Uid, cid, 0)),
 		"backups":           template.HTML(backs.BuildBackupsTable(user.Uid, cid)),
-		"macs":              template.HTML(ctrls.BuildMacs(user.Uid, cid)),
+		"macs":              template.HTML(devmacs.BuildDevMacs(cid, false)),
 	}))
 }
 
@@ -284,32 +284,4 @@ func PostDevice(c *fiber.Ctx) error {
 		}
 	}
 	return c.Status(fiber.StatusOK).JSON(reply)
-}
-
-// Unassociate a mac to a device
-func PostRemoveMac(c *fiber.Ctx) error {
-	user, err := extractUserInfo(c)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
-	}
-
-	if !user.Permissions.Device.Update {
-		return c.Status(fiber.StatusOK).SendString("ERROR: You do not have permission to update device records.")
-	}
-
-	recvd := struct {
-		Cid int `json:"cid"`
-		Mid int `json:"mid"`
-	}{}
-
-	if err := c.BodyParser(&recvd); err != nil {
-		return c.Status(fiber.StatusOK).SendString("ERROR: server error.")
-	}
-
-	// Do processing to remove the mac association
-	var m macs.MacInfo
-	m.Mid = recvd.Mid
-	m.Unassociate()
-
-	return c.Status(fiber.StatusOK).SendString(ctrls.BuildMacs(user.Uid, recvd.Cid))
 }

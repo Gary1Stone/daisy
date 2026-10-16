@@ -13,7 +13,6 @@ import (
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/macs"
 )
 
 func MakeImageCtrl(dev *devices.Device, isUpdatePerm bool) string {
@@ -182,35 +181,4 @@ func buildButton(button actions.Popbutton) string {
 	fmt.Fprintf(&btn, `<a href="#" onclick="pop('%d');" role="button" %s >%s %s</a>`, button.Aid, color, icons.GetIcon(button.Icon), button.Label)
 	fmt.Fprintf(&btn, `<input type='hidden' id='aid%d' value='%s' >`, button.Aid, string(btnJason))
 	return btn.String()
-}
-
-func BuildMacs(curUid, cid int) string {
-	items, err := macs.GetMacInfoByCid(curUid, cid)
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-	delIcon := icons.GetIcon("delete")
-	smallx := icons.GetIcon("smallx")
-	smallcheck := icons.GetIcon("smallcheck")
-	var tbl strings.Builder
-	tbl.WriteString(`<table class='striped' id="maclist">
-		<thead><tr>
-		<th aria-sort="ascending" data-sort="asc">MAC</th>
-		<th aria-sort="none">IP</th>
-		<th aria-sort="none">Hostname</th>
-		<th aria-sort="none">Online</th>
-		<th aria-sort="none">&nbsp;</th>
-		</tr></thead>
-		<tbody>`)
-	for _, item := range items {
-		ico := smallx
-		if item.Online {
-			ico = smallcheck
-		}
-		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%s</td><td>%s</td><td>%v</td><td><a href="#" onclick="removeMac(%d, %d);">%s</a></td></tr>`,
-			item.Mac, item.Ip, item.Hostname, ico, cid, item.Mid, delIcon)
-	}
-	tbl.WriteString("</tbody></table>")
-	return tbl.String()
 }

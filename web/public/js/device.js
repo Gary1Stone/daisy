@@ -451,8 +451,3 @@ function savePreInstalled() {
         }
     });
 }
-
-function removeMac(cid, mid) {
-    if (!mid || !cid) return;
-    htmx("/devices/removemac", {cid: cid, mid: mid}, "macListing");
-}

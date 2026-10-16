@@ -15,12 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function removeMac(cid, mid) {
     if (!mid || !cid) return;
-    htmx("/devices/removemac", {cid: cid, mid: mid}, "macListing");
+    htmx("/devmacs/removemac", {cid: cid, mid: mid}, "macListing");
 }
 
 function getDeviceList(cid) {
     const site = UI.site.value;
-    htmx("/devices/getdevicelist", {cid: txt2Int(cid), site: site}, "deviceListing")
+    htmx("/devmacs/getdevicelist", {cid: txt2Int(cid), site: site}, "deviceListing")
         .then(() => buildTable("listingTable"));
 }
 

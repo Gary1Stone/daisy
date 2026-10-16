@@ -4,14 +4,15 @@ import (
 	"html/template"
 	"strconv"
 
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/device_mac"
+	"github.com/gbsto/daisy/devmacs"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/tree"
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetDevice_Mac(c *fiber.Ctx) error {
+func GetDevMacs(c *fiber.Ctx) error {
 	user, err := extractUserInfo(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
@@ -28,23 +29,23 @@ func GetDevice_Mac(c *fiber.Ctx) error {
 		cid = 0
 	}
 	site := ""
+	siteName := ""
 	name := ""
 	model := ""
 	kindName := ""
 	officeName := ""
-	siteName := ""
 	deviceIcon := ""
 	associated := ""
 	if cid > 0 {
 		device, err := device_mac.GetDevice(cid)
 		if err == nil {
 			site = device.Site
+			siteName = device.SiteName
 			name = device.Name
 			model = device.Model
 			kindName = device.KindName
 			officeName = device.OfficeName
-			siteName = device.SiteName
-			associated = ctrls.BuildMacs(user.Uid, cid)
+			associated = devmacs.BuildDevMacs(cid, user.Permissions.Device.Update)
 			deviceIcon = icons.GetIcon(device.Icon)
 		}
 	}
@@ -55,6 +56,7 @@ func GetDevice_Mac(c *fiber.Ctx) error {
 		"isAdmin":    user.IsAdmin,
 		"cid":        cid,
 		"site":       site,
+		"siteName":   siteName,
 		"associated": template.HTML(associated),
 		"searchIcon": template.HTML(icons.GetIcon("search")),
 		"deviceIcon": template.HTML(deviceIcon),
@@ -62,7 +64,6 @@ func GetDevice_Mac(c *fiber.Ctx) error {
 		"model":      model,
 		"kindName":   kindName,
 		"officeName": officeName,
-		"siteName":   siteName,
 		"macTable":   "one two three",
 	}))
 }
@@ -91,5 +92,33 @@ func PostGetDeviceList(c *fiber.Ctx) error {
 		recvd.Site = tree.GetDefaultSite()
 	}
 
-	return c.Status(fiber.StatusOK).SendString(device_mac.BuildDeviceList(recvd.Site))
+	return c.Status(fiber.StatusOK).SendString(devmacs.BuildDeviceList(recvd.Site))
+}
+
+// Unassociate a mac to a device
+func PostRemoveMac(c *fiber.Ctx) error {
+	user, err := extractUserInfo(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
+	}
+
+	if !user.Permissions.Device.Update {
+		return c.Status(fiber.StatusOK).SendString("ERROR: You do not have permission to update device records.")
+	}
+
+	recvd := struct {
+		Cid int `json:"cid"`
+		Mid int `json:"mid"`
+	}{}
+
+	if err := c.BodyParser(&recvd); err != nil {
+		return c.Status(fiber.StatusOK).SendString("ERROR: server error.")
+	}
+
+	// Do processing to remove the mac association
+	var m macs.MacInfo
+	m.Mid = recvd.Mid
+	m.Unassociate()
+
+	return c.Status(fiber.StatusOK).SendString(devmacs.BuildDevMacs(recvd.Cid, false))
 }
