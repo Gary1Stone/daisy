@@ -72,4 +72,6 @@ func routes(app *fiber.App) {
 	app.Post("/tree/update", checkToken, cmd.PostTreeUpdate)
 	app.Post("/unwanted/add", checkToken, cmd.PostUnwantedAdd)
 	app.Post("/unwanted/delete", checkToken, cmd.PostUnwantedDelete)
+	app.Post("/devices/removemac", checkToken, cmd.PostRemoveMac)
+	app.Post("/devices/getdevicelist", checkToken, cmd.PostGetDeviceList)
 }

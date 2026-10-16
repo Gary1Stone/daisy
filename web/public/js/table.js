@@ -61,7 +61,7 @@ function buildTable(tableID) {
 
             //modify aria-sort="none" for all columns, then set aria-sort="ascending" or aria-sort="decending" for the sorted column
             headers.forEach(h => h.setAttribute('aria-sort', 'none'));
-            th.setAttribute('aria-sort', isAsc ? 'ascending' : 'descending');
+            th.setAttribute('aria-sort', isAsc ? 'descending' : 'ascending');
 
             rows.sort((a, b) => {
                 const aCol = a.cells[index].textContent.trim();

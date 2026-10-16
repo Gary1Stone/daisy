@@ -355,3 +355,12 @@ func GetMacs(tzoff int, site string) ([]MacInfo, error) {
 	}
 	return items, nil
 }
+
+// Remove the cid (device) to mid (MAC) association
+func (m *MacInfo) Unassociate() error {
+	_, err := db.Conn.Exec("UPDATE macs SET cid=NULL WHERE MID=?", m.Mid)
+	if err != nil {
+		return err
+	}
+	return nil
+}

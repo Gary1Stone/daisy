@@ -190,10 +190,26 @@ func BuildMacs(curUid, cid int) string {
 		log.Println(err)
 		return ""
 	}
+	delIcon := icons.GetIcon("delete")
+	smallx := icons.GetIcon("smallx")
+	smallcheck := icons.GetIcon("smallcheck")
 	var tbl strings.Builder
-	tbl.WriteString("<table><thead><tr><td>MAC</td><td>IP</td><td>Hostname</td><td>Online</td></tr></thead><tbody>")
+	tbl.WriteString(`<table class='striped' id="maclist">
+		<thead><tr>
+		<th aria-sort="ascending" data-sort="asc">MAC</th>
+		<th aria-sort="none">IP</th>
+		<th aria-sort="none">Hostname</th>
+		<th aria-sort="none">Online</th>
+		<th aria-sort="none">&nbsp;</th>
+		</tr></thead>
+		<tbody>`)
 	for _, item := range items {
-		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%s</td><td>%s</td><td>%v</td></tr>`, item.Mac, item.Ip, item.Hostname, item.Online)
+		ico := smallx
+		if item.Online {
+			ico = smallcheck
+		}
+		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%s</td><td>%s</td><td>%v</td><td><a href="#" onclick="removeMac(%d, %d);">%s</a></td></tr>`,
+			item.Mac, item.Ip, item.Hostname, ico, cid, item.Mid, delIcon)
 	}
 	tbl.WriteString("</tbody></table>")
 	return tbl.String()

@@ -1,41 +1,14 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
-<!--
-┌─────────────────────────────────────────────────────────────────────┐
-│ Device / MAC Association                                            │
-├───────────────────────┬─────────────────────────────────────────────┤
-│ DEVICES               │ Selected Device: Office PC #3               │
-│                       │                                             │
-│ 🔎 Search devices     │ Device information                         │
-│                       │ Name: Office PC #3                         │
-│ ○ Office PC #1        │ CID: 103                                   │
-│ ○ Office PC #2        │ Type: Computer                             │
-│ ● Office PC #3        │ Office: Kitchen                            │
-│ ○ Printer #1          │                                            │
-│ ○ Router              │ ─── Associated MAC addresses ──────────── │
-│                       │                                           │
-│                       │  ☑ 00:11:22:33:44:55  Wi-Fi               │
-│                       │  ☑ AA:BB:CC:DD:EE:FF  Ethernet            │
-│                       │  ☐ 12:34:56:78:90:AB  Wi-Fi               │
-│                       │                                            │
-│                       │ [+ Add MAC]                                │
-│                       │                                            │
-│                       │ ─── Related MACs ───────────────────────── │
-│                       │                                            │
-│                       │ 00:11:22:33:44:55                          │
-│                       │    ├── 98:76:54:32:10:AA                   │
-│                       │    └── 98:76:54:32:10:BB                   │
-│                       │                                            │
-│                       │ [Save Changes]                             │
-└───────────────────────┴────────────────────────────────────────────┘
--->
 
 <main class="container">
   <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
     <input type="hidden" id="site" name="site" value="{{.site}}" />
-    <input type="hidden" id="cid" name="cid" value="" />
+    <input type="hidden" id="cid" name="cid" value="{{.cid}}" />
+    <fieldset role="group">
+      <button type="button" commandfor="deviceSelect" command="show-modal" data-cid="{{.cid}}" onclick="getDeviceList(this.dataset.cid);">{{.searchIcon}}</button>
+      <input type="text" id="deviceName" readonly value="{{.name}}" />
+    </fieldset>
 
-    {{.deviceList}}
-  
     <table>
       <thead>
         <tr>
@@ -45,19 +18,19 @@
       <tbody>
         <tr>
           <td>Name: </td>
-          <td id="name" aria-readonly="true"></td>
+          <td id="name" aria-readonly="true">{{.name}}</td>
         </tr>
         <tr>
           <td>Model: </td>
-          <td id="model" aria-readonly="true"></td>
+          <td id="model" aria-readonly="true">{{.model}}</td>
         </tr>
         <tr>
           <td>Kind: </td>
-          <td id="kind" aria-readonly="true"></td>
+          <td id="kind" aria-readonly="true">{{.deviceIcon}} {{.kindName}}</td>
         </tr>
         <tr>
-          <td>Office: </td>
-          <td id="office" aria-readonly="true"></td>
+          <td>Site &sol; Office: </td>
+          <td id="office" aria-readonly="true">{{.siteName}} &sol; {{.officeName}}</td>
         </tr>
       </tbody>
     </table>
@@ -65,15 +38,45 @@
 
     <hr>
     <p><b>Associated MAC addresses</b></p>
-    <div id="associated"></div>
-    Add Remove
+    <div id="associated">{{.associated}}</div>
+    
     <hr>
     <p><b>Related MACs</b></p>
     <div id="related"></div>
 
+    <div id="macTable">{{.macTable}}</div>
+
   </form>
-    
 </main>
+
+<dialog id="deviceSelect">
+  <article>
+    <header>
+      <button type='button' aria-label="Close" rel="prev" commandfor="deviceSelect" command="close"></button>
+      <h4 id="name">WKNC Devices</h4>
+    </header>
+      <input type="search" id="searchListing" placeholder="Search..." aria-label="Search" />
+      <div id="deviceListing" style="max-height: 400px; overflow-y: auto;">
+        <table id="listingTable" class="striped">
+          <thead>
+            <tr>
+              <th aria-sort="ascending" data-sort="asc">Name</th>
+              <th aria-sort="none">Model</th>
+              <th aria-sort="none">Kind</th>
+              <th aria-sort="none">Office</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+            <tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+            <tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+          </tbody>
+        </table>
+      </div>
+    <footer>
+      <button type="button" class="outline" commandfor="deviceSelect" command="close">Cancel</button>
+    </footer>
+</dialog>
 
 
 
@@ -85,7 +88,7 @@
     </header>
     <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
       
-
+      </form>
     <footer>
       <button type="button" class="outline" data-target="popEdit" onclick="toggleModal(event);">Cancel</button>
       <button type="button" for="theForm" data-target="popEdit"  onclick="saveDetail();">Save</button>
@@ -94,4 +97,5 @@
 </dialog>
 
 <script src="js/device_mac.js" defer></script>
+<script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}
