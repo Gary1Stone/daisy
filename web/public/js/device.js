@@ -283,18 +283,23 @@ async function confirmDelete() {
 //Adding a record is a two step process
 //Display this screen with a cid=0 (ComputerID = CID)
 //when user presses save, in the servlet, detect if record id (CID) is 0, then insert record.
-//then send the cid to be used inside this form
-function addRecord() {
-    if (btnNew.state !== "on") return;
-    let url = window.location.href;
-    const i = url.indexOf("?");
-    if (i < 0) {
-        url = url + "?cid=" + encodeURIComponent("0");
-    } else {
-        url = url.substring(0, i) + "?cid=" + encodeURIComponent("0");
-    }
-    window.location.href =  encodeURI(url);
+//then sends the cid to be used inside this form
+
+function addRecord(id = 0) {
+  window.location.href = encodeURI("device.html?cid=" + id);
 }
+
+// function addRecord() {
+//     if (btnNew.state !== "on") return;
+//     let url = window.location.href;
+//     const i = url.indexOf("?");
+//     if (i < 0) {
+//         url = url + "?cid=" + encodeURIComponent("0");
+//     } else {
+//         url = url.substring(0, i) + "?cid=" + encodeURIComponent("0");
+//     }
+//     window.location.href =  encodeURI(url);
+// }
 
 function validateForm(data) {
     const form = UI.form();

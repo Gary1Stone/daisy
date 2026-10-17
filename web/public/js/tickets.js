@@ -1,5 +1,5 @@
 // ticket.js
 
-function addRecord() {
-  location.href='ticket.html?aid=0';
+function addRecord(id = 0) {
+  window.location.href = encodeURI("ticket.html?aid=" + id);
 }

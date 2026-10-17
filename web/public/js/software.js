@@ -187,12 +187,17 @@ async function confirmDelete() {
 }
 
 
-function addRecord() {
-    if (btnNew.state !== "on" && txt2Int(UI.sid().value) !== 0) return;
-    const url = new URL(window.location.href);
-    url.searchParams.set("sid", "0");
-    window.location.href = encodeURI(url.toString());
+
+function addRecord(id = 0) {
+  window.location.href = encodeURI("software.html?sid=" + id);
 }
+
+// function addRecord() {
+//     if (btnNew.state !== "on" && txt2Int(UI.sid().value) !== 0) return;
+//     const url = new URL(window.location.href);
+//     url.searchParams.set("sid", "0");
+//     window.location.href = encodeURI(url.toString());
+// }
 
 function validateForm(data) {
     if (!isDigits(data.sid.toString())) return false;    

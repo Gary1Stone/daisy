@@ -41,3 +41,7 @@ function setupTableSearch() {
         });
     });
 }
+
+function rowClicked(id=0) {
+    // Pop details modal
+}

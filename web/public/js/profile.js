@@ -138,8 +138,9 @@ async function deleteProfile() {
 // Display this screen with a uid=0 (user ID = UID)
 // when user presses save, in the servlet, detect if record id (UID) is 0, then insert record.
 // then send the uid to be used inside this form
-function addRecord(event) {
-  location.href='profile.html?uid=0';
+
+function addRecord(id = 0) {
+  window.location.href = encodeURI("profile.html?uid=" + id);
 }
 
 function validateForm(sendData) {

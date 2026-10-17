@@ -1,6 +1,8 @@
-// table.js
-
-// Find all tables with class='striped', add search and sort
+/* table.js
+ *
+ * Find all tables with class='striped', add search and sort
+ * If the row tag has <tr data-id="xxx">... Then the javaScript function rowClicked("xxx") is invoked
+*/
 document.addEventListener('DOMContentLoaded', function() {
     //Count the number of tables with class='striped'
     const tableCount = document.querySelectorAll('table.striped').length;
@@ -118,5 +120,5 @@ function handleRowClick(event) {
     const row = event.currentTarget;
     const id = row.dataset.id;
     if (!id) return;
-    addRecord(id);
+    rowClicked(id);
 }

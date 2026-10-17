@@ -7,7 +7,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function addRecord(id = 0) {
-  window.location.href = encodeURI("software.html?sid=" + txt2Int(id));
+  window.location.href = encodeURI("software.html?sid=" + id);
+}
+
+function rowClicked(id = 0) {
+  window.location.href = encodeURI("software.html?sid=" + id);
 }
 
 // Send ajax request to add unwanted software and replace the unwanted table

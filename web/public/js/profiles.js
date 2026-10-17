@@ -7,5 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function addRecord(id = 0) {
-  window.location.href = encodeURI("profile.html?uid=" + txt2Int(id));
+  window.location.href = encodeURI("profile.html?uid=" + id);
+}
+
+function rowClicked(id = 0) {
+  window.location.href = encodeURI("profile.html?uid=" + id);
 }

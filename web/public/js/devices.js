@@ -44,8 +44,8 @@ async function postData(task, target) {
 }
 
 // Add a new record
-function addRecord() {
-  window.location.href = 'device.html?cid=0';
+function addRecord(id = 0) {
+  window.location.href = encodeURI("device.html?cid=" + txt2Int(id));
 }
 
 // Search Filters show
