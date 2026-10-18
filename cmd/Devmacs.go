@@ -27,6 +27,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 	if err2 != nil {
 		cid = 0
 	}
+	photo := `<img src="images/missing.jpg" alt="photo" width="200px" >`
 	site := ""
 	siteName := ""
 	name := ""
@@ -37,6 +38,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 	associated := ""
 	macTable := ""
 	if cid > 0 {
+
 		device, err := devmacs.GetDevice(cid)
 		if err == nil {
 			site = device.Site
@@ -48,6 +50,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 			associated = devmacs.BuildDevMacs(cid, user.Tzoff, user.Permissions.Device.Update)
 			deviceIcon = icons.GetIcon(device.Icon)
 			macTable = devmacs.BuildUnmatchedMacs(cid, user.Tzoff, site)
+			photo = `<img src="images/` + device.Image + `" alt="photo" width="200px" >`
 		}
 	}
 
@@ -66,6 +69,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 		"kindName":   kindName,
 		"officeName": officeName,
 		"macTable":   template.HTML(macTable),
+		"photo":      template.HTML(photo),
 	}))
 }
 

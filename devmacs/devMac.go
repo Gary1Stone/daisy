@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/photos"
 )
 
 type DeviceInfo struct {
@@ -22,11 +23,12 @@ type DeviceInfo struct {
 	OfficeName string `json:"officename"` // User visible description of the office
 	IsLinked   bool   `json:"islinked"`   // Does the computer have any MACs associated with it
 	IsOnline   bool   `json:"isonline"`   // Is the device currently online
+	Image      string `json:"image"`      // Photo of device
 }
 
 const deviceQuery = `SELECT D.cid, D.name, D.model, COALESCE(D.kind, '') AS kind, COALESCE(K.description, '') AS kindname, 
 		site, COALESCE(S.description, "") AS sitename, Office, COALESCE(O.description, '') AS officeName,  
-		COALESCE(I.icon,'') AS icon
+		COALESCE(I.icon,'') AS icon, COALESCE(D.image, 'missing.jpg') AS Image
 		FROM devices D
 		LEFT JOIN choices AS S ON S.field='SITE' AND S.code=D.SITE
 		LEFT JOIN choices AS O ON O.field='OFFICE' AND O.code=D.OFFICE AND O.parent=D.site
@@ -68,7 +70,9 @@ func GetDevice(cid int) (item DeviceInfo, err error) {
 		err = errors.New("invalid id")
 		return
 	}
-	err = db.Conn.QueryRow(deviceQuery+` AND D.cid=?`, cid).Scan(&item.Cid, &item.Name, &item.Model, &item.Kind, &item.KindName, &item.Site, &item.SiteName, &item.Office, &item.OfficeName, &item.Icon)
+	photoMap := photos.MapPhotos() //Map (name,true/false) of photos in the /public/images directory
+	err = db.Conn.QueryRow(deviceQuery+` AND D.cid=?`, cid).Scan(&item.Cid, &item.Name, &item.Model, &item.Kind, &item.KindName,
+		&item.Site, &item.SiteName, &item.Office, &item.OfficeName, &item.Icon, &item.Image)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
@@ -77,6 +81,11 @@ func GetDevice(cid int) (item DeviceInfo, err error) {
 		log.Println(err)
 		return
 	}
+	item.Image = photos.AddSuffixBeforeExtension(item.Image, "-sm")
+	if len(item.Image) == 0 || !photoMap[item.Image] {
+		item.Image = "missing-sm.jpg"
+	}
+
 	return
 }
 
@@ -89,7 +98,7 @@ func GetDevices(site string) (items []DeviceInfo, err error) {
 	defer rows.Close()
 	for rows.Next() {
 		var item DeviceInfo
-		err = rows.Scan(&item.Cid, &item.Name, &item.Model, &item.Kind, &item.KindName, &item.Site, &item.SiteName, &item.Office, &item.OfficeName, &item.Icon)
+		err = rows.Scan(&item.Cid, &item.Name, &item.Model, &item.Kind, &item.KindName, &item.Site, &item.SiteName, &item.Office, &item.OfficeName, &item.Icon, &item.Image)
 		if err != nil {
 			log.Println(err)
 			return

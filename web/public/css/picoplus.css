@@ -143,6 +143,16 @@ th[data-sort="desc"]::after {
   opacity: 1;
 }
 
+table.striped tbody tr:hover > th,
+table.striped tbody tr:hover > td {
+  background-color: var(--pico-contrast-background);
+  color: var(--pico-contrast-inverse);
+}
+
+table.striped tbody tr:hover a:not([role="button"]) {
+  color: var(--pico-contrast-inverse);
+}
+
 /* Error messages below field */
 small {
   display: none;
@@ -228,4 +238,16 @@ details[role="list"] summary::after {
   transform: translateY(-50%);
   float: none;
   margin-inline-start: 0;
+}
+
+/* description list */
+dl {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+dl dt, dl dd {
+  width: 50%; /* Makes each item take up exactly half the row */
+  margin: 0;
+  padding: 5px 0;
 }

@@ -31,7 +31,7 @@
           <label for="make">Manufacturer</label>
           {{ .makeCtrl }}
           <label for="model">Model</label>
-          <input type="text" id="model" name="model" data-tooltip="Model"
+          <input type="text" autofocus id="model" name="model" data-tooltip="Model"
               maxlength="255" value="{{ .model }}" {{if .isReadonly }} readonly {{end}}
               aria-invalid="false" aria-describedby="modelErr">  
           <small id="modelErr">Up to 255 characters</small>

@@ -125,8 +125,8 @@ func BuildUnmatchedMacs(cid, tzoff int, site string) string {
 		if item.IsOnline {
 			ico = smallcheck
 		}
-		fmt.Fprintf(&tbl, `<tr><td><a href="#" onclick="register(%d, %d);">%v %s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%v</td><td>%s</td><td>%s</td></tr>`,
-			cid, item.Mid, icons.GetIcon(item.Icon), item.Mac, item.Ip, item.Hostname, item.KindName, ico, item.FirstSeen, item.LastSeen)
+		fmt.Fprintf(&tbl, `<tr data-id="%d"><td>%v %s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%v</td><td>%s</td><td>%s</td></tr>`,
+			item.Mid, icons.GetIcon(item.Icon), item.Mac, item.Ip, item.Hostname, item.KindName, ico, item.FirstSeen, item.LastSeen)
 	}
 	tbl.WriteString("</tbody></table>")
 

@@ -1,7 +1,7 @@
 // device_mac.js
 
 const UI = {
-    site: null, cid: null, txtSearch: null, searchListing: null
+    site: null, cid: null, txtSearch: null, searchListing: null, popAssociate: null, mid: null
 };
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     UI.cid = document.getElementById("cid");
     UI.txtSearch = document.getElementById("txtSearch");
     UI.searchListing = document.getElementById("searchListing");
-    setupTableSearch();
+    UI.popAssociate = document.getElementById("popAssociate");
+    UI.mid = document.getElementById("mid");
+    setupTableSearch(); //On the Find popup
 
 });
 
@@ -43,5 +45,17 @@ function setupTableSearch() {
 }
 
 function rowClicked(id=0) {
-    // Pop details modal
+    if (!id) return;
+    const mid = txt2Int(id);
+    if (mid < 1) return;
+    UI.mid.value = mid;
+    UI.popAssociate.showModal();
+}
+
+
+
+function associateMac() {
+    UI.popAssociate.close();
+    UI.mid.value = 0;
+
 }

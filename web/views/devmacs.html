@@ -4,47 +4,43 @@
   <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
     <input type="hidden" id="site" name="site" value="{{.site}}" />
     <input type="hidden" id="cid" name="cid" value="{{.cid}}" />
+    <h4>Device Information</h4>
     <fieldset role="group">
       <button type="button" commandfor="deviceSelect" command="show-modal" data-cid="{{.cid}}" onclick="getDeviceList(this.dataset.cid);">{{.searchIcon}}</button>
+      <span style="display: inline-flex; align-items: center;  justify-content: center;
+        padding: 0 var(--pico-form-element-spacing-horizontal, 1rem);
+        background: var(--pico-form-element-disabled-background-color, #eff2f5);
+        border: var(--pico-border-width, 1px) solid var(--pico-form-element-border-color);
+        border-right: none; color: var(--pico-form-element-color);">{{.deviceIcon}}</span>
       <input type="text" id="deviceName" readonly value="{{.name}}" />
     </fieldset>
 
-    <table>
-      <thead>
-        <tr>
-          <th colspan="2">Device Information</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Name: </td>
-          <td id="name" aria-readonly="true">{{.name}}</td>
-        </tr>
-        <tr>
-          <td>Model: </td>
-          <td id="model" aria-readonly="true">{{.model}}</td>
-        </tr>
-        <tr>
-          <td>Kind: </td>
-          <td id="kind" aria-readonly="true">{{.deviceIcon}} {{.kindName}}</td>
-        </tr>
-        <tr>
-          <td>Site &sol; Office: </td>
-          <td id="office" aria-readonly="true">{{.siteName}} &sol; {{.officeName}}</td>
-        </tr>
-      </tbody>
-    </table>
-
+    <div class="grid">
+      <div>
+        {{.photo}}
+      </div>
+      <div>
+        <dl>
+          <dt>Name:</dt>
+          <dd id="name" aria-readonly="true">{{.name}}</dd>
+          <dt>Model: </dt>
+          <dd id="model" aria-readonly="true">{{.model}}</dd>
+          <dt>Kind:</dt>
+          <dd id="kind" aria-readonly="true">{{.deviceIcon}} {{.kindName}}</dd>
+          <dt>Site &sol; Office:</dt>
+          <dd id="office" aria-readonly="true">{{.siteName}} &sol; {{.officeName}}</dd>
+        </dl>
+      </div>
+    </div>
 
     <hr>
-    <p><b>Associated MAC addresses</b></p>
+    <h4>Associated MACs</h4>
     <div id="associated">{{.associated}}</div>
     
-    <hr>
   <!-- <p><b>Related MACs</b></p>
     <div id="related"></div>--> 
 
-    <p><b>Unrecognized MACs</b></p>
+    <h4>Unrecognized MACs</h4>
     <div id="macTable">{{.macTable}}</div>
 
   </form>
@@ -79,22 +75,34 @@
     </footer>
 </dialog>
 
-<dialog id="popEdit">
+<dialog id="popAssociate">
   <article>
     <header>
-      <button type='button' aria-label="Close" rel="prev" data-target="popEdit" onclick="toggleModal(event);"></button>
+      <button type='button' aria-label="Close" rel="prev" commandfor="popAssociate" command="close"></button>
       <h4 id="name">Device Name</h4>
     </header>
-    <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
-      
-      </form>
+    <input type="hidden" id="mid", name="mid" value="" />
+    <p>Pop Edit</p>
     <footer>
-      <button type="button" class="outline" data-target="popEdit" onclick="toggleModal(event);">Cancel</button>
-      <button type="button" for="theForm" data-target="popEdit"  onclick="saveDetail();">Save</button>
+      <button type="button" class="outline" commandfor="popAssociate" command="close">Cancel</button>
+      <button type="button" commandfor="popAssociate" command="close" onclick="associateMac();">Save</button>
     </footer>
   </article>
 </dialog>
 
+<dialog id="popHelp">
+  <article>
+    <header>
+      <button type='button' aria-label="Close" rel="prev" commandfor="popHelp" command="close"></button>
+      <h4>Help</h4>
+    </header>
+    <p>Network Devices can have multiple MACs, such as a computer having an ethernet connection and a WiFi connection.</p>
+    <footer>
+      <button type="button" class="outline" commandfor="popHelp" command="close">Cancel</button>
+      <button type="button" for="theForm" data-target="popHelp"  onclick="saveDetail();">Save</button>
+    </footer>
+  </article>
+</dialog>
 <script src="js/devmacs.js" defer></script>
 <script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}

@@ -326,7 +326,7 @@ function setUpDropDowns(root = document) {
         }
 
         // 2. Selection Logic
-        function selectOption(optionEl) {
+        function selectOption(optionEl, focusSummary = false) {
             options.forEach(opt => opt.removeAttribute('aria-selected'));
 
             optionEl.setAttribute('aria-selected', 'true');
@@ -335,7 +335,7 @@ function setUpDropDowns(root = document) {
             dropdown.removeAttribute('open');
             summary.setAttribute('aria-invalid', 'false'); // Clear validation error on selection
             hiddenInput.dispatchEvent(new Event('change', { bubbles: true })); // Dispatch change event
-            summary.focus();
+            if (focusSummary) summary.focus();
         }
 
         // 3. Click Listeners
