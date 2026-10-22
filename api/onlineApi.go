@@ -123,6 +123,14 @@ func SaveScanInfo(items []macs.MacInfo) (string, error) {
 		}
 	}
 
+	// The device_mac table holds the mac to cid mapping for the computers that have the audit probe running.
+	// This is the definitive source for the mapping (limited to just those computers)
+	_, err = tx.Exec(`UPDATE macs SET cid=D.cid FROM device_mac D WHERE macs.mac=D.mac AND macs.cid IS NULL`)
+	if err != nil {
+		log.Printf("Error saving macs to database. Rolling back transaction. Error: %v", err)
+		return "", err
+	}
+
 	if err = tx.Commit(); err != nil {
 		log.Println("Error committing transaction:", err)
 		return "", err

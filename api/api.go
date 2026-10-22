@@ -406,6 +406,12 @@ func getWiFiLocation(sysInfo *SysInfo) (float64, float64, error) {
 }
 
 func SetMacAddress(cid int, sysInfo *SysInfo) error {
+
+	// If no macs, nothing to do.
+	if len(sysInfo.Mac_Addresses) == 0 {
+		return nil
+	}
+
 	// Start a new transaction
 	tx, err := db.Conn.Begin()
 	if err != nil {
@@ -416,21 +422,20 @@ func SetMacAddress(cid int, sysInfo *SysInfo) error {
 	// If Commit succeeds, Rollback is a no-op.
 	defer tx.Rollback()
 
-	// Delete existing MAC addresses for the given cid within the transaction
-	_, err = tx.Exec("DELETE FROM device_mac WHERE cid=?", cid)
-	if err != nil {
-		log.Printf("SetMacAddress: failed to delete old MAC addresses for cid %d: %v", cid, err)
-		return fmt.Errorf("failed to delete old MAC addresses: %w", err)
+	// Mark any macs with a new CID as being changed (set valid_from date = now)
+	var newCid strings.Builder
+	newCid.WriteString(`UPDATE device_mac SET valid_from=strftime('%s', 'now') WHERE mac IN (`)
+	var quoted []string
+	for _, mac := range sysInfo.Mac_Addresses {
+		quoted = append(quoted, `"`+strings.ToUpper(strings.ReplaceAll(mac, "-", ":"))+`"`)
 	}
-
-	// If there are no new MAC addresses to add, we're done with the delete.
-	if len(sysInfo.Mac_Addresses) == 0 {
-		// Commit the transaction (only the delete operation succeeded)
-		if err = tx.Commit(); err != nil {
-			log.Printf("SetMacAddress: failed to commit transaction after deleting MACs for cid %d: %v", cid, err)
-			return fmt.Errorf("failed to commit transaction: %w", err)
-		}
-		return nil
+	newCid.WriteString(strings.Join(quoted, ", "))
+	newCid.WriteString(") AND cid != ?")
+	log.Println(newCid.String())
+	_, err = tx.Exec(newCid.String(), cid)
+	if err != nil {
+		log.Printf("SetMacAddress: failed to update old MAC addresses for new valid_from for cid changed %d: %v", cid, err)
+		//	return fmt.Errorf("failed to update reused MAC addresses: %w", err)
 	}
 
 	// Prepare for bulk insert
@@ -446,12 +451,13 @@ func SetMacAddress(cid int, sysInfo *SysInfo) error {
 	valuePlaceholders := strings.Repeat("(?, ?),", numMacs)
 	valuePlaceholders = valuePlaceholders[:len(valuePlaceholders)-1] // Remove trailing comma
 
-	stmt := "INSERT INTO device_mac (cid, mac) VALUES " + valuePlaceholders
+	stmt := "INSERT INTO device_mac (cid, mac) VALUES " + valuePlaceholders + " ON CONFLICT(mac) DO UPDATE SET cid = excluded.cid"
 
 	// Execute the bulk insert query within the transaction
 	_, err = tx.Exec(stmt, valueArgs...)
 	if err != nil {
-		log.Printf("SetMacAddress: failed to insert new MAC addresses for cid %d: %v", cid, err)
+		log.Printf("SetMacAddress: failed to insert/update new MAC addresses for cid %d: %v\n", cid, err)
+		log.Println("QUESTION: Was a NIC card of WIFI adapter reused on a different computer?")
 		return fmt.Errorf("failed to insert new MAC addresses: %w", err)
 	}
 

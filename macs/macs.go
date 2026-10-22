@@ -101,6 +101,9 @@ func SaveMacs(items []MacInfo) error {
 	defer stmt.Close()
 
 	for _, item := range items {
+		if item.Cid > 0 {
+			item.Intruder = false // Turn off intruder flag if item was recognized
+		}
 		_, err := stmt.Exec(item.Name, item.Ip, item.Kind, item.Os, item.User,
 			item.Site, item.Office, item.Location, item.Note, item.Intruder,
 			item.Active, db.ForeignKey(item.Cid), item.Mid)

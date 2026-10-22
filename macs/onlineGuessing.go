@@ -9,7 +9,7 @@ import (
 
 func GuessMacInfo() error {
 	isWriteNeeded := false
-	items, err := getMacInfo("WHERE Intruder=1 AND cid IS NULL", 0) // only want new items from probe
+	items, err := getMacInfo("WHERE Intruder=1", 0) // only want new items from network probe
 	if err != nil {
 		log.Println(err)
 		return err
@@ -54,6 +54,7 @@ func GuessMacInfo() error {
 				item.Name = "iPad"
 				item.Os = "iOS"
 				item.Vendor = "Apple"
+				item.Kind = "TABLET"
 			}
 		}
 		items[i] = item
@@ -76,6 +77,9 @@ func GuessMacInfo() error {
 				item.Site = dev.Site
 				item.Office = dev.Office
 				item.Location = dev.Location
+				if dev.Cid > 0 {
+					item.Intruder = false
+				}
 				isWriteNeeded = true
 			}
 			items[i] = item
