@@ -187,7 +187,6 @@ func GetMac2Hostname(randomOnly bool) (map[string]string, error) {
 }
 
 // Build a lookup map of mac to hostname for easier analysis later
-// TODO: Add macs where hostanme is null or zero length
 func GetMac2Name(randomOnly bool) (map[string]string, error) {
 	mac2Name := make(map[string]string)
 	query := "SELECT O.mac, COALESCE(COALESCE(M.name, M.hostname), O.mac) FROM onlinehistory O LEFT JOIN macs M on M.mac=O.mac "

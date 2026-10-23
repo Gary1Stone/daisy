@@ -13,7 +13,9 @@ func BuildDeviceList(site string) string {
 	if len(site) == 0 {
 		site = tree.GetDefaultSite()
 	}
-	items, err := GetDevices(site)
+
+	var devMac DeviceInfo
+	items, err := devMac.GetDevices(site)
 	if err != nil {
 		return ""
 	}
@@ -132,3 +134,39 @@ func BuildUnmatchedMacs(cid, tzoff int, site string) string {
 
 	return tbl.String()
 }
+
+func BuildAssociatedMacs(cid, mid int) string {
+
+	items, err := GetMacAssociations(cid, mid)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	if len(items) == 0 {
+		return ""
+	}
+
+	var tbl strings.Builder
+	fmt.Fprintf(&tbl, `<table><thead>
+		<tr><th colspan="2">Associate MAC: %s</th></tr>
+		<tr><th>MAC</th><th>recomendation</th></tr>
+		</thead><tbody>`, items[0].ComparedToMac)
+
+	for _, item := range items {
+		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%s</td></tr>`, item.Mac, item.Recomendation)
+	}
+	tbl.WriteString("</tbody></table>")
+
+	return tbl.String()
+}
+
+// Mid           int    `json:"mid"` // Alreday Attached Mid
+// 	Mac           string `json:"mac"` // Alreday Attached Mac
+// 	Corr          int    `json:"corr"`
+// 	Pearson       int    `json:"pearson"`
+// 	Jaccard       int    `json:"jaccard"`
+// 	Slots         int    `json:"slots"`
+// 	OverLap       int    `json:"overlap"`
+// 	ComparedToMid int    `json:"comparedtomid"`
+// 	ComparedToMac string `json:"comparedtomac"`
+// 	Recomendation string `json:"recommendation"`

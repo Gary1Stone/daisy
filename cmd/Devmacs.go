@@ -38,8 +38,8 @@ func GetDevMacs(c *fiber.Ctx) error {
 	associated := ""
 	macTable := ""
 	if cid > 0 {
-
-		device, err := devmacs.GetDevice(cid)
+		var dev devmacs.DeviceInfo
+		device, err := dev.GetDevice(cid)
 		if err == nil {
 			site = device.Site
 			siteName = device.SiteName
@@ -126,4 +126,27 @@ func PostRemoveMac(c *fiber.Ctx) error {
 	m.Unassociate()
 
 	return c.Status(fiber.StatusOK).SendString(devmacs.BuildDevMacs(recvd.Cid, user.Tzoff, false))
+}
+
+// Unassociate a mac to a device
+func PostGetAssociations(c *fiber.Ctx) error {
+	user, err := extractUserInfo(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
+	}
+
+	if !user.Permissions.Device.Update {
+		return c.Status(fiber.StatusOK).SendString("ERROR: You do not have permission to update device records.")
+	}
+
+	recvd := struct {
+		Cid int `json:"cid"`
+		Mid int `json:"mid"`
+	}{}
+
+	if err := c.BodyParser(&recvd); err != nil {
+		return c.Status(fiber.StatusOK).SendString("ERROR: server error.")
+	}
+
+	return c.Status(fiber.StatusOK).SendString(devmacs.BuildAssociatedMacs(recvd.Cid, recvd.Mid))
 }

@@ -63,6 +63,12 @@ func GetDevice(c *fiber.Ctx) error {
 
 	//	log.Printf("GetDevice took %s", time.Since(start))
 
+	var dev devmacs.DeviceInfo
+	primaryMac, err := dev.GetDevicePrimaryMac(cid)
+	if err != nil {
+		log.Println(err)
+	}
+
 	// Render the page
 	return c.Render("device", addNavigationIcons(fiber.Map{
 		"title":             template.HTML(icons.GetIcon("devices") + " Devices"),
@@ -108,6 +114,7 @@ func GetDevice(c *fiber.Ctx) error {
 		"actionLog":         template.HTML(ctrls.BuildDeviceLog(user.Uid, cid, 0)),
 		"backups":           template.HTML(backs.BuildBackupsTable(user.Uid, cid)),
 		"macs":              template.HTML(devmacs.BuildDevMacs(cid, user.Tzoff, false)),
+		"deviceHistory":     template.HTML(ctrls.GetOnlineDeviceHistory(user.Tzoff, primaryMac)),
 	}))
 }
 

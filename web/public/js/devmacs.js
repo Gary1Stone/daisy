@@ -44,12 +44,14 @@ function setupTableSearch() {
     });
 }
 
-function rowClicked(id=0) {
+function rowClicked(id = 0) {
     if (!id) return;
     const mid = txt2Int(id);
     if (mid < 1) return;
-    UI.mid.value = mid;
+    const cid = txt2Int(UI.cid.value);
+    if (cid < 1) return;
     UI.popAssociate.showModal();
+    htmx("/devmacs/associates", {cid: cid, mid: mid}, "associateDetails");
 }
 
 

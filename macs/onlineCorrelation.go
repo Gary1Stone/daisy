@@ -23,14 +23,14 @@ import (
  * 0 no Overlap
  * <1% small overlap...
  *
- * Pearson:
+ * Pearson: Range 100 through 0 to -100
  * > 0.90	    extremely likely same device/user
  * 0.80–0.90	strong similarity
  * 0.65–0.80	possible
  * < 0.50	    weak
  * < -0.6       high advoidance
  *
- * Jaccard:
+ * Jaccard: Range 100 to 0
  * > 0.85	    almost certainly same device or user
  * 0.70–0.85	strong
  * 0.50–0.70	moderate
@@ -104,7 +104,7 @@ func BuildMacCorrelationTable(site string) {
 		INSERT INTO mac_correlation (mac1, mac2, corr, pearson, jaccard, site, slots, overlap)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(mac1, mac2) DO UPDATE SET corr = excluded.corr,
-		pearson = excluded.pearson, jaccard = excluded.jaccard, site = excluded.site`
+		pearson = excluded.pearson, jaccard = excluded.jaccard, site = excluded.site, slots=excluded.slots, overlap=excluded.overlap`
 	stmt, err := tx.Prepare(query)
 	if err != nil {
 		log.Println("Error preparing statement:", err)
@@ -224,6 +224,7 @@ func bitmapToSlots(am, pm int64, dst []float64) {
 	}
 }
 
+// overlap is percentage of time the devices are online at the same time
 func calculateOverlap(mac1, mac2 string, dates []int, byMac map[string]map[int]Online) (float64, int, int) {
 	var sameTime, overlap int
 	history1, ok1 := byMac[mac1]
@@ -269,7 +270,7 @@ func calculateJaccard(mac1, mac2 string, dates []int, byMac map[string]map[int]O
 	history1, ok1 := byMac[mac1]
 	history2, ok2 := byMac[mac2]
 	if !ok1 || !ok2 {
-		return -1
+		return 0
 	}
 
 	for _, date := range dates {
@@ -305,6 +306,7 @@ func calculateJaccard(mac1, mac2 string, dates []int, byMac map[string]map[int]O
 	return float64(intersection) / float64(union)
 }
 
+// pearsons ranges from: 1 to 0 to -1
 func pearson(x, y []float64) float64 {
 	n := len(x)
 	if n == 0 || len(y) != n {
@@ -329,7 +331,7 @@ func pearson(x, y []float64) float64 {
 	return num / den
 }
 
-// Ensure to eliminate macs coveed by alias, or not active, and is not identified as solitary
+// Ensure to eliminate macs covered by alias, or not active, and is not identified as solitary
 func getOnlineHistoryInfo(site string) ([]Online, error) {
 	var items []Online
 	query := `

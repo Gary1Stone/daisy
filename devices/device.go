@@ -949,7 +949,7 @@ func (d *Device) GetDevicesByNames(hostnames []string) (map[string]Device, error
 	}
 
 	query := `
-		SELECT D.cid, D.name, D.type, D.site, D.office, D.location, coalesce(P.fullname, '')
+		SELECT D.cid, D.name, D.type, D.site, D.office, D.location, coalesce(P.fullname, ''), os
 		FROM devices D
 		LEFT JOIN profiles P ON D.uid = P.uid
 		WHERE D.name IN (` + strings.Join(placeholders, ",") + `)
@@ -963,7 +963,7 @@ func (d *Device) GetDevicesByNames(hostnames []string) (map[string]Device, error
 	defer rows.Close()
 	for rows.Next() {
 		var dto Device
-		err := rows.Scan(&dto.Cid, &dto.Name, &dto.Type, &dto.Site, &dto.Office, &dto.Location, &dto.Assigned)
+		err := rows.Scan(&dto.Cid, &dto.Name, &dto.Type, &dto.Site, &dto.Office, &dto.Location, &dto.Assigned, &dto.Os)
 		if err != nil {
 			log.Println(err)
 		} else {
