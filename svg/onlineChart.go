@@ -48,19 +48,17 @@ func writeRows(chart *strings.Builder, items []online.Online, macInfo map[string
 		// Open Group for the row
 		fmt.Fprintf(chart, `<g id="Svg%d" onclick="svgClicked('%d')" style="cursor:pointer;">`, mid, mid)
 
-		// Run-length encoding for slots to reduce SVG size
-		if len(item.Slots) > 0 {
-			currentVal := item.Slots[0]
-			currentStart := 0
-			for j := 1; j < len(item.Slots); j++ {
-				if item.Slots[j] != currentVal {
-					drawSegment(chart, currentStart, j, currentVal, y)
-					currentVal = item.Slots[j]
-					currentStart = j
-				}
+		currentVal := slotStatus(item, 0)
+		currentStart := 0
+		for slot := 1; slot < 96; slot++ {
+			status := slotStatus(item, slot)
+			if status != currentVal {
+				drawSegment(chart, currentStart, slot, currentVal, y)
+				currentVal = status
+				currentStart = slot
 			}
-			drawSegment(chart, currentStart, len(item.Slots), currentVal, y)
 		}
+		drawSegment(chart, currentStart, 96, currentVal, y)
 
 		// Draw text label
 		middle := barHeight/2 + y + 5
@@ -80,6 +78,24 @@ func writeRows(chart *strings.Builder, items []online.Online, macInfo map[string
 		}
 		chart.WriteString(`</g>`) // Close Group
 	}
+}
+
+func slotStatus(item online.Online, slot int) int {
+	bit := uint(slot % 48)
+	mask := uint64(1) << bit
+	deviceBits, systemBits := uint64(item.Am), uint64(item.SysAm)
+	if slot >= 48 {
+		deviceBits, systemBits = uint64(item.Pm), uint64(item.SysPm)
+	}
+
+	status := outage
+	if systemBits&mask != 0 {
+		status = offline
+	}
+	if deviceBits&mask != 0 {
+		status = onnline
+	}
+	return status
 }
 
 func writeGridLines(chart *strings.Builder, height int) {

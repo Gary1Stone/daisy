@@ -17,7 +17,7 @@ func getMacHistory(tzoff int, mac string) ([]Online, error) {
         return onlineInfo, err
     }
 
-    onlineInfo, err = handleTimezones(tzoff, onlineInfo)
+    onlineInfo, err = shiftTimezones(tzoff, onlineInfo)
     if err != nil {
         return nil, err
     }
@@ -43,7 +43,6 @@ func getOnlineHistoryForMac(mac string) ([]Online, error) {
 			log.Println("Error scanning onlinehistory data:", err)
 			continue
 		}
-		item.Slots = make([]int, 96) // prefills with zeros
 		items = append(items, item)
 	}
 	if err = rows.Err(); err != nil {

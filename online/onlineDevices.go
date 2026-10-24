@@ -47,25 +47,6 @@ func getDayOnlineDevices(tzoff int, dayUTC time.Time) ([]Online, error) {
 		deviceData[key] = &onlineInfo[i]
 	}
 
-	// func Helper to fill a section for a given three-days slot buffer
-	fillSection := func(dayInt int, mac string, offset int, threeDaysOfSlots *[slotsPerDay * 3]int) {
-		// Check device data
-		var am, pm uint64 // initalize to 0, offline by default
-		key := fmt.Sprintf("%s_%d", mac, dayInt)
-		if dev, ok := deviceData[key]; ok {
-			am = uint64(dev.Am)
-			pm = uint64(dev.Pm)
-		}
-		// Check system data
-		var sysAM, sysPM uint64
-		if sys, ok := sysHist[int64(dayInt)]; ok {
-			sysAM = uint64(sys.Am)
-			sysPM = uint64(sys.Pm)
-		}
-		// Fill directly into the provided array slice
-		fillSlots(threeDaysOfSlots[offset:offset+slotsPerDay], am, pm, sysAM, sysPM)
-	}
-
 	// Eliminate devices that were not active in the user's timezone for the current day
 	activeMacs := make([]Online, 0, len(onlineInfo))
 
@@ -79,22 +60,17 @@ func getDayOnlineDevices(tzoff int, dayUTC time.Time) ([]Online, error) {
 		}
 		processedMacs[onlineInfo[i].Mac] = true
 
-		var threeDaysOfSlots [slotsPerDay * 3]int // Buffer for the three days of slots
-		fillSection(prevDay, onlineInfo[i].Mac, 0, &threeDaysOfSlots)
-		fillSection(currDay, onlineInfo[i].Mac, slotsPerDay, &threeDaysOfSlots)
-		fillSection(nextDay, onlineInfo[i].Mac, slotsPerDay*2, &threeDaysOfSlots)
-		// Copy the relevant window to the item's slots
-		copy(onlineInfo[i].Slots, threeDaysOfSlots[startIdx:startIdx+slotsPerDay])
-
-		// Check if the device was active in any of the slots for the current day
-		isActive := false
-		for j := range slotsPerDay {
-			if onlineInfo[i].Slots[j] == 1 {
-				isActive = true
-				break
+		days := [3]int{prevDay, currDay, nextDay}
+		var deviceDays, systemDays [3]Online
+		for dayIndex, day := range days {
+			if dev, ok := deviceData[fmt.Sprintf("%s_%d", onlineInfo[i].Mac, day)]; ok {
+				deviceDays[dayIndex] = *dev
 			}
+			systemDays[dayIndex] = sysHist[int64(day)]
 		}
-		if isActive {
+		shiftOnlineBits(&onlineInfo[i], deviceDays, systemDays, startIdx)
+
+		if onlineInfo[i].Am|onlineInfo[i].Pm != 0 {
 			activeMacs = append(activeMacs, onlineInfo[i])
 		}
 	}
@@ -122,7 +98,6 @@ func getWhatWasOnline(prevDay, currDay, nextDay int) ([]Online, error) {
 			log.Println("Error scanning online data:", err)
 			continue
 		}
-		item.Slots = make([]int, 96) // prefills with zeros
 		items = append(items, item)
 	}
 	if err = rows.Err(); err != nil {
