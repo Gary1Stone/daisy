@@ -1,6 +1,7 @@
 package macs
 
 import (
+	"errors"
 	"log"
 	"strings"
 
@@ -177,6 +178,9 @@ func GetMacInfoByCid(tzoff, cid int) ([]MacInfo, error) {
 
 func GetMacInfoByMac(tzoff int, mac string) (MacInfo, error) {
 	var item MacInfo
+	if len(mac) == 0 {
+		return item, errors.New("zero length mac not permitted")
+	}
 	params := []any{mac}
 	//	params = append(params, mac)
 	items, err := getMacInfo("WHERE M.active=1 AND M.mac=?", tzoff, params...)
@@ -197,6 +201,9 @@ type ChartMacInfo struct {
 }
 
 func GetChartInfo4WhatWasOnline(maclist []string) (map[string]ChartMacInfo, error) {
+	if len(maclist) == 0 {
+		return nil, nil
+	}
 	items := make(map[string]ChartMacInfo)
 	args := make([]any, len(maclist))
 	for i, v := range maclist {

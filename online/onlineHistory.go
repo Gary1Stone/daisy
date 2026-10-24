@@ -222,22 +222,26 @@ func scrubOnline(items []Online) ([]Online, error) {
 		return nil, nil
 	}
 
-	// A map to track seen keys and their index in the result slice.
-	seen := make(map[string]int)
-	result := make([]Online, 0, len(items))
+	type key struct {
+		mac  string
+		date int64
+	}
+
+	seen := make(map[key]int, len(items))
+	n := 0
 
 	for _, item := range items {
-		key := fmt.Sprintf("%s_%d", item.Mac, item.Date)
-		if index, ok := seen[key]; ok {
-			// Duplicate. Merge with the item already in the result slice.
-			result[index].Am |= item.Am
-			result[index].Pm |= item.Pm
+		k := key{item.Mac, item.Date}
+
+		if index, ok := seen[k]; ok {
+			items[index].Am |= item.Am
+			items[index].Pm |= item.Pm
 		} else {
-			// New item. Add to result slice and record its index.
-			result = append(result, item)
-			seen[key] = len(result) - 1
+			items[n] = item
+			seen[k] = n
+			n++
 		}
 	}
 
-	return result, nil
+	return items[:n], nil
 }

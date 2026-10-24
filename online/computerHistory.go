@@ -50,7 +50,7 @@ func getComputerOnlineHistory(cid int) (items []Online, err error) {
 		}
 
 		if idx, ok := seen[item.Date]; ok {
-			// Duplicate. Merge with the item already in the result slice. - Only the LAST MAC for the day is retained
+			// Duplicate. Merge with the item already in the result slice. - Only the LAST MAC of the day is retained
 			items[idx].Am |= item.Am
 			items[idx].Pm |= item.Pm
 		} else {

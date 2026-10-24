@@ -1,21 +1,28 @@
 package online
 
 import (
+	"errors"
 	"log"
 
 	"github.com/gbsto/daisy/db"
 )
 
 func getMacHistory(tzoff int, mac string) ([]Online, error) {
-	onlineInfo, err := getOnlineHistoryForMac(mac) // note: slots will be pre-filled with zeros (offline) here
-	if err != nil {
-		return nil, err
-	}
-	if len(onlineInfo) == 0 {
-		return nil, nil
-	}
-	info, err := handleTimezones(tzoff, onlineInfo)
-	return scrubOnline(info)
+    if mac == "" {
+        return nil, errors.New("zero length mac not permitted")
+    }
+
+    onlineInfo, err := getOnlineHistoryForMac(mac)
+    if err != nil || len(onlineInfo) == 0 {
+        return onlineInfo, err
+    }
+
+    onlineInfo, err = handleTimezones(tzoff, onlineInfo)
+    if err != nil {
+        return nil, err
+    }
+
+    return scrubOnline(onlineInfo)
 }
 
 // Get all history info for this mac in UTC, key=date int yyyymmdd

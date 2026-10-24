@@ -9,7 +9,7 @@ import (
 )
 
 func BuildOnlineChart(items []online.Online, macInfo map[string]macs.ChartMacInfo, barTitle string) string {
-	if len(items) == 0 {
+	if len(items) == 0 || len(macInfo) == 0 {
 		return ""
 	}
 	var chart strings.Builder
