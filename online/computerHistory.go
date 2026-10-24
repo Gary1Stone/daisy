@@ -4,10 +4,19 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/macs"
 )
 
-func getComputerHistory(cid, tzoff int) ([]macs.Online, error) {
+type Online struct {
+	Mac     string `json:"Mac"`     // Mac ID unique
+	Date    int64  `json:"Date"`    // Unix timestamp UTC (Mac + Date = Primary Key in the form of YYYYMMDD)
+	Am      int64  `json:"Am"`      // Morning (midnight to noon) Binary
+	Pm      int64  `json:"Pm"`      // Afternoon (noon to midnight) Binary
+	Host    bool   `json:"Host"`    // Is the entry from the host (network scanning) server
+	Updated int64  `json:"Updated"` // Monotonic counter of last update for table replication, filled in by db trigger only
+	Slots   []int  `json:"Slots"`   // 96 15-minute timeslots for the day, 1=online, 0=offline, -1=outage
+}
+
+func getComputerHistory(cid, tzoff int) ([]Online, error) {
 	onlineInfo, err := getComputerOnlineHistory(cid) // note: slots will be pre-filled with zeros (offline) here
 	if err != nil {
 		return nil, err
@@ -18,7 +27,7 @@ func getComputerHistory(cid, tzoff int) ([]macs.Online, error) {
 	return handleTimezones(tzoff, onlineInfo)
 }
 
-func getComputerOnlineHistory(cid int) (items []macs.Online, err error) {
+func getComputerOnlineHistory(cid int) (items []Online, err error) {
 	seen := make(map[int64]int)
 	query := `SELECT COALESCE(A.alias, O.mac) AS macs, O.date, O.am, O.pm, o.host 
 		FROM online O 
@@ -34,7 +43,7 @@ func getComputerOnlineHistory(cid int) (items []macs.Online, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var item macs.Online
+		var item Online
 		if err = rows.Scan(&item.Mac, &item.Date, &item.Am, &item.Pm, &item.Host); err != nil {
 			log.Println(err)
 			return

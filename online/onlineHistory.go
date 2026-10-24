@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/macs"
 )
 
 // returns the minumum and maximum (now) for the online history
@@ -92,8 +91,8 @@ func GetCurrentOnOffCounts() (int, int) {
 }
 
 // Get the Random MAC addresses online information
-func GetOnlineHistoryInfo(macList []string) ([]macs.Online, []int64, error) {
-	var items []macs.Online
+func GetOnlineHistoryInfo(macList []string) ([]Online, []int64, error) {
+	var items []Online
 	var dateList []int64
 	if len(macList) == 0 {
 		return nil, nil, nil
@@ -122,7 +121,7 @@ func GetOnlineHistoryInfo(macList []string) ([]macs.Online, []int64, error) {
 
 	dateSet := make(map[int64]struct{})
 	for rows.Next() {
-		var item macs.Online
+		var item Online
 		if err := rows.Scan(&item.Mac, &item.Date, &item.Am, &item.Pm); err != nil {
 			log.Println(err)
 			return nil, nil, err
@@ -179,12 +178,12 @@ func GetMac2Hostname(randomOnly bool) (map[string]string, error) {
 }
 
 // System/Probe online/offline information, for the entire date range (0's for missing days)
-func getSysHistoryInRange(minDate, maxDate int64) (map[int64]macs.Online, error) {
-	items := make(map[int64]macs.Online)
+func getSysHistoryInRange(minDate, maxDate int64) (map[int64]Online, error) {
+	items := make(map[int64]Online)
 	lastDate := yyyymmddUTC2time(maxDate)
 	for date := yyyymmddUTC2time(minDate); !date.After(lastDate); date = date.AddDate(0, 0, 1) {
 		dateKey := int64(dayKey(date))
-		items[dateKey] = macs.Online{Date: dateKey}
+		items[dateKey] = Online{Date: dateKey}
 	}
 
 	query := `SELECT mac, date, am, pm FROM onlinehistory WHERE host=1 AND date >= ? AND date <= ?`
@@ -196,7 +195,7 @@ func getSysHistoryInRange(minDate, maxDate int64) (map[int64]macs.Online, error)
 	defer rows.Close()
 
 	for rows.Next() {
-		var item macs.Online
+		var item Online
 		err := rows.Scan(&item.Mac, &item.Date, &item.Am, &item.Pm)
 		if err != nil {
 			log.Println("Error scanning online data:", err)
@@ -218,14 +217,14 @@ func getSysHistoryInRange(minDate, maxDate int64) (map[int64]macs.Online, error)
 
 // The onlinehistory table is a synthetic view of the online table, with macs replaced by their aliases
 // Duplicate Macs on the same day are combined here
-func scrubOnline(items []macs.Online) ([]macs.Online, error) {
+func scrubOnline(items []Online) ([]Online, error) {
 	if len(items) == 0 {
 		return nil, nil
 	}
 
 	// A map to track seen keys and their index in the result slice.
 	seen := make(map[string]int)
-	result := make([]macs.Online, 0, len(items))
+	result := make([]Online, 0, len(items))
 
 	for _, item := range items {
 		key := fmt.Sprintf("%s_%d", item.Mac, item.Date)

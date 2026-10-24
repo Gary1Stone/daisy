@@ -15,6 +15,7 @@ import (
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/online"
 	"github.com/gbsto/daisy/profiles"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -60,15 +61,13 @@ func GetDevice(c *fiber.Ctx) error {
 	}
 	var backs backups.BackupInfo
 
-	// page state: empty (cid=0), with record (cid>0); affects type control, if cid=0 then user must select, with blank included but not selectable
+	// page state: empty (cid=0 or maxInt), with record (cid>0); affects type control, if cid=0 then user must select, with blank included but not selectable
 
-	//	log.Printf("GetDevice took %s", time.Since(start))
-
-	// var dev devmacs.DeviceInfo
-	// primaryMac, err := dev.GetDevicePrimaryMac(cid)
-	// if err != nil {
-	// 	log.Println(err)
-	// }
+	chartData, macInfo, err := online.BuildComputerHistoryChartData(cid, user.Tzoff)
+	if err != nil {
+		log.Println(err)
+	}
+	//	fmt.Printf("GetDevice took %s", time.Since(start))
 
 	// Render the page
 	return c.Render("device", addNavigationIcons(fiber.Map{
@@ -115,12 +114,9 @@ func GetDevice(c *fiber.Ctx) error {
 		"actionLog":         template.HTML(ctrls.BuildDeviceLog(user.Uid, cid, 0)),
 		"backups":           template.HTML(backs.BuildBackupsTable(user.Uid, cid)),
 		"macs":              template.HTML(devmacs.BuildDevMacs(cid, user.Tzoff, false)),
-		"deviceHistory":     template.HTML(online.BuildComputerHistoryChart(cid, user.Tzoff, device.Name)),
+		"deviceHistory":     template.HTML(svg.BuildOnlineChart(chartData, macInfo, svg.DateOnly)),
 	}))
 }
-
-//
-//		"deviceHistory":     template.HTML(ctrls.GetOnlineDeviceHistory(user.Tzoff, primaryMac)),
 
 func guessAssignedGroupDefault(curUid int, dev *devices.Device) string {
 	if dev.Gid > 0 {

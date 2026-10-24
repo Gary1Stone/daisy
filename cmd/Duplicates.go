@@ -9,6 +9,7 @@ import (
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/online"
+	"github.com/gbsto/daisy/svg"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -30,6 +31,11 @@ func GetDuplicates(c *fiber.Ctx) error {
 		avoidSelect = "No matching hostnames found."
 	}
 
+	chartData, macInfo, title, err := online.GetAvoidChartData(user.Tzoff, mac1, mac2)
+	if err != nil {
+		log.Println(err)
+	}
+
 	return c.Render("duplicates", addNavigationIcons(fiber.Map{
 		"title":       template.HTML(icons.GetIcon("devices") + " Network"),
 		"fullName":    user.Fullname,
@@ -38,7 +44,7 @@ func GetDuplicates(c *fiber.Ctx) error {
 		"isDisabled":  !user.Permissions.Device.Update,
 		"cmd_one":     template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"avoidSelect": template.HTML(avoidSelect),
-		"avoidChart":  template.HTML(online.GetAvoidChart(user.Tzoff, mac1, mac2)),
+		"avoidChart":  template.HTML(title + svg.BuildOnlineChart(chartData, macInfo, svg.NameWithDate)),
 	}))
 }
 
@@ -62,7 +68,13 @@ func PostDuplicates(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString("CRITICAL SERVER ERROR!")
 	}
 
-	return c.Status(fiber.StatusOK).SendString(online.GetAvoidChart(user.Tzoff, recvd.Mac1, recvd.Mac2))
+	chartData, macInfo, title, err := online.GetAvoidChartData(user.Tzoff, recvd.Mac1, recvd.Mac2)
+	if err != nil {
+		log.Println(err)
+	}
+	reply := title + svg.BuildOnlineChart(chartData, macInfo, svg.NameWithDate)
+
+	return c.Status(fiber.StatusOK).SendString(reply)
 }
 
 func PostDuplicatesJoin(c *fiber.Ctx) error {

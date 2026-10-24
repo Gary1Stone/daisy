@@ -128,10 +128,10 @@ func generateGraphs() {
 	temp.max[8] = hits.MaxValue
 
 	// 9 = Network Load
-	var online SparklineOptions
-	online.Warning = 40 // If more than 40 devices in a day, highlight red
-	temp.graph[9] = BuildNetworkLoadChart(&online)
-	temp.max[9] = online.MaxValue
+	var onnline SparklineOptions
+	onnline.Warning = 40 // If more than 40 devices in a day, highlight red
+	temp.graph[9] = BuildNetworkLoadChart(&onnline)
+	temp.max[9] = onnline.MaxValue
 
 	// Copy the temp variable onto the graphCache global variable
 	GraphCache.mu.Lock()

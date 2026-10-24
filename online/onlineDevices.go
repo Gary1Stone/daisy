@@ -6,11 +6,10 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/macs"
 )
 
 // get which devices were online for a given date (YYYYMMDD)
-func getOnlineDay(tzoff int, yyyymmdd string) ([]macs.Online, error) {
+func getOnlineDay(tzoff int, yyyymmdd string) ([]Online, error) {
 	input := yyyymmdd + " 00:01" // Convert yyyymmdd hh:nn to time
 	layout := "20060102 15:04"
 	dayUTC, err := time.Parse(layout, input) // Parse without timezone (naive time)
@@ -22,7 +21,7 @@ func getOnlineDay(tzoff int, yyyymmdd string) ([]macs.Online, error) {
 }
 
 // get the online history for all the devices in the 3 days for timezone shifting
-func getDayOnlineDevices(tzoff int, dayUTC time.Time) ([]macs.Online, error) {
+func getDayOnlineDevices(tzoff int, dayUTC time.Time) ([]Online, error) {
 	prevDay, currDay, nextDay := gen3Days(dayUTC)
 	startIdx := genStartindex(tzoff)                               // Pre-calculate timezone offset index
 	onlineInfo, err := getWhatWasOnline(prevDay, currDay, nextDay) // This has been scrubbed
@@ -42,7 +41,7 @@ func getDayOnlineDevices(tzoff int, dayUTC time.Time) ([]macs.Online, error) {
 	}
 
 	// Create a map for quick lookup of device data
-	deviceData := make(map[string]*macs.Online, len(onlineInfo))
+	deviceData := make(map[string]*Online, len(onlineInfo))
 	for i := range onlineInfo {
 		key := fmt.Sprintf("%s_%d", onlineInfo[i].Mac, onlineInfo[i].Date)
 		deviceData[key] = &onlineInfo[i]
@@ -68,7 +67,7 @@ func getDayOnlineDevices(tzoff int, dayUTC time.Time) ([]macs.Online, error) {
 	}
 
 	// Eliminate devices that were not active in the user's timezone for the current day
-	activeMacs := make([]macs.Online, 0, len(onlineInfo))
+	activeMacs := make([]Online, 0, len(onlineInfo))
 
 	// Iterate over the days we have data for and adjust for timezone
 	// We have up to three (days) entries of macs in the list, but we only need one for analysis
@@ -103,8 +102,8 @@ func getDayOnlineDevices(tzoff int, dayUTC time.Time) ([]macs.Online, error) {
 }
 
 // Fetch System (Host) status and all device online data for the 3 days
-func getWhatWasOnline(prevDay, currDay, nextDay int) ([]macs.Online, error) {
-	items := make([]macs.Online, 0)
+func getWhatWasOnline(prevDay, currDay, nextDay int) ([]Online, error) {
+	items := make([]Online, 0)
 	query := `SELECT O.mac, O.date, O.am, O.pm, O.host FROM onlinehistory O 
 		LEFT JOIN macs M ON O.mac=M.mac
 		WHERE date IN (?, ?, ?)
@@ -117,7 +116,7 @@ func getWhatWasOnline(prevDay, currDay, nextDay int) ([]macs.Online, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var item macs.Online
+		var item Online
 		err := rows.Scan(&item.Mac, &item.Date, &item.Am, &item.Pm, &item.Host)
 		if err != nil {
 			log.Println("Error scanning online data:", err)

@@ -11,6 +11,7 @@ import (
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/online"
+	"github.com/gbsto/daisy/svg"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gbsto/daisy/db"
@@ -40,6 +41,10 @@ func GetOnline(c *fiber.Ctx) error {
 
 	// set the date picker limits
 	minDate, maxDate := online.MinMaxHistoryDate(user.Uid, user.Tzoff)
+	chartData, macInfo, err := online.GetOnlineDeviceChartData(user.Tzoff, searchDate)
+	if err != nil {
+		log.Println(err)
+	}
 
 	return c.Render("online", addNavigationIcons(fiber.Map{
 		"title":         template.HTML(icons.GetIcon("user") + " Online"),
@@ -51,7 +56,7 @@ func GetOnline(c *fiber.Ctx) error {
 		"minDate":       minDate,
 		"maxDate":       maxDate,
 		"dateParam":     dateParam,
-		"onlineDevices": template.HTML(online.GetOnlineDevices(user.Tzoff, searchDate)),
+		"onlineDevices": template.HTML(svg.BuildOnlineChart(chartData, macInfo, svg.NameOnly)),
 		"kindCtrl":      template.HTML(ctrls.BuildDropList("KIND", "", "", true, false)),
 		"officeCtrl":    template.HTML(ctrls.BuildDropList("OFFICE", "", "", true, false)),
 		"offices":       template.HTML(db.BuildFieldList("OFFICE")),

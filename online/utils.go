@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"math/bits"
 	"time"
-
-	"github.com/gbsto/daisy/macs"
 )
 
 const slotsPerDay = 96
@@ -83,7 +81,7 @@ func yyyymmddUTC2time(yyyymmdd int64) time.Time {
 }
 
 // get all the online history for the computers from newest first to oldest last
-func handleTimezones(tzoff int, onlineInfo []macs.Online) ([]macs.Online, error) {
+func handleTimezones(tzoff int, onlineInfo []Online) ([]Online, error) {
 	// Calculate date range for system history
 	// Add buffer for timezone shifts (at least 1 day)
 	maxDateVal := onlineInfo[0].Date
@@ -103,7 +101,7 @@ func handleTimezones(tzoff int, onlineInfo []macs.Online) ([]macs.Online, error)
 	}
 
 	// Create a map for quick lookup of device data
-	deviceData := make(map[int64]*macs.Online, len(onlineInfo))
+	deviceData := make(map[int64]*Online, len(onlineInfo))
 	for i := range onlineInfo {
 		deviceData[onlineInfo[i].Date] = &onlineInfo[i]
 	}

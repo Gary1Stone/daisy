@@ -5,9 +5,10 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/macs"
+	"github.com/gbsto/daisy/online"
 )
 
-func BuildOnlineChart(items []macs.Online, macInfo map[string]macs.ChartMacInfo, barTitle string) string {
+func BuildOnlineChart(items []online.Online, macInfo map[string]macs.ChartMacInfo, barTitle string) string {
 	if len(items) == 0 {
 		return ""
 	}
@@ -39,7 +40,7 @@ func writeTimeLabels(chart *strings.Builder) {
 	}
 }
 
-func writeRows(chart *strings.Builder, items []macs.Online, macInfo map[string]macs.ChartMacInfo, barTitle string) {
+func writeRows(chart *strings.Builder, items []online.Online, macInfo map[string]macs.ChartMacInfo, barTitle string) {
 	for i, item := range items {
 		mid, name := lookupMac(item.Mac, macInfo)
 		y := (i * barHeight) + headerHeight
@@ -106,7 +107,7 @@ func drawSegment(chart *strings.Builder, start, end, val, y int) {
 	case offline:
 		colour = offlineColor
 		status = "Offline"
-	case online:
+	case onnline:
 		colour = onlineColor
 		status = "Online"
 	case outage:

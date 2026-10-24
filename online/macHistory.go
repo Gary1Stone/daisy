@@ -4,10 +4,9 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/db"
-	"github.com/gbsto/daisy/macs"
 )
 
-func getMacHistory(tzoff int, mac string) ([]macs.Online, error) {
+func getMacHistory(tzoff int, mac string) ([]Online, error) {
 	onlineInfo, err := getOnlineHistoryForMac(mac) // note: slots will be pre-filled with zeros (offline) here
 	if err != nil {
 		return nil, err
@@ -20,8 +19,8 @@ func getMacHistory(tzoff int, mac string) ([]macs.Online, error) {
 }
 
 // Get all history info for this mac in UTC, key=date int yyyymmdd
-func getOnlineHistoryForMac(mac string) ([]macs.Online, error) {
-	items := make([]macs.Online, 0)
+func getOnlineHistoryForMac(mac string) ([]Online, error) {
+	items := make([]Online, 0)
 	query := "SELECT mac, date, am, pm FROM onlinehistory WHERE mac=? ORDER BY date DESC"
 	rows, err := db.Conn.Query(query, mac)
 	if err != nil {
@@ -31,7 +30,7 @@ func getOnlineHistoryForMac(mac string) ([]macs.Online, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var item macs.Online
+		var item Online
 		err := rows.Scan(&item.Mac, &item.Date, &item.Am, &item.Pm)
 		if err != nil {
 			log.Println("Error scanning onlinehistory data:", err)
