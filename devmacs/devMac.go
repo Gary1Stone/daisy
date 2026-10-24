@@ -155,50 +155,6 @@ func (d *DeviceInfo) GetDevicePrimaryMac(cid int) (retMac string, err error) {
 	return // TODO: return the macs[mac]count and combine all plots into one.
 }
 
-type DevHistory struct {
-	Date int     `json:"date"`
-	Am   []int64 `json:"am"`
-	Pm   []int64 `json:"pm"`
-}
-
-func (d *DeviceInfo) GetDeviceOnlineHistory(cid int) (devHistory []DevHistory, err error) {
-	query := `		
-		SELECT COALESCE(A.alias, O.mac) AS macs, O.date, O.am, O.pm, o.host 
-		FROM online O 
-		LEFT JOIN aliases A ON O.mac=A.mac
-		WHERE macs IN
-		(SELECT mac FROM device_mac WHERE cid=? UNION SELECT mac FROM macs WHERE cid=? AND active=1)
-		ORDER BY date
-`
-	rows, err := db.Conn.Query(query, cid, cid)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var date int
-		var am, pm int64
-		if err = rows.Scan(&date, &am, &pm); err != nil {
-			log.Println(err)
-			return
-		}
-
-		if len(devHistory) == 0 || devHistory[len(devHistory)-1].Date != date {
-			devHistory = append(devHistory, DevHistory{Date: date})
-		}
-
-		last := &devHistory[len(devHistory)-1]
-		last.Am = append(last.Am, am)
-		last.Pm = append(last.Pm, pm)
-	}
-	if err = rows.Err(); err != nil {
-		log.Println(err)
-	}
-
-	return
-}
 
 type DeviceMacs struct {
 	Mac         string `json:"mac"`            // MAC  address
@@ -380,12 +336,6 @@ func recomendation(item Associations) string {
 	}
 
 	r := RecommendSameComputer(float64(item.Jaccard)/100.0, float64(item.Pearson)/100.0, float64(item.Corr), item.Slots, DaysOverlap)
-	// 	0.82, // Jaccard
-	// 	0.91, // Pearson
-	// 	75,   // Overlap percentage
-	// 	120,  // Concurrent 15-minute intervals
-	// 	15,   // Distinct days with overlap
-	// )
 
 	return fmt.Sprintf("%+v\n", r)
 }

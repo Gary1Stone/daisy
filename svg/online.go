@@ -67,12 +67,14 @@ func writeRows(chart *strings.Builder, items []macs.Online, macInfo map[string]m
 		case NameOnly:
 			fmt.Fprintf(chart, `<text class="whiteText" x="10" y="%d" pointer-events="none">%s</text>`, middle, name)
 		case NameWithDate:
-			class := "blackText"
+			class := "blackText" // Why is the logic here to change the text color?
 			if item.Mac == items[0].Mac {
 				class = "whiteText"
 			}
 			fmt.Fprintf(chart, `<text class="%s" x="10" y="%d" pointer-events="none">%s %s</text>`, class, middle, name, formatDate(item.Date))
 		case DateOnly:
+			fmt.Fprintf(chart, `<text class="whiteText" x="10" y="%d" pointer-events="none">%s</text>`, middle, formatDate(item.Date))
+		default:
 			fmt.Fprintf(chart, `<text class="whiteText" x="10" y="%d" pointer-events="none">%s</text>`, middle, formatDate(item.Date))
 		}
 		chart.WriteString(`</g>`) // Close Group

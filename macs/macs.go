@@ -37,6 +37,16 @@ type MacInfo struct {
 	Parent      int    `json:"Parent"`      // who this mac is attached to in the treeview
 }
 
+type Online struct {
+	Mac     string `json:"Mac"`     // Mac ID unique
+	Date    int64  `json:"Date"`    // Unix timestamp UTC (Mac + Date = Primary Key in the form of YYYYMMDD)
+	Am      int64  `json:"Am"`      // Morning (midnight to noon) Binary
+	Pm      int64  `json:"Pm"`      // Afternoon (noon to midnight) Binary
+	Host    bool   `json:"Host"`    // Is the entry from the host (network scanning) server
+	Updated int64  `json:"Updated"` // Monotonic counter of last update for table replication, filled in by db trigger only
+	Slots   []int  `json:"Slots"`   // 96 15-minute timeslots for the day, 1=online, 0=offline, -1=outage
+}
+
 func getMacInfo(whereclause string, tzoff int, params ...any) ([]MacInfo, error) {
 	items := make([]MacInfo, 0)
 	prependValues := []any{tzoff, tzoff}      //need two timezone offsets for query

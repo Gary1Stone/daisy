@@ -10,6 +10,7 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
+	"github.com/gbsto/daisy/online"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gbsto/daisy/db"
@@ -38,7 +39,7 @@ func GetOnline(c *fiber.Ctx) error {
 	searchDate := strings.ReplaceAll(dateParam, "-", "")
 
 	// set the date picker limits
-	minDate, maxDate := macs.MinMaxHistoryDate(user.Uid, user.Tzoff)
+	minDate, maxDate := online.MinMaxHistoryDate(user.Uid, user.Tzoff)
 
 	return c.Render("online", addNavigationIcons(fiber.Map{
 		"title":         template.HTML(icons.GetIcon("user") + " Online"),
@@ -50,7 +51,7 @@ func GetOnline(c *fiber.Ctx) error {
 		"minDate":       minDate,
 		"maxDate":       maxDate,
 		"dateParam":     dateParam,
-		"onlineDevices": template.HTML(ctrls.GetOnlineDevices(user.Tzoff, searchDate)),
+		"onlineDevices": template.HTML(online.GetOnlineDevices(user.Tzoff, searchDate)),
 		"kindCtrl":      template.HTML(ctrls.BuildDropList("KIND", "", "", true, false)),
 		"officeCtrl":    template.HTML(ctrls.BuildDropList("OFFICE", "", "", true, false)),
 		"offices":       template.HTML(db.BuildFieldList("OFFICE")),

@@ -1,28 +1,16 @@
-package macs
+package online
 
 import (
 	"fmt"
 	"log"
-	"math/bits"
 	"time"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 )
 
-type Online struct {
-	Mac     string `json:"Mac"`     // Mac ID unique
-	Date    int64  `json:"Date"`    // Unix timestamp UTC (Mac + Date = Primary Key in the form of YYYYMMDD)
-	Am      int64  `json:"Am"`      // Morning (midnight to noon) Binary
-	Pm      int64  `json:"Pm"`      // Afternoon (noon to midnight) Binary
-	Host    bool   `json:"Host"`    // Is the entry from the host (network scanning) server
-	Updated int64  `json:"Updated"` // Monotonic counter of last update for table replication, filled in by db trigger only
-	Slots   []int  `json:"Slots"`   // 96 15-minute timeslots for the day, 1=online, 0=offline, -1=outage
-}
-
-const slotsPerDay = 96 // 24 hours * 4 slots per hour
-
 // get which devices were online for a given date (YYYYMMDD)
-func GetOnlineDay(tzoff int, yyyymmdd string) ([]Online, error) {
+func getOnlineDay(tzoff int, yyyymmdd string) ([]macs.Online, error) {
 	input := yyyymmdd + " 00:01" // Convert yyyymmdd hh:nn to time
 	layout := "20060102 15:04"
 	dayUTC, err := time.Parse(layout, input) // Parse without timezone (naive time)
@@ -30,11 +18,11 @@ func GetOnlineDay(tzoff int, yyyymmdd string) ([]Online, error) {
 		dayUTC = time.Now().UTC()
 	}
 	dayUTC = dayUTC.Add(time.Duration(tzoff) * time.Second) // Apply offset: UTC = local + offset
-	return GetDayOnlineDevices(tzoff, dayUTC)
+	return getDayOnlineDevices(tzoff, dayUTC)
 }
 
 // get the online history for all the devices in the 3 days for timezone shifting
-func GetDayOnlineDevices(tzoff int, dayUTC time.Time) ([]Online, error) {
+func getDayOnlineDevices(tzoff int, dayUTC time.Time) ([]macs.Online, error) {
 	prevDay, currDay, nextDay := gen3Days(dayUTC)
 	startIdx := genStartindex(tzoff)                               // Pre-calculate timezone offset index
 	onlineInfo, err := getWhatWasOnline(prevDay, currDay, nextDay) // This has been scrubbed
@@ -54,7 +42,7 @@ func GetDayOnlineDevices(tzoff int, dayUTC time.Time) ([]Online, error) {
 	}
 
 	// Create a map for quick lookup of device data
-	deviceData := make(map[string]*Online, len(onlineInfo))
+	deviceData := make(map[string]*macs.Online, len(onlineInfo))
 	for i := range onlineInfo {
 		key := fmt.Sprintf("%s_%d", onlineInfo[i].Mac, onlineInfo[i].Date)
 		deviceData[key] = &onlineInfo[i]
@@ -80,7 +68,7 @@ func GetDayOnlineDevices(tzoff int, dayUTC time.Time) ([]Online, error) {
 	}
 
 	// Eliminate devices that were not active in the user's timezone for the current day
-	activeMacs := make([]Online, 0, len(onlineInfo))
+	activeMacs := make([]macs.Online, 0, len(onlineInfo))
 
 	// Iterate over the days we have data for and adjust for timezone
 	// We have up to three (days) entries of macs in the list, but we only need one for analysis
@@ -114,57 +102,9 @@ func GetDayOnlineDevices(tzoff int, dayUTC time.Time) ([]Online, error) {
 	return activeMacs, nil
 }
 
-func dayKey(t time.Time) int {
-	return t.Year()*10000 + int(t.Month())*100 + t.Day()
-}
-
-// Helper function to create YYYYMMDD int value
-func gen3Days(dayUTC time.Time) (prevDay, currDay, nextDay int) {
-	prevDay = dayKey(dayUTC.AddDate(0, 0, -1))
-	currDay = dayKey(dayUTC)
-	nextDay = dayKey(dayUTC.AddDate(0, 0, 1))
-	return prevDay, currDay, nextDay
-}
-
-// Calculate 3-day wide array's start index to convert to user's local day
-func genStartindex(tzoff int) int {
-	startIdx := slotsPerDay + (tzoff / 900) // Correct calculation is with plus (+) sign
-	if startIdx < 0 {
-		startIdx = 0
-	} else if startIdx+slotsPerDay > 3*slotsPerDay {
-		startIdx = 3*slotsPerDay - slotsPerDay
-	}
-	return startIdx
-}
-
-// Optimized to write directly to the destination slice to avoid allocations
-func fillSlots(day []int, am, pm, sysAM, sysPM uint64) {
-	for i := range 48 {
-		if (sysAM>>uint(i))&1 == 0 {
-			day[i] = -1
-		} else {
-			day[i] = 0
-		}
-		if (sysPM>>uint(i))&1 == 0 {
-			day[i+48] = -1
-		} else {
-			day[i+48] = 0
-		}
-	}
-	// set device-online (1) by iterating set bits
-	for bitsSet := am; bitsSet != 0; bitsSet &= bitsSet - 1 {
-		i := bits.TrailingZeros64(bitsSet)
-		day[i] = 1
-	}
-	for bitsSet := pm; bitsSet != 0; bitsSet &= bitsSet - 1 {
-		i := bits.TrailingZeros64(bitsSet)
-		day[48+i] = 1
-	}
-}
-
 // Fetch System (Host) status and all device online data for the 3 days
-func getWhatWasOnline(prevDay, currDay, nextDay int) ([]Online, error) {
-	items := make([]Online, 0)
+func getWhatWasOnline(prevDay, currDay, nextDay int) ([]macs.Online, error) {
+	items := make([]macs.Online, 0)
 	query := `SELECT O.mac, O.date, O.am, O.pm, O.host FROM onlinehistory O 
 		LEFT JOIN macs M ON O.mac=M.mac
 		WHERE date IN (?, ?, ?)
@@ -177,7 +117,7 @@ func getWhatWasOnline(prevDay, currDay, nextDay int) ([]Online, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var item Online
+		var item macs.Online
 		err := rows.Scan(&item.Mac, &item.Date, &item.Am, &item.Pm, &item.Host)
 		if err != nil {
 			log.Println("Error scanning online data:", err)
@@ -203,7 +143,6 @@ type LastOnline struct {
 
 func GetLastOnlineDates(curUid, tzoff int) ([]LastOnline, error) {
 	items := make([]LastOnline, 0)
-	//	tzoff := GetTzoff(curUid)
 
 	query := `
 		SELECT last_seen, mac, cid, name
@@ -243,20 +182,4 @@ func GetLastOnlineDates(curUid, tzoff int) ([]LastOnline, error) {
 		return nil, err
 	}
 	return items, nil
-}
-
-// func convertYYYYMMDDToDate(yyyymmdd int) string {
-func formatDate(dateInt int, tzoff int) string {
-	// Extract year, month, and day
-	year := dateInt / 10000
-	month := (dateInt / 100) % 100
-	day := dateInt % 100
-
-	// Create date in UTC
-	t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-
-	// Apply timezone offset (in seconds)
-	t = t.Add(time.Duration(tzoff) * time.Second)
-
-	return t.Format("Monday 02 Jan 2006")
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/devmacs"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/online"
 	"github.com/gbsto/daisy/profiles"
 
 	"github.com/gofiber/fiber/v2"
@@ -63,11 +64,11 @@ func GetDevice(c *fiber.Ctx) error {
 
 	//	log.Printf("GetDevice took %s", time.Since(start))
 
-	var dev devmacs.DeviceInfo
-	primaryMac, err := dev.GetDevicePrimaryMac(cid)
-	if err != nil {
-		log.Println(err)
-	}
+	// var dev devmacs.DeviceInfo
+	// primaryMac, err := dev.GetDevicePrimaryMac(cid)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 
 	// Render the page
 	return c.Render("device", addNavigationIcons(fiber.Map{
@@ -114,9 +115,12 @@ func GetDevice(c *fiber.Ctx) error {
 		"actionLog":         template.HTML(ctrls.BuildDeviceLog(user.Uid, cid, 0)),
 		"backups":           template.HTML(backs.BuildBackupsTable(user.Uid, cid)),
 		"macs":              template.HTML(devmacs.BuildDevMacs(cid, user.Tzoff, false)),
-		"deviceHistory":     template.HTML(ctrls.GetOnlineDeviceHistory(user.Tzoff, primaryMac)),
+		"deviceHistory":     template.HTML(online.BuildComputerHistoryChart(cid, user.Tzoff, device.Name)),
 	}))
 }
+
+//
+//		"deviceHistory":     template.HTML(ctrls.GetOnlineDeviceHistory(user.Tzoff, primaryMac)),
 
 func guessAssignedGroupDefault(curUid int, dev *devices.Device) string {
 	if dev.Gid > 0 {

@@ -1,4 +1,4 @@
-package macs
+package online
 
 import (
 	"log"
@@ -8,13 +8,14 @@ import (
 	"sync"
 
 	"github.com/gbsto/daisy/db"
+	"github.com/gbsto/daisy/macs"
 )
 
 /**************************************************************************
  *
  * Mac correlation table
  *
- * This runs every time new data comes in from the probe(s)
+ * This runs every time new data comes in from the 15-minute probe(s)
  * Find pairs of mac addresses with how much online time overlap
  * NOTE: Values in the database have been multiplied by 100
  * and stored as integers
@@ -160,10 +161,10 @@ func BuildMacCorrelationTable(site string) {
 	}
 }
 
-func organizeOnlineInfo(onlineInfo []Online) ([]int, []string, map[string]map[int]Online) {
+func organizeOnlineInfo(onlineInfo []macs.Online) ([]int, []string, map[string]map[int]macs.Online) {
 	dateSet := make(map[int]struct{})
 	macSet := make(map[string]struct{})
-	byMac := make(map[string]map[int]Online)
+	byMac := make(map[string]map[int]macs.Online)
 
 	for _, item := range onlineInfo {
 		dateInt := int(item.Date)
@@ -171,7 +172,7 @@ func organizeOnlineInfo(onlineInfo []Online) ([]int, []string, map[string]map[in
 		macSet[item.Mac] = struct{}{}
 
 		if _, ok := byMac[item.Mac]; !ok {
-			byMac[item.Mac] = make(map[int]Online)
+			byMac[item.Mac] = make(map[int]macs.Online)
 		}
 		byMac[item.Mac][dateInt] = item
 	}
@@ -192,7 +193,7 @@ func organizeOnlineInfo(onlineInfo []Online) ([]int, []string, map[string]map[in
 }
 
 // fillVector populates a pre-allocated feature vector for a single MAC address.
-func fillVector(mac string, dates []int, byMac map[string]map[int]Online, vec []float64) {
+func fillVector(mac string, dates []int, byMac map[string]map[int]macs.Online, vec []float64) {
 	// Zero out the reused vector
 	for i := range vec {
 		vec[i] = 0
@@ -225,7 +226,7 @@ func bitmapToSlots(am, pm int64, dst []float64) {
 }
 
 // overlap is percentage of time the devices are online at the same time
-func calculateOverlap(mac1, mac2 string, dates []int, byMac map[string]map[int]Online) (float64, int, int) {
+func calculateOverlap(mac1, mac2 string, dates []int, byMac map[string]map[int]macs.Online) (float64, int, int) {
 	var sameTime, overlap int
 	history1, ok1 := byMac[mac1]
 	history2, ok2 := byMac[mac2]
@@ -264,7 +265,7 @@ func calculateOverlap(mac1, mac2 string, dates []int, byMac map[string]map[int]O
 	return (float64(overlap) / float64(sameTime*48)) * 100.0, sameTime, overlap
 }
 
-func calculateJaccard(mac1, mac2 string, dates []int, byMac map[string]map[int]Online) float64 {
+func calculateJaccard(mac1, mac2 string, dates []int, byMac map[string]map[int]macs.Online) float64 {
 	var intersection, union int
 	var sameTime int // for min threshold
 	history1, ok1 := byMac[mac1]
@@ -332,8 +333,8 @@ func pearson(x, y []float64) float64 {
 }
 
 // Ensure to eliminate macs covered by alias, or not active, and is not identified as solitary
-func getOnlineHistoryInfo(site string) ([]Online, error) {
-	var items []Online
+func getOnlineHistoryInfo(site string) ([]macs.Online, error) {
+	var items []macs.Online
 	query := `
 		SELECT COALESCE(A.alias, O.mac) as mac, O.date, O.am, O.pm
 		FROM online O
@@ -349,7 +350,7 @@ func getOnlineHistoryInfo(site string) ([]Online, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var item Online
+		var item macs.Online
 		if err := rows.Scan(&item.Mac, &item.Date, &item.Am, &item.Pm); err != nil {
 			log.Println(err)
 			return nil, err

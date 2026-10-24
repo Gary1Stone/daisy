@@ -6,6 +6,7 @@ import (
 
 	"github.com/gbsto/daisy/aliases"
 	"github.com/gbsto/daisy/macs"
+	"github.com/gbsto/daisy/online"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -71,8 +72,8 @@ func PostOnlineApi(c *fiber.Ctx) error {
 		}
 
 		go func() {
-			macs.BuildMacCorrelationTable(site) // ~360 msec
-			macs.PopulateVendors()              // Sequential start to avoid DB lock contention
+			online.BuildMacCorrelationTable(site) // ~360 msec
+			macs.PopulateVendors()                // Sequential start to avoid DB lock contention
 		}()
 	}
 	return c.Status(fiber.StatusOK).SendString("OKAY")

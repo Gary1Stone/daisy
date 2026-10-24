@@ -8,6 +8,7 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
+	"github.com/gbsto/daisy/online"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -37,7 +38,7 @@ func GetDuplicates(c *fiber.Ctx) error {
 		"isDisabled":  !user.Permissions.Device.Update,
 		"cmd_one":     template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"avoidSelect": template.HTML(avoidSelect),
-		"avoidChart":  template.HTML(ctrls.GetAvoidChart(user.Tzoff, mac1, mac2)),
+		"avoidChart":  template.HTML(online.GetAvoidChart(user.Tzoff, mac1, mac2)),
 	}))
 }
 
@@ -61,7 +62,7 @@ func PostDuplicates(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString("CRITICAL SERVER ERROR!")
 	}
 
-	return c.Status(fiber.StatusOK).SendString(ctrls.GetAvoidChart(user.Tzoff, recvd.Mac1, recvd.Mac2))
+	return c.Status(fiber.StatusOK).SendString(online.GetAvoidChart(user.Tzoff, recvd.Mac1, recvd.Mac2))
 }
 
 func PostDuplicatesJoin(c *fiber.Ctx) error {

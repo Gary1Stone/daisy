@@ -1,4 +1,4 @@
-package ctrls
+package online
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 )
 
 func GetOnlineDevices(tzoff int, theDay string) string {
-	chartData, err := macs.GetOnlineDay(tzoff, theDay)
+	chartData, err := getOnlineDay(tzoff, theDay)
 	if err != nil {
 		log.Println(err)
 		return "error getting online details"
@@ -31,7 +31,7 @@ func GetOnlineDevices(tzoff int, theDay string) string {
 }
 
 func GetOnlineDeviceHistory(tzoff int, mac string) string {
-	chartData, err := macs.GetDeviceHistory(tzoff, mac)
+	chartData, err := getMacHistory(tzoff, mac)
 	if err != nil {
 		log.Println(err)
 		return "error getting online details"
@@ -63,12 +63,12 @@ func GetAvoidChart(tzoff int, mac1, mac2 string) string {
 		return "missing mac info for online devices"
 	}
 
-	chartData1, err := macs.GetDeviceHistory(tzoff, macInfo1.Mac)
+	chartData1, err := getMacHistory(tzoff, macInfo1.Mac)
 	if err != nil {
 		log.Println(err)
 		return "missing mac info for online devices"
 	}
-	chartData2, err := macs.GetDeviceHistory(tzoff, macInfo2.Mac)
+	chartData2, err := getMacHistory(tzoff, macInfo2.Mac)
 	if err != nil {
 		log.Println(err)
 		return "error getting online details"
@@ -100,7 +100,7 @@ func GetAvoidChart(tzoff int, mac1, mac2 string) string {
 
 func GetLastOnlineDatesTable(curUid, tzoff int) string {
 	var tbl strings.Builder
-	items, err := macs.GetLastOnlineDates(curUid, tzoff)
+	items, err := GetLastOnlineDates(curUid, tzoff)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -111,4 +111,25 @@ func GetLastOnlineDatesTable(curUid, tzoff int) string {
 	}
 	tbl.WriteString(`</tbody></table></div>`)
 	return tbl.String()
+}
+
+func BuildComputerHistoryChart(cid, tzoff int, name string) string {
+	chartData, err := getComputerHistory(cid, tzoff)
+	if err != nil {
+		log.Println(err)
+		return "error getting online details"
+	}
+
+	uniqueMacs := make(map[string]bool)
+	var maclist []string
+
+	for _, item := range chartData {
+		if !uniqueMacs[item.Mac] {
+			uniqueMacs[item.Mac] = true
+			maclist = append(maclist, item.Mac)
+		}
+	}
+
+	macInfo, _ := macs.GetChartInfo4WhatWasOnline(maclist)
+	return svg.BuildOnlineChart(chartData, macInfo, svg.DateOnly)
 }

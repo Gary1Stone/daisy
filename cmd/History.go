@@ -7,6 +7,7 @@ import (
 	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
+	"github.com/gbsto/daisy/online"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -46,6 +47,6 @@ func GetHistory(c *fiber.Ctx) error {
 		"isDisabled":    !user.Permissions.Device.Update,
 		"cmd_one":       template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"midCtrl":       template.HTML(ctrls.BuildDropList("MID", midParam, "", false, false)),
-		"deviceHistory": template.HTML(ctrls.GetOnlineDeviceHistory(user.Tzoff, macInfo.Mac)),
+		"deviceHistory": template.HTML(online.GetOnlineDeviceHistory(user.Tzoff, macInfo.Mac)),
 	}))
 }

@@ -18,7 +18,7 @@ import (
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/logins"
-	"github.com/gbsto/daisy/macs"
+	"github.com/gbsto/daisy/online"
 	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/software"
 	"github.com/gbsto/daisy/svg"
@@ -69,7 +69,7 @@ func GetHome(c *fiber.Ctx) error {
 		}
 	}
 
-	online, offline := macs.GetCurrentOnOffCounts()
+	onlineCount, offlineCount := online.GetCurrentOnOffCounts()
 	var unwanted software.Unwanted
 	var alerts alerts.Alert
 	alerts.Uid = user.Uid
@@ -87,12 +87,12 @@ func GetHome(c *fiber.Ctx) error {
 		"wizardIcon":       template.HTML(icons.GetIcon("wizard")),
 		"checkIcon":        template.HTML(icons.GetIcon("check")),
 		"bellIcon":         template.HTML(icons.GetIcon("bell")),
-		"onlineCount":      online,
-		"offlineCount":     offline,
+		"onlineCount":      onlineCount,
+		"offlineCount":     offlineCount,
 		"onlineSpark":      template.HTML(svg.GraphCache.GetGraph(svg.OnlineMonth)),
 		"maxHitsMonth":     svg.GraphCache.GetMax(svg.OnlineMonth),
 		"wizardsSelect":    template.HTML(ctrls.BuildDropList("WIZARDS", "", "", false, false)),
-		"devicesOnline":    template.HTML(ctrls.GetLastOnlineDatesTable(user.Uid, user.Tzoff)),
+		"devicesOnline":    template.HTML(online.GetLastOnlineDatesTable(user.Uid, user.Tzoff)),
 		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedTable()),
 	}))
 }
