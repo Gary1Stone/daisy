@@ -108,34 +108,55 @@ func getWhatWasOnline(prevDay, currDay, nextDay int) ([]Online, error) {
 }
 
 type LastOnline struct {
-	Name string
-	Mac  string
-	date int
-	Date string
-	Cid  int
+	Name    string // Device Name
+	Date    string // latest Date (YYYY-MM-DD) last seen (or checked in, or via network probe) in user timezone
+	DaysAgo int    // How many days ago
+	Cid     int    // Computer ID
+	Utc     int64  // UTC time of latest last seen
 }
 
+// Find the last time each device was online or being looked at or reported in via audit.exe
 func GetLastOnlineDates(curUid, tzoff int) ([]LastOnline, error) {
 	items := make([]LastOnline, 0)
-
 	query := `
-		SELECT last_seen, mac, cid, name
-		FROM (
-			SELECT
-				O.date AS last_seen, O.mac, M.cid, COALESCE(M.name, M.hostname, 'Unknown') AS name,
-				ROW_NUMBER() OVER (
-					PARTITION BY M.cid
-					ORDER BY O.date DESC
-				) AS rn
-			FROM online O
-			LEFT JOIN macs M ON M.mac = O.mac
-			WHERE (O.AM > 0 OR O.PM > 0) AND M.cid > 0
-		)
-		WHERE rn = 1
-		ORDER BY name DESC
-		`
+	WITH combined_timestamps AS (
+    -- Source 1: Tracks
+    SELECT T.timestamp AS utc, T.cid, D.name
+    FROM tracks T
+    JOIN devices D ON D.cid = T.cid
+    WHERE D.active = 1
 
-	rows, err := db.Conn.Query(query)
+    UNION ALL
+
+    -- Source 2: Action Log
+    SELECT A.opened AS utc, A.cid, D.name
+    FROM action_log A
+    JOIN devices D ON D.cid = A.cid
+    WHERE D.active = 1 AND A.action IN ('SIGHTING', 'GIVING', 'CLAIMING')
+
+    UNION ALL
+
+    -- Source 3: Online  yyyy mm dd => add the dashes
+    SELECT 
+        unixepoch(substr(O.date, 1, 4) || '-' || substr(O.date, 5, 2) || '-' || substr(O.date, 7, 2)) AS utc, 
+        M.cid, 
+        D.name
+    FROM online O
+    JOIN macs M ON M.mac = O.mac
+    JOIN devices D ON D.cid = M.cid
+    WHERE D.active = 1
+	)
+	SELECT 
+		MAX(utc) AS utc,
+		strftime('%Y-%m-%d', MAX(utc-?), 'unixepoch') AS date,
+		cast((strftime('%s', 'now') - (utc-?)) / 86400 AS INTEGER) AS days_ago,
+		cid,
+		name
+	FROM combined_timestamps
+	GROUP BY cid
+	ORDER BY days_ago
+	`
+	rows, err := db.Conn.Query(query, tzoff, tzoff)
 	if err != nil {
 		log.Println("Error querying online data:", err)
 		return nil, err
@@ -143,12 +164,11 @@ func GetLastOnlineDates(curUid, tzoff int) ([]LastOnline, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var item LastOnline
-		err := rows.Scan(&item.date, &item.Mac, &item.Cid, &item.Name)
+		err := rows.Scan(&item.Utc, &item.Date, &item.DaysAgo, &item.Cid, &item.Name)
 		if err != nil {
 			log.Println("Error scanning online data:", err)
 			continue
 		}
-		item.Date = formatDate(item.date, tzoff)
 		items = append(items, item)
 	}
 	if err = rows.Err(); err != nil {

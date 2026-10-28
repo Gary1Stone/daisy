@@ -147,10 +147,10 @@ func BuildAssociatedMacs(cid, mid int) string {
 	}
 
 	var tbl strings.Builder
-	fmt.Fprintf(&tbl, `<table><thead>
+	fmt.Fprintf(&tbl, `<input type="hidden" id="associateMac" value="%d" /><table><thead>
 		<tr><th colspan="2">Associate MAC: %s</th></tr>
 		<tr><th>MAC</th><th>recomendation</th></tr>
-		</thead><tbody>`, items[0].ComparedToMac)
+		</thead><tbody>`, mid, items[0].ComparedToMac)
 
 	for _, item := range items {
 		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%s</td></tr>`, item.Mac, item.Recomendation)

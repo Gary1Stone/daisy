@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gbsto/daisy/macs"
@@ -95,7 +97,7 @@ func GetAvoidChartData(tzoff int, mac1, mac2 string) (chartData []Online, macInf
 	}
 
 	title = "<p>" + macInfo1.Mac + " (" + macInfo1.Name + ") ↔ " + macInfo2.Mac + " (" + macInfo2.Name + ")</p>"
-	return // title + svg.BuildOnlineChart(chartData, macInfo, svg.NameWithDate)
+	return
 }
 
 func GetLastOnlineDatesTable(curUid, tzoff int) string {
@@ -105,9 +107,18 @@ func GetLastOnlineDatesTable(curUid, tzoff int) string {
 		log.Println(err)
 		return ""
 	}
-	tbl.WriteString(`<div style="max-height: 400px; overflow-y: auto;"><table class="striped" id="seen"><thead><tr><th>Device</th><th>Last Seen Online</th></thead><tbody>`)
+	auditLate, err := strconv.Atoi(os.Getenv("AUDIT_LATE"))
+	if err != nil {
+		auditLate = 28
+	}
+
+	tbl.WriteString(`<div style="max-height: 400px; overflow-y: auto;"><table class="striped" id="seen"><thead><tr><th>Device</th><th>Last Checkin</th></thead><tbody>`)
 	for _, item := range items {
-		fmt.Fprintf(&tbl, `<tr><td><a href='device.html?cid=%d'>%s</a></td><td>%s</td></tr>`, item.Cid, item.Name, item.Date)
+		color := "green"
+		if item.DaysAgo > auditLate {
+			color = "red"
+		}
+		fmt.Fprintf(&tbl, `<tr><td><a href='device.html?cid=%d'>%s</a></td><td style="color:%s;">%s (%d days ago)</td></tr>`, item.Cid, item.Name, color, item.Date, item.DaysAgo)
 	}
 	tbl.WriteString(`</tbody></table></div>`)
 	return tbl.String()

@@ -47,17 +47,23 @@ function setupTableSearch() {
 function rowClicked(id = 0) {
     if (!id) return;
     const mid = txt2Int(id);
-    if (mid < 1) return;
     const cid = txt2Int(UI.cid.value);
-    if (cid < 1) return;
+    if (mid < 1 || cid < 1) return;
     UI.popAssociate.showModal();
     htmx("/devmacs/associates", {cid: cid, mid: mid}, "associateDetails");
 }
 
-
-
-function associateMac() {
+function associatedMac() {
+    const cid = txt2Int(UI.cid.value);
+    const associateMac = document.getElementById("associateMac");
+    if (!associateMac) return;
+    const mid = txt2Int(associateMac.value);
+    if (mid < 1 || cid < 1) return;
+    postJSON("/devmacs/associated", {cid: cid, mid: mid}, (reply) => {
+        if (reply !== "okay") {
+           console.log(reply);
+        }
+    });
     UI.popAssociate.close();
     UI.mid.value = 0;
-
 }

@@ -155,7 +155,6 @@ func (d *DeviceInfo) GetDevicePrimaryMac(cid int) (retMac string, err error) {
 	return // TODO: return the macs[mac]count and combine all plots into one.
 }
 
-
 type DeviceMacs struct {
 	Mac         string `json:"mac"`            // MAC  address
 	Mid         int    `json:"mid"`            //    // If = 0, then it is not not in the MACS table, only the self-reporting table
@@ -464,6 +463,15 @@ func RecommendSameComputer(jaccard, pearson, overlapPercent float64, counts, day
 	}
 
 	return result
+}
+
+func SetAssociatedMac(cid, mid int) error {
+	_, err := db.Conn.Exec(`UPDATE macs SET cid=? WHERE mid=?`, db.ForeignKey(cid), mid)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
 }
 
 /*

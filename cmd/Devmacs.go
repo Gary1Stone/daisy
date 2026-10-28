@@ -128,7 +128,7 @@ func PostRemoveMac(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).SendString(devmacs.BuildDevMacs(recvd.Cid, user.Tzoff, false))
 }
 
-// Unassociate a mac to a device
+// Generate a device to mac association recomendation
 func PostGetAssociations(c *fiber.Ctx) error {
 	user, err := extractUserInfo(c)
 	if err != nil {
@@ -149,4 +149,33 @@ func PostGetAssociations(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).SendString(devmacs.BuildAssociatedMacs(recvd.Cid, recvd.Mid))
+}
+
+// Associate a MAC to a device
+func PostMakeAssociation(c *fiber.Ctx) error {
+	user, err := extractUserInfo(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).Redirect("index.html")
+	}
+
+	if !user.Permissions.Device.Update {
+		return c.Status(fiber.StatusOK).SendString("ERROR: You do not have permission to update device records.")
+	}
+
+	recvd := struct {
+		Cid int `json:"cid"` // Computer ID
+		Mid int `json:"mid"` // MAC ID
+	}{}
+
+	if err := c.BodyParser(&recvd); err != nil {
+		return c.Status(fiber.StatusOK).SendString("ERROR: server error.")
+	}
+
+	// Do magic here, associate the mac, Add the cid to the macs table for the mid
+	msg := "okay"
+	err = devmacs.SetAssociatedMac(recvd.Cid, recvd.Mid)
+	if err != nil {
+		msg = "Server Error: Unable to associate the MAC to the device."
+	}
+	return c.Status(fiber.StatusOK).SendString(msg)
 }

@@ -85,7 +85,7 @@
     <div id="associateDetails">Pop Associate</div>
     <footer>
       <button type="button" class="outline" commandfor="popAssociate" command="close">Cancel</button>
-      <button type="button" commandfor="popAssociate" command="close" onclick="associatedMac();">Save</button>
+      <button type="button" onclick="associatedMac();">Save</button>
     </footer>
   </article>
 </dialog>
@@ -96,7 +96,16 @@
       <button type='button' aria-label="Close" rel="prev" commandfor="popHelp" command="close"></button>
       <h4>Help</h4>
     </header>
-    <p>Network Devices can have multiple MACs, such as a computer having an ethernet connection and a WiFi connection.</p>
+    <p>Network Devices can have multiple MACs, such as a computer having an Ethernet connection and a WiFi connection.</p>
+    <p>Sometimes the multiple MACs may be online together, othertimes not. Items to consider:
+      <ul>
+        <li>Does the device have multiple Network Interfae Cards (Ethernet Cards), and are there multiple Ethernet cables connected?</li>
+        <li>Is the WiFi connected at the same time as the Ethernet?</li>
+        <li>Do devices have similar schedules? Are they both on at the same time?</li>
+        <li>Is it a single person bring in multiple devices at the same time?</li>
+        <li>Is it a group of people sharing the same schedule such as a classroom environment?</li>
+      </ul>
+    </p>
     <footer>
       <button type="button" class="outline" commandfor="popHelp" command="close">Cancel</button>
       <button type="button" for="theForm" data-target="popHelp"  onclick="saveDetail();">Save</button>

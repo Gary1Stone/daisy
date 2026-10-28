@@ -43,20 +43,20 @@ func gen3Days(dayUTC time.Time) (prevDay, currDay, nextDay int) {
 }
 
 // func convertYYYYMMDDToDate(yyyymmdd int) string {
-func formatDate(dateInt int, tzoff int) string {
-	// Extract year, month, and day
-	year := dateInt / 10000
-	month := (dateInt / 100) % 100
-	day := dateInt % 100
+// func formatDate(dateInt int, tzoff int) string {
+// 	// Extract year, month, and day
+// 	year := dateInt / 10000
+// 	month := (dateInt / 100) % 100
+// 	day := dateInt % 100
 
-	// Create date in UTC
-	t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+// 	// Create date in UTC
+// 	t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 
-	// Apply timezone offset (in seconds)
-	t = t.Add(time.Duration(tzoff) * time.Second)
+// 	// Apply timezone offset (in seconds)
+// 	t = t.Add(time.Duration(tzoff) * time.Second)
 
-	return t.Format("Monday 02 Jan 2006")
-}
+// 	return t.Format("Monday 02 Jan 2006")
+// }
 
 // Convert yyyymmdd to time
 func yyyymmddUTC2time(yyyymmdd int64) time.Time {
