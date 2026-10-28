@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/gbsto/daisy/aliases"
 	"github.com/gbsto/daisy/macs"
@@ -20,7 +21,7 @@ func PostOnlineApi(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key
-	if request.ApiKey != "weird science class Kevin!" {
+	if request.ApiKey != os.Getenv("ONLINE_API_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusOK).SendString(response)
 	}

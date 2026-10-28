@@ -67,7 +67,7 @@ func GetDevice(c *fiber.Ctx) error {
 	if err != nil {
 		log.Println(err)
 	}
-	//	fmt.Printf("GetDevice took %s", time.Since(start))
+	//	fmt.Printf("GetDevice took %s\n", time.Since(start))
 
 	// Render the page
 	return c.Render("device", addNavigationIcons(fiber.Map{
