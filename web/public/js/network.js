@@ -51,11 +51,9 @@ function showDetail(cid) {
         postJSON("/tree/show", {cid: cid, site: site}, (response) => {
             UI.cid.value = response.cid || "";
             UI.name.innerText = response.name || "";
-            UI.parent.value = response.parent || "";
             setDropdownValue('kind', response.kind || "");
             setDropdownValue('office', response.office || "");
-            // UI.kind.value = response.kind || "";
-            // UI.office.value = response.office || "";
+            setDropdownValue('parent', response.parent || "");
             openModal(UI.popEdit);
             parentChanged();
             kindChanged();
