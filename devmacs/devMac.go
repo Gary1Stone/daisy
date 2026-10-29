@@ -466,9 +466,24 @@ func RecommendSameComputer(jaccard, pearson, overlapPercent float64, counts, day
 }
 
 func SetAssociatedMac(cid, mid int) error {
+	if mid < 1 || cid < 1 {
+		return nil
+	}
 	_, err := db.Conn.Exec(`UPDATE macs SET cid=? WHERE mid=?`, db.ForeignKey(cid), mid)
 	if err != nil {
 		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+// Remove the cid (device) to mid (MAC) association
+func Unassociate(mid int) error {
+	if mid < 1 {
+		return nil
+	}
+	_, err := db.Conn.Exec("UPDATE macs SET cid=NULL WHERE MID=?", mid)
+	if err != nil {
 		return err
 	}
 	return nil

@@ -36,6 +36,9 @@ func generateNodeHTML(node *tree.TreeNode) string {
 	if node.IsOnline {
 		color = colors.Success
 		tip = "online"
+	} else if node.NoMacs {
+		color = colors.Info
+		tip = "never online or offline"
 	}
 	fmt.Fprintf(&html, "<li data-id='%d'> %s <a href='#' onclick='showDetail(%d)'>%s</a> %s (%s)",
 		node.Cid, setIconColor(node.Icon, color, tip), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle))

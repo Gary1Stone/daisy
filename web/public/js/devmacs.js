@@ -12,18 +12,33 @@ document.addEventListener('DOMContentLoaded', function() {
     UI.popAssociate = document.getElementById("popAssociate");
     UI.mid = document.getElementById("mid");
     setupTableSearch(); //On the Find popup
-
 });
+
+function showHelp() {
+    const helpDialog = document.getElementById("helpDialog");
+    if (helpDialog) {
+        openModal(helpDialog);
+    }
+}
 
 function removeMac(cid, mid) {
     if (!mid || !cid) return;
-    htmx("/devmacs/removemac", {cid: cid, mid: mid}, "macListing");
+    htmx("/devmacs/removemac", {cid: cid, mid: mid}, "associated").then(() => reloadPage(cid));
 }
 
-function getDeviceList(cid) {
+function getDeviceList(id) {
+    if (!id) return;
+    cid = txt2Int(id);
+    if (cid < 1) return;
     const site = UI.site.value;
-    htmx("/devmacs/getdevicelist", {cid: txt2Int(cid), site: site}, "deviceListing")
-        .then(() => buildTable("listingTable"));
+    htmx("/devmacs/getdevicelist", {cid: cid, site: site}, "deviceListing");
+}
+
+function reloadPage(id) {
+    if (!id) return;
+    cid = txt2Int(id);
+    if (cid < 1) return;
+    window.location.href = encodeURI("devmacs.html?cid=" + cid);
 }
 
 function setupTableSearch() {
@@ -44,6 +59,7 @@ function setupTableSearch() {
     });
 }
 
+//Show popup of association recomendations for selected MAC
 function rowClicked(id = 0) {
     if (!id) return;
     const mid = txt2Int(id);
@@ -53,6 +69,7 @@ function rowClicked(id = 0) {
     htmx("/devmacs/associates", {cid: cid, mid: mid}, "associateDetails");
 }
 
+// Make association
 function associatedMac() {
     const cid = txt2Int(UI.cid.value);
     const associateMac = document.getElementById("associateMac");
@@ -62,8 +79,8 @@ function associatedMac() {
     postJSON("/devmacs/associated", {cid: cid, mid: mid}, (reply) => {
         if (reply !== "okay") {
            console.log(reply);
+        } else {
+            reloadPage(cid);
         }
     });
-    UI.popAssociate.close();
-    UI.mid.value = 0;
 }

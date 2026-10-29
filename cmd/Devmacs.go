@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"html/template"
+	"log"
 	"strconv"
 
+	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/devmacs"
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/tree"
 	"github.com/gofiber/fiber/v2"
 )
@@ -58,6 +59,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 		"title":      template.HTML(icons.GetIcon("devices") + " Device / MAC association"),
 		"fullName":   user.Fullname,
 		"isAdmin":    user.IsAdmin,
+		"cmd_one":    template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
 		"cid":        cid,
 		"site":       site,
 		"siteName":   siteName,
@@ -121,9 +123,10 @@ func PostRemoveMac(c *fiber.Ctx) error {
 	}
 
 	// Do processing to remove the mac association
-	var m macs.MacInfo
-	m.Mid = recvd.Mid
-	m.Unassociate()
+	err = devmacs.Unassociate(recvd.Mid)
+	if err != nil {
+		log.Println(err)
+	}
 
 	return c.Status(fiber.StatusOK).SendString(devmacs.BuildDevMacs(recvd.Cid, user.Tzoff, false))
 }

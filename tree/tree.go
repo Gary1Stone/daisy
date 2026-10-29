@@ -19,6 +19,7 @@ type Node struct {
 	Model       string `json:"model"`       // Device model
 	IsOnline    bool   `json:"isonline"`    // Is the device currently online
 	Site        string `json:"site"`        // The node's site
+	NoMacs      bool   `json:"nomacs"`      // Flag if the device never shows up online (such as unmanaged switch)
 }
 
 type TreeNode struct {
@@ -52,8 +53,34 @@ func GetNode(cid int, site string) (node Node, err error) {
 }
 
 func GetNodes(site string) (nodes []Node, err error) {
+	// First find all the devices that do not have macs
+	var noMacs = make(map[int]bool)
+	query1 := `SELECT D.cid FROM DEVICES D
+	LEFT JOIN MACS M ON M.cid=D.cid 
+	LEFT JOIN device_mac A ON A.cid=D.cid
+	WHERE D.active=1 AND D.status != 'STORAGE' AND D.site=? AND M.cid IS NULL AND A.cid IS NULL`
+	rows, err := db.Conn.Query(query1, site)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cid int
+		err = rows.Scan(&cid)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		noMacs[cid] = true
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return
+	}
+
 	query := nodeQuery + `AND D.site=? ORDER BY D.name`
-	rows, err := db.Conn.Query(query, site, site)
+	rows, err = db.Conn.Query(query, site, site)
 	if err != nil {
 		log.Println(err)
 		return
@@ -66,6 +93,7 @@ func GetNodes(site string) (nodes []Node, err error) {
 			log.Println(err)
 			return
 		}
+		node.NoMacs = noMacs[node.Cid]
 		nodes = append(nodes, node)
 	}
 	if err = rows.Err(); err != nil {
