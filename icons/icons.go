@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -33,7 +34,7 @@ func GetIcon(iconName string) string {
 	}
 	iconMu.RUnlock()
 
-	filename := iconName + ".svg"
+	filename := strings.ToLower(iconName) + ".svg"
 	iconPath := filepath.Join("web", "public", "icons", filename)
 
 	// Get the icon from the icon directory and add it to the iconMap[]
