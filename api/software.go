@@ -27,7 +27,7 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 	var d devices.Device
 	cid, err := d.GetCidByName(sysInfo.Hostname)
 	if err == sql.ErrNoRows {
-		cid, err = ApiNewComputer(sysInfo)
+		cid, err = apiNewComputer(sysInfo)
 		if err != nil {
 			log.Println("API: hostname not registered")
 			return c.Status(fiber.StatusOK).SendString(resp)
@@ -38,7 +38,7 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 	}
 
 	// Save the device info and track the location
-	err = UpdateSysInfo(cid, sysInfo)
+	err = updateSysInfo(cid, sysInfo)
 	if err != nil {
 		log.Println("API: Failure adding device information", err)
 		return c.Status(fiber.StatusOK).SendString(resp)
@@ -54,21 +54,21 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 	// After adding the Operating System name to it
 	// Simplifies queries later on
 	sysInfo.SoftwareList = append(sysInfo.SoftwareList, sysInfo.OS_Name)
-	err = AddSoftwareList(cid, sysInfo)
+	err = addSoftwareList(cid, sysInfo)
 	if err != nil {
 		log.Println("API: Failure adding software", err)
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}
 
 	// Add the mac addresses
-	err = SetMacAddress(cid, sysInfo)
+	err = setMacAddress(cid, sysInfo)
 	if err != nil {
 		log.Println("API: Failure adding mac address information", err)
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}
 
 	// Add the Drive Information
-	err = SetDiskInfo(cid, sysInfo.Disk_Info)
+	err = setDiskInfo(cid, sysInfo.Disk_Info)
 	if err != nil {
 		log.Println("API: Failure adding drive information", err)
 		return c.Status(fiber.StatusOK).SendString(resp)

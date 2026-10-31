@@ -8,9 +8,12 @@ import (
 	"github.com/gbsto/daisy/macs"
 )
 
+// matches the OnlineHistory struct in isaw
 type OnlineAPI struct {
 	ApiKey     string            `json:"ApiKey"`
 	Command    string            `json:"Command"`
+	NetProbe   string            `json:"Netprobe"` // Computer's Hostname of the network probe
+	Site       string            `json:"Site"`     // The site the newtork probe is responsible for
 	OnlineInfo []Online          `json:"OnlineInfo"`
 	ScanInfo   []macs.MacInfo    `json:"ScanInfo"`
 	Aliases    []aliases.Aliases `json:"Aliases"`
@@ -39,7 +42,7 @@ type Online struct {
 	Slots   []int  `json:"Slots"`   // 96 15-minute timeslots for the day, 1=online, 0=offline, -1=outage
 }
 
-func SaveOnline(items []Online) error {
+func saveOnline(items []Online) error {
 	if len(items) == 0 {
 		return nil
 	}
@@ -84,7 +87,7 @@ func SaveOnline(items []Online) error {
 // Save the Scan Info map to the database
 // Limited to the scan fields only
 // Returns the site ID
-func SaveScanInfo(items []macs.MacInfo) (string, error) {
+func saveScanInfo(items []macs.MacInfo) (string, error) {
 	if len(items) == 0 {
 		return "", nil
 	}
@@ -139,7 +142,7 @@ func SaveScanInfo(items []macs.MacInfo) (string, error) {
 }
 
 // Sends hightest updated count in these tables to the API for it to determine if it needs to request new data
-func GetLastUpdated() HighWaterMarks {
+func getLastUpdated() HighWaterMarks {
 	var hwm HighWaterMarks
 	hwm.Macs = 0
 	hwm.Online = 0

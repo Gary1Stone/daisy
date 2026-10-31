@@ -19,6 +19,10 @@ CREATE INDEX "cities_lat_lon_idx" ON "cities" (
 
 CREATE UNIQUE INDEX devices_idx ON devices ("cid" ASC, "active" ASC, "name" ASC);
 
+CREATE UNIQUE INDEX idx_choices_site_parent
+ON choices(parent)
+WHERE field = 'SITE' AND parent != '';
+
 CREATE INDEX logins_idx ON logins ("id" ASC, "timestamp" ASC, "uid" ASC, "success" ASC);
 
 CREATE INDEX "profiles_idx" ON "profiles" (

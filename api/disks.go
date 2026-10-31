@@ -7,7 +7,7 @@ import (
 )
 
 // A single computer can have multiple disk drives
-func SetDiskInfo(cid int, diskInfo []DiskInfo) error {
+func setDiskInfo(cid int, diskInfo []DiskInfo) error {
 	// Delete existing disk data for this device
 	query := "DELETE FROM disks WHERE cid=?"
 	_, err := db.Conn.Exec(query, cid)

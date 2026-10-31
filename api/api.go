@@ -86,7 +86,7 @@ type SysInfo struct {
 	Disk_Info                 []DiskInfo `json:"Disk_Info"`
 }
 
-func AddSoftwareList(cid int, sysInfo *SysInfo) error {
+func addSoftwareList(cid int, sysInfo *SysInfo) error {
 	oldList := make(map[string]int)
 	var name string
 	var id int
@@ -169,7 +169,7 @@ func AddSoftwareList(cid int, sysInfo *SysInfo) error {
 // Add the system info from the API to the device record
 // These fields are not shared with the device fields
 // used in the application
-func UpdateSysInfo(cid int, sysInfo *SysInfo) error {
+func updateSysInfo(cid int, sysInfo *SysInfo) error {
 	curUid := db.SYS_PROFILE.Uid
 	recordDeviceLocation(cid, sysInfo)
 	recordDeviceWiFi(cid, sysInfo)
@@ -222,7 +222,7 @@ func UpdateSysInfo(cid int, sysInfo *SysInfo) error {
 }
 
 // Never saw this computer before, or the user changed the computer name
-func ApiNewComputer(sysInfo *SysInfo) (int, error) {
+func apiNewComputer(sysInfo *SysInfo) (int, error) {
 	computer := new(devices.Device) // Allocate on heap (address of)
 	computer.Name = sysInfo.Hostname
 	computer.Year = extractYearFromBios(sysInfo.BIOS_Version)
@@ -405,7 +405,7 @@ func getWiFiLocation(sysInfo *SysInfo) (float64, float64, error) {
 	return longitude, latitude, errors.New("no matches")
 }
 
-func SetMacAddress(cid int, sysInfo *SysInfo) error {
+func setMacAddress(cid int, sysInfo *SysInfo) error {
 
 	// If no macs, nothing to do.
 	if len(sysInfo.Mac_Addresses) == 0 {
@@ -468,7 +468,7 @@ func SetMacAddress(cid int, sysInfo *SysInfo) error {
 	}
 
 	// Update the mac table with the CID and aliaes table
-	err = SetMacAliases(cid, sysInfo)
+	err = setMacAliases(cid, sysInfo)
 	if err != nil {
 		log.Println(err)
 	}
@@ -478,7 +478,7 @@ func SetMacAddress(cid int, sysInfo *SysInfo) error {
 
 // SetMacAliases associates a set of MAC addresses with a device, determines a master MAC,
 // updates the database, and creates aliases for the other MACs.
-func SetMacAliases(cid int, sysInfo *SysInfo) error {
+func setMacAliases(cid int, sysInfo *SysInfo) error {
 	macs := sysInfo.Mac_Addresses
 	if len(macs) == 0 {
 		return nil
@@ -554,4 +554,55 @@ func saveWiFiLocation(SSID, BSSID string, RSSI int, latitude, longitude float64,
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func checkNetProbe(netprobe, site string) bool {
+	//Get the parent info
+	var parent string
+	query := "SELECT parent FROM choices WHERE field='SITE' AND code=?"
+	err := db.Conn.QueryRow(query, site).Scan(&parent)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println(err)
+		return false
+	}
+
+	if parent == netprobe {
+		return true // Its a match
+	}
+
+	if parent != "" {
+		return false // Already has an initalized parent
+	}
+
+	// Uninitalized parent. Check the netprobe is not used in another site
+	cnt := 0
+	query = "SELECT COUNT(*) FROM choices WHERE field='SITE' AND parent=?"
+	err = db.Conn.QueryRow(query, netprobe).Scan(&cnt)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	if cnt > 0 {
+		log.Println("Two sites cannot have the same hostname as the parent")
+		return false
+	}
+
+	// All good, so set the parent, this database idx is set so two sites cannot have the same parent
+	// CREATE UNIQUE INDEX idx_choices_site_parent
+	// ON choices(parent)
+	// WHERE field = 'SITE' AND parent != '';
+	_, err = db.Conn.Exec("UPDATE choices SET parent=? WHERE field='SITE' AND code=?", netprobe, site)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func ResetNetworkProbe(site string) error {
+	_, err := db.Conn.Exec("UPDATE choices SET parent='' WHERE field='SITE' and code=?", site)
+	if err != nil {
+		return err
+	}
+	return nil
 }
