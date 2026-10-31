@@ -431,7 +431,6 @@ func setMacAddress(cid int, sysInfo *SysInfo) error {
 	}
 	newCid.WriteString(strings.Join(quoted, ", "))
 	newCid.WriteString(") AND cid != ?")
-	log.Println(newCid.String())
 	_, err = tx.Exec(newCid.String(), cid)
 	if err != nil {
 		log.Printf("SetMacAddress: failed to update old MAC addresses for new valid_from for cid changed %d: %v", cid, err)
