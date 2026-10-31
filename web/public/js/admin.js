@@ -200,6 +200,7 @@ function setHeaderExtraColumn(tableSelected) {
         case "TROUBLE": return "<th>Device Type</th>";
         case "GROUP": return "<th>Permissions</th>";
         case "TYPE": return "<th>Asset ID Prefix</th>";
+        case "SITE": return "<th title='Network Device Scanner (iSaw.exe or laptops.exe)'>Probe Hostname</th>";
         default: return "";
     }
 }
@@ -210,8 +211,20 @@ function setRowExtraColumn(tableSelected, parent, asset_id, id) {
         case "TROUBLE": return `<td>${buildTroubleParentControl(parent, id)}</td>`;
         case "GROUP": return `<td>${buildGroupPermissionsControl(id)}</td>`;
         case "TYPE": return `<td>${buildAssetIdControl(asset_id, id)}</td>`;
+        case "SITE": return `<td>${buildProbeControl(parent, id)}</td>`;
         default: return "";
     }
+}
+
+function buildProbeControl(txt, rowId) {
+    const ctlId = `probe${rowId}`;
+    const errorId = `probeerror${rowId}`;
+    const maxLength = 25;
+    return `<input type='text' id='${ctlId}' name='${ctlId}' value="${txt}" placeholder='Site probe'
+            title='Asset ID Prefix' minlength='0' maxlength='${maxLength}' pattern='[a-zA-Z0-9]+'
+            aria-invalid="false" aria-describedby='${errorId}'
+            onchange="doProbe('${rowId}')" >
+        <small id='${errorId}'>Mandatory with only A-Z or 0-9, ${maxLength} Characters</small>`;
 }
 
 //Comparer Function for sorting JSON object array  
@@ -282,7 +295,6 @@ function buildCodeControl(txt, rowId) {
     let validationRules, errorMessage;
     let patternAttribute = ""; // Initialize patternAttribute as empty string
     switch (tableSelected) {
-        
         case "GROUP":
         case "IMPACT":
             validationRules = "required minlength='1' maxlength='3' pattern='[0-9]+'";
@@ -366,7 +378,18 @@ function doParentSelect(rowId) {
     }
 }
 
- function moveRowUp(rowId) {
+function doProbe(rowId) {
+    if (building) return;
+    const id = txt2Int(rowId);
+    const ctlId = "probe" + id.toString();
+    const idx = adminData.findIndex((item => item.id === id));
+    if (idx >= 0 && idx < adminData.length) {
+        adminData[idx].parent = document.getElementById(ctlId).value;
+        adminData[idx].update = true; //Flag server to update this record
+    }
+}
+
+function moveRowUp(rowId) {
     const id = txt2Int(rowId);
     const idx = adminData.findIndex((item => item.id === id));
     const seq = adminData[idx].seq;
