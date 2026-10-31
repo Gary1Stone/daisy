@@ -8,17 +8,17 @@ import (
 )
 
 // Return a substring
-func Substr(input string, start int, length int) string {
-	inputLength := len(input)
-	if start < 0 || length <= 0 || inputLength == 0 || start > inputLength {
-		return ""
-	}
-	if start+length > inputLength {
-		length = inputLength - start
-	}
-	asRunes := []rune(input[start : start+length])
-	return string(asRunes)
-}
+// func Substr(input string, start int, length int) string {
+// 	inputLength := len(input)
+// 	if start < 0 || length <= 0 || inputLength == 0 || start > inputLength {
+// 		return ""
+// 	}
+// 	if start+length > inputLength {
+// 		length = inputLength - start
+// 	}
+// 	asRunes := []rune(input[start : start+length])
+// 	return string(asRunes)
+// }
 
 // Convert yyyy-mm-dd to Unix timestamp in seconds UTC since Jan 1, 1970
 func ToUnixSeconds(yyyymmdd string, tzoff int) int64 {

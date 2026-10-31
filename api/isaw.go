@@ -6,7 +6,6 @@ import (
 
 	"github.com/gbsto/daisy/choices"
 	"github.com/gbsto/daisy/emails"
-	"github.com/gbsto/daisy/wizards"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -35,7 +34,7 @@ func PostiSawApi(c *fiber.Ctx) error {
 
 	switch request.Command {
 	case "GET_PROFILES":
-		profiles, err := wizards.GetProfiles()
+		profiles, err := GetProfiles()
 		if err != nil {
 			log.Println("API: Failure getting profiles", err)
 			return c.Status(fiber.StatusOK).SendString(response)
@@ -47,7 +46,7 @@ func PostiSawApi(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusOK).SendString(string(reply))
 	case "GET_COMPUTERS":
-		computers, err := wizards.GetComputers()
+		computers, err := GetComputers()
 		if err != nil {
 			log.Println("API: Failure getting profiles", err)
 			return c.Status(fiber.StatusOK).SendString(response)

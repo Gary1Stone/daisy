@@ -1,4 +1,4 @@
-package wizards
+package api
 
 import (
 	"log"

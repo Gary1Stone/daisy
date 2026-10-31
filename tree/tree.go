@@ -135,7 +135,6 @@ func GetTreeNodes(site string) (roots []*TreeNode, err error) {
 
 // Update the Parent, kind, officce fields of all the Device and MAC records
 func SetTreeParent(cid, parent int, kind, office string) error {
-
 	tx, err := db.Conn.Begin()
 	if err != nil {
 		log.Println(err)
