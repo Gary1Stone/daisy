@@ -2,7 +2,6 @@ package webserver
 
 import (
 	"crypto/tls"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -21,9 +20,6 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	// Constants
 	domain := os.Getenv("HOST")
 	httpsPort := os.Getenv("PORT")
-
-	// Logging
-	log.SetOutput(io.MultiWriter(os.Stderr, daisyLogger))
 
 	// Working Directories
 	workingDir, err := os.Getwd()
@@ -108,7 +104,6 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 		attack.Path = c.Path()
 		attack.Browser = c.Get("User-Agent")
 		attack.RecordAttack()
-		//db.RecordAttack(ip, c.Method(), c.Path(), c.Get("User-Agent"))
 		// Set the status code to 404 Not Found
 		c.Status(fiber.StatusNotFound)
 		return c.Render("404", fiber.Map{ // HTML template is named "404.html"
