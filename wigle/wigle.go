@@ -50,6 +50,8 @@ func GetWiFiLocationFromWigle(ssid, bssid string, lat, lon float64) (float64, fl
 		dailyLimitOccurred = time.Now()
 	}
 
+	log.Printf("Wigle finding ssid: %s, bssid: %s\n", ssid, bssid)
+
 	// Construct the URL with query parameters
 	apiURL := "https://api.wigle.net/api/v2/network/search"
 	params := url.Values{}
@@ -113,7 +115,7 @@ func GetWiFiLocationFromWigle(ssid, bssid string, lat, lon float64) (float64, fl
 
 	// Return the coordinates from the first result
 	firstResult := wigleResp.Results[0]
-	log.Printf("Wigle API: Found location for BSSID %s: Lat %f, Lon %f", bssid, firstResult.Trilat, firstResult.Trilong)
+	log.Printf("Wigle API: Found location for SSID: %s BSSID %s: Lat %f, Lon %f", ssid, bssid, firstResult.Trilat, firstResult.Trilong)
 	return firstResult.Trilat, firstResult.Trilong, nil
 }
 
