@@ -27,6 +27,10 @@ func PostOnlineApi(c *fiber.Ctx) error {
 	}
 
 	// Check if the network probe is configured properly
+	// Confirm the SITE and NetProbe match the setting in choices table to prevent trashing existing site data with two sites reporting they are the same one.
+	// In the choices table, if the site's parent field is empty for the given site, fill it with the netprobe information (probe's hostname).
+	// If the netprobe does not match the site's parent, return error.
+	// This is to make sure the .env file is properly updated before running another network probe (isaw/laptops)
 	if !checkNetProbe(request.NetProbe, request.Site) {
 		msg := "API: Failure saving online history. Site is misconfgured in the .env file. Then reset it in the Sites admin screen in Daisy"
 		log.Println(msg)
@@ -58,19 +62,6 @@ func PostOnlineApi(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(string(reply)) // Notice that JSON can be sent in string format
 
 	case "SAVE_ONLINE_HISTORY":
-
-		log.Println("SAVE_ONLINE_HISTORY")
-
-		// Confirm the SITE and NetProbe match setting in choices table to prevent trashing existing data with two sites reporting they are the same one.
-		// In the choices table, if the site's parent field is empty for the given site, fill it with the netprobe information (probe's hostname).
-		// If the netprobe does not match the site's parent, return error.
-		// This is to make sure the .env file is properly updated before running another network probe (isaw)
-
-		// if !checkNetProbe(request.NetProbe, request.Site) {
-		// 	msg := "API: Failure saving online history. Site is misconfgured in the .env file. Then reset it in the Sites admin screen in Daisy"
-		// 	log.Println(msg)
-		// 	return c.Status(fiber.StatusUnauthorized).SendString(msg)
-		// }
 
 		err := saveOnline(request.OnlineInfo)
 		if err != nil {
