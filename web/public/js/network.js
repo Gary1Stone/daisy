@@ -1,38 +1,37 @@
 //Network.js
 
 const UI = {
-    form: null, site: null, name: null, cid: null, parent: null, kind: null, office: null, 
-    popEdit: null, iParent: null, iOffice: null, iKind: null, treeview: null
+    form: () => document.getElementById("theForm"),
+    site: () => document.getElementById("site"),
+    name: () => document.getElementById("name"),
+    cid: () => document.getElementById("cid"),
+    parent: () => document.getElementById("parent"),
+    kind: () => document.getElementById("kind"),
+    office: () => document.getElementById("office"),
+    popEdit: () => document.getElementById("popEdit"),
+    iParent: () => document.getElementsByClassName("iParent"),
+    iOffice: () => document.getElementsByClassName("iOffice"),
+    iKind: () => document.getElementsByClassName("iKind"),
+    treeview: () => document.getElementsByClassName("treeview"),
+    helpDialog: () => document.getElementById("helpDialog")
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    UI.form = document.getElementById("theForm");
-    UI.site = document.getElementById("site");
-    UI.name = document.getElementById("name");
-    UI.cid = document.getElementById("cid");
-    UI.parent = document.getElementById("parent");
-    UI.kind = document.getElementById("kind");
-    UI.office = document.getElementById("office");
-    UI.popEdit = document.getElementById("popEdit");
-    UI.iParent = document.getElementsByClassName("iParent");
-    UI.iOffice = document.getElementsByClassName("iOffice");
-    UI.iKind = document.getElementsByClassName("iKind");
-    UI.treeview = document.getElementsByClassName("treeview");
-    if (UI.parent) {
-        UI.parent.addEventListener("change", parentChanged);
+    if (UI.parent()) {
+        UI.parent().addEventListener("change", parentChanged);
     }
-    if (UI.kind) {
-        UI.kind.addEventListener("change", kindChanged);
+    if (UI.kind()) {
+        UI.kind().addEventListener("change", kindChanged);
     }
 });
 
 function parentChanged() {
-    const selected = UI.parent.value;
+    const selected = UI.parent().value;
     htmx("/icons", {ctrl: "parent", selected: selected}, 'iParent');
 }
 
 function kindChanged() {
-    const selected = UI.kind.value;
+    const selected = UI.kind().value;
     htmx("/icons", {ctrl: "kind", selected: selected}, 'iKind');
 }
 
@@ -47,14 +46,14 @@ function showDetail(cid) {
         return;
     }
     try {
-        site = document.getElementById("site").value;
+        const site = site().value;
         postJSON("/tree/show", {cid: cid, site: site}, (response) => {
-            UI.cid.value = response.cid || "";
-            UI.name.innerText = response.name || "";
+            UI.cid().value = response.cid || "";
+            UI.name().innerText = response.name || "";
             setDropdownValue('kind', response.kind || "");
             setDropdownValue('office', response.office || "");
             setDropdownValue('parent', response.parent || "");
-            openModal(UI.popEdit);
+            openModal(UI.popEdit());
             parentChanged();
             kindChanged();
         });
@@ -66,18 +65,18 @@ function showDetail(cid) {
 
 function saveDetail() {
     const formData = {
-        Cid: parseInt(UI.cid.value),
-        Name: UI.name.innerText,
+        Cid: parseInt(UI.cid().value),
+        Name: UI.name().innerText,
         Icon: "",
-		Parent: parseInt(UI.parent.value),
-		Office: UI.office.value,
-		Kind: UI.kind.value,
-        Site: UI.site.value,
+		Parent: parseInt(UI.parent().value),
+		Office: UI.office().value,
+		Kind: UI.kind().value,
+        Site: UI.site().value,
     };
     
     try {
         htmx("/tree/update", formData, "treeview");
-        closeModal(UI.popEdit);
+        closeModal(UI.popEdit());
     } catch (error) {
         alert("Failed to update device details: " + error);
         console.error("Failed to get response from sever:", error);
@@ -85,7 +84,7 @@ function saveDetail() {
 }
 
 function showHelp() {
-    openModal(document.getElementById("helpDialog"));
+    openModal(UI.helpDialog());
 }
 
 function goto(url) {
@@ -94,6 +93,5 @@ function goto(url) {
 }
 
 function newSiteSelected() {
-    const newSite = UI.site.value;
-    window.location.href = encodeURI("network.html?site=" + newSite);
+    window.location.href = encodeURI("network.html?site=" + UI.site().value);
 }

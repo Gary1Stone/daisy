@@ -1,16 +1,15 @@
 // device_mac.js
 
 const UI = {
-    site: null, cid: null, txtSearch: null, searchListing: null, popAssociate: null, mid: null
+    site: () => document.getElementById("site"),
+    cid: () => document.getElementById("cid"),
+    txtSearch: () => document.getElementById("txtSearch"),
+    searchListing: () => document.getElementById("searchListing"),
+    popAssociate: () => document.getElementById("popAssociate"),
+    mid: () => document.getElementById("mid")
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    UI.site = document.getElementById("site");
-    UI.cid = document.getElementById("cid");
-    UI.txtSearch = document.getElementById("txtSearch");
-    UI.searchListing = document.getElementById("searchListing");
-    UI.popAssociate = document.getElementById("popAssociate");
-    UI.mid = document.getElementById("mid");
     setupTableSearch(); //On the Find popup
 });
 

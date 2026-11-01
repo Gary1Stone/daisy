@@ -3,7 +3,6 @@
 // Declare iconbar button variables at top level so they are available to checkValid, saveRecord, etc.
 let btnSave, btnNew, btnDelete;
 
-// Cache DOM elements using getters to ensure they are available when needed
 const UI = {
     form: () => document.getElementById('theForm'),
     uid: () => document.getElementById("uid"),
