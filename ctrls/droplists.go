@@ -24,6 +24,8 @@ func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool)
 		options = droplists.GetMidOptions(field, selected, parentCode, withBlank)
 	case "WIZARDS":
 		options = droplists.GetWizardOptions(field, selected, withBlank)
+	case "SITE", "SITESEARCH":
+		options = droplists.GetSiteOptions(field, selected, withBlank)
 	default:
 		options = droplists.GetOptions(field, selected, parentCode, withBlank)
 	}
@@ -73,25 +75,6 @@ func buildDropdown(droplist droplists.Droplist, options []droplists.DroplistOpti
 	if required != "" {
 		ariaRequired = "true"
 	}
-
-	//Test if the expermintal feature is enabled
-	// fmt.Fprintf(&ctrl, `<select id="%s" name="%s" data-tooltip="%s" %s aria-required="%s" %s %s aria-invalid="false" aria-describedby="%sErr" >`, droplist.Id, droplist.Id, droplist.Title, disabled, ariaRequired, onchange, required, droplist.Id)
-	// ctrl.WriteString(`<button><selectedcontent></selectedcontent></button>`)
-	// for _, option := range options {
-	// 	selected := ""
-	// 	if option.Selected {
-	// 		selected = "selected"
-	// 	}
-	// 	icon := ""
-	// 	if len(option.Icon) > 0 && len(option.Colour) > 0 {
-	// 		icon = setIconColor(option.Icon, option.Colour, option.Tip)
-	// 	} else if len(option.Icon) > 0 {
-	// 		icon = icons.GetIcon(option.Icon)
-	// 	}
-	// 	fmt.Fprintf(&ctrl, `<option value="%s" %s>%s %s</option>`, option.Value, selected, icon, option.Description)
-	// }
-	// ctrl.WriteString("</select>")
-	// return ctrl.String()
 
 	ctrl.WriteString(`<div class="custom-select-container">`)
 	// We use type="text" but visually hidden to support native validation and onchange handlers
