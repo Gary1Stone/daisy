@@ -163,11 +163,9 @@ func GetTypeOptions(field, selected, wizard string, withBlank bool) []DroplistOp
 
 // Droplist population
 // Fetch list of users (uid, name) for the given group from the profiles table.
-// If the specified UID is no longer active, include it. If it
+// If the specified UID is no longer active, include it.
 // But only show it if the uid's group is correct
 // This prevents saving user to wrong group
-//
-// TODO: Limit the user's group selection to only ones used in the devices table.
 func GetUserList(field string, selected, parentCode string, withBlank bool) []DroplistOption {
 	var options []DroplistOption
 	if withBlank {
@@ -180,49 +178,31 @@ func GetUserList(field string, selected, parentCode string, withBlank bool) []Dr
 	icon := icons.FindIconNameByName(field)
 	uid, gid := toInt(selected, parentCode)
 	if uid > 0 {
-		var item DroplistOption
-		var myquery strings.Builder
-		myquery.WriteString("SELECT uid, fullname FROM profiles WHERE uid=? AND gid=? ")
-		// NOT SURE WHY I included the cnt (number of alerts/notices the person has) <----------<<<<<<<<<<<<  REMOVE AFTER WIZARD RE-CODED IF NOT USED this is not used in device search
-		// if isSearch {
-		// 	myquery.WriteString("AND cnt>0 ")
-		// }
-		err := db.Conn.QueryRow(myquery.String(), uid, gid).Scan(&item.Value, &item.Description)
+		var query strings.Builder
+		query.WriteString(`SELECT uid, fullname FROM profiles WHERE gid=? AND (uid=? OR (active = 1 AND uid <> ?)) ORDER BY fullname`)
+		rows, err := db.Conn.Query(query.String(), gid, uid, uid)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println(err)
-		} else {
-			item.Selected = false
-			item.Icon = icon
-			if len(item.Value) > 0 { // Prevent empty entries
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var item DroplistOption
+			err := rows.Scan(&item.Value, &item.Description)
+			if err != nil {
+				log.Println(err)
+			} else {
+				item.Icon = icon
+				if item.Value == strconv.Itoa(uid) {
+					item.Selected = true
+				}
 				options = append(options, item)
 			}
 		}
-	}
-	var query strings.Builder
-	query.WriteString("SELECT uid, fullname FROM profiles WHERE active=1 AND gid=? AND uid<>? ")
-	// NOT SURE WHY I included the cnt (number of alerts/notices the person has) <----------<<<<<<<<<<<<  REMOVE AFTER WIZARD RE-CODED IF NOT USED
-	// if isSearch {
-	// 	query.WriteString("AND cnt>0 ")
-	// }
-	query.WriteString("ORDER BY fullname")
-	rows, err := db.Conn.Query(query.String(), gid, uid)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var item DroplistOption
-		err := rows.Scan(&item.Value, &item.Description)
+		err = rows.Err()
 		if err != nil {
 			log.Println(err)
-		} else {
-			item.Icon = icon
-			options = append(options, item)
 		}
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Println(err)
 	}
 	return options
 }
@@ -276,24 +256,32 @@ func FindGroupID(curUid, usr_gid, cid, dev_uid, dev_gid int, defaultToCurUser bo
 	db.AdminCache.RLock()
 	defer db.AdminCache.RUnlock()
 	if defaultToCurUser {
-		return usr_gid // GetGid(curUid)
+		return usr_gid
 	}
+
+	// If no computer, return the first available active group
 	if cid == 0 {
 		for _, item := range db.AdminCache.TheSlice {
 			if item.Field == "GROUP" && item.Active == 1 {
-				gid, _ := strconv.Atoi(item.Code)
+				gid, err := strconv.Atoi(item.Code)
+				if err != nil {
+					return 0
+				}
 				return gid
 			}
 		}
 	}
-	//uid, gid := GetDeviceAssignedUserGroup(curUid, cid)
+
+	// If the device has an assigned group, use that
 	if dev_gid > 0 {
 		return dev_gid
 	}
+
+	// if the user assigned to the device, use their group ID
 	if dev_uid > 0 {
-		return usr_gid // GetGid(uid)
+		return usr_gid
 	}
-	return usr_gid
+	return 0 // No group default
 }
 
 // Find the first group in the group select list to use as the default group for the user select list

@@ -9,15 +9,12 @@
 
   <div class="grid">
 
-    <div>
-       <!-- Show the selected Device -->
-        <div id="SelectedDevice" style="text-align: center;">
+    <div id="SelectedDevice" style="text-align: center;">
           <img id="pic" src="{{ .devPic }}" alt="" width='200px' height='150px' >
           <p id="cidDetails">{{ .devDetails }}</p>
           <input type="hidden" id="curUid" name="curUid" value="{{ .curUid }}" >
           <input type="hidden" id="wizKey" name="wizKey" value="{{ .wizKey }}" >
           <input type="hidden" id="cid" name="cid" value="{{ .cid }}" >
-        </div>
     </div>
 
     <div id="SiteSelect">

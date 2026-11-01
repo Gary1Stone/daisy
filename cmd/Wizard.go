@@ -88,7 +88,7 @@ func GetWizard(c *fiber.Ctx) error {
 			device.Model = device.Model[0:25]
 		}
 		devDetails += device.Model
-		site, office = d.GetDeviceAssignedSiteOffice(user.Uid, cid)
+		site, office = d.GetDeviceAssignedSiteOffice(cid)
 	}
 
 	return c.Render("wizard", addNavigationIcons(fiber.Map{
@@ -180,7 +180,7 @@ func PostWizard(c *fiber.Ctx) error {
 	case "get_site_control":
 		// If we have a computer, use the computer's assigned site
 		if recvd.Cid > 0 {
-			site, _ := d.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
+			site, _ := d.GetDeviceAssignedSiteOffice(recvd.Cid)
 			if len(site) > 0 {
 				recvd.Site = site
 			}
@@ -189,7 +189,7 @@ func PostWizard(c *fiber.Ctx) error {
 	case "get_office_control":
 		// If the computer is in the selected site (recvd.Site), set the default office
 		if recvd.Cid > 0 {
-			site, office := d.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
+			site, office := d.GetDeviceAssignedSiteOffice(recvd.Cid)
 			if recvd.Site == site {
 				recvd.Office = office
 			}
@@ -206,7 +206,7 @@ func PostWizard(c *fiber.Ctx) error {
 		}
 		if recvd.Gid == 0 {
 			gid := profiles.GetGid(user.Uid)
-			dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(user.Uid, 0)
+			dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(recvd.Cid)
 			recvd.Gid = droplists.FindGroupID(user.Uid, gid, recvd.Cid, dev_uid, dev_gid, defaultToCurUser)
 		}
 		reply = ctrls.BuildDropList("GROUP", strconv.Itoa(recvd.Gid), "", withBlank, false)
@@ -221,7 +221,7 @@ func PostWizard(c *fiber.Ctx) error {
 		}
 		// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
-			defaultUid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+			defaultUid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 		}
 		reply = ctrls.BuildDropList("USER", strconv.Itoa(defaultUid), strconv.Itoa(recvd.Gid), includeBlankOption, false)
 	case "get_impact_control":

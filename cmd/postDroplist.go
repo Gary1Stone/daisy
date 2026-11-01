@@ -47,7 +47,7 @@ func PostDroplist(c *fiber.Ctx) error {
 		if recvd.IsWizard {
 			// If we have a computer, use the computer's assigned site
 			if recvd.Cid > 0 {
-				site, _ := d.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
+				site, _ := d.GetDeviceAssignedSiteOffice(recvd.Cid)
 				if len(site) > 0 {
 					recvd.Site = site
 				}
@@ -62,7 +62,7 @@ func PostDroplist(c *fiber.Ctx) error {
 		if recvd.IsWizard {
 			recvd.IsReadonly = false
 			if recvd.Cid > 0 {
-				site, office := d.GetDeviceAssignedSiteOffice(user.Uid, recvd.Cid)
+				site, office := d.GetDeviceAssignedSiteOffice(recvd.Cid)
 				if recvd.Site == site {
 					recvd.Office = office
 				}
@@ -84,7 +84,7 @@ func PostDroplist(c *fiber.Ctx) error {
 			if recvd.Gid == 0 {
 				usr_gid := profiles.GetGid(user.Uid)
 				var d devices.Device
-				dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+				dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(recvd.Cid)
 				recvd.Gid = droplists.FindGroupID(user.Uid, usr_gid, recvd.Cid, dev_uid, dev_gid, defaultToCurUser)
 			}
 		}
@@ -105,7 +105,7 @@ func PostDroplist(c *fiber.Ctx) error {
 			// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 			if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
 				var d devices.Device
-				recvd.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+				recvd.Uid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 			}
 		}
 		reply = ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), withBlank, recvd.IsReadonly)
@@ -130,7 +130,7 @@ func PostDroplist(c *fiber.Ctx) error {
 			// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 			if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
 				var d devices.Device
-				recvd.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+				recvd.Uid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 			}
 		}
 		reply = ctrls.BuildDropList("USERINFORM", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Inform_gid), true, false)

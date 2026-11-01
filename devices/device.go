@@ -851,30 +851,29 @@ func (d *Device) GetNextAssetId(cid int, deviceType string) (string, error) {
 }
 
 // Find a device's assigned user and group
-func (d *Device) GetDeviceAssignedUserGroup(curUid, cid int) (int, int) {
-	uid := 0
-	gid := 0
+func (d *Device) GetDeviceAssignedUserGroup(cid int) (uid int, gid int) {
+	if cid < 1 {
+		return
+	}
 	query := "SELECT coalesce(uid, 0) AS uid, coalesce(gid, 0) AS gid FROM devices WHERE cid=?"
 	err := db.Conn.QueryRow(query, cid).Scan(&uid, &gid)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
 	}
-	return uid, gid
+	return
 }
 
 // Find a device's assigned user
-func (d *Device) GetDeviceAssignedSiteOffice(curUid, cid int) (string, string) {
-	site := ""
-	office := ""
+func (d *Device) GetDeviceAssignedSiteOffice(cid int) (site string, office string) {
 	if cid < 1 {
-		return site, office
+		return
 	}
 	query := "SELECT coalesce(site, '') AS site, coalesce(office, '') AS office FROM devices WHERE cid=?"
 	err := db.Conn.QueryRow(query, cid).Scan(&site, &office)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
 	}
-	return site, office
+	return
 }
 
 func (d *Device) SetLastSeen(cid int) error {

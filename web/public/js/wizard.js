@@ -38,12 +38,12 @@ const UI = {
 }
 
 function el(id) { return document.getElementById(id); }
+function showEl(id) { const e = el(id); if (e) e.style.display = ""; }
+function hideEl(id) { const e = el(id); if (e) e.style.display = "none"; }
 function val(id) { const e = el(id); return e ? e.value : ""; }
 function html(id) { const e = el(id); return e ? e.innerHTML : ""; }
 function setHtml(id, content) { const e = el(id); if (e) e.innerHTML = content; }
 function setVal(id, v) { const e = el(id); if (e) e.value = v; }
-function showEl(id) { const e = el(id); if (e) e.style.display = ""; }
-function hideEl(id) { const e = el(id); if (e) e.style.display = "none"; }
 function addClass(id, cls) { const e = el(id); if (e) e.classList.add(cls); }
 function removeClass(id, cls) { const e = el(id); if (e) e.classList.remove(cls); }
 
@@ -128,7 +128,7 @@ function getSearchFormData(task) {
     let sendData = {
         task: task,
         page: page,
-        cid: UI.cid().value,
+        cid: txt2Int(UI.cid().value),
         devtype:  UI.type().value,
         gid: txt2Int(UI.groupSearch().value),
         uid: txt2Int(UI.userSearch().value),
@@ -238,6 +238,7 @@ let nav = {
         setHtml("sidLabel", this.labels[this.curWizard].SoftwareSelect);
         setHtml("dateLabel", this.labels[this.curWizard].DateChoose);
         setHtml("troubleLabel", this.labels[this.curWizard].TroubleSelect); //new
+        hideEl("SelectedDevice");
         if (cid > 0) {
             nav.next();
         }

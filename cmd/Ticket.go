@@ -80,18 +80,18 @@ func GetTicket(c *fiber.Ctx) error {
 
 	if action.Inform_gid == 0 {
 		usr_gid := profiles.GetGid(user.Uid)
-		dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(user.Uid, 0)
+		dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(action.Cid) // TODO: WAS THIS AN ERROR WHEN action.CID was 0?
 		action.Inform_gid = droplists.FindGroupID(0, usr_gid, 0, dev_uid, dev_gid, false)
 	}
 
 	// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 	if action.Gid > 0 && action.Uid == 0 && action.Cid > 0 {
-		action.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, action.Cid)
+		action.Uid, _ = d.GetDeviceAssignedUserGroup(action.Cid)
 	}
 
 	if action.Gid == 0 {
 		usr_gid := profiles.GetGid(user.Uid)
-		dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(user.Uid, action.Gid)
+		dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(action.Gid)
 		action.Gid = droplists.FindGroupID(user.Uid, usr_gid, action.Gid, dev_uid, dev_gid, true)
 	}
 
@@ -161,18 +161,18 @@ func PostTicket(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(response)
 	}
 	var d devices.Device
-	
+
 	switch recvd.Task {
 	case "get_person_control":
 		// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
-			recvd.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+			recvd.Uid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 		}
 		response = ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
 	case "get_inform_person_control":
 		// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
-			recvd.Uid, _ = d.GetDeviceAssignedUserGroup(user.Uid, recvd.Cid)
+			recvd.Uid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 		}
 		response = ctrls.BuildDropList("USERINFORM", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Inform_gid), true, false)
 	case "route_ticket":
