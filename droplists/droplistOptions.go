@@ -52,6 +52,38 @@ func GetOptions(field, selected, parentCode string, withBlank bool) []DroplistOp
 	return options
 }
 
+// Use the choices (admin table) cache
+func GetSiteOptions(field, selected string, withBlank bool) []DroplistOption {
+	db.AdminCache.RLock()
+	defer db.AdminCache.RUnlock()
+	isSearch := strings.Contains(field, "SEARCH")
+	field = strings.TrimSuffix(field, "SEARCH")
+	field = strings.TrimSuffix(field, "INFORM")
+	var options []DroplistOption
+	if withBlank {
+		var option DroplistOption
+		options = append(options, option)
+	}
+	for _, item := range db.AdminCache.TheSlice {
+		if item.Field != field ||
+			item.Active != 1 ||
+			(isSearch && item.Count <= 0) {
+			continue
+		}
+		var option DroplistOption
+		option.Value = item.Code
+		option.Description = item.Description
+		option.Selected = false
+		if item.Code == selected {
+			option.Selected = true
+		}
+		option.Icon = item.Icon
+		option.Colour = item.Color
+		options = append(options, option)
+	}
+	return options
+}
+
 // Get the type of device droplist
 // list is dependant on wizard AND if in use
 // Only shows computers for certian wizards
