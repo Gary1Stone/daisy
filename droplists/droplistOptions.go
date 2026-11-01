@@ -394,7 +394,7 @@ func GetWizardOptions(field, selected string, withBlank bool) []DroplistOption {
 	}
 
 	for i := range list {
-		if list[i].Value == selected {
+		if list[i].Value == selected || (!withBlank && i == 0) {
 			list[i].Selected = true
 		}
 	}
