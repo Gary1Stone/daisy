@@ -13,7 +13,6 @@ import (
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/droplists"
-	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/profiles"
 	"github.com/gbsto/daisy/software"
 	"github.com/gbsto/daisy/wizards"
@@ -45,7 +44,7 @@ func GetWizard(c *fiber.Ctx) error {
 	filter.Page = 0 // Reset the page to 0
 
 	wizkey := c.Query("wizkey", "sighting")
-	title := ctrls.BuildWizardTitle(wizkey)
+	//title := ctrls.BuildWizardTitle(wizkey)
 	cid, err := strconv.Atoi(c.Query("cid", "0"))
 	if err != nil {
 		cid = 0
@@ -93,7 +92,7 @@ func GetWizard(c *fiber.Ctx) error {
 	}
 
 	return c.Render("wizard", addNavigationIcons(fiber.Map{
-		"title":            template.HTML(icons.GetIcon("wizard") + " " + title),
+		"title":            template.HTML(ctrls.BuildWizardTitle(wizkey)),
 		"fullName":         user.Fullname,
 		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnFilter, user.Permissions.Device.Read)),
 		"isAdmin":          user.IsAdmin,

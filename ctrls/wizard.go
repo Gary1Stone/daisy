@@ -10,12 +10,12 @@ import (
 
 func BuildWizardTitle(wizkey string) string {
 	var title strings.Builder
-	title.WriteString(icons.GetIcon("wizard"))
-	title.WriteString(`&nbsp;Wizard `)
+	fmt.Fprintf(&title, `%s&nbsp;Wizard `, icons.GetIcon("wizard"))
 	items, _ := actions.GetActionCodes(false)
 	for _, item := range items {
 		if item.Name == wizkey {
 			fmt.Fprintf(&title, `%s&nbsp;%s`, icons.GetIcon(item.Icon), item.Description)
+			break
 		}
 	}
 	return title.String()
