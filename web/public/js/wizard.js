@@ -21,7 +21,7 @@ const wizards = {
 const UI = {
     thanksDialog: () => document.getElementById("thanksDialog"),
     helpDialog: () => document.getElementById("helpDialog"),
-    installed:() => document.getElementById("installed"),
+    installed: () => document.getElementById("installed"),
     filterDialog: () => document.getElementById("filterDialog"),
     cid: () => document.getElementById("cid"),
     type: () => document.getElementById("type"),
@@ -31,7 +31,10 @@ const UI = {
     userSearch: () => document.getElementById("userSearch"),
     textSearch: () => document.getElementById("textSearch"),
     isLate: () => document.getElementById("isLate"),
-    isMissing: () => document.getElementById("isMissing")
+    isMissing: () => document.getElementById("isMissing"),
+    btnPrev: () => document.getElementById("btnPrev"),
+    btnNext: () => document.getElementById("btnNext"),
+    btnFinish: () => document.getElementById("btnFinish")
 }
 
 function el(id) { return document.getElementById(id); }
@@ -287,18 +290,13 @@ let nav = {
         this.setButtons();
     },
     setButtons() {
-        removeClass("btnPrev", "disabled"); //enable back button
-        removeClass("btnNext", "disabled"); //enable next button
-        addClass("btnFinish", "disabled"); //disable finish button
-        if (this.curStep === 0) {
-            addClass("btnPrev", "disabled");
-            addClass("btnNext", "disabled");
+        const atStart = this.curStep === 0;
+        const atEnd = this.curStep === this.numSteps;
+        UI.btnPrev().disabled = atStart;
+        UI.btnNext().disabled = atStart || atEnd;
+        UI.btnFinish().disabled = !atEnd;
+        if (atStart) {
             openModal(UI.filterDialog());
-        } else if (this.curStep === this.numSteps) {
-            addClass("btnNext", "disabled");
-            removeClass("btnFinish", "disabled");
-        } else {
-            removeClass("btnNext", "disabled"); //enable next button
         }
     },
     getHelpMessage() {
@@ -478,11 +476,19 @@ function onFinish() {
     if (!isMandatory(sendData)) {
         return;
     }
-    addClass("btnFinish", "disabled"); //disable finish button so no second submission
+
+    UI.btnPrev().disabled = true;
+    UI.btnNext().disabled = true;
+    UI.btnFinish().disabled = true;
+
+    UI.btnPrev().ariaBusy = "true";
+    UI.btnNext().ariaBusy = "true";
+    UI.btnFinish().ariaBusy = "true";
+
     postForm("wizard", sendData, (response) => {
         if (response === "Okay") {
             nav.hide();
-            showEl("thankYou");
+            toast("Thank you for helping to keep track of the electronics.", "success");
             setTimeout(() => { window.location.href = encodeURI("home.html"); }, 3000); 
         } else {
             console.log(response);
