@@ -172,7 +172,6 @@ func GetUserList(field string, selected, parentCode string, withBlank bool) []Dr
 		var option DroplistOption
 		options = append(options, option)
 	}
-	//	isSearch := strings.Contains(field, "SEARCH")
 	field = strings.TrimSuffix(field, "SEARCH")
 	field = strings.TrimSuffix(field, "INFORM")
 	icon := icons.FindIconNameByName(field)

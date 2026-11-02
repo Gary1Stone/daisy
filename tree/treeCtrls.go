@@ -1,4 +1,4 @@
-package ctrls
+package tree
 
 import (
 	"fmt"
@@ -8,12 +8,11 @@ import (
 	"github.com/gbsto/daisy/colors"
 	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/tree"
 )
 
 /* Build a html tree view of the network assets from the DEVICES table */
 func BuildTreeView(site string) string {
-	nodes, err := tree.GetTreeNodes(site)
+	nodes, err := GetTreeNodes(site)
 	if err != nil {
 		return "Server Error: Unable to build tree view."
 	}
@@ -29,7 +28,7 @@ func BuildTreeView(site string) string {
 	return html.String()
 }
 
-func generateNodeHTML(node *tree.TreeNode) string {
+func generateNodeHTML(node *TreeNode) string {
 	var html strings.Builder
 	color := colors.Alert
 	tip := "offline"
@@ -41,7 +40,7 @@ func generateNodeHTML(node *tree.TreeNode) string {
 		tip = "never online or offline"
 	}
 	fmt.Fprintf(&html, "<li data-id='%d'> %s <a href='#' onclick='showDetail(%d)'>%s</a> %s (%s)",
-		node.Cid, setIconColor(node.Icon, color, tip), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle))
+		node.Cid, droplists.SetIconColor(node.Icon, color, tip), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle))
 
 	if len(node.Children) > 0 {
 		html.WriteString("<ul>")
@@ -61,7 +60,7 @@ func htmlEscape(s string) string {
 }
 
 func BuildParentSelect(selected int, site string, readOnly bool) string {
-	items, err := tree.GetNodes(site)
+	items, err := GetNodes(site)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -92,16 +91,5 @@ func BuildParentSelect(selected int, site string, readOnly bool) string {
 		options = append(options, opt)
 	}
 
-	return buildDropdown(droplist, options, readOnly, "", "")
-
-	// fmt.Fprintf(&ctrl, `<select id="parent" name="parent" data-tooltip="Select Parent Device" %s aria-invalid="false" aria-describedby="parentErr" ><option value=""></option>`, disabled)
-	// for _, item := range items {
-	// 	txt := ""
-	// 	if selected == item.Cid {
-	// 		txt = "selected"
-	// 	}
-	// 	fmt.Fprintf(&ctrl, `<option value='%d' %s>%s %s %s (%s)</option>`, item.Cid, txt, setIconColor(item.Icon, item.IsOnline), item.Name, item.Model, item.Office)
-	// }
-	// ctrl.WriteString("</select>")
-	// return ctrl.String()
+	return droplists.BuildDropdown(droplist, options, readOnly, "", "")
 }

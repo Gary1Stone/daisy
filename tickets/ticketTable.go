@@ -1,4 +1,4 @@
-package ctrls
+package tickets
 
 import (
 	"log"

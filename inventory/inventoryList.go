@@ -1,14 +1,12 @@
-package ctrls
+package inventory
 
 import (
 	"log"
 	"strings"
-
-	"github.com/gbsto/daisy/inventory"
 )
 
 func BuildInventoryList() string {
-	list, err := inventory.GetInventoryList()
+	list, err := getInventoryList()
 	if err != nil {
 		log.Println(err)
 		return ""

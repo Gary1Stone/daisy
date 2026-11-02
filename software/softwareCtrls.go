@@ -1,4 +1,4 @@
-package ctrls
+package software
 
 import (
 	"fmt"
@@ -8,13 +8,13 @@ import (
 
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/colors"
+	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/software"
 	"github.com/gbsto/daisy/util"
 )
 
 // Generate profile table for wide screens
-func SoftwaresTable(curUid, tzoff int, filter software.SoftwareFilter) string {
+func SoftwaresTable(curUid, tzoff int, filter SoftwareFilter) string {
 	var table strings.Builder
 
 	// Build the table header with search
@@ -115,33 +115,9 @@ func BuildSoftwareLog(curUid, sid, hist int) string {
 		button.Uid_ack = act.Uid_ack
 		button.Wlog = act.Wlog
 		button.Icon = act.Icon
-		fmt.Fprintf(&table, "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>", buildButton(button), act.Localtime, act.Devicename, act.OriginatorName)
-		fmt.Fprintf(&table, "<td><div id='notes%d'>%s</div></td><td>%s</td></tr>", act.Aid, act.Notes, calculateStatus(act))
+		fmt.Fprintf(&table, "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>", devices.BuildButton(button), act.Localtime, act.Devicename, act.OriginatorName)
+		fmt.Fprintf(&table, "<td><div id='notes%d'>%s</div></td><td>%s</td></tr>", act.Aid, act.Notes, actions.CalculateStatus(act))
 	}
 	table.WriteString("</tbody></table>")
 	return table.String()
-}
-
-func calculateStatus(act *actions.Action) string {
-	retVal := ""
-	if act.Uid > 0 && act.Uid_ack == 0 {
-		retVal += ": User"
-	}
-	if act.Cid > 0 && act.Cid_ack == 0 {
-		retVal += ": Device"
-	}
-	if act.Sid > 0 && act.Sid_ack == 0 {
-		retVal += ": Software"
-	}
-	if act.Inform > 0 && act.Inform_ack == 0 {
-		retVal += ": Inform"
-	}
-	if len(retVal) > 0 {
-		retVal = "Pending" + retVal
-	} else if act.Active == 1 {
-		retVal = "Open but completed"
-	} else {
-		retVal = "Closed"
-	}
-	return retVal
 }

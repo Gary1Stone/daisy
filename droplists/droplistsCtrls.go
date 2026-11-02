@@ -1,39 +1,38 @@
-package ctrls
+package droplists
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
 )
 
 func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool) string {
-	var options []droplists.DroplistOption
+	var options []DroplistOption
 	switch field {
 	case "SOFTWARE":
-		options = droplists.GetSoftwareList(withBlank)
+		options = GetSoftwareList(withBlank)
 	case "USER", "USERSEARCH", "USERINFORM": // Profile table search, "GROUPINFORM"
-		options = droplists.GetUserList(field, selected, parentCode, withBlank)
+		options = GetUserList(field, selected, parentCode, withBlank)
 	case "TYPE", "TYPESEARCH": // parent = wizard, so TYPE needs special processing
-		options = droplists.GetTypeOptions(field, selected, parentCode, withBlank)
+		options = GetTypeOptions(field, selected, parentCode, withBlank)
 	case "KIND":
-		options = droplists.GetKindOptions(field, selected, parentCode, withBlank)
+		options = GetKindOptions(field, selected, parentCode, withBlank)
 	case "MID":
-		options = droplists.GetMidOptions(field, selected, parentCode, withBlank)
+		options = GetMidOptions(field, selected, parentCode, withBlank)
 	case "WIZARDS":
-		options = droplists.GetWizardOptions(field, selected, withBlank)
+		options = GetWizardOptions(field, selected, withBlank)
 	case "SITE", "SITESEARCH":
-		options = droplists.GetSiteOptions(field, selected, withBlank)
+		options = GetSiteOptions(field, selected, withBlank)
 	default:
-		options = droplists.GetOptions(field, selected, parentCode, withBlank)
+		options = GetOptions(field, selected, parentCode, withBlank)
 	}
 	return buildCtrl(field, readOnly, options)
 }
 
-func buildCtrl(field string, readOnly bool, options []droplists.DroplistOption) string {
-	droplist := droplists.GetDroplistInfo(field)
+func buildCtrl(field string, readOnly bool, options []DroplistOption) string {
+	droplist := GetDroplistInfo(field)
 	isDropDown := false
 
 	for option := range options {
@@ -52,13 +51,13 @@ func buildCtrl(field string, readOnly bool, options []droplists.DroplistOption) 
 		required = "required"
 	}
 	if isDropDown {
-		return buildDropdown(droplist, options, readOnly, onchange, required)
+		return BuildDropdown(droplist, options, readOnly, onchange, required)
 	}
 	return buildSelect(droplist, options, readOnly, onchange, required)
 }
 
 // Dropdown with icons with colors
-func buildDropdown(droplist droplists.Droplist, options []droplists.DroplistOption, readOnly bool, onchange, required string) string {
+func BuildDropdown(droplist Droplist, options []DroplistOption, readOnly bool, onchange, required string) string {
 	var ctrl strings.Builder
 	selected := ""
 	for option := range options {
@@ -85,7 +84,7 @@ func buildDropdown(droplist droplists.Droplist, options []droplists.DroplistOpti
 	for _, option := range options {
 		icon := ""
 		if len(option.Icon) > 0 && len(option.Colour) > 0 {
-			icon = setIconColor(option.Icon, option.Colour, option.Tip)
+			icon = SetIconColor(option.Icon, option.Colour, option.Tip)
 		} else if len(option.Icon) > 0 {
 			icon = icons.GetIcon(option.Icon)
 		}
@@ -100,7 +99,7 @@ func buildDropdown(droplist droplists.Droplist, options []droplists.DroplistOpti
 }
 
 // Standard select list, no icons, no colors
-func buildSelect(droplist droplists.Droplist, options []droplists.DroplistOption, readOnly bool, onchange, required string) string {
+func buildSelect(droplist Droplist, options []DroplistOption, readOnly bool, onchange, required string) string {
 	var ctrl strings.Builder
 	disabled := ""
 	if readOnly {
@@ -143,7 +142,7 @@ func xlateColor(colour string) string {
 	return fgColor
 }
 
-func setIconColor(iconName string, colour string, tip string) string {
+func SetIconColor(iconName string, colour string, tip string) string {
 	class := xlateColor(colour)
 	return fmt.Sprintf(`<span class="%s" data-tooltip="%s">%s</span>`, class, tip, icons.GetIcon(iconName))
 }

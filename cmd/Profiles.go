@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"log"
 
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/profiles"
 
@@ -31,8 +30,8 @@ func GetProfiles(c *fiber.Ctx) error {
 		"title":         template.HTML(icons.GetIcon("profiles") + " Profiles"),
 		"fullName":      user.Fullname,
 		"isAdmin":       user.IsAdmin,
-		"cmd_one":       template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Profile.Create)),
-		"profilesTable": template.HTML(ctrls.ProfilesTable(user.Uid, filter)),
+		"cmd_one":       template.HTML(icons.MakeButton(icons.BtnNew, user.Permissions.Profile.Create)),
+		"profilesTable": template.HTML(profiles.ProfilesTable(user.Uid, filter)),
 		"bellIcon":      template.HTML(icons.GetIcon("bell")),
 	}))
 }
@@ -49,5 +48,5 @@ func PostProfiles(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
 
-	return c.Status(fiber.StatusOK).SendString(ctrls.ProfilesTable(user.Uid, filter))
+	return c.Status(fiber.StatusOK).SendString(profiles.ProfilesTable(user.Uid, filter))
 }

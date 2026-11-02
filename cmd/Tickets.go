@@ -3,8 +3,8 @@ package cmd
 import (
 	"html/template"
 
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
+	"github.com/gbsto/daisy/tickets"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,7 +26,7 @@ func GetTickets(c *fiber.Ctx) error {
 		"title":        template.HTML(icons.GetIcon("ticket") + " Tickets"),
 		"fullName":     user.Fullname,
 		"isAdmin":      isAdmin,
-		"cmd_one":      template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Ticket.Create)),
-		"ticketsTable": template.HTML(ctrls.BuildTicketsTable(user.Uid)),
+		"cmd_one":      template.HTML(icons.MakeButton(icons.BtnNew, user.Permissions.Ticket.Create)),
+		"ticketsTable": template.HTML(tickets.BuildTicketsTable(user.Uid)),
 	}))
 }

@@ -11,7 +11,6 @@ import (
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/inventory"
-	"github.com/gbsto/daisy/profiles"
 )
 
 type Action struct {
@@ -371,7 +370,7 @@ func (act *Action) AddAction(curUid int) error {
 		act.OpenedInt = time.Now().UTC().Unix() // GMT time in seconds
 	}
 	//Set the group IDs for the user and inform
-	act.Gid = profiles.GetGid(act.Uid)
+	act.Gid = db.GetGid(act.Uid)
 	//	act.Inform_gid, _ = GetGid(act.Inform)
 	//If action is to be closed, set the closed time and ack(s)
 	if act.Active == 0 {

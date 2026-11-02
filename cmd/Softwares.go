@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"log"
 
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/inventory"
 	"github.com/gbsto/daisy/software"
@@ -35,8 +34,8 @@ func GetSoftwares(c *fiber.Ctx) error {
 		"title":            template.HTML(icons.GetIcon("software") + " Software"),
 		"fullName":         user.Fullname,
 		"isAdmin":          user.IsAdmin,
-		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
-		"trackedSoftware":  template.HTML(ctrls.SoftwaresTable(user.Uid, user.Tzoff, filter)),
+		"cmd_one":          template.HTML(icons.MakeButton(icons.BtnNew, user.Permissions.Software.Create)),
+		"trackedSoftware":  template.HTML(software.SoftwaresTable(user.Uid, user.Tzoff, filter)),
 		"otherSoftware":    template.HTML(other.BuildOtherTable()),
 		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedEditTable()),
 	}))
@@ -54,7 +53,7 @@ func PostSoftwares(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString("CRITICAL SERVER ERROR!")
 	}
 
-	return c.Status(fiber.StatusOK).SendString(ctrls.SoftwaresTable(user.Uid, user.Tzoff, filter))
+	return c.Status(fiber.StatusOK).SendString(software.SoftwaresTable(user.Uid, user.Tzoff, filter))
 }
 
 func PostPreInstalled(c *fiber.Ctx) error {

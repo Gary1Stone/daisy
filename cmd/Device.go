@@ -9,9 +9,9 @@ import (
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/backups"
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/devmacs"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/online"
 	"github.com/gbsto/daisy/profiles"
@@ -74,10 +74,10 @@ func GetDevice(c *fiber.Ctx) error {
 		"title":             template.HTML(icons.GetIcon("devices") + " Devices"),
 		"fullName":          user.Fullname,
 		"isAdmin":           user.IsAdmin,
-		"cmd_one":           template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Device.Update)),
-		"cmd_two":           template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Device.Create)),
-		"cmd_three":         template.HTML(ctrls.MakeButton(ctrls.BtnDelete, deleteAble)),
-		"imageCtrl":         template.HTML(ctrls.MakeImageCtrl(&device, user.Permissions.Device.Update)),
+		"cmd_one":           template.HTML(icons.MakeButton(icons.BtnSave, user.Permissions.Device.Update)),
+		"cmd_two":           template.HTML(icons.MakeButton(icons.BtnNew, user.Permissions.Device.Create)),
+		"cmd_three":         template.HTML(icons.MakeButton(icons.BtnDelete, deleteAble)),
+		"imageCtrl":         template.HTML(devices.MakeImageCtrl(&device, user.Permissions.Device.Update)),
 		"isReadonly":        !user.Permissions.Device.Update,
 		"isDisabled":        !user.Permissions.Device.Update,
 		"name":              device.Name,
@@ -88,17 +88,17 @@ func GetDevice(c *fiber.Ctx) error {
 		"usb":               device.Usb,
 		"cd":                device.Cd,
 		"serial_number":     device.Serial_number,
-		"typeCtrl":          template.HTML(ctrls.BuildDropList("TYPE", device.Type, "", true, false)),
-		"makeCtrl":          template.HTML(ctrls.BuildDropList("MAKE", device.Make, "", true, false)),
-		"statusCtrl":        template.HTML(ctrls.BuildDropList("STATUS", device.Status, "", false, false)),
-		"groupCtrl":         template.HTML(ctrls.BuildDropList("GROUP", groupAssigned, "", true, false)),
-		"osCtrl":            template.HTML(ctrls.BuildDropList("OS", device.Os, "", true, false)),
-		"siteCtrl":          template.HTML(ctrls.BuildDropList("SITE", device.Site, "", false, false)),
-		"coresCtrl":         template.HTML(ctrls.BuildDropList("CORES", strconv.Itoa(device.Cores), "", true, false)),
-		"driveTypeCtrl":     template.HTML(ctrls.BuildDropList("DRIVETYPE", device.Drivetype, "", false, false)),
-		"years":             template.HTML(ctrls.BuildYearsSelect(device.Year)),
-		"uidCtrl":           template.HTML(ctrls.BuildDropList("USER", strconv.Itoa(device.Uid), strconv.Itoa(device.Gid), true, !user.Permissions.Device.Update)),
-		"officeCtrl":        template.HTML(ctrls.BuildDropList("OFFICE", device.Office, device.Site, true, !user.Permissions.Device.Update)),
+		"typeCtrl":          template.HTML(droplists.BuildDropList("TYPE", device.Type, "", true, false)),
+		"makeCtrl":          template.HTML(droplists.BuildDropList("MAKE", device.Make, "", true, false)),
+		"statusCtrl":        template.HTML(droplists.BuildDropList("STATUS", device.Status, "", false, false)),
+		"groupCtrl":         template.HTML(droplists.BuildDropList("GROUP", groupAssigned, "", true, false)),
+		"osCtrl":            template.HTML(droplists.BuildDropList("OS", device.Os, "", true, false)),
+		"siteCtrl":          template.HTML(droplists.BuildDropList("SITE", device.Site, "", false, false)),
+		"coresCtrl":         template.HTML(droplists.BuildDropList("CORES", strconv.Itoa(device.Cores), "", true, false)),
+		"driveTypeCtrl":     template.HTML(droplists.BuildDropList("DRIVETYPE", device.Drivetype, "", false, false)),
+		"years":             template.HTML(devices.BuildYearsSelect(device.Year)),
+		"uidCtrl":           template.HTML(droplists.BuildDropList("USER", strconv.Itoa(device.Uid), strconv.Itoa(device.Gid), true, !user.Permissions.Device.Update)),
+		"officeCtrl":        template.HTML(droplists.BuildDropList("OFFICE", device.Office, device.Site, true, !user.Permissions.Device.Update)),
 		"locationCtrl":      device.Location,
 		"ramCtrl":           device.Ram,
 		"cpuCtrl":           device.Cpu,
@@ -110,8 +110,8 @@ func GetDevice(c *fiber.Ctx) error {
 		"last_updated_by":   device.Last_updated_by,
 		"last_updated_time": device.Last_updated_time,
 		"fullname":          device.Lun,
-		"software":          template.HTML(ctrls.BuildSoftwareList(user.Uid, device.Cid)),
-		"actionLog":         template.HTML(ctrls.BuildDeviceLog(user.Uid, cid, 0)),
+		"software":          template.HTML(devices.BuildSoftwareList(user.Uid, device.Cid)),
+		"actionLog":         template.HTML(devices.BuildDeviceLog(user.Uid, cid, 0)),
 		"backups":           template.HTML(backs.BuildBackupsTable(user.Uid, cid)),
 		"macs":              template.HTML(devmacs.BuildDevMacs(cid, user.Tzoff, false)),
 		"deviceHistory":     template.HTML(svg.BuildOnlineChart(chartData, macInfo, svg.DateOnly)),
@@ -183,15 +183,15 @@ func PostDevice(c *fiber.Ctx) error {
 			reply.Msg = "ERROR: The name " + recvd.Name + " is already used."
 		}
 	case "get_office_control":
-		return c.Status(fiber.StatusOK).SendString(ctrls.BuildDropList("OFFICE", recvd.Office, recvd.Site, true, !user.Permissions.Device.Update))
+		return c.Status(fiber.StatusOK).SendString(droplists.BuildDropList("OFFICE", recvd.Office, recvd.Site, true, !user.Permissions.Device.Update))
 	case "get_person_control":
-		return c.Status(fiber.StatusOK).SendString(ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, !user.Permissions.Device.Update))
+		return c.Status(fiber.StatusOK).SendString(droplists.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, !user.Permissions.Device.Update))
 	case "getactionlog":
 		if recvd.Aid > 0 { //set_accept_cid_by_aid
 			//	db.AckAlert(curUid, 0, recvd.Aid, true, true, false)
 			actions.AckAction(user.Uid, recvd.Aid, true, true, false)
 		}
-		return c.Status(fiber.StatusOK).SendString(ctrls.BuildDeviceLog(user.Uid, recvd.Cid, recvd.ShowHistory))
+		return c.Status(fiber.StatusOK).SendString(devices.BuildDeviceLog(user.Uid, recvd.Cid, recvd.ShowHistory))
 	case "delete":
 		reply.Success = false
 		reply.Msg = "ERROR: You do not have permission to delete device records."

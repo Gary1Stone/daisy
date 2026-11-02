@@ -5,7 +5,6 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/devmacs"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/tree"
@@ -28,7 +27,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 	if err2 != nil {
 		cid = 0
 	}
-	photo := `<img src="images/missing.jpg" alt="photo" width="200px" >`
+	photo := `<img src="images/missing.jpg" alt="photo" width="200px" style='display: block; margin: 0 auto;' >`
 	site := ""
 	siteName := ""
 	name := ""
@@ -51,7 +50,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 			associated = devmacs.BuildDevMacs(cid, user.Tzoff, user.Permissions.Device.Update)
 			deviceIcon = icons.GetIcon(device.Icon)
 			macTable = devmacs.BuildUnmatchedMacs(cid, user.Tzoff, site)
-			photo = `<img src="images/` + device.Image + `" alt="photo" width="200px" >`
+			photo = `<img src="images/` + device.Image + `" alt="photo" width="200px" style='display: block; margin: 0 auto;' >`
 		}
 	}
 
@@ -59,7 +58,7 @@ func GetDevMacs(c *fiber.Ctx) error {
 		"title":      template.HTML(icons.GetIcon("devices") + " Device / MAC association"),
 		"fullName":   user.Fullname,
 		"isAdmin":    user.IsAdmin,
-		"cmd_one":    template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
+		"cmd_one":    template.HTML(icons.MakeButton(icons.BtnHelp, true)),
 		"cid":        cid,
 		"site":       site,
 		"siteName":   siteName,

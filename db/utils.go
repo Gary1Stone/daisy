@@ -143,3 +143,17 @@ func ForeignKey(value any) any {
 	}
 	return value
 }
+
+// Get the user's group ID from their profile
+// Common function across many packages
+func GetGid(uid int) int {
+	var gid = 0
+	if uid > 0 {
+		err := Conn.QueryRow("SELECT gid FROM profiles WHERE uid=?", uid).Scan(&gid)
+		if err != nil {
+			log.Println(err)
+			return gid
+		}
+	}
+	return gid
+}

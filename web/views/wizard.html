@@ -10,7 +10,7 @@
   <div class="grid">
 
     <div id="SelectedDevice" style="text-align: center;">
-          <img id="pic" src="{{ .devPic }}" alt="" width='200px' height='150px' >
+          <img id="pic" src="{{ .devPic }}" alt="" width='200px' style='display: block; margin: 0 auto;' >
           <p id="cidDetails">{{ .devDetails }}</p>
           <input type="hidden" id="curUid" name="curUid" value="{{ .curUid }}" >
           <input type="hidden" id="wizKey" name="wizKey" value="{{ .wizKey }}" >
@@ -82,15 +82,6 @@
         {{ .impactCtrl }}
       </div>
     </div>
-
-
-    
-        <div id="thankYou" class="wizPanel">
-          <p id="thanksLabel">Thank You</p>
-          <div class="form-group">
-            <p>The information you supplied was saved.</p>
-            <p>Thank you for helping to keep track of the electronics.</p>
-          </div>
 
   </div>
 

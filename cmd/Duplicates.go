@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/gbsto/daisy/aliases"
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/online"
@@ -26,7 +25,7 @@ func GetDuplicates(c *fiber.Ctx) error {
 	}
 
 	// First try the list of matching hostnames
-	avoidSelect, mac1, mac2 := ctrls.BuildAvoidSelectCtrl()
+	avoidSelect, mac1, mac2 := macs.BuildAvoidSelectCtrl()
 	if mac1 == "" {
 		avoidSelect = "No matching hostnames found."
 	}
@@ -42,7 +41,7 @@ func GetDuplicates(c *fiber.Ctx) error {
 		"isAdmin":     user.IsAdmin,
 		"isReadonly":  !user.Permissions.Device.Update,
 		"isDisabled":  !user.Permissions.Device.Update,
-		"cmd_one":     template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
+		"cmd_one":     template.HTML(icons.MakeButton(icons.BtnHelp, true)),
 		"avoidSelect": template.HTML(avoidSelect),
 		"avoidChart":  template.HTML(title + svg.BuildOnlineChart(chartData, macInfo, svg.NameWithDate)),
 	}))

@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/online"
@@ -52,8 +52,8 @@ func GetHistory(c *fiber.Ctx) error {
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Device.Update,
 		"isDisabled":    !user.Permissions.Device.Update,
-		"cmd_one":       template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
-		"midCtrl":       template.HTML(ctrls.BuildDropList("MID", midParam, "", false, false)),
+		"cmd_one":       template.HTML(icons.MakeButton(icons.BtnHelp, true)),
+		"midCtrl":       template.HTML(droplists.BuildDropList("MID", midParam, "", false, false)),
 		"deviceHistory": template.HTML(svg.BuildOnlineChart(chartData, macInfo, svg.DateOnly)),
 	}))
 }

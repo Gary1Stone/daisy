@@ -10,11 +10,10 @@ import (
 
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/alerts"
-	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/profiles"
 	"github.com/gbsto/daisy/tickets"
 	"github.com/gbsto/daisy/util"
 
@@ -79,7 +78,7 @@ func GetTicket(c *fiber.Ctx) error {
 	}
 
 	if action.Inform_gid == 0 {
-		usr_gid := profiles.GetGid(user.Uid)
+		usr_gid := db.GetGid(user.Uid)
 		dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(action.Cid) // TODO: WAS THIS AN ERROR WHEN action.CID was 0?
 		action.Inform_gid = droplists.FindGroupID(0, usr_gid, 0, dev_uid, dev_gid, false)
 	}
@@ -90,7 +89,7 @@ func GetTicket(c *fiber.Ctx) error {
 	}
 
 	if action.Gid == 0 {
-		usr_gid := profiles.GetGid(user.Uid)
+		usr_gid := db.GetGid(user.Uid)
 		dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(action.Gid)
 		action.Gid = droplists.FindGroupID(user.Uid, usr_gid, action.Gid, dev_uid, dev_gid, true)
 	}
@@ -98,38 +97,38 @@ func GetTicket(c *fiber.Ctx) error {
 	return c.Render("ticket", addNavigationIcons(fiber.Map{
 		"title":         template.HTML(icons.GetIcon("news") + " Ticket"),
 		"fullName":      user.Fullname,
-		"cmd_one":       template.HTML(ctrls.BuildRouteButton(user.Permissions.Ticket.Update)),
+		"cmd_one":       template.HTML(tickets.BuildRouteButton(user.Permissions.Ticket.Update)),
 		"isAdmin":       user.IsAdmin,
 		"openedGMT":     action.OpenedInt,
 		"closedGMT":     action.ClosedInt,
 		"active":        strconv.Itoa(action.Active),
 		"cid":           strconv.Itoa(action.Cid),
 		"image":         template.HTML(action.Image),
-		"deviceCtrl":    template.HTML(ctrls.BuildDeviceCtrl(dev)),
+		"deviceCtrl":    template.HTML(tickets.BuildDeviceCtrl(dev)),
 		"deviceName":    dev.Name,
 		"deviceIcon":    template.HTML(action.DeviceIcon),
-		"softwareCtrl":  template.HTML(ctrls.BuildDropList("SOFTWARE", strconv.Itoa(action.Sid), "", true, isClosed)),
-		"troubleCtrl":   template.HTML(ctrls.BuildDropList("TROUBLE", strconv.Itoa(action.Trouble), dev.Type, false, isClosed)),
-		"report":        template.HTML(ctrls.BuildReportCtrl(action.Report, isClosed)),
+		"softwareCtrl":  template.HTML(droplists.BuildDropList("SOFTWARE", strconv.Itoa(action.Sid), "", true, isClosed)),
+		"troubleCtrl":   template.HTML(droplists.BuildDropList("TROUBLE", strconv.Itoa(action.Trouble), dev.Type, false, isClosed)),
+		"report":        template.HTML(tickets.BuildReportCtrl(action.Report, isClosed)),
 		"notes":         template.HTML(removePrefixSuffixAnchor(action.Action, action.Report, action.Notes)),
-		"impactCtrl":    template.HTML(ctrls.BuildDropList("IMPACT", strconv.Itoa(action.Impact), "", false, isClosed)),
+		"impactCtrl":    template.HTML(droplists.BuildDropList("IMPACT", strconv.Itoa(action.Impact), "", false, isClosed)),
 		"status":        status,
 		"aid":           strconv.Itoa(action.Aid),
 		"originator":    action.OriginatorName,
 		"email":         action.OriginatorEmail,
 		"opened":        action.Localtime,
-		"assignedGroup": template.HTML(ctrls.BuildDropList("GROUP", strconv.Itoa(action.Gid), "", false, isClosed)),
-		"assignedUser":  template.HTML(ctrls.BuildDropList("USER", strconv.Itoa(action.Uid), strconv.Itoa(action.Gid), true, isClosed)),
-		"informGroup":   template.HTML(ctrls.BuildDropList("GROUPINFORM", strconv.Itoa(action.Inform_gid), "", false, isClosed)),
-		"informUser":    template.HTML(ctrls.BuildDropList("USERINFORM", strconv.Itoa(action.Inform), strconv.Itoa(action.Inform_gid), false, isClosed)),
-		"ctrlCidAck":    template.HTML(ctrls.BuildAckCheckbox(action.Cid_ack, isReadonly, "Device", "cid_ack")),
-		"ctrlSidAck":    template.HTML(ctrls.BuildAckCheckbox(action.Sid_ack, isReadonly, "Software", "sid_ack")),
-		"wlog":          template.HTML(ctrls.BuildWorklog(user.Uid, action.Aid)),
+		"assignedGroup": template.HTML(droplists.BuildDropList("GROUP", strconv.Itoa(action.Gid), "", false, isClosed)),
+		"assignedUser":  template.HTML(droplists.BuildDropList("USER", strconv.Itoa(action.Uid), strconv.Itoa(action.Gid), true, isClosed)),
+		"informGroup":   template.HTML(droplists.BuildDropList("GROUPINFORM", strconv.Itoa(action.Inform_gid), "", false, isClosed)),
+		"informUser":    template.HTML(droplists.BuildDropList("USERINFORM", strconv.Itoa(action.Inform), strconv.Itoa(action.Inform_gid), false, isClosed)),
+		"ctrlCidAck":    template.HTML(tickets.BuildAckCheckbox(action.Cid_ack, isReadonly, "Device", "cid_ack")),
+		"ctrlSidAck":    template.HTML(tickets.BuildAckCheckbox(action.Sid_ack, isReadonly, "Software", "sid_ack")),
+		"wlog":          template.HTML(tickets.BuildWorklog(user.Uid, action.Aid)),
 		"gid":           strconv.Itoa(action.Gid),
 		"uid":           strconv.Itoa(action.Uid),
 		"assignGroup":   action.AssignedGroupName,
 		"assignUser":    action.AssignedUserName,
-		"informList":    template.HTML(ctrls.BuildInformList(aid)),
+		"informList":    template.HTML(tickets.BuildInformList(aid)),
 		"plusIcon":      template.HTML(icons.GetIcon("plus")),
 		"deleteIcon":    template.HTML(icons.GetIcon("delete")),
 		"newsIcon":      template.HTML(icons.GetIcon("news")),
@@ -168,13 +167,13 @@ func PostTicket(c *fiber.Ctx) error {
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
 			recvd.Uid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 		}
-		response = ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
+		response = droplists.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
 	case "get_inform_person_control":
 		// If there is a group, and no user, but a device, lookup that device's assigned user (if any)
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
 			recvd.Uid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 		}
-		response = ctrls.BuildDropList("USERINFORM", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Inform_gid), true, false)
+		response = droplists.BuildDropList("USERINFORM", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Inform_gid), true, false)
 	case "route_ticket":
 		recvd.Cmd = "ROUTE"
 		if recvd.OldGid != recvd.Gid || recvd.OldUid != recvd.Uid {
@@ -185,7 +184,7 @@ func PostTicket(c *fiber.Ctx) error {
 		if err != nil {
 			log.Println(err)
 		}
-		response = ctrls.BuildWorklog(user.Uid, recvd.Aid)
+		response = tickets.BuildWorklog(user.Uid, recvd.Aid)
 	case "add_log":
 		err := tickets.AddLog(user.Uid, recvd)
 		if err != nil {
@@ -199,7 +198,7 @@ func PostTicket(c *fiber.Ctx) error {
 			// Concept: have a notify at close flag in Alerts table DONE
 
 		}
-		response = ctrls.BuildWorklog(user.Uid, recvd.Aid)
+		response = tickets.BuildWorklog(user.Uid, recvd.Aid)
 	}
 	return c.Status(fiber.StatusOK).SendString(response)
 }

@@ -12,7 +12,6 @@ import (
 
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/photos"
-	"github.com/gbsto/daisy/profiles"
 )
 
 const (
@@ -454,7 +453,7 @@ func (d *Device) SetDevice(curUid int, dto *Device) bool {
 	}
 	//Ensure gid matches uid's group
 	if dto.Uid > 0 && dto.Gid == 0 {
-		dto.Gid = profiles.GetGid(dto.Uid)
+		dto.Gid = db.GetGid(dto.Uid)
 	}
 	var query = `
 		UPDATE devices SET

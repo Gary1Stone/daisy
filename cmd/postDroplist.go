@@ -3,10 +3,9 @@ package cmd
 import (
 	"strconv"
 
-	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/droplists"
-	"github.com/gbsto/daisy/profiles"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -53,7 +52,7 @@ func PostDroplist(c *fiber.Ctx) error {
 				}
 			}
 		}
-		reply = ctrls.BuildDropList("SITE", recvd.Site, "", false, false)
+		reply = droplists.BuildDropList("SITE", recvd.Site, "", false, false)
 
 	// case "get_office_control_wizard":
 	// case "get_office_control_device":
@@ -68,7 +67,7 @@ func PostDroplist(c *fiber.Ctx) error {
 				}
 			}
 		}
-		reply = ctrls.BuildDropList("OFFICE", recvd.Office, recvd.Site, true, recvd.IsReadonly)
+		reply = droplists.BuildDropList("OFFICE", recvd.Office, recvd.Site, true, recvd.IsReadonly)
 
 	//case "get_group_control_wizard":
 	case "GROUP":
@@ -82,13 +81,13 @@ func PostDroplist(c *fiber.Ctx) error {
 				defaultToCurUser = true
 			}
 			if recvd.Gid == 0 {
-				usr_gid := profiles.GetGid(user.Uid)
+				usr_gid := db.GetGid(user.Uid)
 				var d devices.Device
 				dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(recvd.Cid)
 				recvd.Gid = droplists.FindGroupID(user.Uid, usr_gid, recvd.Cid, dev_uid, dev_gid, defaultToCurUser)
 			}
 		}
-		reply = ctrls.BuildDropList("GROUP", strconv.Itoa(recvd.Gid), "", withBlank, false)
+		reply = droplists.BuildDropList("GROUP", strconv.Itoa(recvd.Gid), "", withBlank, false)
 
 	case "USER":
 		withBlank := true
@@ -108,22 +107,22 @@ func PostDroplist(c *fiber.Ctx) error {
 				recvd.Uid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 			}
 		}
-		reply = ctrls.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), withBlank, recvd.IsReadonly)
+		reply = droplists.BuildDropList("USER", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), withBlank, recvd.IsReadonly)
 
 	case "IMPACT":
-		reply = ctrls.BuildDropList("IMPACT", "-1", "", false, false)
+		reply = droplists.BuildDropList("IMPACT", "-1", "", false, false)
 
 	case "TROUBLE":
-		reply = ctrls.BuildDropList("TROUBLE", "-1", recvd.Type, false, false)
+		reply = droplists.BuildDropList("TROUBLE", "-1", recvd.Type, false, false)
 
 	case "OFFICESEARCH":
 		if len(recvd.Wizard) > 0 {
 			recvd.Office = ""
 		}
-		reply = ctrls.BuildDropList("OFFICESEARCH", recvd.Office, recvd.Site, true, false)
+		reply = droplists.BuildDropList("OFFICESEARCH", recvd.Office, recvd.Site, true, false)
 
 	case "USERSEARCH":
-		reply = ctrls.BuildDropList("USERSEARCH", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
+		reply = droplists.BuildDropList("USERSEARCH", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
 
 	case "USERINFORM":
 		if recvd.IsTicket {
@@ -133,7 +132,7 @@ func PostDroplist(c *fiber.Ctx) error {
 				recvd.Uid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 			}
 		}
-		reply = ctrls.BuildDropList("USERINFORM", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Inform_gid), true, false)
+		reply = droplists.BuildDropList("USERINFORM", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Inform_gid), true, false)
 
 	}
 	return c.Status(fiber.StatusOK).SendString(reply)

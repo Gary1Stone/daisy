@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
 	"github.com/gbsto/daisy/online"
@@ -52,13 +52,13 @@ func GetOnline(c *fiber.Ctx) error {
 		"isAdmin":       user.IsAdmin,
 		"isReadonly":    !user.Permissions.Profile.Update,
 		"isDisabled":    !user.Permissions.Profile.Update,
-		"cmd_two":       template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
+		"cmd_two":       template.HTML(icons.MakeButton(icons.BtnHelp, true)),
 		"minDate":       minDate,
 		"maxDate":       maxDate,
 		"dateParam":     dateParam,
 		"onlineDevices": template.HTML(svg.BuildOnlineChart(chartData, macInfo, svg.NameOnly)),
-		"kindCtrl":      template.HTML(ctrls.BuildDropList("KIND", "", "", true, false)),
-		"officeCtrl":    template.HTML(ctrls.BuildDropList("OFFICE", "", "", true, false)),
+		"kindCtrl":      template.HTML(droplists.BuildDropList("KIND", "", "", true, false)),
+		"officeCtrl":    template.HTML(droplists.BuildDropList("OFFICE", "", "", true, false)),
 		"offices":       template.HTML(db.BuildFieldList("OFFICE")),
 	}))
 }

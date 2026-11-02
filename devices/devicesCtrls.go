@@ -1,4 +1,4 @@
-package ctrls
+package devices
 
 import (
 	"encoding/json"
@@ -10,15 +10,14 @@ import (
 
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
 )
 
-func MakeImageCtrl(dev *devices.Device, isUpdatePerm bool) string {
+func MakeImageCtrl(dev *Device, isUpdatePerm bool) string {
 	var ctrl strings.Builder
 	if dev.Cid == 0 {
-		ctrl.WriteString(`<img src="images/missing.jpg" alt="photo" width="338px" height="253px" id="displayedImage" >`)
+		ctrl.WriteString(`<img src="images/missing.jpg" alt="photo" width="338px" height="253px" id="displayedImage" style='display: block; margin: 0 auto;' >`)
 	} else {
 		if isUpdatePerm {
 			ctrl.WriteString(`<a href="#" onclick="changePic();" >`)
@@ -29,7 +28,7 @@ func MakeImageCtrl(dev *devices.Device, isUpdatePerm bool) string {
 		} else {
 			ctrl.WriteString("missing.jpg")
 		}
-		ctrl.WriteString(`" +  alt="photo" width="338px" height="253px" id="displayedImage" >`)
+		ctrl.WriteString(`" +  alt="photo" width="338px" height="253px" id="displayedImage" style='display: block; margin: 0 auto;' >`)
 		if isUpdatePerm {
 			ctrl.WriteString("</a>")
 		}
@@ -161,14 +160,15 @@ func BuildDeviceLog(curUid, cid, hist int) string {
 		button.Sid_ack = act.Sid_ack
 		button.Wlog = act.Wlog
 		button.Icon = act.Icon
-		fmt.Fprintf(&table, `<tr><td>%s</td><td>%s</td><td>%s</td><td><div id='notes%d'>%s</div></td><td>%s</td></tr>`, buildButton(button), act.Localtime, act.OriginatorName, act.Aid, act.Notes, calculateStatus(act))
+		fmt.Fprintf(&table, `<tr><td>%s</td><td>%s</td><td>%s</td><td><div id='notes%d'>%s</div></td><td>%s</td></tr>`,
+			BuildButton(button), act.Localtime, act.OriginatorName, act.Aid, act.Notes, actions.CalculateStatus(act))
 	}
 	table.WriteString("</tbody></table>")
 	return table.String()
 }
 
 // Button to pop up the modal dialog with JSON object of the paramenters to use when the button is pressed
-func buildButton(button actions.Popbutton) string {
+func BuildButton(button actions.Popbutton) string {
 	var btn strings.Builder
 	btnJason, err := json.Marshal(button)
 	if err != nil {
@@ -181,4 +181,41 @@ func buildButton(button actions.Popbutton) string {
 	fmt.Fprintf(&btn, `<a href="#" onclick="pop('%d');" role="button" %s >%s %s</a>`, button.Aid, color, icons.GetIcon(button.Icon), button.Label)
 	fmt.Fprintf(&btn, `<input type='hidden' id='aid%d' value='%s' >`, button.Aid, string(btnJason))
 	return btn.String()
+}
+
+// On the profile page, list all the assigned computers
+func BuildAssignedDevices(curUid, tzoff, uid int) string {
+	var d Device
+	devices, err := d.GetAssignedDevices(curUid, tzoff, uid)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	if len(devices) == 0 {
+		return ""
+	}
+	var ctrl strings.Builder
+	ctrl.WriteString(`<div class="scrollarea">`)
+	for _, item := range devices {
+		fmt.Fprintf(&ctrl, `<p style="text-decoration: none;"><a href='device.html?cid=%d'>%s %s %s</a></p>`,
+			item.Cid, icons.GetIcon(item.Icon), item.Name, item.Model)
+	}
+	ctrl.WriteString(`</div>`)
+
+	return ctrl.String()
+}
+
+func LocationCtrl(curUid, tzoff, cid int) string {
+	var location string
+	if cid > 0 {
+		var d Device
+		if dev, err := d.GetDevice(curUid, tzoff, cid); err == nil {
+			location = dev.Location
+		} else {
+			log.Println(err)
+		}
+	}
+	return `<input type="text" id="location" name="location" maxlength="100" value="` + location + `" 
+        title="Location" data-role="input" data-validate="maxlength=100" >
+        <span id="locationError" class="invalid_feedback">Location details are needed.</span>`
 }

@@ -46,7 +46,7 @@ function showDetail(cid) {
         return;
     }
     try {
-        const site = site().value;
+        const site = UI.site().value;
         postJSON("/tree/show", {cid: cid, site: site}, (response) => {
             UI.cid().value = response.cid || "";
             UI.name().innerText = response.name || "";

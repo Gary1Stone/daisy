@@ -9,10 +9,10 @@ import (
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/droplists"
+	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/profiles"
 	"github.com/gbsto/daisy/software"
 	"github.com/gbsto/daisy/wizards"
@@ -92,29 +92,29 @@ func GetWizard(c *fiber.Ctx) error {
 	}
 
 	return c.Render("wizard", addNavigationIcons(fiber.Map{
-		"title":            template.HTML(ctrls.BuildWizardTitle(wizkey)),
+		"title":            template.HTML(wizards.BuildWizardTitle(wizkey)),
 		"fullName":         user.Fullname,
-		"cmd_one":          template.HTML(ctrls.MakeButton(ctrls.BtnFilter, user.Permissions.Device.Read)),
+		"cmd_one":          template.HTML(icons.MakeButton(icons.BtnFilter, user.Permissions.Device.Read)),
 		"isAdmin":          user.IsAdmin,
 		"curUid":           user.Uid,
 		"wizKey":           wizkey,
 		"cid":              strconv.Itoa(cid),
 		"devPic":           devPic,
 		"devDetails":       template.HTML(devDetails),
-		"typeCtrl":         template.HTML(ctrls.BuildDropList("TYPESEARCH", filter.DevType, wizkey, true, false)),
-		"siteSearchCtrl":   template.HTML(ctrls.BuildDropList("SITESEARCH", filter.Site, "", true, false)),
-		"officeSearchCtrl": template.HTML(ctrls.BuildDropList("OFFICESEARCH", filter.Office, filter.Site, true, false)),
-		"groupSearchCtrl":  template.HTML(ctrls.BuildDropList("GROUPSEARCH", strconv.Itoa(filter.Gid), "", true, false)),
-		"userSearchCtrl":   template.HTML(ctrls.BuildDropList("USERSEARCH", strconv.Itoa(filter.Uid), "0", true, false)),
-		"softwareCtrl":     template.HTML(ctrls.BuildDropList("SOFTWARE", "", "", swBlank, false)),
-		"groupCtrl":        template.HTML(ctrls.BuildDropList("GROUP", "0", "", grpBlank, false)),
-		"userCtrl":         template.HTML(ctrls.BuildDropList("USER", "0", userGroup, false, false)),
-		"impactCtrl":       template.HTML(ctrls.BuildDropList("IMPACT", "-1", "", false, false)),
-		"troubleCtrl":      template.HTML(ctrls.BuildDropList("TROUBLE", "0", defaultType, false, false)),
-		"siteCtrl":         template.HTML(ctrls.BuildDropList("SITE", site, "", false, false)),
-		"officeCtrl":       template.HTML(ctrls.BuildDropList("OFFICE", office, site, false, false)),
-		"locationCtrl":     template.HTML(ctrls.LocationCtrl(user.Uid, user.Tzoff, cid)),
-		"cards":            template.HTML(ctrls.DeviceCards(user.Uid, user.Tzoff, &filter, true)),
+		"typeCtrl":         template.HTML(droplists.BuildDropList("TYPESEARCH", filter.DevType, wizkey, true, false)),
+		"siteSearchCtrl":   template.HTML(droplists.BuildDropList("SITESEARCH", filter.Site, "", true, false)),
+		"officeSearchCtrl": template.HTML(droplists.BuildDropList("OFFICESEARCH", filter.Office, filter.Site, true, false)),
+		"groupSearchCtrl":  template.HTML(droplists.BuildDropList("GROUPSEARCH", strconv.Itoa(filter.Gid), "", true, false)),
+		"userSearchCtrl":   template.HTML(droplists.BuildDropList("USERSEARCH", strconv.Itoa(filter.Uid), "0", true, false)),
+		"softwareCtrl":     template.HTML(droplists.BuildDropList("SOFTWARE", "", "", swBlank, false)),
+		"groupCtrl":        template.HTML(droplists.BuildDropList("GROUP", "0", "", grpBlank, false)),
+		"userCtrl":         template.HTML(droplists.BuildDropList("USER", "0", userGroup, false, false)),
+		"impactCtrl":       template.HTML(droplists.BuildDropList("IMPACT", "-1", "", false, false)),
+		"troubleCtrl":      template.HTML(droplists.BuildDropList("TROUBLE", "0", defaultType, false, false)),
+		"siteCtrl":         template.HTML(droplists.BuildDropList("SITE", site, "", false, false)),
+		"officeCtrl":       template.HTML(droplists.BuildDropList("OFFICE", office, site, false, false)),
+		"locationCtrl":     template.HTML(devices.LocationCtrl(user.Uid, user.Tzoff, cid)),
+		"cards":            template.HTML(devices.DeviceCards(user.Uid, user.Tzoff, &filter, true)),
 	}))
 }
 
@@ -176,7 +176,7 @@ func PostWizard(c *fiber.Ctx) error {
 	case wizards.Care:
 		care(user.Uid, recvd)
 	case "get_location_from_device":
-		reply = ctrls.LocationCtrl(user.Uid, user.Tzoff, recvd.Cid)
+		reply = devices.LocationCtrl(user.Uid, user.Tzoff, recvd.Cid)
 	case "get_site_control":
 		// If we have a computer, use the computer's assigned site
 		if recvd.Cid > 0 {
@@ -185,7 +185,7 @@ func PostWizard(c *fiber.Ctx) error {
 				recvd.Site = site
 			}
 		}
-		reply = ctrls.BuildDropList("SITE", recvd.Site, "", false, false)
+		reply = droplists.BuildDropList("SITE", recvd.Site, "", false, false)
 	case "get_office_control":
 		// If the computer is in the selected site (recvd.Site), set the default office
 		if recvd.Cid > 0 {
@@ -194,7 +194,7 @@ func PostWizard(c *fiber.Ctx) error {
 				recvd.Office = office
 			}
 		}
-		reply = ctrls.BuildDropList("OFFICE", recvd.Office, recvd.Site, true, false)
+		reply = droplists.BuildDropList("OFFICE", recvd.Office, recvd.Site, true, false)
 	case "get_group_control":
 		withBlank := true
 		if recvd.Wizard == "broken" || recvd.Wizard == "died" || recvd.Wizard == "care" || recvd.Wizard == "request" {
@@ -205,11 +205,11 @@ func PostWizard(c *fiber.Ctx) error {
 			defaultToCurUser = true
 		}
 		if recvd.Gid == 0 {
-			gid := profiles.GetGid(user.Uid)
+			gid := db.GetGid(user.Uid)
 			dev_uid, dev_gid := d.GetDeviceAssignedUserGroup(recvd.Cid)
 			recvd.Gid = droplists.FindGroupID(user.Uid, gid, recvd.Cid, dev_uid, dev_gid, defaultToCurUser)
 		}
-		reply = ctrls.BuildDropList("GROUP", strconv.Itoa(recvd.Gid), "", withBlank, false)
+		reply = droplists.BuildDropList("GROUP", strconv.Itoa(recvd.Gid), "", withBlank, false)
 	case "get_person_control":
 		defaultUid := 0
 		if recvd.Wizard == "claim" {
@@ -223,15 +223,15 @@ func PostWizard(c *fiber.Ctx) error {
 		if recvd.Gid > 0 && recvd.Uid == 0 && recvd.Cid > 0 {
 			defaultUid, _ = d.GetDeviceAssignedUserGroup(recvd.Cid)
 		}
-		reply = ctrls.BuildDropList("USER", strconv.Itoa(defaultUid), strconv.Itoa(recvd.Gid), includeBlankOption, false)
+		reply = droplists.BuildDropList("USER", strconv.Itoa(defaultUid), strconv.Itoa(recvd.Gid), includeBlankOption, false)
 	case "get_impact_control":
-		reply = ctrls.BuildDropList("IMPACT", "-1", "", false, false)
+		reply = droplists.BuildDropList("IMPACT", "-1", "", false, false)
 	case "get_trouble_control":
-		reply = ctrls.BuildDropList("TROUBLE", "-1", recvd.Type, false, false)
+		reply = droplists.BuildDropList("TROUBLE", "-1", recvd.Type, false, false)
 	case "get_office_search_control":
-		reply = ctrls.BuildDropList("OFFICESEARCH", "", recvd.Site, true, false)
+		reply = droplists.BuildDropList("OFFICESEARCH", "", recvd.Site, true, false)
 	case "get_user_search_control":
-		reply = ctrls.BuildDropList("USERSEARCH", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
+		reply = droplists.BuildDropList("USERSEARCH", strconv.Itoa(recvd.Uid), strconv.Itoa(recvd.Gid), true, false)
 	}
 	//	log.Printf("PostWizard took %s", time.Since(start))
 	return c.Status(fiber.StatusOK).SendString(reply)
@@ -279,7 +279,7 @@ func assignUser(curUid, uid, gid int, act *actions.Action) (string, int) {
 	act.Uid = uid
 	// If gid missing, look up the user's group
 	if uid > 0 && gid == 0 {
-		gid = profiles.GetGid(uid)
+		gid = db.GetGid(uid)
 	}
 	act.Gid = gid
 	// If closed, and there is a group or user, mark as acknowledged
@@ -337,7 +337,7 @@ func updateDevice(curUid int, wiz *wizFormData) (string, int) {
 	if wiz.Task == "CLAIMING" || wiz.Task == "GIVING" || wiz.Task == "SIGHTING" {
 		dev.Uid = wiz.Uid
 		if wiz.Uid > 0 {
-			dev.Gid = profiles.GetGid(wiz.Uid) // The user's Group
+			dev.Gid = db.GetGid(wiz.Uid) // The user's Group
 		} else {
 			dev.Gid = wiz.Gid // New group assigned, no user selected
 		}

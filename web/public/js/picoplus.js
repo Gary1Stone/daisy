@@ -305,6 +305,7 @@ function setUpDropDowns(root = document) {
         const hiddenInput = container.querySelector('.droplist-input');
         const summary = dropdown.querySelector('summary');
         if (!hiddenInput || !summary) return;
+        summary.dataset.placeholder = summary.innerHTML;
         const options = Array.from(dropdown.querySelectorAll('ul[role="listbox"] a'));
         let activeIndex = -1;
 
@@ -408,7 +409,19 @@ function setDropdownValue(el, value) {
     opt => opt.getAttribute("data-value") === String(value)
   );
 
-  if (!option) return false;
+  if (!option) {
+    if (String(value) !== "") return false;
+
+    options?.forEach(opt => opt.removeAttribute("aria-selected"));
+    const summary = dropdown?.querySelector("summary");
+    if (summary) {
+      summary.innerHTML = summary.dataset.placeholder || "";
+      summary.setAttribute("aria-invalid", "false");
+    }
+    input.value = "";
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    return true;
+  }
 
   options.forEach(opt => opt.removeAttribute("aria-selected"));
   option.setAttribute("aria-selected", "true");

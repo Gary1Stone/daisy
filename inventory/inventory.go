@@ -16,7 +16,7 @@ type Sw_list struct {
 }
 
 // Return a unique list of inventory software names
-func GetInventoryList() ([]string, error) {
+func getInventoryList() ([]string, error) {
 	list := make([]string, 0)
 	rows, err := db.Conn.Query("SELECT DISTINCT(name) FROM sw_inv")
 	if err != nil {

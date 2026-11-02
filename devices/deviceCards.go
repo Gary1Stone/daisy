@@ -1,4 +1,4 @@
-package ctrls
+package devices
 
 import (
 	"encoding/json"
@@ -7,15 +7,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/util"
 )
 
 // Device cards for the devices.html screen and the wizard.html screen
-func DeviceCards(curUid, tzoff int, filter *devices.DeviceFilter, isWiz bool) string {
+func DeviceCards(curUid, tzoff int, filter *DeviceFilter, isWiz bool) string {
 	var card strings.Builder
-	var d devices.Device
+	var d Device
 	items, err := d.SearchDevices(curUid, tzoff, filter)
 	if err != nil {
 		log.Println(err)
@@ -77,7 +76,7 @@ func DeviceCards(curUid, tzoff int, filter *devices.DeviceFilter, isWiz bool) st
 		} else {
 			fmt.Fprintf(&card, `<a href='device.html?cid=%d' data-tooltip='Show Record'>`, item.Cid)
 		}
-		fmt.Fprintf(&card, "<img src='images/%s' alt='device photo' width='100%%'></a>", item.Small_image)
+		fmt.Fprintf(&card, "<img src='images/%s' alt='device photo' width='200px' style='display: block; margin: 0 auto;'></a>", item.Small_image)
 
 		//BODY
 		fmt.Fprintf(&card, "<section><p>%s (%d)</p><p>%s</p><p>%s %s</p>", item.Make, item.Year, util.Mx25(item.Model), brokenIcon, item.Status)

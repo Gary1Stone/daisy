@@ -1,4 +1,4 @@
-package ctrls
+package wizards
 
 import (
 	"fmt"
@@ -6,6 +6,21 @@ import (
 
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/icons"
+)
+
+const (
+	Sighting = "SIGHTING"
+	Using    = "USING"
+	Claiming = "CLAIMING"
+	Giving   = "GIVING"
+	Broken   = "BROKEN"
+	Lost     = "LOST"
+	Died     = "DIED"
+	Care     = "CARE"
+	Backup   = "BACKUP"
+	Install  = "INSTALL"
+	Remove   = "REMOVE"
+	Request  = "REQUEST"
 )
 
 func BuildWizardTitle(wizkey string) string {

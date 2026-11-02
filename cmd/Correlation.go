@@ -3,7 +3,6 @@ package cmd
 import (
 	"html/template"
 
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/macs"
 
@@ -37,9 +36,9 @@ func GetCorrelation(c *fiber.Ctx) error {
 		"isAdmin":      user.IsAdmin,
 		"isReadonly":   user.Permissions.Admin.Update,
 		"isDisabled":   user.Permissions.Admin.Update,
-		"cmd_one":      template.HTML(ctrls.MakeButton(ctrls.BtnFilter, user.Permissions.Device.Read)),
-		"cmd_two":      template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
-		"affinityList": template.HTML(ctrls.BuildMacCorrelationTable(filter)),
+		"cmd_one":      template.HTML(icons.MakeButton(icons.BtnFilter, user.Permissions.Device.Read)),
+		"cmd_two":      template.HTML(icons.MakeButton(icons.BtnHelp, true)),
+		"affinityList": template.HTML(macs.BuildMacCorrelationTable(filter)),
 	}))
 }
 
@@ -55,5 +54,5 @@ func PostCorrelation(c *fiber.Ctx) error {
 	if err := c.BodyParser(&filter); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("CRITICAL SERVER ERROR!")
 	}
-	return c.Status(fiber.StatusOK).SendString(ctrls.BuildMacCorrelationTable(filter))
+	return c.Status(fiber.StatusOK).SendString(macs.BuildMacCorrelationTable(filter))
 }

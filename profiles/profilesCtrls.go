@@ -1,4 +1,4 @@
-package ctrls
+package profiles
 
 import (
 	"fmt"
@@ -6,15 +6,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/logins"
-	"github.com/gbsto/daisy/profiles"
 	"github.com/gbsto/daisy/util"
 )
 
 // Generate profile table for wide screens
-func ProfilesTable(curUid int, filter profiles.Profile) string {
+func ProfilesTable(curUid int, filter Profile) string {
 	var table strings.Builder
 
 	// Build the table header
@@ -38,7 +36,8 @@ func ProfilesTable(curUid int, filter profiles.Profile) string {
 		if item.Tickets > 0 {
 			ticket = buildTicketIcon(item.Tickets)
 		}
-		fmt.Fprintf(&table, "<tr data-id='%d'><td><a href='profile.html?uid=%d'>%s</a></td><td>%s</td><td>%s</td><td> %s %s</td></tr>", item.Uid, item.Uid, item.User, util.Mx25(item.Fullname), util.Mx25(item.Group), alert, ticket)
+		fmt.Fprintf(&table, "<tr data-id='%d'><td><a href='profile.html?uid=%d'>%s</a></td><td>%s</td><td>%s</td><td> %s %s</td></tr>",
+			item.Uid, item.Uid, item.User, util.Mx25(item.Fullname), util.Mx25(item.Group), alert, ticket)
 	}
 
 	table.WriteString("</tbody></table>")
@@ -98,7 +97,8 @@ func GetProfileLogins(curUid, uid int) string {
 		</thead>
 		<tbody>`)
 	for _, item := range items {
-		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%d</td><td>%s, %s, %s<p>%s</p></td><td>%d</td></tr>`, item.Last_login, item.Days, item.Country, item.State, item.City, item.Community, item.Distance)
+		fmt.Fprintf(&tbl, `<tr><td>%s</td><td>%d</td><td>%s, %s, %s<p>%s</p></td><td>%d</td></tr>`,
+			item.Last_login, item.Days, item.Country, item.State, item.City, item.Community, item.Distance)
 	}
 	tbl.WriteString("</tbody></table></div>")
 	return tbl.String()
@@ -116,27 +116,6 @@ func BuildRadiusOptions(radius int) string {
 		}
 		fmt.Fprintf(&ctrl, `<option value='%d' %s>%d Km</option>`, rad, selected, rad)
 	}
-	return ctrl.String()
-}
-
-// On the profile page, list all the assigned computers
-func BuildAssignedDevices(curUid, tzoff, uid int) string {
-	var d devices.Device
-	devices, err := d.GetAssignedDevices(curUid, tzoff, uid)
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-	if len(devices) == 0 {
-		return ""
-	}
-	var ctrl strings.Builder
-	ctrl.WriteString(`<div class="scrollarea">`)
-	for _, item := range devices {
-		fmt.Fprintf(&ctrl, `<p style="text-decoration: none;"><a href='device.html?cid=%d'>%s %s %s</a></p>`, item.Cid, icons.GetIcon(item.Icon), item.Name, item.Model)
-	}
-	ctrl.WriteString(`</div>`)
-
 	return ctrl.String()
 }
 

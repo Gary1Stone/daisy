@@ -33,31 +33,6 @@ func BuildDeviceList(site string) string {
 	return tbl.String()
 }
 
-// // Device 2 MAC
-// func BuildD2MDeviceList(site string) string {
-
-// 	items, err := device_mac.GetDevices(site)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return err.Error()
-// 	}
-
-// 	var ctrl strings.Builder
-// 	ctrl.WriteString(`<details class="dropdown" id="devicelist"><summary id="selected">Select a device</summary><ul>`)
-// 	for _, item := range items {
-// 		tip := item.Kind
-// 		color := colors.Alert
-// 		if item.IsLinked {
-// 			color = colors.Success
-// 		}
-
-// 		fmt.Fprintf(&ctrl, `<li><a href="#" onclick="cidSelected(%d)"><span id="cid%d">%s %s %s<span></a></li>`, item.Cid, item.Cid, setIconColor(item.Kind, color, tip), item.Name, item.Model)
-// 	}
-// 	ctrl.WriteString(`</ul></details>`)
-
-// 	return ctrl.String()
-// }
-
 // List all the macs belonging to the specified computer
 // Contains self-reported MACs and network Scan Macs
 func BuildDevMacs(cid, tzoff int, canEdit bool) string {

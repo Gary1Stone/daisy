@@ -1,4 +1,4 @@
-package ctrls
+package tickets
 
 import (
 	"fmt"
@@ -11,7 +11,6 @@ import (
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/tickets"
 )
 
 func BuildDeviceCtrl(dev devices.Device) string {
@@ -82,7 +81,7 @@ func BuildAckCheckbox(isChecked int, isReadonly bool, label, id string) string {
 
 func BuildWorklog(curUid, aid int) string {
 	// Fetch worklog items from the database
-	items, err := tickets.GetLogs(curUid, db.GetTzoff(curUid), aid)
+	items, err := GetLogs(curUid, db.GetTzoff(curUid), aid)
 	if err != nil {
 		log.Println(err)
 		return "<p>Error loading worklog data.</p>"

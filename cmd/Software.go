@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/actions"
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/inventory"
 	"github.com/gbsto/daisy/software"
@@ -33,7 +32,7 @@ func GetSoftware(c *fiber.Ctx) error {
 	}
 
 	// Get the software record
-	software, err := software.GetSoftware(user.Uid, user.Tzoff, sid)
+	swRec, err := software.GetSoftware(user.Uid, user.Tzoff, sid)
 	if err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusOK).Redirect("index.html")
@@ -48,30 +47,30 @@ func GetSoftware(c *fiber.Ctx) error {
 		"title":          template.HTML(icons.GetIcon("software") + " Software"),
 		"fullName":       user.Fullname,
 		"isAdmin":        user.IsAdmin,
-		"cmd_one":        template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Software.Update)),
-		"cmd_two":        template.HTML(ctrls.MakeButton(ctrls.BtnNew, user.Permissions.Software.Create)),
-		"cmd_three":      template.HTML(ctrls.MakeButton(ctrls.BtnDelete, user.Permissions.Software.Delete)),
-		"sid":            software.Sid,
-		"name":           software.Name,
-		"licenses":       software.Licenses,
-		"active":         software.Active,
+		"cmd_one":        template.HTML(icons.MakeButton(icons.BtnSave, user.Permissions.Software.Update)),
+		"cmd_two":        template.HTML(icons.MakeButton(icons.BtnNew, user.Permissions.Software.Create)),
+		"cmd_three":      template.HTML(icons.MakeButton(icons.BtnDelete, user.Permissions.Software.Delete)),
+		"sid":            swRec.Sid,
+		"name":           swRec.Name,
+		"licenses":       swRec.Licenses,
+		"active":         swRec.Active,
 		"isReadonly":     !user.Permissions.Software.Update,
 		"isDisabled":     !user.Permissions.Software.Update,
-		"reuseable":      software.Reuseable,
-		"license_key":    software.License_key,
-		"product":        software.Product,
-		"source":         software.Source,
-		"link":           software.Link,
-		"inv_name":       software.Inv_name,
-		"pre_installed":  software.Pre_installed,
-		"free":           software.Free,
-		"purchased":      software.Purchased,
+		"reuseable":      swRec.Reuseable,
+		"license_key":    swRec.License_key,
+		"product":        swRec.Product,
+		"source":         swRec.Source,
+		"link":           swRec.Link,
+		"inv_name":       swRec.Inv_name,
+		"pre_installed":  swRec.Pre_installed,
+		"free":           swRec.Free,
+		"purchased":      swRec.Purchased,
 		"edit":           template.HTML(edit),
-		"notes":          software.Notes,
-		"by":             software.Fullname,
-		"at":             software.Last_updated_time,
-		"installed_list": template.HTML(ctrls.BuildInstalledList(user.Uid, sid)),
-		"actionlog":      template.HTML(ctrls.BuildSoftwareLog(user.Uid, sid, 0)),
+		"notes":          swRec.Notes,
+		"by":             swRec.Fullname,
+		"at":             swRec.Last_updated_time,
+		"installed_list": template.HTML(software.BuildInstalledList(user.Uid, sid)),
+		"actionlog":      template.HTML(software.BuildSoftwareLog(user.Uid, sid, 0)),
 	}))
 }
 
@@ -109,7 +108,7 @@ func PostSoftware(c *fiber.Ctx) error {
 		if recvd.Aid > 0 {
 			actions.AckAction(user.Uid, recvd.Aid, true, false, true)
 		}
-		return c.Status(fiber.StatusOK).SendString(ctrls.BuildSoftwareLog(user.Uid, recvd.Sid, recvd.Showhistory))
+		return c.Status(fiber.StatusOK).SendString(software.BuildSoftwareLog(user.Uid, recvd.Sid, recvd.Showhistory))
 	case "unique":
 		reply.Success = recvd.IsUnique()
 		reply.Sid = recvd.Sid

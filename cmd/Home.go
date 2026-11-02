@@ -13,9 +13,9 @@ import (
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/alerts"
 	"github.com/gbsto/daisy/colors"
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/logins"
 	"github.com/gbsto/daisy/online"
@@ -91,7 +91,7 @@ func GetHome(c *fiber.Ctx) error {
 		"offlineCount":     offlineCount,
 		"onlineSpark":      template.HTML(svg.GraphCache.GetGraph(svg.OnlineMonth)),
 		"maxHitsMonth":     svg.GraphCache.GetMax(svg.OnlineMonth),
-		"wizardsSelect":    template.HTML(ctrls.BuildDropList("WIZARDS", "", "", false, false)),
+		"wizardsSelect":    template.HTML(droplists.BuildDropList("WIZARDS", "", "", false, false)),
 		"devicesOnline":    template.HTML(online.GetLastOnlineDatesTable(user.Uid, user.Tzoff)),
 		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedTable()),
 	}))

@@ -402,16 +402,3 @@ func (p *ProfileInfo) CascadeGidChange() {
 		log.Println("Failed to commit transaction:", err)
 	}
 }
-
-// Get the user's group ID
-func GetGid(uid int) int {
-	var gid = 0
-	if uid > 0 {
-		err := db.Conn.QueryRow("SELECT gid FROM profiles WHERE uid=?", uid).Scan(&gid)
-		if err != nil {
-			log.Println(err)
-			return gid
-		}
-	}
-	return gid
-}

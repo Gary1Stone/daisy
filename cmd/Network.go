@@ -3,7 +3,7 @@ package cmd
 import (
 	"html/template"
 
-	"github.com/gbsto/daisy/ctrls"
+	"github.com/gbsto/daisy/droplists"
 	"github.com/gbsto/daisy/icons"
 	"github.com/gbsto/daisy/tree"
 
@@ -34,21 +34,21 @@ func GetNetwork(c *fiber.Ctx) error {
 		"isAdmin":      user.IsAdmin,
 		"isReadonly":   !user.Permissions.Admin.Update,
 		"isDisabled":   !user.Permissions.Admin.Update,
-		"cmd_one":      template.HTML(ctrls.MakeButton(ctrls.BtnOnline, true)),
-		"cmd_two":      template.HTML(ctrls.MakeButton(ctrls.BtnDuplicate, true)),
-		"cmd_three":    template.HTML(ctrls.MakeButton(ctrls.BtnCorrelate, true)),
-		"cmd_four":     template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
+		"cmd_one":      template.HTML(icons.MakeButton(icons.BtnOnline, true)),
+		"cmd_two":      template.HTML(icons.MakeButton(icons.BtnDuplicate, true)),
+		"cmd_three":    template.HTML(icons.MakeButton(icons.BtnCorrelate, true)),
+		"cmd_four":     template.HTML(icons.MakeButton(icons.BtnHelp, true)),
 		"networkImage": "/images/wknc-network.png",
 		"officeIcon":   template.HTML(icons.GetIcon("office")),
 		"parentIcon":   template.HTML(icons.GetIcon("parent")),
 		"historyIcon":  template.HTML(icons.GetIcon("history")),
 		"cloneIcon":    template.HTML(icons.GetIcon("clone")),
 		"equalsIcon":   template.HTML(icons.GetIcon("equals")),
-		"tree":         template.HTML(ctrls.BuildTreeView(site)),
-		"siteCtrl":     template.HTML(ctrls.BuildDropList("SITE", site, "", false, !user.Permissions.Network.Read)),
-		"parentCtrl":   template.HTML(ctrls.BuildParentSelect(0, site, !user.Permissions.Network.Update)),
-		"kindCtrl":     template.HTML(ctrls.BuildDropList("KIND", "", "", true, !user.Permissions.Network.Update)),
-		"officeCtrl":   template.HTML(ctrls.BuildDropList("OFFICE", "", site, true, !user.Permissions.Network.Update)),
+		"tree":         template.HTML(tree.BuildTreeView(site)),
+		"siteCtrl":     template.HTML(droplists.BuildDropList("SITE", site, "", false, !user.Permissions.Network.Read)),
+		"parentCtrl":   template.HTML(tree.BuildParentSelect(0, site, !user.Permissions.Network.Update)),
+		"kindCtrl":     template.HTML(droplists.BuildDropList("KIND", "", "", true, !user.Permissions.Network.Update)),
+		"officeCtrl":   template.HTML(droplists.BuildDropList("OFFICE", "", site, true, !user.Permissions.Network.Update)),
 		"site":         site,
 	}))
 }
@@ -84,5 +84,5 @@ func PostTreeUpdate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString("error updating device")
 	}
 
-	return c.Status(fiber.StatusOK).SendString(ctrls.BuildTreeView(req.Site))
+	return c.Status(fiber.StatusOK).SendString(tree.BuildTreeView(req.Site))
 }

@@ -7,7 +7,6 @@ import (
 
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/choices"
-	"github.com/gbsto/daisy/ctrls"
 	"github.com/gbsto/daisy/icons"
 
 	"github.com/gofiber/fiber/v2"
@@ -39,9 +38,9 @@ func GetAdmin(c *fiber.Ctx) error {
 		"title":           template.HTML(icons.GetIcon("settings") + " Admin"),
 		"fullName":        user.Fullname,
 		"isAdmin":         user.IsAdmin,
-		"cmd_one":         template.HTML(ctrls.MakeButton(ctrls.BtnTables, user.Permissions.Admin.Read)),
-		"cmd_two":         template.HTML(ctrls.MakeButton(ctrls.BtnSave, user.Permissions.Admin.Update)),
-		"cmd_three":       template.HTML(ctrls.MakeButton(ctrls.BtnHelp, true)),
+		"cmd_one":         template.HTML(icons.MakeButton(icons.BtnTables, user.Permissions.Admin.Read)),
+		"cmd_two":         template.HTML(icons.MakeButton(icons.BtnSave, user.Permissions.Admin.Update)),
+		"cmd_three":       template.HTML(icons.MakeButton(icons.BtnHelp, true)),
 		"deviceTypesJson": string(deviceTypesJson),
 		"siteIcon":        template.HTML(icons.GetIcon("site")),
 		"officeIcon":      template.HTML(icons.GetIcon("office")),
