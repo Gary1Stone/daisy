@@ -71,16 +71,16 @@ func WrapSearchTerm(str string) string {
 	return "%" + str + "%"
 }
 
-func GetSqlVersion() string {
-	var version string
-	err := Conn.QueryRow("SELECT sqlite_version()").Scan(&version)
-	if err != nil {
-		return "unknown"
-	}
-	return version
-}
+// func getSqlVersion() string {
+// 	var version string
+// 	err := Conn.QueryRow("SELECT sqlite_version()").Scan(&version)
+// 	if err != nil {
+// 		return "unknown"
+// 	}
+// 	return version
+// }
 
-func ExportSchema() error {
+func exportSchema() error {
 	rows, err := Conn.Query(`
 		SELECT sql
 		FROM sqlite_master

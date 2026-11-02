@@ -115,42 +115,42 @@ func (d *Device) GetDevice(curUid, tzoff, cid int) (Device, error) {
 }
 
 // Get the device photo name ensuring it is in the /public/images directory
-func (d *Device) GetImage(cid int) string {
-	if cid <= 0 {
-		return "missing.jpg"
-	}
-	img := ""
-	query := "SELECT image FROM devices WHERE cid=?"
-	err := db.Conn.QueryRow(query, cid).Scan(&img)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-	}
-	photoMap := photos.MapPhotos()
-	if len(img) == 0 || !photoMap[img] {
-		img = "missing.jpg"
-	}
-	return img
-}
+// func (d *Device) getImage(cid int) string {
+// 	if cid <= 0 {
+// 		return "missing.jpg"
+// 	}
+// 	img := ""
+// 	query := "SELECT image FROM devices WHERE cid=?"
+// 	err := db.Conn.QueryRow(query, cid).Scan(&img)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		log.Println(err)
+// 	}
+// 	photoMap := photos.MapPhotos()
+// 	if len(img) == 0 || !photoMap[img] {
+// 		img = "missing.jpg"
+// 	}
+// 	return img
+// }
 
 // Get the device's small photo name ensuring it is in the /public/images directory
-func (d *Device) GetSmallImage(cid int) string {
-	if cid <= 0 {
-		return "missing-sm.jpg"
-	}
-	img := ""
-	query := "SELECT image FROM devices WHERE cid=?"
-	err := db.Conn.QueryRow(query, cid).Scan(&img)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-	}
-	//Create name for the small image
-	img = photos.AddSuffixBeforeExtension(img, "-sm")
-	photoMap := photos.MapPhotos()
-	if len(img) == 0 || !photoMap[img] {
-		img = "missing.jpg"
-	}
-	return img
-}
+// func (d *Device) getSmallImage(cid int) string {
+// 	if cid <= 0 {
+// 		return "missing-sm.jpg"
+// 	}
+// 	img := ""
+// 	query := "SELECT image FROM devices WHERE cid=?"
+// 	err := db.Conn.QueryRow(query, cid).Scan(&img)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		log.Println(err)
+// 	}
+// 	//Create name for the small image
+// 	img = photos.AddSuffixBeforeExtension(img, "-sm")
+// 	photoMap := photos.MapPhotos()
+// 	if len(img) == 0 || !photoMap[img] {
+// 		img = "missing.jpg"
+// 	}
+// 	return img
+// }
 
 // Produce slice of devices
 func (d *Device) GetDevices(curUid, tzoff, cid, page int) ([]*Device, error) {
@@ -689,7 +689,7 @@ func (d *Device) ListUsersDevices() ([]User2DeviceReport, error) {
 	return list, nil
 }
 
-func (d *Device) SearchDevices(curUid, tzoff int, filter *DeviceFilter) ([]*Device, error) {
+func (d *Device) searchDevices(tzoff int, filter *DeviceFilter) ([]*Device, error) {
 	var params []any
 	var where strings.Builder
 	where.WriteString("WHERE A.active=1 ")

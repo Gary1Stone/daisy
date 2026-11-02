@@ -19,7 +19,7 @@ func ProfilesTable(curUid int, filter Profile) string {
 	table.WriteString(buildProfileTableHeader())
 
 	// Fetch profile items
-	items, err := filter.GetProfiles(curUid)
+	items, err := filter.getProfiles(curUid)
 	if err != nil {
 		log.Println(err)
 		table.WriteString("</tbody></table>")

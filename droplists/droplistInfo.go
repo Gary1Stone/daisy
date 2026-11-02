@@ -66,7 +66,7 @@ func (d *droplistMap) loadDroplists() {
 }
 
 // Return the droplist info from the cache
-func GetDroplistInfo(field string) Droplist {
+func getDroplistInfo(field string) Droplist {
 	if len(droplists.theMap) == 0 {
 		droplists.loadDroplists()
 	}

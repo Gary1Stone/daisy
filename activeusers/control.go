@@ -8,9 +8,9 @@ import (
 	"github.com/gbsto/daisy/icons"
 )
 
-func BuildActiveUsersTable(curUid, tzoff int) string {
+func BuildActiveUsersTable(tzoff int) string {
 	var ausr ActiveUsers
-	items, err := ausr.GetActiveUsers(curUid, tzoff)
+	items, err := ausr.getActiveUsers(tzoff)
 	if err != nil || len(items) == 0 {
 		log.Println(err)
 		return ""

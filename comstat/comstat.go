@@ -57,7 +57,7 @@ type audits struct {
 	longitude float64 // Where the device was last audited
 }
 
-func (c *Comstat) GetComstat(curUid, tzoff int) ([]*Comstat, error) {
+func (c *Comstat) getComstat(tzoff int) ([]*Comstat, error) {
 	//	start := time.Now()
 	computers := make([]*Comstat, 0)
 	var query strings.Builder

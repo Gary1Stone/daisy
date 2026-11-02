@@ -19,7 +19,7 @@ type ActiveUsers struct {
 	Since     string `json:"since"`
 }
 
-func (a *ActiveUsers) GetActiveUsers(curUid, tzoff int) ([]ActiveUsers, error) {
+func (a *ActiveUsers) getActiveUsers(tzoff int) ([]ActiveUsers, error) {
 	items := make([]ActiveUsers, 0)
 	query := `
 		SELECT max(L.timestamp), L.uid, L.id, P.fullname, L.country, L.state, L.city, L.community, strftime('%Y-%m-%d %H:%M', L.timestamp-?, 'unixepoch') AS since 

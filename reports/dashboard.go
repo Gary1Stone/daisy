@@ -41,7 +41,7 @@ func GetDashboardReport() string {
 	return report.String()
 }
 
-func GetDeviceCounts() string {
+func getDeviceCounts() string {
 	var d dashboards.DashInfo
 	items := d.GetDashboard()
 	var report strings.Builder

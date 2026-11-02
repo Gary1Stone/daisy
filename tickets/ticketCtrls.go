@@ -81,7 +81,7 @@ func BuildAckCheckbox(isChecked int, isReadonly bool, label, id string) string {
 
 func BuildWorklog(curUid, aid int) string {
 	// Fetch worklog items from the database
-	items, err := GetLogs(curUid, db.GetTzoff(curUid), aid)
+	items, err := getLogs(curUid, db.GetTzoff(curUid), aid)
 	if err != nil {
 		log.Println(err)
 		return "<p>Error loading worklog data.</p>"

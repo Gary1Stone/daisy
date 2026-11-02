@@ -22,7 +22,7 @@ type History struct {
 }
 
 // Users last login and where, if banned, not logged in for 90+ days
-func GetUsersReports(uid int) ([]History, error) {
+func getUsersReports(uid int) ([]History, error) {
 	history := make([]History, 0)
 	//Get this user's timezone offset
 	Tzoff := db.GetTzoff(uid)
@@ -111,7 +111,7 @@ type LastSeen struct {
 
 // Find all devices that never checked in
 // or have not checked in with the last 90 days
-func GetLastSeenDevices(curUid int) ([]LastSeen, error) {
+func getLastSeenDevices(curUid int) ([]LastSeen, error) {
 	tzoff := db.GetTzoff(curUid)
 	items := make([]LastSeen, 0)
 	query := `
@@ -151,7 +151,7 @@ type Gaps struct {
 	Gap       int
 }
 
-func NetworkGap() ([]Gaps, error) {
+func networkGap() ([]Gaps, error) {
 	gaps := make([]Gaps, 0)
 	query := `
 		WITH OrderedPings AS (

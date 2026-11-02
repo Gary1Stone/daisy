@@ -121,39 +121,40 @@ func (d *DeviceInfo) GetDevices(site string) (items []DeviceInfo, err error) {
 // The CID was assigned by device_mac table and by matching the network hostname to the device record name, or manually assigned by a user.
 // Find which mac has records in the online table
 // Find the max count in macs[]
-func (d *DeviceInfo) GetDevicePrimaryMac(cid int) (retMac string, err error) {
-	macs := make(map[string]int)
-	maxC := 0
-	query := `SELECT mac, count(*) AS cnt FROM online WHERE mac IN
-		(SELECT mac FROM device_mac WHERE cid=? UNION SELECT mac FROM macs WHERE cid=? AND active=1)
-		GROUP BY mac`
-	rows, err := db.Conn.Query(query, cid, cid)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer rows.Close()
-	for rows.Next() {
-		mac := ""
-		cnt := 0
-		err = rows.Scan(&mac, &cnt)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		if cnt > 0 {
-			macs[mac] = cnt
-			if cnt > maxC {
-				maxC = cnt
-				retMac = mac
-			}
-		}
-	}
-	if err = rows.Err(); err != nil {
-		log.Println(err)
-	}
-	return // TODO: return the macs[mac]count and combine all plots into one.
-}
+
+// func (d *DeviceInfo) getDevicePrimaryMac(cid int) (retMac string, err error) {
+// 	macs := make(map[string]int)
+// 	maxC := 0
+// 	query := `SELECT mac, count(*) AS cnt FROM online WHERE mac IN
+// 		(SELECT mac FROM device_mac WHERE cid=? UNION SELECT mac FROM macs WHERE cid=? AND active=1)
+// 		GROUP BY mac`
+// 	rows, err := db.Conn.Query(query, cid, cid)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return
+// 	}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		mac := ""
+// 		cnt := 0
+// 		err = rows.Scan(&mac, &cnt)
+// 		if err != nil {
+// 			log.Println(err)
+// 			return
+// 		}
+// 		if cnt > 0 {
+// 			macs[mac] = cnt
+// 			if cnt > maxC {
+// 				maxC = cnt
+// 				retMac = mac
+// 			}
+// 		}
+// 	}
+// 	if err = rows.Err(); err != nil {
+// 		log.Println(err)
+// 	}
+// 	return // TODO: return the macs[mac]count and combine all plots into one.
+// }
 
 type DeviceMacs struct {
 	Mac         string `json:"mac"`            // MAC  address
@@ -181,7 +182,7 @@ const DeviceMacsQuery = `
 		LEFT JOIN icons AS I ON I.name = M.kind
 		LEFT JOIN choices AS K ON K.field='KIND' AND K.code=M.kind `
 
-func GetMacInfoByCid(cid, tzoff int) (items []DeviceMacs, err error) {
+func getMacInfoByCid(cid, tzoff int) (items []DeviceMacs, err error) {
 	// First read all the macs for the computer that are in the self-reporting (audit.exe) table
 	query := `
 		SELECT COALESCE(M.mid, 0) AS mid, D.mac, COALESCE(M.hostname, '') AS hostname, 
@@ -247,7 +248,7 @@ func GetMacInfoByCid(cid, tzoff int) (items []DeviceMacs, err error) {
 }
 
 // Exclude randomized macs
-func GetUnmatchedMacs(cid, tzoff int, site string) (items []DeviceMacs, err error) {
+func getUnmatchedMacs(cid, tzoff int, site string) (items []DeviceMacs, err error) {
 	query := DeviceMacsQuery + "WHERE M.cid IS NULL AND site=? AND M.israndomMac=0 AND M.mac NOT IN (SELECT mac FROM device_mac WHERE cid=?) AND M.kind NOT IN ('CELLPHONE', 'TABLET', 'WATCH', 'PTR')"
 	rows, err := db.Conn.Query(query, tzoff, tzoff, site, cid)
 	if err != nil {
@@ -285,7 +286,7 @@ type Associations struct {
 }
 
 // Get a list of the device's MACs and their correlation data
-func GetMacAssociations(cid, mid int) (items []Associations, err error) {
+func getMacAssociations(cid, mid int) (items []Associations, err error) {
 	query := `SELECT M.mid, M.mac, C.mac1, C.mac2, C.corr, C.jaccard, C.pearson, C.slots, C.overlap
 		FROM macs M
 		LEFT JOIN mac_correlation C ON (C.mac1 = M.mac OR C.mac2 = M.mac)
@@ -334,7 +335,7 @@ func recomendation(item Associations) string {
 		log.Println(err)
 	}
 
-	r := RecommendSameComputer(float64(item.Jaccard)/100.0, float64(item.Pearson)/100.0, float64(item.Corr), item.Slots, DaysOverlap)
+	r := recommendSameComputer(float64(item.Jaccard)/100.0, float64(item.Pearson)/100.0, float64(item.Corr), item.Slots, DaysOverlap)
 
 	return fmt.Sprintf("%+v\n", r)
 }
@@ -346,7 +347,7 @@ type MACRecommendation struct {
 	Reason     string
 }
 
-func RecommendSameComputer(jaccard, pearson, overlapPercent float64, counts, daysOverlap int) MACRecommendation {
+func recommendSameComputer(jaccard, pearson, overlapPercent float64, counts, daysOverlap int) MACRecommendation {
 	// a jaccard or overlapPercent of -1 means missing mac or not enough data points (< 10)
 
 	// Validate input.

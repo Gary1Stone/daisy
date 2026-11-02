@@ -9,7 +9,7 @@ import (
 
 // Word association
 
-func GetStarted() {
+func getStarted() {
 	fmt.Println("Matching package initialized")
 
 	hostnameList, err := macs.GetHostnames()

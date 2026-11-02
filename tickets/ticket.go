@@ -53,7 +53,7 @@ type Wlog struct {
 }
 
 // Small fast routine to get only the modifiable fields on a ticket (Alert)
-func GetTicket(curUid, aid int) (Ticket, error) {
+func getTicket(curUid, aid int) (Ticket, error) {
 	var tkt Ticket
 	var query strings.Builder
 	db.AddActionLock(curUid, aid)
@@ -226,7 +226,7 @@ func sendClosureEmail(tkt *Ticket) error {
 	return nil
 }
 
-func GetLogs(curUid, tzoff, aid int) ([]Wlog, error) {
+func getLogs(curUid, tzoff, aid int) ([]Wlog, error) {
 	var items []Wlog
 	//	tzoff := GetTzoff(curUid)
 	const query = `

@@ -87,7 +87,7 @@ func GuessMacInfo() error {
 	}
 
 	if isWriteNeeded {
-		err = SaveMacs(items)
+		err = saveMacs(items)
 		if err != nil {
 			log.Println(err)
 			return err

@@ -102,7 +102,7 @@ func connectToDatabase() {
 	// We detect this by checking if the 'db' source directory exists.
 	// The 'db' folder is not included in production deployments.
 	if info, err := os.Stat(filepath.Join(workDir, "db")); err == nil && info.IsDir() {
-		err = ExportSchema()
+		err = exportSchema()
 		if err != nil {
 			log.Println("ERROR: Failed to export database schema " + err.Error())
 		}

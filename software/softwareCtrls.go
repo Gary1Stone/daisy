@@ -30,7 +30,7 @@ func SoftwaresTable(curUid, tzoff int, filter SoftwareFilter) string {
     <tbody>`)
 
 	// Fetch software items
-	items, err := filter.GetSoftwares(curUid, tzoff)
+	items, err := filter.getSoftwares(curUid, tzoff)
 	if err != nil {
 		log.Println(err)
 		return err.Error()

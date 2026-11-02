@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func BuildAvoidListCtrl() string {
+func buildAvoidListCtrl() string {
 	var ctrl strings.Builder
 	items, err := getAvoidData()
 	if err != nil {
@@ -60,7 +60,7 @@ func BuildAvoidSelectCtrl() (string, string, string) {
 // Build the avoid select/list pair data
 func getAvoidData() ([]PairInfo, error) {
 	// First find any duplicate hostnames
-	macList, err := GetDuplicateHostnames()
+	macList, err := getDuplicateHostnames()
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -68,7 +68,7 @@ func getAvoidData() ([]PairInfo, error) {
 
 	// If no duplicates, try all macs
 	if len(macList) == 0 {
-		macList, err = GetMacList()
+		macList, err = getMacList()
 		if err != nil {
 			log.Println(err)
 			return nil, err
@@ -76,7 +76,7 @@ func getAvoidData() ([]PairInfo, error) {
 	}
 
 	// Get correlations only for the macs we're interested in
-	items, err := GetMacCorrelations(false, macList)
+	items, err := getMacCorrelations(false, macList)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -87,7 +87,7 @@ func getAvoidData() ([]PairInfo, error) {
 
 func BuildMacCorrelationTable(filter MacCorrelationFilter) string {
 	var ctrl strings.Builder
-	items, err := GetMacCorrelation(filter)
+	items, err := getMacCorrelation(filter)
 	if err != nil {
 		log.Println(err)
 		return ""

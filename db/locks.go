@@ -14,7 +14,7 @@ type Locks struct {
 
 // Adds a lock record with timestamp to the locks table
 // Records who looks at or saved which record when, in server time
-func (recLock Locks) AddLock() {
+func (recLock Locks) addLock() {
 	if recLock.Uid < 1 {
 		recLock.Uid = SYS_PROFILE.Uid
 	}
@@ -74,7 +74,7 @@ func (recLock Locks) isLocked() bool {
 
 	if !locked {
 		recLock.Display = 0 //0=save 1=Show
-		recLock.AddLock()
+		recLock.addLock()
 	}
 	return locked
 }
@@ -96,7 +96,7 @@ func AddProfileLock(curUid, uid int) {
 		Table_name: PROFILE_TABLE,
 		Display:    1,
 	}
-	recLock.AddLock()
+	recLock.addLock()
 }
 
 func IsSoftwareLocked(curUid, sid int) bool {
@@ -116,7 +116,7 @@ func AddSoftwareLock(curUid, sid int) {
 		Table_name: SOFTWARE_TABLE,
 		Display:    1,
 	}
-	recLock.AddLock()
+	recLock.addLock()
 }
 
 func AddDeviceLock(curUid, cid int) {
@@ -126,7 +126,7 @@ func AddDeviceLock(curUid, cid int) {
 		Table_name: DEVICE_TABLE,
 		Display:    1,
 	}
-	recLock.AddLock()
+	recLock.addLock()
 }
 
 func IsDeviceLocked(curUid, cid int) bool {
@@ -146,7 +146,7 @@ func AddActionLock(curUid, aid int) {
 		Table_name: ACTION_TABLE,
 		Display:    1,
 	}
-	recLock.AddLock()
+	recLock.addLock()
 }
 
 func IsActionLocked(curUid, aid int) bool {

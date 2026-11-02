@@ -83,7 +83,7 @@ func StartServer(daisyLogger *lumberjack.Logger) {
 	}
 
 	// Middleware to enforce HTTPS
-	app.Use(SecureOnly(httpsPort))
+	app.Use(secureOnly(httpsPort))
 
 	// Register all your specific application routes
 	routes(app)

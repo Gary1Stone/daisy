@@ -67,7 +67,7 @@ func yyyymmddUTC2time(yyyymmdd int64) time.Time {
 }
 
 // Debugging utility
-func PrintBitmap(mac string, bmp []int) {
+func printBitmap(mac string, bmp []int) {
 	fmt.Print(mac, " ")
 	for i := range bmp {
 		fmt.Print(bmp[i])

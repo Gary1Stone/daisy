@@ -28,10 +28,10 @@ type SparklineOptions struct {
 }
 
 // 1=Day, 7=Week, 30=Month
-func BuildAttackChart(opts *SparklineOptions) string {
+func buildAttackChart(opts *SparklineOptions) string {
 	var err error
 	setChartSize(opts)
-	opts.points, err = GetAttacks(opts.Duration, opts.Width)
+	opts.points, err = getAttacks(opts.Duration, opts.Width)
 	if err != nil {
 		return "Server Error"
 	}
@@ -39,7 +39,7 @@ func BuildAttackChart(opts *SparklineOptions) string {
 	return buildChart(opts)
 }
 
-func BuildLoginsChart(opts *SparklineOptions) string {
+func buildLoginsChart(opts *SparklineOptions) string {
 	opts.points = nil
 	setChartSize(opts)
 	var err error
@@ -57,7 +57,7 @@ func BuildLoginsChart(opts *SparklineOptions) string {
 	return buildChart(opts)
 }
 
-func BuildHitsChart(opts *SparklineOptions) string {
+func buildHitsChart(opts *SparklineOptions) string {
 	opts.points = nil
 	setChartSize(opts)
 	var err error
@@ -70,7 +70,7 @@ func BuildHitsChart(opts *SparklineOptions) string {
 	return buildChart(opts)
 }
 
-func BuildNetworkLoadChart(opts *SparklineOptions) string {
+func buildNetworkLoadChart(opts *SparklineOptions) string {
 	opts.points = nil
 	setChartSize(opts)
 	var err error

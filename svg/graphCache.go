@@ -78,17 +78,17 @@ func generateGraphs() {
 	// 0 = Attacks per day
 	opts.Warning = 10
 	opts.Duration = Day
-	temp.graph[0] = BuildAttackChart(&opts)
+	temp.graph[0] = buildAttackChart(&opts)
 	temp.max[0] = opts.MaxValue
 
 	// 1 = Attacks per week
 	opts.Duration = Week
-	temp.graph[1] = BuildAttackChart(&opts)
+	temp.graph[1] = buildAttackChart(&opts)
 	temp.max[1] = opts.MaxValue
 
 	// 2 = Attacks per month
 	opts.Duration = Month
-	temp.graph[2] = BuildAttackChart(&opts)
+	temp.graph[2] = buildAttackChart(&opts)
 	temp.max[2] = opts.MaxValue
 
 	var login SparklineOptions
@@ -96,17 +96,17 @@ func generateGraphs() {
 
 	// 3 = Logins per day
 	login.Duration = Day
-	temp.graph[3] = BuildLoginsChart(&login)
+	temp.graph[3] = buildLoginsChart(&login)
 	temp.max[3] = login.MaxValue
 
 	// 4 = Logins per week
 	login.Duration = Week
-	temp.graph[4] = BuildLoginsChart(&login)
+	temp.graph[4] = buildLoginsChart(&login)
 	temp.max[4] = login.MaxValue
 
 	// 5 = Logins per month
 	login.Duration = Month
-	temp.graph[5] = BuildLoginsChart(&login)
+	temp.graph[5] = buildLoginsChart(&login)
 	temp.max[5] = login.MaxValue
 
 	var hits SparklineOptions
@@ -114,23 +114,23 @@ func generateGraphs() {
 
 	// 6 = Hits per day
 	opts.Duration = Day
-	temp.graph[6] = BuildHitsChart(&hits)
+	temp.graph[6] = buildHitsChart(&hits)
 	temp.max[6] = hits.MaxValue
 
 	// 7 = Hits per week
 	opts.Duration = Week
-	temp.graph[7] = BuildHitsChart(&hits)
+	temp.graph[7] = buildHitsChart(&hits)
 	temp.max[7] = hits.MaxValue
 
 	// 8 = Hits per month
 	hits.Duration = Month
-	temp.graph[8] = BuildHitsChart(&hits)
+	temp.graph[8] = buildHitsChart(&hits)
 	temp.max[8] = hits.MaxValue
 
 	// 9 = Network Load
 	var onnline SparklineOptions
 	onnline.Warning = 40 // If more than 40 devices in a day, highlight red
-	temp.graph[9] = BuildNetworkLoadChart(&onnline)
+	temp.graph[9] = buildNetworkLoadChart(&onnline)
 	temp.max[9] = onnline.MaxValue
 
 	// Copy the temp variable onto the graphCache global variable

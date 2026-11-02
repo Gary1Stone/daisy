@@ -12,27 +12,27 @@ func BuildDropList(field, selected, parentCode string, withBlank, readOnly bool)
 	var options []DroplistOption
 	switch field {
 	case "SOFTWARE":
-		options = GetSoftwareList(withBlank)
+		options = getSoftwareList(withBlank)
 	case "USER", "USERSEARCH", "USERINFORM": // Profile table search, "GROUPINFORM"
-		options = GetUserList(field, selected, parentCode, withBlank)
+		options = getUserList(field, selected, parentCode, withBlank)
 	case "TYPE", "TYPESEARCH": // parent = wizard, so TYPE needs special processing
-		options = GetTypeOptions(field, selected, parentCode, withBlank)
+		options = getTypeOptions(field, selected, parentCode, withBlank)
 	case "KIND":
-		options = GetKindOptions(field, selected, parentCode, withBlank)
+		options = getKindOptions(field, selected, withBlank)
 	case "MID":
-		options = GetMidOptions(field, selected, parentCode, withBlank)
+		options = getMidOptions(selected, withBlank)
 	case "WIZARDS":
-		options = GetWizardOptions(field, selected, withBlank)
+		options = getWizardOptions(selected, withBlank)
 	case "SITE", "SITESEARCH":
-		options = GetSiteOptions(field, selected, withBlank)
+		options = getSiteOptions(field, selected, withBlank)
 	default:
-		options = GetOptions(field, selected, parentCode, withBlank)
+		options = getOptions(field, selected, parentCode, withBlank)
 	}
 	return buildCtrl(field, readOnly, options)
 }
 
 func buildCtrl(field string, readOnly bool, options []DroplistOption) string {
-	droplist := GetDroplistInfo(field)
+	droplist := getDroplistInfo(field)
 	isDropDown := false
 
 	for option := range options {

@@ -111,7 +111,7 @@ func (e *Emails) transmitEmail() {
 		t.Execute(&body, info)
 
 		//Send the email
-		err = e.SendAnEmail(toSend.User, os.Getenv("EMAIL"), toSend.Subject, body.String())
+		err = e.sendAnEmail(toSend.User, os.Getenv("EMAIL"), toSend.Subject, body.String())
 		if err != nil {
 			log.Println(err)
 			toSend.Status = "ERROR"
@@ -140,11 +140,11 @@ func (e *Emails) transmitEmail() {
 // How to ensure the connection is open: from PowerShell or VScode terminal run:
 // Test-NetConnection smtp.gmail.com -Port 587
 // Real-NetConnection smtp.gmail.com -Port 465
-func (e *Emails) SendAnEmail(to, from, subject, body string) error {
+func (e *Emails) sendAnEmail(to, from, subject, body string) error {
 	em := email.NewEmail()
 	em.From = from
 	em.To = []string{to}
-	em.Subject = from
+	em.Subject = subject
 	em.HTML = []byte(body)
 	return em.Send(os.Getenv("EMAILSERVER")+":"+os.Getenv("EMAILPORT"), smtp.PlainAuth("", os.Getenv("EMAIL"), os.Getenv("EMAILPWD"), os.Getenv("EMAILSERVER")))
 }

@@ -36,7 +36,7 @@ func BuildDeviceList(site string) string {
 // List all the macs belonging to the specified computer
 // Contains self-reported MACs and network Scan Macs
 func BuildDevMacs(cid, tzoff int, canEdit bool) string {
-	items, err := GetMacInfoByCid(cid, tzoff)
+	items, err := getMacInfoByCid(cid, tzoff)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -77,7 +77,7 @@ func BuildUnmatchedMacs(cid, tzoff int, site string) string {
 		site = tree.GetDefaultSite()
 	}
 
-	items, err := GetUnmatchedMacs(cid, tzoff, site)
+	items, err := getUnmatchedMacs(cid, tzoff, site)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -112,7 +112,7 @@ func BuildUnmatchedMacs(cid, tzoff int, site string) string {
 
 func BuildAssociatedMacs(cid, mid int) string {
 
-	items, err := GetMacAssociations(cid, mid)
+	items, err := getMacAssociations(cid, mid)
 	if err != nil {
 		log.Println(err)
 		return ""

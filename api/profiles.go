@@ -14,7 +14,7 @@ type Profiles struct {
 	Pin   string
 }
 
-func GetProfiles() ([]Profiles, error) {
+func getProfiles() ([]Profiles, error) {
 	var profiles []Profiles
 	query := `SELECT uid, gid, user, first FROM profiles WHERE active=1 ORDER BY fullname`
 	rows, err := db.Conn.Query(query)
@@ -55,7 +55,7 @@ type Computers struct {
 	Image    string `json:"image"`
 }
 
-func GetComputers() ([]Computers, error) {
+func getComputers() ([]Computers, error) {
 	var computers []Computers
 	query := `
 		SELECT cid, name, type, coalesce(site, '') AS site, coalesce(office, '') AS office,

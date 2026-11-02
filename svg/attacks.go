@@ -9,7 +9,7 @@ import (
 )
 
 // Returns a slice of ints for every 15-minute interval with the specified range
-func GetAttacks(duration, width int) ([]int, error) {
+func getAttacks(duration, width int) ([]int, error) {
 	var points []int
 	intervalSeconds := int64(15 * 60)              // 15 minutes in seconds
 	totalSeconds := int64(duration * 24 * 60 * 60) // 24 hours in seconds * num of days

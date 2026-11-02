@@ -34,7 +34,7 @@ func PostiSawApi(c *fiber.Ctx) error {
 
 	switch request.Command {
 	case "GET_PROFILES":
-		profiles, err := GetProfiles()
+		profiles, err := getProfiles()
 		if err != nil {
 			log.Println("API: Failure getting profiles", err)
 			return c.Status(fiber.StatusOK).SendString(response)
@@ -46,7 +46,7 @@ func PostiSawApi(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusOK).SendString(string(reply))
 	case "GET_COMPUTERS":
-		computers, err := GetComputers()
+		computers, err := getComputers()
 		if err != nil {
 			log.Println("API: Failure getting profiles", err)
 			return c.Status(fiber.StatusOK).SendString(response)

@@ -81,7 +81,7 @@ func getMacInfo(whereclause string, tzoff int, params ...any) ([]MacInfo, error)
 }
 
 // Save the macInfo map to the database, only the user addressable fields, not the scan fields
-func SaveMacs(items []MacInfo) error {
+func saveMacs(items []MacInfo) error {
 	if len(items) == 0 {
 		return nil
 	}
@@ -165,7 +165,7 @@ func GetMacInfoByMid(tzoff, mid int) (MacInfo, error) {
 	return items[0], nil
 }
 
-func GetMacInfoByCid(tzoff, cid int) ([]MacInfo, error) {
+func getMacInfoByCid(tzoff, cid int) ([]MacInfo, error) {
 	var items []MacInfo
 	params := []any{cid}
 	items, err := getMacInfo("WHERE M.active=1 AND M.cid=?", tzoff, params...)
@@ -262,7 +262,7 @@ func GetHostnames() ([]string, error) {
 
 // Get the mac's hostnames for correlation
 // Only include the hostnames where their macs are not in the alias table
-func GetDuplicateHostnames() ([]string, error) {
+func getDuplicateHostnames() ([]string, error) {
 	items := make([]string, 0)
 	// Okay, the aliases table holds the already matched MACs, mac is the device's MAC and alias is the master MAC
 	// This query should list all the repeated hostnames, but not for cellphones,...
@@ -298,7 +298,7 @@ func GetDuplicateHostnames() ([]string, error) {
 }
 
 // return list of macs that are active, not in the alias table, not isSolitary ....?
-func GetMacList() ([]string, error) {
+func getMacList() ([]string, error) {
 	items := make([]string, 0)
 	query := `SELECT M.mac FROM macs M
 		JOIN (SELECT DISTINCT mac FROM onlinehistory) O ON O.mac = M.mac
@@ -328,7 +328,7 @@ func GetMacList() ([]string, error) {
 }
 
 // ADD ICON TO THIS
-func GetMacs(tzoff int, site string) ([]MacInfo, error) {
+func getMacs(tzoff int, site string) ([]MacInfo, error) {
 	items := make([]MacInfo, 0)
 	query := `
 		SELECT Mid, Mac, Created, Name, Hostname, Ip, Kind, Os,

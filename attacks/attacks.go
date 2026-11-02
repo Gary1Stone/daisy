@@ -196,7 +196,7 @@ func (a *AttackInfo) geolocation() bool {
 	return true
 }
 
-func (a *AttackInfo) GetAttacksDetails(curUid, duration int) ([]AttackInfo, error) {
+func (a *AttackInfo) getAttacksDetails(curUid, duration int) ([]AttackInfo, error) {
 	items := make([]AttackInfo, 0)
 	tzoff := db.GetTzoff(curUid)
 	days := "'-1 days'"

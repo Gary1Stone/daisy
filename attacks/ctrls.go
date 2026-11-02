@@ -26,7 +26,7 @@ func (a *AttackInfo) BuildAttacksTable(curUid, duration int) string {
 
 	// Fetch attacks items
 	var attacks AttackInfo
-	items, err := attacks.GetAttacksDetails(curUid, duration)
+	items, err := attacks.getAttacksDetails(curUid, duration)
 	if err != nil {
 		log.Println(err)
 		table.WriteString("</tbody></table>")

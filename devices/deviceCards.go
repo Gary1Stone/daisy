@@ -15,7 +15,7 @@ import (
 func DeviceCards(curUid, tzoff int, filter *DeviceFilter, isWiz bool) string {
 	var card strings.Builder
 	var d Device
-	items, err := d.SearchDevices(curUid, tzoff, filter)
+	items, err := d.searchDevices(tzoff, filter)
 	if err != nil {
 		log.Println(err)
 	}

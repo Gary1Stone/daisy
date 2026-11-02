@@ -60,7 +60,7 @@ func ComstatTable(uid, tzoff int) string {
 
 	// Fetch all devices
 	var com Comstat
-	items, err := com.GetComstat(uid, tzoff)
+	items, err := com.getComstat(tzoff)
 	if err != nil {
 		log.Println(err)
 		return err.Error()

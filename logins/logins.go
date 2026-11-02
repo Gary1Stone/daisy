@@ -41,21 +41,21 @@ type Logins struct {
 }
 
 // Suggest the last user that logged in from this IP address
-func GetLastUserByIP(ip string) string {
-	var user string = ""
-	const query = `
-		SELECT B.user 
-		FROM logins A
-		LEFT JOIN profiles B on A.uid=B.uid
-		WHERE A.success=1 AND A.ip=? 
-		ORDER BY timestamp DESC LIMIT 1
-	`
-	err := db.Conn.QueryRow(query, ip).Scan(&user)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-	}
-	return user
-}
+// func getLastUserByIP(ip string) string {
+// 	var user string = ""
+// 	const query = `
+// 		SELECT B.user 
+// 		FROM logins A
+// 		LEFT JOIN profiles B on A.uid=B.uid
+// 		WHERE A.success=1 AND A.ip=? 
+// 		ORDER BY timestamp DESC LIMIT 1
+// 	`
+// 	err := db.Conn.QueryRow(query, ip).Scan(&user)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		log.Println(err)
+// 	}
+// 	return user
+// }
 
 // We need a session id to prevent two user from sharing the id/password
 func GetLastSessionByUid(uid int) (string, string, error) {
@@ -246,18 +246,18 @@ func GetLastLogin(uid int) (Logins, error) {
 }
 
 // Return the User's timzone name
-func GetTimezoneName(curUid int) string {
-	if curUid < 1 {
-		curUid = db.SYS_PROFILE.Uid
-	}
-	var timezone string = ""
-	query := "SELECT timezone FROM logins WHERE uid=? AND success=1 ORDER BY timestamp DESC LIMIT 1"
-	err := db.Conn.QueryRow(query, curUid).Scan(&timezone)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-	}
-	return timezone
-}
+// func getTimezoneName(curUid int) string {
+// 	if curUid < 1 {
+// 		curUid = db.SYS_PROFILE.Uid
+// 	}
+// 	var timezone string = ""
+// 	query := "SELECT timezone FROM logins WHERE uid=? AND success=1 ORDER BY timestamp DESC LIMIT 1"
+// 	err := db.Conn.QueryRow(query, curUid).Scan(&timezone)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		log.Println(err)
+// 	}
+// 	return timezone
+// }
 
 func CheckUsersLastIpBanned(uid int) bool {
 	const query = "SELECT ip FROM logins WHERE uid=? ORDER BY timestamp DESC LIMIT 1"

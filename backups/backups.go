@@ -86,7 +86,7 @@ func (b *BackupInfo) SaveBackups(backups []BackupInfo, source string) error {
 	return nil
 }
 
-func (b *BackupInfo) GetBackups(curUid, cid int) ([]BackupInfo, error) {
+func (b *BackupInfo) getBackups(curUid, cid int) ([]BackupInfo, error) {
 	items := make([]BackupInfo, 0)
 	tzoff := db.GetTzoff(curUid) // Adjust for user's timezone
 	query := `

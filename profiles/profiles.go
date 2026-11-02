@@ -64,7 +64,7 @@ func (f *Profile) Init() {
 }
 
 // Get one or multiple user profiles by uid (user ID), uid=0 means get all
-func (p *Profile) GetProfiles(curUid int) ([]ProfileInfo, error) {
+func (p *Profile) getProfiles(curUid int) ([]ProfileInfo, error) {
 	var profiles []ProfileInfo
 	var query strings.Builder
 	query.WriteString(`
@@ -177,7 +177,7 @@ func (p Profile) GetProfile(curUid, uid int) (ProfileInfo, error) {
 
 	p.Init()
 	p.Uid = uid
-	profiles, err := p.GetProfiles(curUid)
+	profiles, err := p.getProfiles(curUid)
 	if err != nil {
 		log.Println(err)
 		return profile, err
@@ -195,7 +195,7 @@ func (p Profile) GetUserByEmail(email string) (ProfileInfo, error) {
 	uid := db.SYS_PROFILE.Uid
 	p.Init()
 	p.User = email
-	profiles, err := p.GetProfiles(uid)
+	profiles, err := p.getProfiles(uid)
 	if err != nil {
 		log.Println(err)
 		return profile, err
@@ -258,7 +258,7 @@ func SetProfileColor(uid int, color string) (string, int) {
 }
 
 // Get permissions CAPS - C-Device/Computer table, A-Admin Tables, P-Profile table, S-Software table T- Ticket (Action_log)
-func GetPermissions(gid int) (string, error) {
+func getPermissions(gid int) (string, error) {
 	var permissions = ""
 	var query = "SELECT parent FROM choices WHERE field='GROUP' AND code=?"
 	err := db.Conn.QueryRow(query, gid).Scan(&permissions)

@@ -102,7 +102,7 @@ func GetAvoidChartData(tzoff int, mac1, mac2 string) (chartData []Online, macInf
 
 func GetLastOnlineDatesTable(curUid, tzoff int) string {
 	var tbl strings.Builder
-	items, err := GetLastOnlineDates(curUid, tzoff)
+	items, err := getLastOnlineDates(curUid, tzoff)
 	if err != nil {
 		log.Println(err)
 		return ""

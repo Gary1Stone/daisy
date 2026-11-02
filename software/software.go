@@ -66,7 +66,7 @@ func GetSoftware(curUid, tzoff, sid int) (Software, error) {
 	var filter SoftwareFilter
 	filter.Init()
 	filter.Sid = sid
-	softwares, err := filter.GetSoftwares(curUid, tzoff)
+	softwares, err := filter.getSoftwares(curUid, tzoff)
 	if err != nil {
 		log.Println(err)
 		return Software{}, err
@@ -79,7 +79,7 @@ func GetSoftware(curUid, tzoff, sid int) (Software, error) {
 }
 
 // Get slice of Software structs
-func (f *SoftwareFilter) GetSoftwares(curUid, tzoff int) ([]Software, error) {
+func (f *SoftwareFilter) getSoftwares(curUid, tzoff int) ([]Software, error) {
 	var softwares []Software
 	var query strings.Builder
 	// Nullable Fields: source, license_key, product, link, notes, color, old_name

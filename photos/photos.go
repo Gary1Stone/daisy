@@ -152,7 +152,7 @@ func GetThumbnail(img string) string {
 	return ctrl.String()
 }
 
-func DeletePhoto(filename string) {
+func deletePhoto(filename string) {
 	serverDir := getServerDir()
 	photo := filepath.Join(serverDir, "web", "public", "images", filename)
 	err := os.Remove(photo)
@@ -208,7 +208,7 @@ func RemoveOldPhotos() error {
 	for photo, toDelete := range existingPhotos {
 		if toDelete {
 			log.Println("Removing unused photo:", photo)
-			DeletePhoto(photo)
+			deletePhoto(photo)
 		}
 	}
 	return nil

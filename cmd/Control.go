@@ -71,15 +71,15 @@ func PostControl(c *fiber.Ctx) error {
 	//Do processing and saves
 	switch recvd.Task {
 	case "get_active_users":
-		reply = activeusers.BuildActiveUsersTable(user.Uid, user.Tzoff)
+		reply = activeusers.BuildActiveUsersTable(user.Tzoff)
 	case "end_session":
 		var ausr activeusers.ActiveUsers
 		ausr.EndSession(recvd.Id)
-		reply = activeusers.BuildActiveUsersTable(user.Uid, user.Tzoff)
+		reply = activeusers.BuildActiveUsersTable(user.Tzoff)
 	case "end_session_all":
-		reply = activeusers.BuildActiveUsersTable(user.Uid, user.Tzoff)
+		reply = activeusers.BuildActiveUsersTable(user.Tzoff)
 	case "get_server_load":
-		reply = activeusers.BuildActiveUsersTable(user.Uid, user.Tzoff)
+		reply = activeusers.BuildActiveUsersTable(user.Tzoff)
 	case "get_attacks":
 		var a attacks.AttackInfo
 		reply = a.BuildAttacksTable(user.Uid, recvd.Id)

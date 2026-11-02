@@ -11,7 +11,7 @@ func (b *BackupInfo) BuildBackupsTable(uid, cid int) string {
 		return ""
 	}
 
-	backups, err := b.GetBackups(uid, cid)
+	backups, err := b.getBackups(uid, cid)
 	if err != nil || len(backups) == 0 {
 		return ""
 	}

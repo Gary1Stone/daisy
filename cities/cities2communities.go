@@ -16,40 +16,40 @@ type communityLocation struct {
 	Latitude  float64
 }
 
-func RunScanCommunities() {
-	var coms []communityLocation
-	query := "SELECT community_id, longitude, latitude FROM communities"
-	rows, err := db.Conn.Query(query)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var com communityLocation
-		err := rows.Scan(&com.RecId, &com.Longitude, &com.Latitude)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		coms = append(coms, com)
-	}
-	if err = rows.Err(); err != nil {
-		log.Println(err)
-		return
-	}
-	for _, com := range coms {
-		cityId := scan4NearestCity(com)
-		if cityId > 0 {
-			query = "UPDATE communities SET city_id=? WHERE community_id=?"
-			_, err := db.Conn.Exec(query, cityId, com.RecId)
-			if err != nil {
-				log.Println(err)
-			}
-		}
-	}
+// func runScanCommunities() {
+// 	var coms []communityLocation
+// 	query := "SELECT community_id, longitude, latitude FROM communities"
+// 	rows, err := db.Conn.Query(query)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return
+// 	}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		var com communityLocation
+// 		err := rows.Scan(&com.RecId, &com.Longitude, &com.Latitude)
+// 		if err != nil {
+// 			log.Println(err)
+// 			return
+// 		}
+// 		coms = append(coms, com)
+// 	}
+// 	if err = rows.Err(); err != nil {
+// 		log.Println(err)
+// 		return
+// 	}
+// 	for _, com := range coms {
+// 		cityId := scan4NearestCity(com)
+// 		if cityId > 0 {
+// 			query = "UPDATE communities SET city_id=? WHERE community_id=?"
+// 			_, err := db.Conn.Exec(query, cityId, com.RecId)
+// 			if err != nil {
+// 				log.Println(err)
+// 			}
+// 		}
+// 	}
 
-}
+// }
 
 func scan4NearestCity(loc communityLocation) int {
 	curSinLat := math.Sin(loc.Latitude * math.Pi / 180)

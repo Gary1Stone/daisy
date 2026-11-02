@@ -12,7 +12,7 @@ import (
 
 /* Build a html tree view of the network assets from the DEVICES table */
 func BuildTreeView(site string) string {
-	nodes, err := GetTreeNodes(site)
+	nodes, err := getTreeNodes(site)
 	if err != nil {
 		return "Server Error: Unable to build tree view."
 	}
@@ -60,7 +60,7 @@ func htmlEscape(s string) string {
 }
 
 func BuildParentSelect(selected int, site string, readOnly bool) string {
-	items, err := GetNodes(site)
+	items, err := getNodes(site)
 	if err != nil {
 		log.Println(err)
 		return ""

@@ -85,7 +85,7 @@ func NetworkGaps() string {
 		</tr>
 		</thead>
 		<tbody>`)
-	items, err := NetworkGap()
+	items, err := networkGap()
 	if err != nil {
 		log.Println(err)
 		report.WriteString(`</tbody></table>`)
@@ -98,7 +98,7 @@ func NetworkGaps() string {
 	return report.String()
 }
 
-func LastSeenDevices(curUid int, devInfo map[int]devices.DevicesMeta) string {
+func lastSeenDevices(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id='last_table' >
 		<thead>
@@ -114,7 +114,7 @@ func LastSeenDevices(curUid int, devInfo map[int]devices.DevicesMeta) string {
 		seenLate = 90
 	}
 
-	items, err := GetLastSeenDevices(curUid)
+	items, err := getLastSeenDevices(curUid)
 	if err != nil {
 		log.Println(err)
 		report.WriteString(`</tbody></table>`)
@@ -241,7 +241,7 @@ func Backups(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	return report.String()
 }
 
-func Drivespace(curUid int, devInfo map[int]devices.DevicesMeta) string {
+func drivespace(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id='drive_table'>
 		<thead>

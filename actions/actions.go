@@ -140,9 +140,9 @@ type Popbutton struct {
 }
 
 // When a new struct is created, strings are set to zero length ("") and ints are set to 0 automatically
-func (A *Action) Init() {
-	A.Active = 1
-}
+// func (A *Action) initAction() {
+// 	A.Active = 1
+// }
 
 // get one Action log entry
 func GetAction(curUid, aid int) (*Action, error) {

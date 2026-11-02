@@ -96,7 +96,7 @@ func (a *Alert) buildAlertWhereClause() (string, []any) {
 }
 
 // Read the AlertDetails
-func (a *Alert) GetAlerts() ([]*AlertInfo, error) {
+func (a *Alert) getAlerts() ([]*AlertInfo, error) {
 	alerts := make([]*AlertInfo, 0, 1000)
 	whereClause, params := a.buildAlertWhereClause()
 	whereClause += "AND I.is_device=1 "
@@ -142,19 +142,19 @@ func (a *Alert) GetAlerts() ([]*AlertInfo, error) {
 	return alerts, nil
 }
 
-func (a *Alert) SetAlert() error {
-	if a.Id < 1 {
-		log.Println("ID required to set alert")
-		return errors.New("ID required to set alert")
-	}
-	var query = "UPDATE alerts SET aid=?, uid=?, ack=?, wait=? WHERE id=?"
-	_, err := db.Conn.Exec(query, db.ForeignKey(a.Aid), db.ForeignKey(a.Uid), db.ForeignKey(a.Ack), a.Wait, a.Id)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	return nil
-}
+// func (a *Alert) setAlert() error {
+// 	if a.Id < 1 {
+// 		log.Println("ID required to set alert")
+// 		return errors.New("ID required to set alert")
+// 	}
+// 	var query = "UPDATE alerts SET aid=?, uid=?, ack=?, wait=? WHERE id=?"
+// 	_, err := db.Conn.Exec(query, db.ForeignKey(a.Aid), db.ForeignKey(a.Uid), db.ForeignKey(a.Ack), a.Wait, a.Id)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // curUid, aid, active int, alerts []alerts.AlertInfo
 func (a *Alert) AddAlert() {
@@ -174,19 +174,19 @@ func (a *Alert) AddAlert() {
 }
 
 // At ticket closing, run this to activate waiting alerts
-func (a *Alert) RemoveAlertWait() error {
-	if a.Aid < 1 {
-		log.Println("AID required to remove alert")
-		return errors.New("aid required to remove alert")
-	}
-	query := "UPDATE alerts set wait=0 WHERE aid=?"
-	_, err := db.Conn.Exec(query, db.ForeignKey(a.Aid))
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	return nil
-}
+// func (a *Alert) removeAlertWait() error {
+// 	if a.Aid < 1 {
+// 		log.Println("AID required to remove alert")
+// 		return errors.New("aid required to remove alert")
+// 	}
+// 	query := "UPDATE alerts set wait=0 WHERE aid=?"
+// 	_, err := db.Conn.Exec(query, db.ForeignKey(a.Aid))
+// 	if err != nil {
+// 		log.Println(err)
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // Acknowedge the alert for the action log item
 // Action_log Foreign keys: originator, cid, sid, uid, inform, closed_by

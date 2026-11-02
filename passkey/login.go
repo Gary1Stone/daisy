@@ -232,7 +232,7 @@ func FinishLogin(c *fiber.Ctx) error {
 	loginInfo.Success = 1
 	loginInfo.Timezone = usr.Timezone
 	loginInfo.Credential_id = bytesToBase64String(credential.ID)
-	token, _, err := CreateJWTToken(loginInfo)
+	token, _, err := createJWTToken(loginInfo)
 	if err != nil {
 		return handleError(c, fiber.StatusInternalServerError, "Could not create authentication token", err)
 	}

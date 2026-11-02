@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"log"
 	"strconv"
-	"strings"
 
 	"github.com/gbsto/daisy/actions"
 	"github.com/gbsto/daisy/alerts"
@@ -237,14 +236,14 @@ func PostWizard(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).SendString(reply)
 }
 
-func StatusSelect() string {
-	var ctrl strings.Builder
-	ctrl.WriteString("<select id='status' data-role='select' data-filter='false' >")
-	ctrl.WriteString("<option value='1' selected>Open</option>")
-	ctrl.WriteString("<option value='0'>Closed</option>")
-	ctrl.WriteString("</select>")
-	return ctrl.String()
-}
+// func statusSelect() string {
+// 	var ctrl strings.Builder
+// 	ctrl.WriteString("<select id='status' data-role='select' data-filter='false' >")
+// 	ctrl.WriteString("<option value='1' selected>Open</option>")
+// 	ctrl.WriteString("<option value='0'>Closed</option>")
+// 	ctrl.WriteString("</select>")
+// 	return ctrl.String()
+// }
 
 // Notifictions for the actions:
 // SIGHTING (Alert) --> CID y, SID n, UID y (who seen with it, becomes owner), INFORM Y (current Owner)

@@ -598,10 +598,10 @@ func checkNetProbe(netprobe, site string) bool {
 	return true
 }
 
-func ResetNetworkProbe(site string) error {
-	_, err := db.Conn.Exec("UPDATE choices SET parent='' WHERE field='SITE' and code=?", site)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func resetNetworkProbe(site string) error {
+// 	_, err := db.Conn.Exec("UPDATE choices SET parent='' WHERE field='SITE' and code=?", site)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }

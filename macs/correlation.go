@@ -29,7 +29,7 @@ type PairInfo struct {
 	Overlap   int    `json:"Overlap"`
 }
 
-func GetMacCorrelations(isCorrelatedOnly bool, macList []string) ([]PairInfo, error) {
+func getMacCorrelations(isCorrelatedOnly bool, macList []string) ([]PairInfo, error) {
 	var results []PairInfo
 	if len(macList) == 0 {
 		return nil, nil
@@ -91,7 +91,7 @@ type MacCorrelationFilter struct {
 }
 
 // Find devices that their online time matches almost perfectly
-func GetMacCorrelation(filter MacCorrelationFilter) ([]PairInfo, error) {
+func getMacCorrelation(filter MacCorrelationFilter) ([]PairInfo, error) {
 	var results []PairInfo
 	jsign := "<"
 	if filter.Jsign {
@@ -166,7 +166,7 @@ func GetMacCorrelation(filter MacCorrelationFilter) ([]PairInfo, error) {
 // MAC2 ↔ MAC3
 // MAC3 ↔ MAC4
 // Device 1 = {MAC1, MAC2, MAC3, MAC4}
-func MacRotations() ([]string, error) {
+func macRotations() ([]string, error) {
 	// 1. Get all online history for random macs, grouped by mac in memory.
 	type macHistory struct {
 		Date int

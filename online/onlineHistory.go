@@ -91,7 +91,7 @@ func GetCurrentOnOffCounts() (int, int) {
 }
 
 // Get the Random MAC addresses online information
-func GetOnlineHistoryInfo(macList []string) ([]Online, []int64, error) {
+func getOnlineHistoryByMACs(macList []string) ([]Online, []int64, error) {
 	var items []Online
 	var dateList []int64
 	if len(macList) == 0 {
@@ -148,7 +148,7 @@ func GetOnlineHistoryInfo(macList []string) ([]Online, []int64, error) {
 
 // Build a lookup map of mac to hostname for easier analysis later
 // TODO: Add macs where hostanme is null or zero length
-func GetMac2Hostname(randomOnly bool) (map[string]string, error) {
+func getMac2Hostname(randomOnly bool) (map[string]string, error) {
 	mac2Hostname := make(map[string]string)
 	query := "SELECT O.mac, COALESCE(M.Hostname, o.mac) FROM onlinehistory O LEFT JOIN macs M on M.mac=O.mac "
 	if randomOnly {

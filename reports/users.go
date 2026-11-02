@@ -12,7 +12,7 @@ import (
  *
  */
 func GetUsersReport(curUid int) string {
-	items, err := GetUsersReports(curUid)
+	items, err := getUsersReports(curUid)
 	if err != nil {
 		log.Println(err)
 		return ""

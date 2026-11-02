@@ -23,7 +23,7 @@ import (
 
 func (a *Alert) GetAlertTable() string {
 	// Fetch alerts and handle errors
-	items, err := a.GetAlerts()
+	items, err := a.getAlerts()
 	if err != nil {
 		log.Println(err)
 		return err.Error()
@@ -98,7 +98,7 @@ func (a *Alert) BuildInformList() string {
 		return "error: AID missing"
 	}
 
-	items, err := a.GetAlerts()
+	items, err := a.getAlerts()
 	if err != nil {
 		log.Println(err)
 		return "<p class='fg-red'>Error loading alert inform list</p>"

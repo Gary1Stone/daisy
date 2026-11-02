@@ -52,7 +52,7 @@ func GetNode(cid int, site string) (node Node, err error) {
 	return node, nil
 }
 
-func GetNodes(site string) (nodes []Node, err error) {
+func getNodes(site string) (nodes []Node, err error) {
 	// First find all the devices that do not have macs
 	var noMacs = make(map[int]bool)
 	query1 := `SELECT D.cid FROM DEVICES D
@@ -104,8 +104,8 @@ func GetNodes(site string) (nodes []Node, err error) {
 	return
 }
 
-func GetTreeNodes(site string) (roots []*TreeNode, err error) {
-	nodes, err := GetNodes(site)
+func getTreeNodes(site string) (roots []*TreeNode, err error) {
+	nodes, err := getNodes(site)
 	if err != nil {
 		return
 	}

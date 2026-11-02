@@ -38,7 +38,7 @@ func PostSightingApi(c *fiber.Ctx) error {
 	}
 
 	// Add the sighting record
-	err := sighting.AddRecord()
+	err := sighting.addRecord()
 	if err != nil {
 		log.Println("API: Failure adding sighting", err)
 		return c.Status(fiber.StatusOK).SendString(resp)
@@ -46,7 +46,7 @@ func PostSightingApi(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).SendString("Okay")
 }
 
-func (s *Sightings) AddRecord() error {
+func (s *Sightings) addRecord() error {
 	if s.Eid < 1 {
 		s.Eid = db.SYS_PROFILE.Uid
 	}

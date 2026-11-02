@@ -71,7 +71,7 @@ func BuildSoftwareList(curUid, cid int) string {
 		}
 		table.WriteString("<tr><td>")
 		if item.Sid > 0 {
-			fmt.Fprintf(&table, `<a href="software.html?sid=%d>%s&nbsp;%s %s</a></td>`, item.Sid, appIcon, item.Name, tracked)
+			fmt.Fprintf(&table, `<a href="software.html?sid=%d">%s&nbsp;%s %s</a></td>`, item.Sid, appIcon, item.Name, tracked)
 		} else {
 			fmt.Fprintf(&table, `%s&nbsp;%s %s</td>`, appIcon, item.Name, tracked)
 		}

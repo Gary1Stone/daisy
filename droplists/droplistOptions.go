@@ -20,7 +20,7 @@ type DroplistOption struct {
 }
 
 // Use the choices (admin table) cache
-func GetOptions(field, selected, parentCode string, withBlank bool) []DroplistOption {
+func getOptions(field, selected, parentCode string, withBlank bool) []DroplistOption {
 	db.AdminCache.RLock()
 	defer db.AdminCache.RUnlock()
 	isSearch := strings.Contains(field, "SEARCH")
@@ -53,7 +53,7 @@ func GetOptions(field, selected, parentCode string, withBlank bool) []DroplistOp
 }
 
 // Use the choices (admin table) cache
-func GetSiteOptions(field, selected string, withBlank bool) []DroplistOption {
+func getSiteOptions(field, selected string, withBlank bool) []DroplistOption {
 	db.AdminCache.RLock()
 	defer db.AdminCache.RUnlock()
 	isSearch := strings.Contains(field, "SEARCH")
@@ -87,7 +87,7 @@ func GetSiteOptions(field, selected string, withBlank bool) []DroplistOption {
 // Get the type of device droplist
 // list is dependant on wizard AND if in use
 // Only shows computers for certian wizards
-func GetTypeOptions(field, selected, wizard string, withBlank bool) []DroplistOption {
+func getTypeOptions(field, selected, wizard string, withBlank bool) []DroplistOption {
 	db.AdminCache.RLock()
 	defer db.AdminCache.RUnlock()
 	isSearch := strings.Contains(field, "SEARCH")
@@ -166,7 +166,7 @@ func GetTypeOptions(field, selected, wizard string, withBlank bool) []DroplistOp
 // If the specified UID is no longer active, include it.
 // But only show it if the uid's group is correct
 // This prevents saving user to wrong group
-func GetUserList(field string, selected, parentCode string, withBlank bool) []DroplistOption {
+func getUserList(field string, selected, parentCode string, withBlank bool) []DroplistOption {
 	var options []DroplistOption
 	if withBlank {
 		var option DroplistOption
@@ -218,7 +218,7 @@ func toInt(userId, groupId string) (int, int) {
 	return uid, gid
 }
 
-func GetSoftwareList(withBlank bool) []DroplistOption {
+func getSoftwareList(withBlank bool) []DroplistOption {
 	var options []DroplistOption
 	if withBlank {
 		var option DroplistOption
@@ -294,7 +294,7 @@ func GetDefaultGroup() string {
 }
 
 // Use the choices (admin table) cache
-func GetKindOptions(field, selected, parentCode string, withBlank bool) []DroplistOption {
+func getKindOptions(field, selected string, withBlank bool) []DroplistOption {
 	db.AdminCache.RLock()
 	defer db.AdminCache.RUnlock()
 	var options []DroplistOption
@@ -320,7 +320,7 @@ func GetKindOptions(field, selected, parentCode string, withBlank bool) []Dropli
 	return options
 }
 
-func GetMidOptions(field, selected, parentCode string, withBlank bool) []DroplistOption {
+func getMidOptions(selected string, withBlank bool) []DroplistOption {
 	query := `SELECT M.mid, M.name, M.source FROM macs M
 		JOIN (
 			SELECT DISTINCT mac FROM onlinehistory
@@ -361,7 +361,7 @@ func GetMidOptions(field, selected, parentCode string, withBlank bool) []Droplis
 	return options
 }
 
-func GetWizardOptions(field, selected string, withBlank bool) []DroplistOption {
+func getWizardOptions(selected string, withBlank bool) []DroplistOption {
 	var options []DroplistOption
 	if withBlank {
 		options = append(options, DroplistOption{})

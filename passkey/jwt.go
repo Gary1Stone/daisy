@@ -16,7 +16,7 @@ import (
 // When saving the cookie, it is set to expire in 60 days
 // Which gives several weeks to just log in to reset the token
 // Otherwise the user has to re-register with emailed passcode
-func CreateJWTToken(jwtInfo logins.Logins) (string, time.Time, error) {
+func createJWTToken(jwtInfo logins.Logins) (string, time.Time, error) {
 	permissions, err := profiles.GetUidPermissions(jwtInfo.Uid)
 	if err != nil {
 		log.Println("cannot get permissions", err)
