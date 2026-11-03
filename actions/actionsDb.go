@@ -125,20 +125,6 @@ func GetActionCodes(onlyDevices bool) ([]Actions, error) {
 // Pending=-1 disables search for pending alerts, because it is not used for the queue functionality
 // It is only used to show open (pending) alerts on other screens (device & software)
 
-type Popbutton struct {
-	Color   string `json:"color"`
-	Action  string `json:"action"`
-	Label   string `json:"label"`
-	Icon    string `json:"icon"`
-	Active  int    `json:"active"`
-	Aid     int    `json:"aid"`
-	Cid_ack int    `json:"cid_ack"`
-	Iid_ack int    `json:"iid_ack"`
-	Sid_ack int    `json:"sid_ack"`
-	Uid_ack int    `json:"uid_ack"`
-	Wlog    int    `json:"wlog"` // Can the action be closed: 1=true, 0=false >0=closed
-}
-
 // When a new struct is created, strings are set to zero length ("") and ints are set to 0 automatically
 // func (A *Action) initAction() {
 // 	A.Active = 1
