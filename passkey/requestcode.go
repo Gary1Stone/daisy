@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/gbsto/daisy/emails"
-	"github.com/gbsto/daisy/register"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -36,7 +35,7 @@ func RequestCode(c *fiber.Ctx) error {
 	if len(ips) > 0 {
 		ip = ips[0]
 	}
-	var r register.RegisterCode
+	var r RegisterCode
 	r.Apicode = usr.Apicode
 	r.Ip = ip
 	if !r.IsApiCode() {

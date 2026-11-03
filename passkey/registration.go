@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gbsto/daisy/logins"
-	"github.com/gbsto/daisy/register"
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -54,7 +53,7 @@ func BeginRegistration(c *fiber.Ctx) error {
 	}
 
 	//Check if the code and IP are the sqme as the original request
-	var r register.RegisterCode
+	var r RegisterCode
 	r.Apicode = usrInfo.Apicode
 	r.Ip = ip
 	if !r.IsApiCode() {

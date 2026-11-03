@@ -4,14 +4,14 @@ import (
 	"html/template"
 
 	"github.com/gbsto/daisy/icons"
-	"github.com/gbsto/daisy/register"
+	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/util"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetRegistration(c *fiber.Ctx) error {
-	var r register.RegisterCode
+	var r passkey.RegisterCode
 	r.Ip = c.IP()
 	ips := c.IPs()
 	if len(ips) > 0 {

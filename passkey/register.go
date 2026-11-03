@@ -1,4 +1,4 @@
-package register
+package passkey
 
 import (
 	"database/sql"
