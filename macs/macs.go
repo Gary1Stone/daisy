@@ -165,16 +165,16 @@ func GetMacInfoByMid(tzoff, mid int) (MacInfo, error) {
 	return items[0], nil
 }
 
-func getMacInfoByCid(tzoff, cid int) ([]MacInfo, error) {
-	var items []MacInfo
-	params := []any{cid}
-	items, err := getMacInfo("WHERE M.active=1 AND M.cid=?", tzoff, params...)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	return items, nil
-}
+// func getMacInfoByCid(tzoff, cid int) ([]MacInfo, error) {
+// 	var items []MacInfo
+// 	params := []any{cid}
+// 	items, err := getMacInfo("WHERE M.active=1 AND M.cid=?", tzoff, params...)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return nil, err
+// 	}
+// 	return items, nil
+// }
 
 func GetMacInfoByMac(tzoff int, mac string) (MacInfo, error) {
 	var item MacInfo
@@ -327,41 +327,41 @@ func getMacList() ([]string, error) {
 	return items, nil
 }
 
-// ADD ICON TO THIS
-func getMacs(tzoff int, site string) ([]MacInfo, error) {
-	items := make([]MacInfo, 0)
-	query := `
-		SELECT Mid, Mac, Created, Name, Hostname, Ip, Kind, Os,
-		User, Site, Office, Location, Note, Vendor, 
-		Online, Scanned, Source, Intruder, Updated, Active, coalesce(cid, 0) AS cid,
-		isSolitary, isRandomMac, isIgnore,		
-		strftime('%Y-%m-%d', created-?, 'unixepoch') AS firstseen,
-		strftime('%Y-%m-%d', scanned-?, 'unixepoch') AS lastseen,
-		coalesce(parent, 0) AS parent
-		FROM macs WHERE active=1 AND site=? ORDER BY cid, hostname`
-	rows, err := db.Conn.Query(query, tzoff, tzoff, site)
-	if err != nil {
-		log.Println("Error querying mac info:", err)
-		return nil, err
-	}
-	defer rows.Close()
+// // ADD ICON TO THIS
+// func getMacs(tzoff int, site string) ([]MacInfo, error) {
+// 	items := make([]MacInfo, 0)
+// 	query := `
+// 		SELECT Mid, Mac, Created, Name, Hostname, Ip, Kind, Os,
+// 		User, Site, Office, Location, Note, Vendor,
+// 		Online, Scanned, Source, Intruder, Updated, Active, coalesce(cid, 0) AS cid,
+// 		isSolitary, isRandomMac, isIgnore,
+// 		strftime('%Y-%m-%d', created-?, 'unixepoch') AS firstseen,
+// 		strftime('%Y-%m-%d', scanned-?, 'unixepoch') AS lastseen,
+// 		coalesce(parent, 0) AS parent
+// 		FROM macs WHERE active=1 AND site=? ORDER BY cid, hostname`
+// 	rows, err := db.Conn.Query(query, tzoff, tzoff, site)
+// 	if err != nil {
+// 		log.Println("Error querying mac info:", err)
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
 
-	for rows.Next() {
-		var item MacInfo
-		err := rows.Scan(&item.Mid, &item.Mac, &item.Created, &item.Name, &item.Hostname,
-			&item.Ip, &item.Kind, &item.Os, &item.User, &item.Site, &item.Office,
-			&item.Location, &item.Note, &item.Vendor, &item.Online, &item.Scanned,
-			&item.Source, &item.Intruder, &item.Updated, &item.Active, &item.Cid,
-			&item.IsSolitary, &item.IsRandomMac, &item.IsIgnore, &item.Firstseen, &item.Lastseen)
-		if err != nil {
-			log.Println("Error scanning mac info:", err)
-			continue
-		}
-		items = append(items, item)
-	}
-	if err = rows.Err(); err != nil {
-		log.Println(err)
-		return items, err
-	}
-	return items, nil
-}
+// 	for rows.Next() {
+// 		var item MacInfo
+// 		err := rows.Scan(&item.Mid, &item.Mac, &item.Created, &item.Name, &item.Hostname,
+// 			&item.Ip, &item.Kind, &item.Os, &item.User, &item.Site, &item.Office,
+// 			&item.Location, &item.Note, &item.Vendor, &item.Online, &item.Scanned,
+// 			&item.Source, &item.Intruder, &item.Updated, &item.Active, &item.Cid,
+// 			&item.IsSolitary, &item.IsRandomMac, &item.IsIgnore, &item.Firstseen, &item.Lastseen)
+// 		if err != nil {
+// 			log.Println("Error scanning mac info:", err)
+// 			continue
+// 		}
+// 		items = append(items, item)
+// 	}
+// 	if err = rows.Err(); err != nil {
+// 		log.Println(err)
+// 		return items, err
+// 	}
+// 	return items, nil
+// }

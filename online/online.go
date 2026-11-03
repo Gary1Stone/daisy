@@ -1,7 +1,6 @@
 package online
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -67,13 +66,13 @@ func yyyymmddUTC2time(yyyymmdd int64) time.Time {
 }
 
 // Debugging utility
-func printBitmap(mac string, bmp []int) {
-	fmt.Print(mac, " ")
-	for i := range bmp {
-		fmt.Print(bmp[i])
-	}
-	fmt.Print("\n")
-}
+// func printBitmap(mac string, bmp []int) {
+// 	fmt.Print(mac, " ")
+// 	for i := range bmp {
+// 		fmt.Print(bmp[i])
+// 	}
+// 	fmt.Print("\n")
+// }
 
 // Shift the UTC (database) time to the user timezone.
 // tzoff = users timezone offset from UTC

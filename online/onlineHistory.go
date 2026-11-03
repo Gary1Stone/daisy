@@ -148,34 +148,34 @@ func getOnlineHistoryByMACs(macList []string) ([]Online, []int64, error) {
 
 // Build a lookup map of mac to hostname for easier analysis later
 // TODO: Add macs where hostanme is null or zero length
-func getMac2Hostname(randomOnly bool) (map[string]string, error) {
-	mac2Hostname := make(map[string]string)
-	query := "SELECT O.mac, COALESCE(M.Hostname, o.mac) FROM onlinehistory O LEFT JOIN macs M on M.mac=O.mac "
-	if randomOnly {
-		query += "WHERE M.isRandomMac=1 "
-	}
-	query += "GROUP BY O.mac"
-	rows, err := db.Conn.Query(query)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	defer rows.Close()
+// func getMac2Hostname(randomOnly bool) (map[string]string, error) {
+// 	mac2Hostname := make(map[string]string)
+// 	query := "SELECT O.mac, COALESCE(M.Hostname, o.mac) FROM onlinehistory O LEFT JOIN macs M on M.mac=O.mac "
+// 	if randomOnly {
+// 		query += "WHERE M.isRandomMac=1 "
+// 	}
+// 	query += "GROUP BY O.mac"
+// 	rows, err := db.Conn.Query(query)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
 
-	for rows.Next() {
-		var mac, hostname string
-		if err := rows.Scan(&mac, &hostname); err != nil {
-			log.Println(err)
-			return nil, err
-		}
-		mac2Hostname[mac] = hostname
-	}
-	if err = rows.Err(); err != nil {
-		log.Println(err)
-		return mac2Hostname, err
-	}
-	return mac2Hostname, nil
-}
+// 	for rows.Next() {
+// 		var mac, hostname string
+// 		if err := rows.Scan(&mac, &hostname); err != nil {
+// 			log.Println(err)
+// 			return nil, err
+// 		}
+// 		mac2Hostname[mac] = hostname
+// 	}
+// 	if err = rows.Err(); err != nil {
+// 		log.Println(err)
+// 		return mac2Hostname, err
+// 	}
+// 	return mac2Hostname, nil
+// }
 
 // System/Probe online/offline information, for the entire date range (0's for missing days)
 func getSysHistoryInRange(minDate, maxDate int64) (map[int64]Online, error) {

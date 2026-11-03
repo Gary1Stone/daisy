@@ -116,7 +116,7 @@ type LastOnline struct {
 }
 
 // Find the last time each device was online or being looked at or reported in via audit.exe
-func getLastOnlineDates(curUid, tzoff int) ([]LastOnline, error) {
+func getLastOnlineDates(tzoff int) ([]LastOnline, error) {
 	items := make([]LastOnline, 0)
 	query := `
 	WITH combined_timestamps AS (
