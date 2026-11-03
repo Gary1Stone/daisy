@@ -1,6 +1,6 @@
 package tracks
 
-/* where a computer has reported in */
+/* where a computer (audit.exe) has reported in */
 
 import (
 	"log"
