@@ -53,42 +53,42 @@ type Wlog struct {
 }
 
 // Small fast routine to get only the modifiable fields on a ticket (Alert)
-func getTicket(curUid, aid int) (Ticket, error) {
-	var tkt Ticket
-	var query strings.Builder
-	db.AddActionLock(curUid, aid)
-	query.WriteString(`
-		SELECT aid, 
-			coalesce(cid, 0) cid, cid_ack, 
-			coalesce(sid, 0) sid, sid_ack,
-			coalesce(gid, 0) gid, coalesce(uid, 0) uid, uid_ack, 
-			coalesce(inform_gid, 0) inform_gid, coalesce(inform, 0) inform, inform_ack, 
-			coalesce(impact, 0) impact, coalesce(trouble, 0) trouble, coalesce(report, '') report
-		FROM action_log
-		WHERE aid=?
-	`)
-	rows, err := db.Conn.Query(query.String(), aid)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		err := rows.Scan(&tkt.Aid, &tkt.Cid, &tkt.Cid_ack,
-			&tkt.Sid, &tkt.Sid_ack,
-			&tkt.Gid, &tkt.Uid, &tkt.Uid_ack,
-			&tkt.Inform_gid, &tkt.Inform, &tkt.Inform_ack,
-			&tkt.Impact, &tkt.Trouble, &tkt.Report)
-		if err != nil {
-			log.Println(err)
-			return tkt, err
-		}
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Println(err)
-	}
-	return tkt, err
-}
+// func getTicket(curUid, aid int) (Ticket, error) {
+// 	var tkt Ticket
+// 	var query strings.Builder
+// 	db.AddActionLock(curUid, aid)
+// 	query.WriteString(`
+// 		SELECT aid,
+// 			coalesce(cid, 0) cid, cid_ack,
+// 			coalesce(sid, 0) sid, sid_ack,
+// 			coalesce(gid, 0) gid, coalesce(uid, 0) uid, uid_ack,
+// 			coalesce(inform_gid, 0) inform_gid, coalesce(inform, 0) inform, inform_ack,
+// 			coalesce(impact, 0) impact, coalesce(trouble, 0) trouble, coalesce(report, '') report
+// 		FROM action_log
+// 		WHERE aid=?
+// 	`)
+// 	rows, err := db.Conn.Query(query.String(), aid)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		log.Println(err)
+// 	}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		err := rows.Scan(&tkt.Aid, &tkt.Cid, &tkt.Cid_ack,
+// 			&tkt.Sid, &tkt.Sid_ack,
+// 			&tkt.Gid, &tkt.Uid, &tkt.Uid_ack,
+// 			&tkt.Inform_gid, &tkt.Inform, &tkt.Inform_ack,
+// 			&tkt.Impact, &tkt.Trouble, &tkt.Report)
+// 		if err != nil {
+// 			log.Println(err)
+// 			return tkt, err
+// 		}
+// 	}
+// 	err = rows.Err()
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	return tkt, err
+// }
 
 func SetTicket(curUid int, tkt *Ticket) error {
 	if db.IsActionLocked(curUid, tkt.Aid) {
@@ -226,9 +226,8 @@ func sendClosureEmail(tkt *Ticket) error {
 	return nil
 }
 
-func getLogs(curUid, tzoff, aid int) ([]Wlog, error) {
+func getLogs(tzoff, aid int) ([]Wlog, error) {
 	var items []Wlog
-	//	tzoff := GetTzoff(curUid)
 	const query = `
 	SELECT coalesce(A.aid, 0) AS aid, 
 		strftime('%Y-%m-%d %H:%M', A.timestamp-?, 'unixepoch') AS timestamp,
