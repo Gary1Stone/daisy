@@ -1,4 +1,45 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
+<style>
+/* Remove default list styling */
+ul.tree li, ul.nested li{
+  list-style-type: none;
+}
+
+.tree {
+  margin: 0;
+  padding: 0;
+}
+
+/* Style the caret/arrow */
+.caret {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 1. Point the arrow DOWN by default (\25BC instead of \25B6) */
+.caret::before {
+  content: "\25BC";
+  color: silver;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* 2. Rotate the arrow to point RIGHT when the user collapses it */
+.caret-collapsed::before {
+  transform: rotate(-90deg);
+}
+
+/* 3. Show the nested list by default */
+.nested {
+  display: block;
+}
+
+/* 4. Hide the nested list when toggled closed */
+.nested-hidden {
+  display: none;
+}
+</style>
+
 <main class="container">
   <div id="treeview">{{.tree}}</div>
   <div style="width:1440px; margin: 0 auto;">

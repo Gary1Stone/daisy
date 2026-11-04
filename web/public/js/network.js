@@ -23,6 +23,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (UI.kind()) {
         UI.kind().addEventListener("change", kindChanged);
     }
+
+    var toggler = document.getElementsByClassName("caret");
+    for (var i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function() {
+            this.parentElement.querySelector(".nested").classList.toggle("nested-hidden");
+            this.classList.toggle("caret-collapsed");
+        });
+    }
+
 });
 
 function parentChanged() {
@@ -95,3 +104,5 @@ function goto(url) {
 function newSiteSelected() {
     window.location.href = encodeURI("network.html?site=" + UI.site().value);
 }
+
+

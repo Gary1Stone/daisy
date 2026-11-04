@@ -19,7 +19,7 @@ func BuildTreeView(site string) string {
 
 	// Generate HTML for the tree view
 	var html strings.Builder
-	fmt.Fprintf(&html, `<ul><li><a href='#' data-target="siteSelect" onclick="toggleModal(event);"> %s Internet %s</a></li><ul>`, icons.GetIcon("internet"), htmlEscape(site))
+	fmt.Fprintf(&html, `<ul class="tree"><li><a href='#' data-target="siteSelect" onclick="toggleModal(event);"> %s Internet %s</a></li><ul>`, icons.GetIcon("internet"), htmlEscape(site))
 
 	for _, rootNode := range nodes {
 		html.WriteString(generateNodeHTML(rootNode))
@@ -39,11 +39,17 @@ func generateNodeHTML(node *TreeNode) string {
 		color = colors.Info
 		tip = "never online or offline"
 	}
-	fmt.Fprintf(&html, "<li data-id='%d'> %s <a href='#' onclick='showDetail(%d)'>%s</a> %s (%s)",
-		node.Cid, droplists.SetIconColor(node.Icon, color, tip), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle))
+
+	caret := ""
+	if len(node.Children) > 0 {
+		caret = " class='caret'"
+	}
+
+	fmt.Fprintf(&html, "<li data-id='%d'><span%s> %s <a href='#' onclick='showDetail(%d)'>%s</a> %s (%s)</span>",
+		node.Cid, caret, droplists.SetIconColor(node.Icon, color, tip), node.Cid, htmlEscape(node.Name), htmlEscape(node.Model), htmlEscape(node.OfficeTitle))
 
 	if len(node.Children) > 0 {
-		html.WriteString("<ul>")
+		html.WriteString("<ul class='nested'>")
 		for _, child := range node.Children {
 			html.WriteString(generateNodeHTML(child))
 		}
@@ -93,3 +99,54 @@ func BuildParentSelect(selected int, site string, readOnly bool) string {
 
 	return droplists.BuildDropdown(droplist, options, readOnly, "", "")
 }
+
+/* Try JSON tree */
+
+/* Build a html tree view of the network assets from the DEVICES table */
+func GetJsonTreeData(site string) string {
+	nodes, err := getTreeNodes(site)
+	if err != nil {
+		return "Server Error: Unable to build tree view."
+	}
+
+	// Generate HTML for the tree view
+	var html strings.Builder
+	fmt.Fprintf(&html, `<ul><li><a href='#' data-target="siteSelect" onclick="toggleModal(event);"> %s Internet %s</a></li><ul>`, icons.GetIcon("internet"), htmlEscape(site))
+
+	for _, rootNode := range nodes {
+		html.WriteString(generateNodeHTML(rootNode))
+	}
+	html.WriteString("</ul></ul>")
+	return html.String()
+}
+
+//     const treeData = [
+//     {
+//         id: '1',
+//         name: 'WKNC',
+//         selectable: false,
+//         children: [
+//             {
+//                 id: '1.1', name: 'Reports', children: [
+//                     {id: '1.1.1', name: 'Q1 Sales'},
+//                     {id: '1.1.2', name: 'Q2 Marketing', selected: true}
+//                 ]
+//             },
+//             {
+//                 id: '1.2', name: 'Proposals', children: [
+//                     {id: '1.2.1', name: 'New Client A'},
+//                     {id: '1.2.2', name: 'Project Beta'}
+//                 ]
+//             }
+//         ]
+//     },
+//     {
+//         id: '2',
+//         name: 'Images',
+//         children: [
+//             {id: '2.1', name: 'Vacation Photos'},
+//             {id: '2.2', name: 'Work Graphics'}
+//         ]
+//     },
+//     {id: '3', name: 'Videos'}
+// ];
