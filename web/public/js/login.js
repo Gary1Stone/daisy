@@ -80,15 +80,15 @@ async function login(username) {
         
         // The server typically returns success: true or similar, but verify status via reply content
         if (reply.msg && !reply.error) {
-            toast(reply.msg, "success");
+           ot.toast(reply.msg, "success", { variant: 'danger', placement: 'top-center' });
             sessionStorage.removeItem("geo");
             window.location.href = encodeURI("home.html");
         } else {
-            toast(reply.msg, "error");
+            ot.toast(reply.msg, "Error", { variant: 'danger', placement: 'top-center' });
         }
     } catch (error) {
         console.error(error);
-        toast(error, "error");
+        ot.toast(error, "Error", { variant: 'danger', placement: 'top-center' });
     } finally {
         if (btn) {
             btn.disabled = false;

@@ -42,9 +42,7 @@ function initialize() {
       if (isAvailable) {
         btn.disabled = false;
       } else {
-        if (typeof toast === 'function') {
-            toast(msgs.device, "error"); 
-        }
+        ot.toast(msgs.device, "Error", { variant: 'danger', placement: 'top-center' }); 
       } 
     });
   }
@@ -70,7 +68,7 @@ function doAccept() {
 function tryGeoBrowser() {
     if (!navigator.geolocation) {
       geo.err = true;
-      toast(msgs.support, "error");
+      ot.toast(msgs.support, "error", { variant: 'danger', placement: 'top-center' });
       console.error("Geolocation is not supported by this browser.");
       setTimeout(tryGeoSource2, 111); //Try alternative to getting location
       return;
@@ -106,7 +104,7 @@ function tryGeoSource2() {
 
 //extreme-ip-lookup
 function tryGeoSource3() {
-  fetchGeoData(atob(msgs.extreme), 3, () => toast(msgs.latlon));
+  fetchGeoData(atob(msgs.extreme), 3, () => ot.toast(msgs.latlon, "Ops!", { variant: 'warning', placement: 'top-center' }));
 }
 
 function fetchGeoData(url, source, fallback) {
@@ -191,9 +189,5 @@ function handleGeoError(error) {
       break;
   }
   geo.err = true;
-  Snackbar.push({
-      message: msg,
-      type: "warning",
-      duration: 15000
-  });
+  ot.toast(msg, "Warning", { variant: 'warning', placement: 'top-center' }); 
 }

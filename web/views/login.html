@@ -1,31 +1,30 @@
-{{template "partials/top" .}}
-<header class="container">
-    <nav>
-        <ul>
-            <li><span style="font-size:2rem">&#127809;</span> Device Asset Information System</li>
-        </ul>
-    </nav>
-</header>
+{{template "partials/top2" .}}
 <main class="container">
-    <form id="theForm" name="theForm" onsubmit="return false;" autocomplete="off">
-        <article>
-            <header><img src="/icons/user.svg" alt="user" width="48px" height="48px" />&nbsp;Login</header>
-            <p>Welcome</p>
-            <p>{{.fullname}}</p>
+    <article class="card" style="width: fit-content; margin-inline: auto;">
+        <form id="theForm" name="theForm" onsubmit="return false;" autocomplete="off">
             <input type="hidden" id="username" value="{{.user}}" >
-            <footer>
-                <button type='button' class="secondary" onclick="registerMe()">Register...</button>
+            <header>
+                <h3><span style="font-size:2rem">&#127809;</span> Device Asset Information System</h3>
+                <p>Your session has expired.</p>
+            </header>
+            <p class="p-4">
+                <img src="/icons/user.svg" alt="user"/>
+                &nbsp;Welcome {{.fullname}}
+            </p>
+            <footer class="vstack p-4">
                 <button type='button' autofocus onclick="startLogin()">Log In...</button>
             </footer>
-        </article>
-    </form>
+            <p class="p-4">Don't have an account?</p>
+            <footer class="vstack">
+                <button type='button' class="outline" onclick="registerMe()">Register...</button>
+            </footer>
+            <footer class="p-4">
+                <p>All Rights reserved.</p>
+                <p>For further information contact: webmaster@wknc.ca</p>
+            </footer>
+        </form>
+    </article>
 </main>
-
-<footer class="container">
-    <p>All Rights reserved.</p>
-    <p>For further information contact: webmaster@wknc.ca</p>
-</footer>
-
 <script src="js/index.es5.umd.min.js" defer></script>
 <script src="js/login.js" defer></script>
-{{template "partials/bottom" .}}
+{{template "partials/bottom2" .}}
