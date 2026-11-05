@@ -4,11 +4,17 @@
  *  All rights Reserved
  */
 
+
+const UI = {
+    username: () => document.getElementById("username"),
+    btnSubmit: () =>  document.getElementById("btnSubmit")
+}
+
 // If no username, proceed to new registartion
 document.addEventListener("DOMContentLoaded", function() {
     const username = checkEmailField();
     if (username.length === 0) {
-        registerMe();
+        window.location.href = encodeURI("registration.html");
     }
 });
 
@@ -18,14 +24,13 @@ function startLogin() {
     login(username);
 }
 
-function registerMe() {
-    window.location.href = encodeURI("registration.html");
-}
-
 // Verify the username is filled in properly
 function checkEmailField() {
     let isValid = true;
-    const emailField = document.getElementById('username');
+    const emailField = UI.username(); // document.getElementById('username');
+    if (!emailField) {
+        return "";
+    }
     if (!emailField.checkValidity()) {
         isValid = false;
     }
@@ -34,13 +39,13 @@ function checkEmailField() {
         isValid = false;
     }
     if (!isValid) {
-        return ""
+        return "";
     }
     return username;
 }
 
 async function login(username) {
-    const btn = document.getElementById("btnSubmit");
+    const btn = UI.btnSubmit(); // document.getElementById("btnSubmit");
     if (btn) {
         btn.disabled = true;
         btn.setAttribute("aria-busy", "true");
@@ -80,7 +85,7 @@ async function login(username) {
         
         // The server typically returns success: true or similar, but verify status via reply content
         if (reply.msg && !reply.error) {
-           ot.toast(reply.msg, "success", { variant: 'danger', placement: 'top-center' });
+            ot.toast(reply.msg, "success", { variant: 'danger', placement: 'top-center' });
             sessionStorage.removeItem("geo");
             window.location.href = encodeURI("home.html");
         } else {

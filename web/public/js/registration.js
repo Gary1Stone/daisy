@@ -34,7 +34,7 @@ function checkEmailField() {
     const emailField = document.getElementById('username');
     const username = emailField?.value?.trim();
     if (!username || !emailField.checkValidity()) {
-        toast("Please enter a valid email address", "warning");
+        ot.toast("Please enter a valid email address", "Warning", { variant: 'warning', placement: 'top-center' });
         return "";
     }
     return username;
@@ -46,7 +46,7 @@ function checkPasscodeField() {
     const passcode = passcodeField?.value?.trim();
     if (!passcode || !passcodeField.checkValidity()) {
         showPasscodeForm();
-        toast("Please enter the code sent to your email", "warning");
+        ot.toast("Please enter the code sent to your email", "Warning", { variant: 'warning', placement: 'top-center' });
         return "";
     }
     return passcode;
@@ -73,7 +73,7 @@ async function requestCode() {
         const reply = await postJSON('/api/passkey/requestCode', {username: username, apicode: apicode});
         
         if (reply.error || !reply.msg) {
-            toast(reply.msg, "error");
+            ot.toast(reply.msg, "Error", { variant: 'danger', placement: 'top-center' });
             return;
         }
 
@@ -86,7 +86,7 @@ async function requestCode() {
             startCountdown();
         }
     } catch (error) {
-        toast(error, "error");
+           ot.toast(error, "Error", { variant: 'danger', placement: 'top-center' });
     } finally {
         if (btn) {
             btn.disabled = false;
@@ -149,13 +149,13 @@ async function register() {
         // Check status through reply content
         if (reply.error || !reply.msg) {
             throw new Error(reply.msg || "Failed to verify registration");
-        }        
-        toast(reply.msg, "success");
+        }     
+        ot.toast(reply.msg, "Success", { variant: 'info', placement: 'top-center' });   
         sessionStorage.removeItem("geo");
         window.location.href = encodeURI(homePage);
     } catch (error) {
         console.error(error);
-        toast(error.message || error, "error");
+        ot.toast(error.message || error, "Error", { variant: 'danger', placement: 'top-center' });
     } finally {
         if (btn) {
             btn.disabled = false;

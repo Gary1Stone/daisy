@@ -1,27 +1,24 @@
 {{template "partials/top2" .}}
 <main class="container">
     <article class="card" style="width: fit-content; margin-inline: auto;">
-        <form id="theForm" name="theForm" onsubmit="return false;" autocomplete="off">
+        <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
             <input type="hidden" id="username" value="{{.user}}" >
             <header>
                 <h3><span style="font-size:2rem">&#127809;</span> Device Asset Information System</h3>
                 <p>Your session has expired.</p>
             </header>
-            <p class="p-4">
+            <p class="mt-4">
                 <img src="/icons/user.svg" alt="user"/>
-                &nbsp;Welcome {{.fullname}}
+                &nbsp;Welcome <b>{{.fullname}}</b>
             </p>
-            <footer class="vstack p-4">
+            <footer class="vstack mt-4">
                 <button type='button' autofocus onclick="startLogin()">Log In...</button>
             </footer>
-            <p class="p-4">Don't have an account?</p>
-            <footer class="vstack">
+            <p class="mt-8">Don't have an account?</p>
+            <footer class="vstack mt-4">
                 <button type='button' class="outline" onclick="registerMe()">Register...</button>
             </footer>
-            <footer class="p-4">
-                <p>All Rights reserved.</p>
-                <p>For further information contact: webmaster@wknc.ca</p>
-            </footer>
+            <blockquote>All Rights reserved.<br>For further information contact: webmaster@wknc.ca</blockquote>
         </form>
     </article>
 </main>

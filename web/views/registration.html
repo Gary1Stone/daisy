@@ -1,49 +1,47 @@
-{{template "partials/top" .}}
-<header class="container">
-    <nav>
-        <ul>
-            <li><span style="font-size:2rem">&#127809;</span> Device Asset Information System</li>
-        </ul>
-    </nav>
-</header>
+{{template "partials/top2" .}}
 <main class="container">
-    <article>
-        <header>
-            {{.userIcon}}&nbsp;Registration
-        </header>
-        
+    <article class="card" style="width: fit-content; margin-inline: auto;">
         <form id="theForm" name="theForm" onsubmit="return false;" action="#" method="post" autocomplete="off">
-            <section>
-                <fieldset>
-                    <input type="hidden" id="apicode" name="apicode" value="{{.apicode}}">
-                    <label for="username">User ID</label>
-                    <input type="email"  id="username" name="username" placeholder="username" 
-                        value="{{.user}}" title="User Identifier" autocomplete="email" 
-                        required minlength="6" maxlength="60" autofocus
-                        aria-label="User Identifier" aria-describedby="username-helper" />
-                    <small id="username-helper">Required. Your assigned email address</small>
+            <input type="hidden" id="apicode" name="apicode" value="{{.apicode}}">
+            <header>
+                <h3><span style="font-size:2rem">&#127809;</span> Device Asset Information System</h3>
+                <p> {{.userIcon}}&nbsp;Registration</p>
+            </header>
+            <div>
+
+                <fieldset class="vstack">
+                    <label for="username" data-field>
+                        User ID
+                        <input type="email"  id="username" name="username" 
+                            placeholder="Your email address" value="{{.user}}" 
+                            title="" autocomplete="email" 
+                            required minlength="6" maxlength="60" autofocus
+                            aria-label="User Identifier" aria-describedby="usernameErr" aria-invalid="false" />
+                        <span id="usernameErr" class="error" role="status">Enter a valid email address</span>
+                    </label>
                 </fieldset>
 
-                <fieldset id="enterPasscode" style="display:none">
-                    <label for="passcode">Passcode (valid for <span id="mins">15</span> minutes)</label>
-                    <input type="text" 
-                        id="passcode" name="passcode" disabled placeholder="passcode" value=""
-                        minlength="5" maxlength="20" required 
-                        aria-label="passcode"
-                        aria-describedby="passcode-helper" >
-                    <small id="passcode-helper">Enter the passcode emailed to you.</small>
+                <fieldset id="enterPasscode" class="vstack" style="display:none">
+                    <label for="passcode" data-field>
+                        Passcode (valid for <span id="mins">15</span> minutes)
+                        <input type="text" id="passcode" name="passcode" disabled 
+                            placeholder="passcode" title="" value=""
+                            required minlength="5" maxlength="25"
+                            aria-label="passcode" aria-describedby="passcodeErr" aria-invalid="false" >
+                        <span id="passcodeErr" class="error" role="status">Enter the passcode emailed to you.</span>
+                    </label>
                 </fieldset>
-                <footer>
-                    <button id="btnOkay" type='button' onclick="okayClick()">Okay</button>
-                </footer>
-            </section>
+
+            </div>
+            <footer class="hstack justify-end mt-4">
+                <button type='button' id="btnOkay" onclick="okayClick()" aria-busy="false">Okay</button>
+            </footer>
+            <blockquote>All Rights reserved.<br>For further information contact: webmaster@wknc.ca</blockquote>
         </form>
     </article>
 </main>
-<footer class="container">
-    <p>All Rights reserved.</p>
-    <p>For further information contact: webmaster@wknc.ca</p>
-</footer>
+
+
 <script src="js/index.es5.umd.min.js" defer></script>
 <script src="js/registration.js" defer></script>
-{{template "partials/bottom" .}}
+{{template "partials/bottom2" .}}

@@ -18,6 +18,11 @@ const msgs = {
   unknown: "An error occurred."
 };
 
+const UI = {
+    btn: () => document.getElementById("btn"),
+    nextpage: () =>  document.getElementById("nextpage")
+}
+
 /**
  * Use the 'load' event instead of 'DOMContentLoaded'.
  * This ensures all external scripts (like picoplus.js which defines 'toast')
@@ -31,8 +36,9 @@ window.addEventListener("load", initialize);
  * Wrapped in a named function so it can be called safely regardless of load state.
  */
 function initialize() {
-  const btn = document.getElementById("btn");
+  const btn = UI.btn(); // document.getElementById("btn");
   if (btn) {
+    btn.disabled = true;
     btn.setAttribute("aria-busy", "false"); //Hide spinner
     const geoString = sessionStorage.getItem('geo');
     if (geoString) {
@@ -48,14 +54,16 @@ function initialize() {
   }
 }
 
-
 // We store GEO in session storage so it can be used by the next few pages
 // which might be login or registration or home.
 // We may not have the user ID yet, so it cannot be stored in the DB yet
 // If last time we were here is within 15 mins, don't get the geo data again
 function doAccept() {
-  document.getElementById("btn").disabled = true;
-  document.getElementById("btn").setAttribute("aria-busy", "true"); //Show spinner
+  const btn = UI.btn(); // document.getElementById("btn");
+  if (btn) {
+    btn.disabled = true;
+    btn.setAttribute("aria-busy", "true"); //Show spinner
+  }
   const utcSec = Math.floor(new Date().getTime() / 1000);
   if (utcSec - geo.sec > 900) {  // if more than 5 minutes, refresh the geo data
     tryGeoBrowser();
@@ -64,13 +72,13 @@ function doAccept() {
   }
 }
 
-//Most accurate and must be this if user is geofenced
+// Most accurate and must be this if user is geofenced
 function tryGeoBrowser() {
     if (!navigator.geolocation) {
       geo.err = true;
-      ot.toast(msgs.support, "error", { variant: 'danger', placement: 'top-center' });
+      ot.toast(msgs.support, "Error", { variant: 'danger', placement: 'top-center' });
       console.error("Geolocation is not supported by this browser.");
-      setTimeout(tryGeoSource2, 111); //Try alternative to getting location
+      setTimeout(tryGeoSource2, 111); // Try alternative to getting location
       return;
     }
     // Geolocation is supported
@@ -142,7 +150,7 @@ function geoCheck() {
   geo.sec = Math.floor(now.getTime() / 1000);
   sessionStorage.setItem('geo', JSON.stringify(geo));
 
-  const pageField = document.getElementById("nextpage");
+  const pageField = UI.nextpage();
   const page = pageField?.value?.trim();
   if (!page) {
       return true;
