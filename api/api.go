@@ -34,6 +34,28 @@ type DiskInfo struct {
 	Localtime string  `json:"Localtime"` // Local time
 }
 
+type DriveHealth struct {
+	Name              string `json:"Name"`      // Name of the physical hard drive
+	DeviceID          string `json:"DeviceID"`  // physical hard drive identifier
+	DriveType         string `json:"DriveType"` // Type of hard drive
+	HealthStatus      string `json:"HealthStatus"`
+	OperationalStatus string `json:"OperationalStatus"`
+}
+
+type DriveLetterHealth struct {
+	DriveLetter       string `json:"DriveLetter"`
+	HealthStatus      string `json:"HealthStatus"`
+	OperationalStatus string `json:"OperationalStatus"`
+	FileSystem        string `json:"FileSystem"`
+}
+
+type PredictiveFailure struct {
+	Name             string `json:"Name"`
+	DeviceID         string `json:"DeviceID"`
+	PredictFailure   *bool  `json:"PredictFailure"`
+	ReasonForFailure string `json:"ReasonForFailure"`
+}
+
 type Wifi struct {
 	Ssid  string `json:"Ssid"`  // Service Set Identifier is the unique name of a Wi-Fi network that identifies it to users and devices
 	Bssid string `json:"Bssid"` // Basic Service Set Identifier is the unique physical address (MAC address) of a Wi-Fi access point
@@ -41,49 +63,52 @@ type Wifi struct {
 }
 
 type SysInfo struct {
-	Hostname                  string     `json:"Hostname"`
-	ApiKey                    string     `json:"ApiKey"`
-	SoftwareList              []string   `json:"SoftwareList"`
-	OS_Name                   string     `json:"OS_Name"`
-	OS_Version                string     `json:"OS_Version"`
-	OS_Manufacturer           string     `json:"OS_Manufacturer"`
-	OS_Configuration          string     `json:"OS_Configuration"`
-	OS_Build_Type             string     `json:"OS_Build_Type"`
-	Registered_Owner          string     `json:"Registered_Owner"`
-	Registered_Organization   string     `json:"Registered_Organization"`
-	Product_ID                string     `json:"Product_ID"`
-	Original_Install_Date     string     `json:"Original_Install_Date"`
-	System_Boot_Time          string     `json:"System_Boot_Time"`
-	System_Manufacturer       string     `json:"System_Manufacturer"`
-	System_Model              string     `json:"System_Model"`
-	System_Type               string     `json:"System_Type"`
-	Processors                string     `json:"Processors"`
-	BIOS_Version              string     `json:"BIOS_Version"`
-	Windows_Directory         string     `json:"Windows_Directory"`
-	System_Directory          string     `json:"System_Directory"`
-	Boot_Device               string     `json:"Boot_Device"`
-	System_Locale             string     `json:"System_Locale"`
-	Input_Locale              string     `json:"Input_Locale"`
-	Time_Zone                 string     `json:"Time_Zone"`
-	Total_Physical_Memory     string     `json:"Total_Physical_Memory"`
-	Available_Physical_Memory string     `json:"Available_Physical_Memory"`
-	Virtual_Memory_Max_Size   string     `json:"Virtual_Memory_Max_Size"`
-	Virtual_Memory_Available  string     `json:"Virtual_Memory_Available"`
-	Virtual_Memory_In_Use     string     `json:"Virtual_Memory_In_Use"`
-	Page_File_Locations       string     `json:"Page_File_Locations"`
-	Domain                    string     `json:"Domain"`
-	Logon_Server              string     `json:"Logon_Server"`
-	Hotfixs                   string     `json:"Hotfixs"`
-	Network_Cards             string     `json:"Network_Cards"`
-	HyperV_Requirements       string     `json:"HyperV_Requirements"`
-	Battery                   int        `json:"Battery"`
-	CpuName                   string     `json:"CpuName"`
-	Latitude                  float64    `json:"Latitude"`
-	Longitude                 float64    `json:"Longitude"`
-	IP_Address                string     `json:"Ip_Address"`
-	Mac_Addresses             []string   `json:"Mac_Addresses"`
-	WiFi_List                 []Wifi     `json:"Wifi_List"`
-	Disk_Info                 []DiskInfo `json:"Disk_Info"`
+	Hostname                  string              `json:"Hostname"`
+	ApiKey                    string              `json:"ApiKey"`
+	SoftwareList              []string            `json:"SoftwareList"`
+	OS_Name                   string              `json:"OS_Name"`
+	OS_Version                string              `json:"OS_Version"`
+	OS_Manufacturer           string              `json:"OS_Manufacturer"`
+	OS_Configuration          string              `json:"OS_Configuration"`
+	OS_Build_Type             string              `json:"OS_Build_Type"`
+	Registered_Owner          string              `json:"Registered_Owner"`
+	Registered_Organization   string              `json:"Registered_Organization"`
+	Product_ID                string              `json:"Product_ID"`
+	Original_Install_Date     string              `json:"Original_Install_Date"`
+	System_Boot_Time          string              `json:"System_Boot_Time"`
+	System_Manufacturer       string              `json:"System_Manufacturer"`
+	System_Model              string              `json:"System_Model"`
+	System_Type               string              `json:"System_Type"`
+	Processors                string              `json:"Processors"`
+	BIOS_Version              string              `json:"BIOS_Version"`
+	Windows_Directory         string              `json:"Windows_Directory"`
+	System_Directory          string              `json:"System_Directory"`
+	Boot_Device               string              `json:"Boot_Device"`
+	System_Locale             string              `json:"System_Locale"`
+	Input_Locale              string              `json:"Input_Locale"`
+	Time_Zone                 string              `json:"Time_Zone"`
+	Total_Physical_Memory     string              `json:"Total_Physical_Memory"`
+	Available_Physical_Memory string              `json:"Available_Physical_Memory"`
+	Virtual_Memory_Max_Size   string              `json:"Virtual_Memory_Max_Size"`
+	Virtual_Memory_Available  string              `json:"Virtual_Memory_Available"`
+	Virtual_Memory_In_Use     string              `json:"Virtual_Memory_In_Use"`
+	Page_File_Locations       string              `json:"Page_File_Locations"`
+	Domain                    string              `json:"Domain"`
+	Logon_Server              string              `json:"Logon_Server"`
+	Hotfixs                   string              `json:"Hotfixs"`
+	Network_Cards             string              `json:"Network_Cards"`
+	HyperV_Requirements       string              `json:"HyperV_Requirements"`
+	Battery                   int                 `json:"Battery"`
+	CpuName                   string              `json:"CpuName"`
+	Latitude                  float64             `json:"Latitude"`
+	Longitude                 float64             `json:"Longitude"`
+	IP_Address                string              `json:"Ip_Address"`
+	Mac_Addresses             []string            `json:"Mac_Addresses"`
+	WiFi_List                 []Wifi              `json:"Wifi_List"`
+	Disk_Info                 []DiskInfo          `json:"Disk_Info"`
+	Drive_Health              []DriveHealth       `json:"Drive_Health"`
+	Drive_Letter_Health       []DriveLetterHealth `json:"Drive_Letter_Health"`
+	Predictive_Failures       []PredictiveFailure `json:"Predictive_Failures"`
 }
 
 func addSoftwareList(cid int, sysInfo *SysInfo) error {
@@ -357,13 +382,7 @@ func recordDeviceLocation(cid int, sysInfo *SysInfo) {
 	wg.Add(1)
 	go cities.GetCommunity(curSinLat, curCosLat, curCosLon, curSinLon, &dto2, &wg)
 	wg.Wait()
-
-	//	dto.City = dto1.City
 	dto.City_id = dto1.City_id
-	//	dto.State = dto1.State
-	//	dto.Country = dto1.Country_code
-	//	dto.Country_code = dto1.Country_code
-	//	dto.Community = dto2.Community
 	dto.Community_id = dto2.Community_id
 
 	query := `

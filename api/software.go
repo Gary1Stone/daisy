@@ -74,5 +74,26 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}
 
+	// Add the drive health Information
+	err = setDriveHealth(cid, sysInfo.Drive_Health)
+	if err != nil {
+		log.Println("API: Failure adding health information", err)
+		return c.Status(fiber.StatusOK).SendString(resp)
+	}
+
+	// Add the drive letter health Information
+	err = setLetterHealth(cid, sysInfo.Drive_Letter_Health)
+	if err != nil {
+		log.Println("API: Failure adding drive letter health information", err)
+		return c.Status(fiber.StatusOK).SendString(resp)
+	}
+
+	// Add the drive Predictive Failure Information
+	err = setPredictiveFailure(cid, sysInfo.Predictive_Failures)
+	if err != nil {
+		log.Println("API: Failure adding drive letter health information", err)
+		return c.Status(fiber.StatusOK).SendString(resp)
+	}
+
 	return c.Status(fiber.StatusOK).SendString("Okay")
 }

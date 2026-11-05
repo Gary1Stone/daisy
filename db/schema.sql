@@ -165,6 +165,60 @@ CREATE TABLE device_mac (id INTEGER NOT NULL UNIQUE, cid INTEGER, mac TEXT NOT N
 
 CREATE TABLE devices (cid INTEGER NOT NULL UNIQUE, name TEXT NOT NULL UNIQUE COLLATE NOCASE, type TEXT NOT NULL DEFAULT 'DESKTOP' COLLATE NOCASE, kind TEXT NOT NULL DEFAULT "", parent INTEGER REFERENCES devices (cid), site TEXT NOT NULL, office TEXT NOT NULL, location TEXT NOT NULL, year INTEGER NOT NULL, make TEXT NOT NULL, model TEXT NOT NULL, cpu TEXT NOT NULL, ram INTEGER NOT NULL, drivetype TEXT NOT NULL, drivesize INTEGER NOT NULL, cd INTEGER NOT NULL, notes TEXT NOT NULL, cores INTEGER NOT NULL, gpu TEXT NOT NULL, wifi INTEGER NOT NULL DEFAULT 0, ethernet INTEGER NOT NULL DEFAULT 0, usb INTEGER NOT NULL DEFAULT 0, uid INTEGER, active INTEGER NOT NULL DEFAULT 1, last_updated_by INTEGER, last_updated_time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')), image TEXT NOT NULL, color TEXT NOT NULL, speed NUMERIC NOT NULL, status NUMERIC NOT NULL DEFAULT 'WORKING', os TEXT NOT NULL, serial_number TEXT NOT NULL, gid INTEGER NOT NULL DEFAULT 0, old_name BLOB NOT NULL, os_name TEXT, os_version TEXT, os_manufacturer TEXT, os_configuration TEXT, os_build_type TEXT, registered_owner TEXT, registered_organization TEXT, product_id TEXT, original_install_date TEXT, system_boot_time TEXT, system_manufacturer TEXT, system_model TEXT, system_type TEXT, processors TEXT, bios_version TEXT, windows_directory TEXT, system_directory TEXT, boot_device TEXT, system_locale TEXT, input_locale TEXT, time_zone TEXT, total_physical_memory TEXT, available_physical_memory TEXT, virtual_memory_max_size TEXT, virtual_memory_available TEXT, virtual_memory_in_use TEXT, page_file_locations TEXT, domain TEXT, logon_server TEXT, hotfixs TEXT, network_cards TEXT, hyperv_requirements TEXT, battery INTEGER, last_audit INTEGER NOT NULL DEFAULT (0), last_seen INTEGER DEFAULT (0) NOT NULL, PRIMARY KEY (cid AUTOINCREMENT), FOREIGN KEY (last_updated_by) REFERENCES profiles (uid) ON DELETE SET NULL ON UPDATE CASCADE, FOREIGN KEY (uid) REFERENCES profiles (uid) ON DELETE SET NULL ON UPDATE CASCADE);
 
+CREATE TABLE disk_health (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp         INTEGER NOT NULL
+                              DEFAULT (strftime('%s', 'now') ),
+    cid               INTEGER REFERENCES devices (cid) ON DELETE CASCADE
+                                                       ON UPDATE CASCADE
+                                                       MATCH SIMPLE,
+    name              TEXT    NOT NULL
+                              DEFAULT "",
+    deviceid          TEXT    NOT NULL
+                              DEFAULT "",
+    drivetype         TEXT    NOT NULL
+                              DEFAULT "",
+    healthstatus      TEXT    NOT NULL
+                              DEFAULT "",
+    operationalstatus TEXT    NOT NULL
+                              DEFAULT ""
+)
+STRICT;
+
+CREATE TABLE disk_letter_health (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp         INTEGER DEFAULT (strftime('%s', 'now') ) 
+                              NOT NULL,
+    cid               INTEGER REFERENCES devices (cid) ON DELETE CASCADE
+                                                       ON UPDATE CASCADE
+                                                       MATCH SIMPLE,
+    driveletter       TEXT    NOT NULL
+                              DEFAULT "",
+    healthstatus      TEXT    NOT NULL
+                              DEFAULT "",
+    operationalstatus TEXT    NOT NULL
+                              DEFAULT ""
+)
+STRICT;
+
+CREATE TABLE disk_predictive_failure (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp        INTEGER NOT NULL
+                             DEFAULT (strftime('%s', 'now') ),
+    cid              INTEGER REFERENCES devices (cid) ON DELETE CASCADE
+                                                      ON UPDATE CASCADE
+                                                      MATCH SIMPLE,
+    name             TEXT    NOT NULL
+                             DEFAULT "",
+    deviceid         TEXT    NOT NULL
+                             DEFAULT "",
+    predictfailure   INTEGER NOT NULL
+                             DEFAULT (0),
+    reasonforfailure TEXT    NOT NULL
+                             DEFAULT ""
+)
+STRICT;
+
 CREATE TABLE disks (id INTEGER PRIMARY KEY NOT NULL UNIQUE, cid INTEGER REFERENCES devices (cid) ON DELETE SET NULL ON UPDATE CASCADE MATCH SIMPLE, drive TEXT NOT NULL DEFAULT "", total INTEGER NOT NULL DEFAULT (0), free INTEGER NOT NULL DEFAULT (0), used INTEGER NOT NULL DEFAULT (0), fill REAL NOT NULL DEFAULT (0), timestamp INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))) STRICT;
 
 CREATE TABLE "droplists" (
