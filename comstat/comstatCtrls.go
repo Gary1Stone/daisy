@@ -139,3 +139,100 @@ func ComstatTable(uid, tzoff int) string {
 	return table.String()
 
 }
+
+func ComstatBoxes(uid, tzoff int) string {
+	var box strings.Builder
+
+	//	BEGININGOFTIME := "1969-12-31"
+
+	auditLate, err := strconv.Atoi(os.Getenv("AUDIT_LATE"))
+	if err != nil {
+		auditLate = 28
+	}
+
+	seenLate, err := strconv.Atoi(os.Getenv("LAST_SEEN_LATE"))
+	if err != nil {
+		seenLate = 90
+	}
+
+	fileLate, err := strconv.Atoi(os.Getenv("BACKUP_FILE_LATE"))
+	if err != nil {
+		fileLate = 28
+	}
+	systemLate, err := strconv.Atoi(os.Getenv("BACKUP_SYSTEM_LATE"))
+	if err != nil {
+		systemLate = 180
+	}
+	diskLate, err := strconv.Atoi(os.Getenv("BACKUP_DISK_LATE"))
+	if err != nil {
+		diskLate = 180
+	}
+	//Icon, Computer name, kind, status
+
+	var com Comstat
+	items, err := com.getComstat(tzoff)
+	if err != nil {
+		log.Println(err)
+		return err.Error()
+	}
+
+	for _, item := range items {
+
+		audit := "🟢"
+		if auditLate > 0 && item.AuditDays > auditLate {
+			audit = "🔴"
+		}
+		seen := "🟢"
+		if seenLate > 0 && item.SeenDays > seenLate {
+			seen = "🔴"
+		}
+
+		iconColor := "black"
+		if item.IsBroken {
+			iconColor = "red"
+		}
+
+		online := "🟢"
+		// if item.isOnline {
+		// 	online = "🔴"
+		// }
+
+		box.WriteString("<div class='box'>")
+		fmt.Fprintf(&box, `<p><span style="color:%s;">%s</span> %s %s %s </p>`, iconColor, icons.GetIcon(item.Icon), item.Name, item.Type, online)
+		fmt.Fprintf(&box, `<p>Audit: %s %d days</p>`, audit, item.AuditDays)
+		fmt.Fprintf(&box, `<p>Seen: %s %d days</p>`, seen, item.SeenDays)
+
+		colourFile := "🟢"
+		if item.FileDays > fileLate {
+			colourFile = "🔴"
+		}
+		colourSystem := "🟢"
+		if item.SystemDays > systemLate {
+			colourSystem = "🔴"
+		}
+		colourDisk := "🟢"
+		if item.DiskDays > diskLate {
+			colourDisk = "🔴"
+		}
+
+		fmt.Fprintf(&box, `<p>Backups: File: %s %d days<br>`, colourFile, item.FileDays)
+		fmt.Fprintf(&box, `System: %s %d days<br>`, colourSystem, item.SystemDays)
+		fmt.Fprintf(&box, `Disk: %s %d days</p>`, colourDisk, item.DiskDays)
+
+		c := 0
+		for _, disk := range item.DisksInfo {
+			if c > 0 {
+				box.WriteString("<br>")
+			}
+			c++
+			fill := strconv.Itoa(int(disk.Fill))
+			freeGB := float64(disk.Free) / 1024.0
+			totalGB := float64(disk.Total) / 1024.0
+			details := fmt.Sprintf("%.0f GB free of %.0f GB", freeGB, totalGB)
+			fmt.Fprintf(&box, `<span title="%s">%s %s%% <meter value="%s" min="0" max="100" low="70" high="90" optimum="0"></meter></span>`, details, disk.Drive, fill, fill)
+		}
+		box.WriteString("</div>")
+	}
+
+	return box.String()
+}
