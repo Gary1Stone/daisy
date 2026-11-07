@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gbsto/daisy/actions"
-	"github.com/gbsto/daisy/dashboards"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
 	"github.com/gbsto/daisy/icons"
@@ -14,7 +13,7 @@ import (
 )
 
 func GetDashboardReport() string {
-	var d dashboards.DashInfo
+	var d DashInfo
 	items := d.GetDashboard()
 	var report strings.Builder
 	report.WriteString(`<table class='striped' id="dashboardTable">
@@ -32,7 +31,7 @@ func GetDashboardReport() string {
 	for _, item := range items {
 		pendingAction := "0"
 		if item.PendingAction > 0 {
-			pendingAction = fmt.Sprintf(`<a href="#" onclick="getReport('ISSUES_REPORT', '%s');">%d</a>", item.Type, item.PendingAction'`, item.Type, item.PendingAction)
+			pendingAction = fmt.Sprintf(`<a href="#" onclick="getReport('ISSUES_REPORT', '%s');">%d</a>`, item.Type, item.PendingAction)
 		}
 		fmt.Fprintf(&report, `<tr><td><a href="#" onclick="getReport('DEVICES_REPORT', '%s');">%s %s</a></td>`, item.Type, icons.GetIcon(item.Icon), item.Label)
 		fmt.Fprintf(&report, `<td>%d</td><td>%d</td><td>%s</td><td>%d</td></tr>`, item.Count, item.Unavailable, pendingAction, item.Instorage)
@@ -41,26 +40,26 @@ func GetDashboardReport() string {
 	return report.String()
 }
 
-func getDeviceCounts() string {
-	var d dashboards.DashInfo
-	items := d.GetDashboard()
-	var report strings.Builder
-	report.WriteString(`<table class='striped' id="dash_table">
-    <thead>
-    <tr>
-        <th aria-sort="ascending" data-sort="asc">Device</th>
-        <th aria-sort="none">Quantity</th>
-        <th aria-sort="none">Issues</th>
-        <th aria-sort="none">Storage</th>
-    </tr>
-    </thead>
-    <tbody>`)
-	for _, item := range items {
-		fmt.Fprintf(&report, `<tr><td>%s %s</td><td>%d</td><td>%d</td><td>%d</td></tr>`, icons.GetIcon(item.Icon), item.Label, item.Count, item.PendingAction, item.Instorage)
-	}
-	report.WriteString("</tbody></table>")
-	return report.String()
-}
+// func getDeviceCounts() string {
+// 	var d dashboard.DashInfo
+// 	items := d.GetDashboard()
+// 	var report strings.Builder
+// 	report.WriteString(`<table class='striped' id="dash_table">
+//     <thead>
+//     <tr>
+//         <th aria-sort="ascending" data-sort="asc">Device</th>
+//         <th aria-sort="none">Quantity</th>
+//         <th aria-sort="none">Issues</th>
+//         <th aria-sort="none">Storage</th>
+//     </tr>
+//     </thead>
+//     <tbody>`)
+// 	for _, item := range items {
+// 		fmt.Fprintf(&report, `<tr><td>%s %s</td><td>%d</td><td>%d</td><td>%d</td></tr>`, icons.GetIcon(item.Icon), item.Label, item.Count, item.PendingAction, item.Instorage)
+// 	}
+// 	report.WriteString("</tbody></table>")
+// 	return report.String()
+// }
 
 /*
  * Issues Report

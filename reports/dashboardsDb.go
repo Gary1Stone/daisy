@@ -1,4 +1,4 @@
-package dashboards
+package reports
 
 import (
 	"database/sql"

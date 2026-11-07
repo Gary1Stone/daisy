@@ -6,9 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
-	"github.com/gbsto/daisy/api"
 	"github.com/gbsto/daisy/backups"
 	"github.com/gbsto/daisy/db"
 	"github.com/gbsto/daisy/devices"
@@ -98,41 +96,41 @@ func NetworkGaps() string {
 	return report.String()
 }
 
-func lastSeenDevices(curUid int, devInfo map[int]devices.DevicesMeta) string {
-	var report strings.Builder
-	report.WriteString(`<table class='striped' id='last_table' >
-		<thead>
-		<tr>
-		<th aria-sort="ascending" data-sort="asc">Device</th>
-		<th aria-sort="none">Last Seen</th>
-		</tr>
-		</thead>
-		<tbody>`)
+// func lastSeenDevices(curUid int, devInfo map[int]devices.DevicesMeta) string {
+// 	var report strings.Builder
+// 	report.WriteString(`<table class='striped' id='last_table' >
+// 		<thead>
+// 		<tr>
+// 		<th aria-sort="ascending" data-sort="asc">Device</th>
+// 		<th aria-sort="none">Last Seen</th>
+// 		</tr>
+// 		</thead>
+// 		<tbody>`)
 
-	seenLate, err := strconv.Atoi(os.Getenv("LAST_SEEN_LATE"))
-	if err != nil {
-		seenLate = 90
-	}
+// 	seenLate, err := strconv.Atoi(os.Getenv("LAST_SEEN_LATE"))
+// 	if err != nil {
+// 		seenLate = 90
+// 	}
 
-	items, err := getLastSeenDevices(curUid)
-	if err != nil {
-		log.Println(err)
-		report.WriteString(`</tbody></table>`)
-		return report.String()
-	}
-	for _, item := range items {
-		colour := "green"
-		if item.Days > seenLate {
-			colour = "red"
-		}
-		// Column 1 - Device
-		fmt.Fprintf(&report, `<tr><td><a href='device.html?cid=%d' title='%s %s' ><span class='%s icon'></span>&nbsp;%s</a></td>`, item.Cid, item.Make, item.Model, devInfo[item.Cid].Icon, item.Name)
-		// Column 2 - Last seen date
-		fmt.Fprintf(&report, `<td><span style='color:%s;' title='%d days ago'>%s</span></td></tr>`, colour, item.Days, item.LastSeen)
-	}
-	fmt.Fprintf(&report, "</tbody></table>")
-	return report.String()
-}
+// 	items, err := getLastSeenDevices(curUid)
+// 	if err != nil {
+// 		log.Println(err)
+// 		report.WriteString(`</tbody></table>`)
+// 		return report.String()
+// 	}
+// 	for _, item := range items {
+// 		colour := "green"
+// 		if item.Days > seenLate {
+// 			colour = "red"
+// 		}
+// 		// Column 1 - Device
+// 		fmt.Fprintf(&report, `<tr><td><a href='device.html?cid=%d' title='%s %s' ><span class='%s icon'></span>&nbsp;%s</a></td>`, item.Cid, item.Make, item.Model, devInfo[item.Cid].Icon, item.Name)
+// 		// Column 2 - Last seen date
+// 		fmt.Fprintf(&report, `<td><span style='color:%s;' title='%d days ago'>%s</span></td></tr>`, colour, item.Days, item.LastSeen)
+// 	}
+// 	fmt.Fprintf(&report, "</tbody></table>")
+// 	return report.String()
+// }
 
 func Checkins(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	var report strings.Builder
@@ -241,51 +239,51 @@ func Backups(curUid int, devInfo map[int]devices.DevicesMeta) string {
 	return report.String()
 }
 
-func drivespace(curUid int, devInfo map[int]devices.DevicesMeta) string {
-	var report strings.Builder
-	report.WriteString(`<table class='striped' id='drive_table'>
-		<thead>
-		<tr>
-		<th>Device</th>
-		<th>Drive Space</th>
-		<th>Date</th>
-		</tr>
-		</thead>
-		<tbody>`)
+// func drivespace(curUid int, devInfo map[int]devices.DevicesMeta) string {
+// 	var report strings.Builder
+// 	report.WriteString(`<table class='striped' id='drive_table'>
+// 		<thead>
+// 		<tr>
+// 		<th>Device</th>
+// 		<th>Drive Space</th>
+// 		<th>Date</th>
+// 		</tr>
+// 		</thead>
+// 		<tbody>`)
 
-	// Get the latest drive space info
-	items, err := api.GetDiskInfo(curUid, -1)
-	if err != nil {
-		log.Println(err)
-		report.WriteString("</tbody></table>")
-		return report.String()
-	}
+// 	// Get the latest drive space info
+// 	items, err := api.GetDiskInfo(curUid, -1)
+// 	if err != nil {
+// 		log.Println(err)
+// 		report.WriteString("</tbody></table>")
+// 		return report.String()
+// 	}
 
-	for _, item := range items {
-		// Skip if devInfo for the cid does not exists in the MAP
-		dev, ok := devInfo[item.Cid]
-		if !ok {
-			continue
-		}
-		// Calculate drive space
-		fill := strconv.Itoa(int(item.Fill))
-		freeGB := float64(item.Free) / 1024.0
-		totalGB := float64(item.Total) / 1024.0
-		details := fmt.Sprintf("%.0f GB free of %.0f GB", freeGB, totalGB)
-		// Get days difference between timestamp and now
-		now := time.Now().UTC()
-		days := int(now.Sub(time.Unix(int64(item.Timestamp), 0)).Hours() / 24)
-		colour := "green"
-		if days > 7 {
-			colour = "red"
-		}
-		// Column 1 - link to device record
-		fmt.Fprintf(&report, `<tr><td><a href="device.html?cid=%d" title="%s %s" ><span class="%s icon"></span>&nbsp;%s </a></td>`, item.Cid, dev.Make, dev.Model, dev.Icon, dev.Name)
-		// Column 2 - meter bar
-		fmt.Fprintf(&report, `<td><span title="%s">%s <meter value="%s" min="0" max="100" low="70" high="90" optimum="0"></meter> %s%%</span></td>`, details, item.Drive, fill, fill)
-		// Column 3 - date of last reading
-		fmt.Fprintf(&report, `<td><span style="color:%s;" title="%d days ago">%s</span></td></tr>`, colour, days, item.Localtime)
-	}
-	fmt.Fprintf(&report, `</tbody></table>`)
-	return report.String()
-}
+// 	for _, item := range items {
+// 		// Skip if devInfo for the cid does not exists in the MAP
+// 		dev, ok := devInfo[item.Cid]
+// 		if !ok {
+// 			continue
+// 		}
+// 		// Calculate drive space
+// 		fill := strconv.Itoa(int(item.Fill))
+// 		freeGB := float64(item.Free) / 1024.0
+// 		totalGB := float64(item.Total) / 1024.0
+// 		details := fmt.Sprintf("%.0f GB free of %.0f GB", freeGB, totalGB)
+// 		// Get days difference between timestamp and now
+// 		now := time.Now().UTC()
+// 		days := int(now.Sub(time.Unix(int64(item.Timestamp), 0)).Hours() / 24)
+// 		colour := "green"
+// 		if days > 7 {
+// 			colour = "red"
+// 		}
+// 		// Column 1 - link to device record
+// 		fmt.Fprintf(&report, `<tr><td><a href="device.html?cid=%d" title="%s %s" ><span class="%s icon"></span>&nbsp;%s </a></td>`, item.Cid, dev.Make, dev.Model, dev.Icon, dev.Name)
+// 		// Column 2 - meter bar
+// 		fmt.Fprintf(&report, `<td><span title="%s">%s <meter value="%s" min="0" max="100" low="70" high="90" optimum="0"></meter> %s%%</span></td>`, details, item.Drive, fill, fill)
+// 		// Column 3 - date of last reading
+// 		fmt.Fprintf(&report, `<td><span style="color:%s;" title="%d days ago">%s</span></td></tr>`, colour, days, item.Localtime)
+// 	}
+// 	fmt.Fprintf(&report, `</tbody></table>`)
+// 	return report.String()
+// }

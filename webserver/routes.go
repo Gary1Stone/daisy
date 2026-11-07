@@ -76,4 +76,5 @@ func routes(app *fiber.App) {
 	app.Post("/devmacs/getdevicelist", checkToken, cmd.PostGetDeviceList)
 	app.Post("/devmacs/associates", checkToken, cmd.PostGetAssociations)
 	app.Post("/devmacs/associated", checkToken, cmd.PostMakeAssociation)
+	app.Get("/dashboard.html", checkToken, cmd.GetDashboard)
 }

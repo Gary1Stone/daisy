@@ -111,38 +111,38 @@ type LastSeen struct {
 
 // Find all devices that never checked in
 // or have not checked in with the last 90 days
-func getLastSeenDevices(curUid int) ([]LastSeen, error) {
-	tzoff := db.GetTzoff(curUid)
-	items := make([]LastSeen, 0)
-	query := `
-	SELECT D.cid, D.name, D.type, D.image, coalesce(cast((strftime('%s', 'now') - D.last_seen) / 86400 AS INTEGER), 0) AS days,
-	coalesce(strftime('%Y-%m-%d', D.last_seen-?, 'unixepoch'), 'never') AS last_seen, coalesce(C.description, '') AS make, D.model
-	FROM devices D
-	LEFT JOIN choices C ON  C.code=D.make AND C.field='MAKE'
-	WHERE D.active=1
-	ORDER BY days desc
-	`
-	rows, err := db.Conn.Query(query, tzoff)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-		return items, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var item LastSeen
-		err := rows.Scan(&item.Cid, &item.Name, &item.Type, &item.Image, &item.Days, &item.LastSeen, &item.Make, &item.Model)
-		if err != nil {
-			log.Println(err)
-		} else {
-			items = append(items, item)
-		}
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Println(err)
-	}
-	return items, err
-}
+// func getLastSeenDevices(curUid int) ([]LastSeen, error) {
+// 	tzoff := db.GetTzoff(curUid)
+// 	items := make([]LastSeen, 0)
+// 	query := `
+// 	SELECT D.cid, D.name, D.type, D.image, coalesce(cast((strftime('%s', 'now') - D.last_seen) / 86400 AS INTEGER), 0) AS days,
+// 	coalesce(strftime('%Y-%m-%d', D.last_seen-?, 'unixepoch'), 'never') AS last_seen, coalesce(C.description, '') AS make, D.model
+// 	FROM devices D
+// 	LEFT JOIN choices C ON  C.code=D.make AND C.field='MAKE'
+// 	WHERE D.active=1
+// 	ORDER BY days desc
+// 	`
+// 	rows, err := db.Conn.Query(query, tzoff)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		log.Println(err)
+// 		return items, err
+// 	}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		var item LastSeen
+// 		err := rows.Scan(&item.Cid, &item.Name, &item.Type, &item.Image, &item.Days, &item.LastSeen, &item.Make, &item.Model)
+// 		if err != nil {
+// 			log.Println(err)
+// 		} else {
+// 			items = append(items, item)
+// 		}
+// 	}
+// 	err = rows.Err()
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	return items, err
+// }
 
 type Gaps struct {
 	Cid       int

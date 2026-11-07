@@ -4,6 +4,7 @@ go 1.26.1
 
 require (
 	github.com/disintegration/imaging v1.6.2
+	github.com/gertd/go-pluralize v0.2.1
 	github.com/go-webauthn/webauthn v0.16.1
 	github.com/gofiber/fiber/v2 v2.52.12
 	github.com/gofiber/helmet/v2 v2.2.26

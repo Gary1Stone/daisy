@@ -185,21 +185,7 @@ CREATE TABLE disk_health (
 )
 STRICT;
 
-CREATE TABLE disk_letter_health (
-    id                INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp         INTEGER DEFAULT (strftime('%s', 'now') ) 
-                              NOT NULL,
-    cid               INTEGER REFERENCES devices (cid) ON DELETE CASCADE
-                                                       ON UPDATE CASCADE
-                                                       MATCH SIMPLE,
-    driveletter       TEXT    NOT NULL
-                              DEFAULT "",
-    healthstatus      TEXT    NOT NULL
-                              DEFAULT "",
-    operationalstatus TEXT    NOT NULL
-                              DEFAULT ""
-)
-STRICT;
+CREATE TABLE disk_letter_health (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp INTEGER DEFAULT (strftime('%s', 'now')) NOT NULL, cid INTEGER REFERENCES devices (cid) ON DELETE CASCADE ON UPDATE CASCADE MATCH SIMPLE, driveletter TEXT NOT NULL DEFAULT "", healthstatus TEXT NOT NULL DEFAULT "", operationalstatus TEXT NOT NULL DEFAULT "", filesystem TEXT NOT NULL DEFAULT "") STRICT;
 
 CREATE TABLE disk_predictive_failure (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,

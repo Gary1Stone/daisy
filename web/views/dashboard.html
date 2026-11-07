@@ -1,0 +1,239 @@
+{{template "partials/top2" .}}{{template "partials/navbar2" .}}
+<main class="container">
+    {{.kpis}}
+    <div class="row">
+        <div class="col-12">
+            <article class="card">
+                <header>
+                    <h3>WKNC Network KPIs</h3>
+                    <p>4003 devices</p>
+                </header>
+                <span class="badge" data-variant="success">30 Total Devices in Inventory</span>
+                <span class="badge" data-variant="success">17 Online, (12 known, 5 unknown, 7 Mobile)</span>
+                <span class="badge" data-variant="warning">11 Offline</span>
+                <span class="badge" data-variant="danger">1 Failing Drive</span>
+                <span class="badge" data-variant="warning">21 Late Backups</span>
+            </article>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <article class="card">
+                <header>
+                    <h3>Core Infrastructure</h3>
+                    <p>7 devices</p>
+                </header>
+                <span class="badge" data-variant="success" title="online">NET-12 Router 🟢</span>
+                <span class="badge" data-variant="success" title="online">NET-17 Switch 🟢</span>
+                <span class="badge" data-variant="warning" title="online">NET-11 Router 🟢</span>
+                <span class="badge" data-variant="danger" title="online">LAPTOPS Server 🟢</span>
+                <span class="badge" data-variant="warning" title="online">NET-32 Router 🟢</span>
+            </article>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <article class="card">
+                <header>
+                    <h3>Servers</h3>
+                    <p>1 device</p>
+                </header>
+                <span class="badge" data-variant="danger" title="online">LAPTOPS Server 🟢</span>
+            </article>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <article class="card">
+                <header>
+                    <h3>Desktops</h3>
+                    <p>9 device</p>
+                </header>
+                <span class="badge" data-variant="danger" title="online">LAPTOPS Server 🟢</span>
+            </article>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <article class="card">
+                <header>
+                    <h3>Laptops</h3>
+                    <p>7 device</p>
+                </header>
+                <span class="badge" data-variant="danger" title="online">LAPTOPS Server 🟢</span>
+            </article>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-4">
+            <article class="card">
+                <header>
+                    <h3>LAPTOPS (Online:🟢)</h3>
+                </header>
+                <div>
+                    <table><thead><tr><th>Drives</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                        <td>C:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="15">15%</meter> 🟢 (healthy) </td>
+                    </tr><tr>
+                        <td>D:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="75">75%</meter> 🟢 (healthy) </td>
+                    </tr><tr>
+                        <td>E:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="55">75%</meter> 🟡 (Danger) </td>
+                    </tr>
+                    </tbody></table> 
+                    
+                    <table><thead><tr><th>Backups</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                        <td>Files:</td>
+                        <td>🟢 48 hrs ago</td>
+                    </tr><tr>
+                        <td>System:</td>
+                        <td>🔴 21 days ago</td>
+                    </tr><tr>
+                        <td>Drive:</td>
+                        <td>🟢 187 days ago</td>
+                    </tr>
+                    </tbody></table>
+                </div>
+            </article>
+        </div>
+        
+        <div class="col-4">another</div>
+        <div class="col-4">and another</div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-12">
+            <p>DESKTOP Health Matrix Grid</p>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4">
+            <article class="card">
+                <header>
+                    <h3>WKNC-12 (Online:🟢)</h3>
+                </header>
+                    <table><thead><tr><th>Drives</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                        <td>C:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="15">15%</meter> 🟢 (healthy) </td>
+                    </tr><tr>
+                        <td>D:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="75">75%</meter> 🟢 (healthy) </td>
+                    </tr><tr>
+                        <td>E:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="55">75%</meter> 🟡 (Danger) </td>
+                    </tr>
+                    </tbody></table> 
+                    
+                    <table><thead><tr><th>Backups</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                        <td>Files:</td>
+                        <td>🟢 48 hrs ago</td>
+                    </tr><tr>
+                        <td>System:</td>
+                        <td>🔴 21 days ago</td>
+                    </tr><tr>
+                        <td>Drive:</td>
+                        <td>🟢 187 days ago</td>
+                    </tr>
+                    </tbody></table>
+            </article>
+        </div>
+        <div class="col-4">
+            
+            <article class="card">
+                <header>
+                    <h3>WKNC-45 (Online:🟢)</h3>
+                </header>
+                    <table><thead><tr><th>Drives</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                        <td>C:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="15">15%</meter> 🟢 (healthy) </td>
+                    </tr><tr>
+                        <td>D:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="75">75%</meter> 🟢 (healthy) </td>
+                    </tr><tr>
+                        <td>E:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="55">75%</meter> 🟡 (Danger) </td>
+                    </tr>
+                    </tbody></table> 
+                    
+                    <table><thead><tr><th>Backups</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                        <td>Files:</td>
+                        <td>🟢 48 hrs ago</td>
+                    </tr><tr>
+                        <td>System:</td>
+                        <td>🔴 21 days ago</td>
+                    </tr><tr>
+                        <td>Drive:</td>
+                        <td>🟢 187 days ago</td>
+                    </tr>
+                    </tbody></table>
+            </article>
+        </div>
+        <div class="col-4">
+            
+            <article class="card">
+                <header>
+                    <h3>WKNC-12 (Offline: 🔴 12 Days Ago)</h3>
+                </header>
+                    <table><thead><tr><th>Drives</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                        <td>C:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="15">15%</meter> 🟢 (healthy) </td>
+                    </tr><tr>
+                        <td>D:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="75">75%</meter> 🟢 (healthy) </td>
+                    </tr><tr>
+                        <td>E:</td>
+                        <td><meter min="0" max="100" low="20" high="80"  optimum="90"  value="55">75%</meter> 🟡 (Danger) </td>
+                    </tr>
+                    </tbody></table> 
+                    
+                    <table><thead><tr><th>Backups</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                        <td>Files:</td>
+                        <td>🟢 48 hrs ago</td>
+                    </tr><tr>
+                        <td>System:</td>
+                        <td>🔴 21 days ago</td>
+                    </tr><tr>
+                        <td>Drive:</td>
+                        <td>🟢 187 days ago</td>
+                    </tr>
+                    </tbody></table>
+            </article>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            Laptops Health Matrix Grid
+            <hr>
+        </div>
+    </div>
+    
+    
+    <div class="row">
+        <div class="col-12">
+            Printers<hr>
+        </div>
+    </div>
+
+
+</main>
+{{template "partials/bottom2" .}}
