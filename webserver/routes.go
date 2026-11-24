@@ -44,6 +44,7 @@ func routes(app *fiber.App) {
 	app.Post("/api/passkey/registerFinish", passkey.FinishRegistration)
 	app.Post("/api/passkey/loginStart", passkey.BeginLogin)
 	app.Post("/api/passkey/loginFinish", passkey.FinishLogin)
+	app.Post("/api/taps", api.PostTapsApi)
 	app.Get("/ticket.html", checkToken, cmd.GetTicket)
 	app.Post("/ticket", checkToken, cmd.PostTicket)
 	app.Get("/tickets.html", checkToken, cmd.GetTickets)
