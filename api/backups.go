@@ -38,7 +38,7 @@ func PostBackupsApi(c *fiber.Ctx) error {
 	var b backups.BackupInfo
 	err := b.SaveBackups(back.Backups, back.Source)
 	if err != nil {
-		log.Println("API: Failure adding software", err)
+		log.Println("API: Failure adding backups", err)
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}
 
