@@ -21,7 +21,7 @@ func PostOnlineApi(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key
-	if request.ApiKey != os.Getenv("ONLINE_API_KEY") {
+	if request.ApiKey != os.Getenv("ISAW_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusUnauthorized).SendString(response)
 	}

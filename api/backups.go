@@ -2,6 +2,7 @@ package api
 
 import (
 	"log"
+	"os"
 
 	"github.com/gbsto/daisy/backups"
 	"github.com/gofiber/fiber/v2"
@@ -23,7 +24,7 @@ func PostBackupsApi(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key
-	if back.ApiKey != "Barbara_Anne_Little_Stone" {
+	if back.ApiKey != os.Getenv("ISAW_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}

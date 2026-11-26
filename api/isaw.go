@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/gbsto/daisy/choices"
 	"github.com/gbsto/daisy/emails"
@@ -27,7 +28,7 @@ func PostiSawApi(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key
-	if request.ApiKey != "it was a dark and stormy night" {
+	if request.ApiKey != os.Getenv("ISAW_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusOK).SendString(response)
 	}

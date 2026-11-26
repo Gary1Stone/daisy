@@ -2,6 +2,7 @@ package api
 
 import (
 	"log"
+	"os"
 
 	"github.com/gbsto/daisy/devices"
 	"github.com/gofiber/fiber/v2"
@@ -16,7 +17,7 @@ func PostPingApi(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key
-	if pingInfo.ApiKey != "its_me_mario" {
+	if pingInfo.ApiKey != os.Getenv("ISAW_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}

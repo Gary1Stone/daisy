@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/gbsto/daisy/db"
@@ -31,7 +32,7 @@ func PostM30Api(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key TODO: move to .env or use the master key
-	if msg.ApiKey != "itwasafuntrip2machiupicchu" {
+	if msg.ApiKey != os.Getenv("ISAW_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusBadRequest).SendString("Bad API key")
 	}

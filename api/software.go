@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	"github.com/gbsto/daisy/devices"
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +18,7 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key
-	if sysInfo.ApiKey != "3278328732ty8y80987301ye689621emncnkj" {
+	if sysInfo.ApiKey != os.Getenv("ISAW_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}
