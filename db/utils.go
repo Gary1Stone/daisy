@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"html"
 	"log"
 	"math"
 	"os"
@@ -71,14 +72,23 @@ func WrapSearchTerm(str string) string {
 	return "%" + str + "%"
 }
 
-// func getSqlVersion() string {
-// 	var version string
-// 	err := Conn.QueryRow("SELECT sqlite_version()").Scan(&version)
-// 	if err != nil {
-// 		return "unknown"
-// 	}
-// 	return version
-// }
+func GetM30status() string {
+	var msg string
+	err := Conn.QueryRow("SELECT coalesce(msg, '') FROM m30status WHERE ID = (SELECT MAX(id) FROM m30status)").Scan(&msg)
+	if err != nil {
+		return ""
+	}
+	return nl2br(msg)
+}
+func nl2br(text string) string {
+	// Normalize Windows (\r\n) and old Mac (\r) line endings to \n
+	text = strings.ReplaceAll(text, "\r\n", "\n")
+	text = strings.ReplaceAll(text, "\r", "\n")
+
+	// Escape special HTML characters to prevent XSS, then replace newlines
+	escaped := html.EscapeString(text)
+	return strings.ReplaceAll(escaped, "\n", "<br>\n")
+}
 
 func exportSchema() error {
 	rows, err := Conn.Query(`
