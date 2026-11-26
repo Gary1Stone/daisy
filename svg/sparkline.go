@@ -1,7 +1,6 @@
 package svg
 
 import (
-	"database/sql"
 	"log"
 	"strconv"
 	"strings"
@@ -170,11 +169,11 @@ func polyline(opts *SparklineOptions) string {
 }
 
 // Returns the counts of how many unique people logged in within 15 minute periods
-// for the last 30 days
+// for the last 30 or 7 or 1 days
 func getNetworkDeviceCountsPerDay(duration, width int) ([]int, error) {
 	var points []int
 	query := `WITH RECURSIVE dates AS (
-		SELECT DATE('now', '-30 days') AS d
+		SELECT DATE('now', '-? days') AS d
 		UNION ALL
 		SELECT DATE(d, '+1 day')
 		FROM dates
@@ -186,8 +185,8 @@ func getNetworkDeviceCountsPerDay(duration, width int) ([]int, error) {
 		GROUP BY dates.d
 		ORDER BY dates.d DESC
 		`
-	rows, err := db.Conn.Query(query)
-	if err != nil && err != sql.ErrNoRows {
+	rows, err := db.Conn.Query(query, duration)
+	if err != nil {
 		log.Println(err)
 		return points, err
 	}

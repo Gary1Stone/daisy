@@ -80,6 +80,7 @@ func (m *Msg) getTapHwm() (int, error) {
 	return cnt, err
 }
 
+// in the database, ensure host + src_id are unique in the dhcp table
 func (m *Msg) saveTaps() error {
 	tx, err := db.Conn.Begin()
 	if err != nil {
