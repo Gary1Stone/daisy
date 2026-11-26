@@ -18,7 +18,7 @@ func PostSoftwareApi(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key
-	if sysInfo.ApiKey != os.Getenv("ISAW_KEY") {
+	if sysInfo.ApiKey != os.Getenv("AUDIT_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}

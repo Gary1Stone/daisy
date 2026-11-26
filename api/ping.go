@@ -17,7 +17,7 @@ func PostPingApi(c *fiber.Ctx) error {
 	}
 
 	// Validate the API key
-	if pingInfo.ApiKey != os.Getenv("ISAW_KEY") {
+	if pingInfo.ApiKey != os.Getenv("AUDIT_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusOK).SendString(resp)
 	}
