@@ -1,4 +1,5 @@
 {{template "partials/top" .}} {{template "partials/navbar" .}}
+<link rel="stylesheet" href="css/uPlot.min.css">
 <main class="container">
   <a href="dashboard.html">Dashboard</a>
   <div class="grid">
@@ -89,7 +90,22 @@
         D'Link M30 Router Status
       </header>
       <section>
-        {{.m30Status}}
+        {{.m30Report}}
+      </section>
+      <footer>
+      </footer>
+    </article>
+
+  </div>
+
+  <div class="grid">
+
+    <article>
+      <header>
+        WKNC Network Speed Tests
+      </header>
+      <section>
+        <div id="speedChart" data-chart="{{ .GraphData }}"></div>
       </section>
       <footer>
       </footer>
@@ -98,6 +114,8 @@
   </div>
 
 </main>
+
+<script src="js/uPlot.iife.min.js" defer></script>
 <script src="js/home.js" defer></script>
 <script src="js/table.js" defer></script>
 {{template "partials/bottom" .}}

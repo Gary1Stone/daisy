@@ -30,6 +30,8 @@ function initialize() {
             }
         });
     }
+
+    initializeSpeedChart();
 }
 
 function ackAlert(aid = 0) {
@@ -87,3 +89,41 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', effectiveTheme);
     });
 });
+
+
+
+function initializeSpeedChart() {
+    const chartElement = document.getElementById("speedChart");
+    if (!chartElement) return;
+
+    const chartData = JSON.parse(chartElement.dataset.chart);
+    if (chartData.timestamps.length === 0) return;
+    const opts = {
+      title: "Daily Network Speed (30 Days)",
+      width: 700,
+      height: 350,
+      // uPlot defaults to time: true on the X-axis, so no extra x-scale config is needed
+      scales: {
+        y: { range: [0, null] }
+      },
+      axes: [
+        { label: "Date" },
+        { label: "Speed (Mbps)" }
+      ],
+      series: [
+        {
+          label: "Date",
+          value: "{YYYY}-{MM}-{DD}" // Clean date-only format in hover legend
+        },
+        {
+          label: "Download (Mbps)",
+          stroke: "#0066cc",
+          width: 2,
+          fill: "rgba(0, 102, 204, 0.1)",
+          points: { show: true, size: 6, fill: "#0066cc" }
+        }
+      ]
+    };
+
+    new uPlot(opts, [chartData.timestamps, chartData.download], chartElement);
+}
