@@ -258,15 +258,15 @@ func SetProfileColor(uid int, color string) (string, int) {
 }
 
 // Get permissions CAPS - C-Device/Computer table, A-Admin Tables, P-Profile table, S-Software table T- Ticket (Action_log)
-func getPermissions(gid int) (string, error) {
-	var permissions = ""
-	var query = "SELECT parent FROM choices WHERE field='GROUP' AND code=?"
-	err := db.Conn.QueryRow(query, gid).Scan(&permissions)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
-	}
-	return permissions, err
-}
+// func getPermissions(gid int) (string, error) {
+// 	var permissions = ""
+// 	var query = "SELECT parent FROM choices WHERE field='GROUP' AND code=?"
+// 	err := db.Conn.QueryRow(query, gid).Scan(&permissions)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		log.Println(err)
+// 	}
+// 	return permissions, err
+// }
 
 func GetUidPermissions(uid int) (string, error) {
 	var permissions = ""
