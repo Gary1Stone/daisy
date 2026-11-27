@@ -32,7 +32,7 @@ type Record struct {
 	IsRandom bool   `json:"israndom"` // Is the MAC random
 }
 
-// Store where the backups are kept
+// Store where the dhcp requests are kept
 func PostTapsApi(c *fiber.Ctx) error {
 
 	msg := new(Msg) // Allocate on heap (address of)
@@ -41,7 +41,7 @@ func PostTapsApi(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Server error parsing message.")
 	}
 
-	// Validate the API key TODO: move to .env or use the master key
+	// Validate the API key
 	if msg.ApiKey != os.Getenv("ISAW_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusBadRequest).SendString("Bad API key")

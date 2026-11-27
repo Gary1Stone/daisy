@@ -61,7 +61,7 @@ func PostSpeedApi(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Server error parsing message.")
 	}
 
-	// Validate the API key TODO: move to .env or use the master key
+	// Validate the API key
 	if msg.ApiKey != os.Getenv("ISAW_KEY") {
 		log.Println("API: Invalid API Key")
 		return c.Status(fiber.StatusBadRequest).SendString("Bad API key")
@@ -115,11 +115,12 @@ func (m *SpeedPayload) saveSpeed() error {
 	Latency, MaxLatency, MinLatency, Jitter, DownloadSpeed, UploadSpeed, 
 	TestDuration, PingDuration, DownloadDuration, UploadDuration, 
 	PacketLossSent, PacketLossDup, PacketLossMax
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := db.Conn.Prepare(query)
 	if err != nil {
-		log.Fatalf("FATAL: Error preparing speedtest insert statement: %v", err)
+		log.Printf("FATAL: Error preparing speedtest insert statement: %v", err)
+		return err
 	}
 
 	for _, r := range m.Records {

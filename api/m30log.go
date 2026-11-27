@@ -82,7 +82,8 @@ func (m *M30msgs) saveM30() error {
 
 	stmt, err := db.Conn.Prepare(Query)
 	if err != nil {
-		log.Fatalf("FATAL: Error preparing M30 insert statement: %v", err)
+		log.Printf("FATAL: Error preparing M30 insert statement: %v", err)
+		return err
 	}
 
 	for _, r := range m.Msgs {
