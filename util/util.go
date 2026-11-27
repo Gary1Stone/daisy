@@ -1,9 +1,11 @@
 package util
 
 import (
+	"html"
 	"log"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -92,4 +94,13 @@ func Mx50(str string) string {
 		str = str[:50] + "&hellip;"
 	}
 	return str
+}
+
+// Normalize Windows (\r\n) and old Mac (\r) line endings to \n
+// Escape special HTML characters to prevent XSS, then replace newlines
+func Sanitize(text string) string {
+	text = strings.ReplaceAll(text, "\r\n", "\n")
+	text = strings.ReplaceAll(text, "\r", "\n")
+	escaped := html.EscapeString(text)
+	return strings.ReplaceAll(escaped, "\n", "<br>\n")
 }

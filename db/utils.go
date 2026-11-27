@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"html"
 	"log"
 	"math"
 	"os"
@@ -70,24 +69,6 @@ func BucketDownsample(data []int, pixelWidth int) []int {
 
 func WrapSearchTerm(str string) string {
 	return "%" + str + "%"
-}
-
-func GetM30status() string {
-	var msg string
-	err := Conn.QueryRow("SELECT coalesce(msg, '') FROM m30status WHERE ID = (SELECT MAX(id) FROM m30status)").Scan(&msg)
-	if err != nil {
-		return ""
-	}
-	return nl2br(msg)
-}
-func nl2br(text string) string {
-	// Normalize Windows (\r\n) and old Mac (\r) line endings to \n
-	text = strings.ReplaceAll(text, "\r\n", "\n")
-	text = strings.ReplaceAll(text, "\r", "\n")
-
-	// Escape special HTML characters to prevent XSS, then replace newlines
-	escaped := html.EscapeString(text)
-	return strings.ReplaceAll(escaped, "\n", "<br>\n")
 }
 
 func exportSchema() error {
