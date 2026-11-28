@@ -33,7 +33,7 @@ type M30status struct {
 
 func (m *M30msgs) GetM30Hwm() (int, error) {
 	cnt := 0
-	query := "SELECT MAX(src_id) FROM m30status"
+	query := "SELECT COALESCE(MAX(src_id), 0) FROM m30status" //If table is empty, would get a null error
 	err := db.Conn.QueryRow(query).Scan(&cnt)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
@@ -80,7 +80,7 @@ func getM30status(tzoff int) ([]M30status, error) {
 		report, title, severity, occurances, occurs, sample1, sample2, sample3
 		FROM m30status
 		WHERE report = (SELECT report FROM m30status WHERE id = (SELECT MAX(id) FROM m30status))
-		ORDER BY src_id`
+		ORDER BY src_id` //created > strftime('%s', 'now', '-7 days')
 
 	rows, err := db.Conn.Query(query, tzoff)
 	if err != nil {
@@ -120,7 +120,7 @@ func BuildM30Report(tzoff int) string {
 	}
 
 	for _, item := range items {
-		fmt.Fprintf(&ctrl, `<details><summary><b>%s</b> [%s]</summary>`, item.Title, sev2txt(item.Severity))
+		fmt.Fprintf(&ctrl, `<details><summary>%s<b>%s</b> [%s]</summary>`, item.ReportDate, item.Title, sev2txt(item.Severity))
 		fmt.Fprintf(&ctrl, `<p>%d Occurrences, First line: %d </p>`, item.Occurances, item.Occurs)
 		cnt := 0
 		if len(item.Sample1) > 0 {
@@ -156,4 +156,62 @@ func sev2txt(sev int) string {
 		return "Critical"
 	}
 	return ""
+}
+
+type summary struct {
+	severity int
+	title    string
+	total    int
+}
+
+func getM30Summary() (items []summary, err error) {
+	query := `SELECT severity, title, COUNT(*) AS total
+		FROM m30status
+		WHERE severity > 0 AND created > strftime('%s', 'now', '-7 days')
+		GROUP BY severity, title
+		ORDER BY severity, title`
+
+	rows, err := db.Conn.Query(query)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer rows.Close()
+
+	// Loop through rows, using Scan to assign column data to struct fields.
+	for rows.Next() {
+		var item summary
+		err = rows.Scan(&item.severity, &item.title, &item.total)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		items = append(items, item)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return
+	}
+
+	return
+}
+
+func BuildM30Summary() string {
+	var ctrl strings.Builder
+	items, err := getM30Summary()
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+
+	fmt.Fprintf(&ctrl, `<table><thead><tr><th>Severity</th><th>Title</th><th>Count</th></thead><tbody>`)
+
+	for _, item := range items {
+		fmt.Fprintf(&ctrl, `<tr><td>%s</td><td>%s</td><td>%d</td></tr>`, sev2txt(item.severity), item.title, item.total)
+	}
+
+	fmt.Fprintf(&ctrl, `</tbody></table>`)
+
+	return ctrl.String()
 }
