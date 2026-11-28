@@ -31,6 +31,7 @@ type M30status struct {
 	ReportDate string `json:"reportdate"` // YYYY-MM-DD
 }
 
+// Get the High-Water Marks (largest src_id)
 func (m *M30msgs) GetM30Hwm() (int, error) {
 	cnt := 0
 	query := "SELECT COALESCE(MAX(src_id), 0) FROM m30status" //If table is empty, would get a null error
@@ -76,11 +77,11 @@ func (m *M30msgs) SaveM30() error {
 
 func getM30status(tzoff int) ([]M30status, error) {
 	var items []M30status
-	query := `SELECT id, created, strftime('%Y-%m-%d %H', created-?, 'unixepoch') AS reportdate, src_id, 
-		report, title, severity, occurances, occurs, sample1, sample2, sample3
+	query := `SELECT id, created, strftime('%Y-%m-%d %H', created-?, 'unixepoch') AS reportdate, 
+		src_id, report, title, severity, occurances, occurs, sample1, sample2, sample3
 		FROM m30status
-		WHERE report = (SELECT report FROM m30status WHERE id = (SELECT MAX(id) FROM m30status))
-		ORDER BY src_id` //created > strftime('%s', 'now', '-7 days')
+		WHERE severity > 0 AND created > strftime('%s', 'now', '-7 days')
+		ORDER BY report, src_id`
 
 	rows, err := db.Conn.Query(query, tzoff)
 	if err != nil {
@@ -119,8 +120,12 @@ func BuildM30Report(tzoff int) string {
 		return ""
 	}
 
+	fmt.Fprintf(&ctrl, `<table class='striped' id="m30table"><thead><tr><th>Date time</th><th>Title</th><th>Occurances</th><th>Severity</th></thead><tbody>`)
+
 	for _, item := range items {
-		fmt.Fprintf(&ctrl, `<details><summary>%s<b>%s</b> [%s]</summary>`, item.ReportDate, item.Title, sev2txt(item.Severity))
+		fmt.Fprintf(&ctrl, `<tr><td>%s:00</td>`, item.ReportDate)
+
+		fmt.Fprintf(&ctrl, `<td><details><summary><b>%s</b></summary>`, item.Title)
 		fmt.Fprintf(&ctrl, `<p>%d Occurrences, First line: %d </p>`, item.Occurances, item.Occurs)
 		cnt := 0
 		if len(item.Sample1) > 0 {
@@ -138,8 +143,13 @@ func BuildM30Report(tzoff int) string {
 		if item.Occurances-cnt > 0 {
 			fmt.Fprintf(&ctrl, `<p> and %d more occurances</p>`, item.Occurances-cnt)
 		}
-		fmt.Fprintf(&ctrl, `</details>`)
+		fmt.Fprintf(&ctrl, `</details></td>`)
+
+		fmt.Fprintf(&ctrl, `<td>%d</td>`, item.Occurances)
+		fmt.Fprintf(&ctrl, `<td>%s</td></tr>`, sev2txt(item.Severity))
 	}
+
+	fmt.Fprintf(&ctrl, `</tbody></table>`)
 
 	return ctrl.String()
 }
@@ -165,7 +175,7 @@ type summary struct {
 }
 
 func getM30Summary() (items []summary, err error) {
-	query := `SELECT severity, title, COUNT(*) AS total
+	query := `SELECT severity, title, SUM(occurances) AS total
 		FROM m30status
 		WHERE severity > 0 AND created > strftime('%s', 'now', '-7 days')
 		GROUP BY severity, title
@@ -205,7 +215,7 @@ func BuildM30Summary() string {
 		return ""
 	}
 
-	fmt.Fprintf(&ctrl, `<table><thead><tr><th>Severity</th><th>Title</th><th>Count</th></thead><tbody>`)
+	fmt.Fprintf(&ctrl, `<table class='striped' id="logtable"><thead><tr><th>Severity</th><th>Title</th><th>Count</th></thead><tbody>`)
 
 	for _, item := range items {
 		fmt.Fprintf(&ctrl, `<tr><td>%s</td><td>%s</td><td>%d</td></tr>`, sev2txt(item.severity), item.title, item.total)

@@ -15,7 +15,7 @@ func GetM30(c *fiber.Ctx) error {
 	}
 
 	return c.Render("m30", addNavigationIcons(fiber.Map{
-		"title":     template.HTML(icons.GetIcon("about") + " M30 Status"),
+		"title":     template.HTML(icons.GetIcon("router") + " M30 Status"),
 		"fullName":  user.Fullname,
 		"isAdmin":   user.IsAdmin,
 		"cmd_one":   "",

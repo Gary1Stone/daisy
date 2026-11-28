@@ -96,7 +96,7 @@ func GetHome(c *fiber.Ctx) error {
 		"wizardsSelect":    template.HTML(droplists.BuildDropList("WIZARDS", "", "", false, false)),
 		"devicesOnline":    template.HTML(online.GetLastOnlineDatesTable(user.Tzoff)),
 		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedTable()),
-		"m30Report":        template.HTML(m30.BuildM30Report(user.Tzoff)),
+		"m30Report":        template.HTML(m30.BuildM30Summary()),
 		"GraphData":        speed.GetSpeedChartData(),
 	}))
 }
