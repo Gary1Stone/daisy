@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -23,6 +22,7 @@ import (
 	"github.com/gbsto/daisy/online"
 	"github.com/gbsto/daisy/passkey"
 	"github.com/gbsto/daisy/software"
+	"github.com/gbsto/daisy/speed"
 	"github.com/gbsto/daisy/svg"
 
 	"github.com/gbsto/daisy/util"
@@ -76,12 +76,6 @@ func GetHome(c *fiber.Ctx) error {
 	var alerts alerts.Alert
 	alerts.Uid = user.Uid
 
-	graphData, err := getSpeedChartData()
-	if err != nil {
-		log.Printf("Failed to load speed chart data: %v", err)
-		return c.Status(fiber.StatusInternalServerError).SendString("Unable to load home page graph data")
-	}
-
 	return c.Render("home", addNavigationIcons(fiber.Map{
 		"title":            template.HTML("&#127809; Daisy"),
 		"fullName":         user.Fullname,
@@ -103,49 +97,8 @@ func GetHome(c *fiber.Ctx) error {
 		"devicesOnline":    template.HTML(online.GetLastOnlineDatesTable(user.Tzoff)),
 		"unwantedSoftware": template.HTML(unwanted.BuildUnwantedTable()),
 		"m30Report":        template.HTML(m30.BuildM30Report(user.Tzoff)),
-		"GraphData":        graphData,
+		"GraphData":        speed.GetSpeedChartData(),
 	}))
-}
-
-func getSpeedChartData() (string, error) {
-	type chartData struct {
-		Timestamps []int64   `json:"timestamps"`
-		Download   []float64 `json:"download"`
-	}
-
-	data := chartData{
-		Timestamps: make([]int64, 0, 30),
-		Download:   make([]float64, 0, 30),
-	}
-	rows, err := db.Conn.Query("SELECT Created, DownloadSpeed FROM speedtest ORDER BY Created DESC LIMIT 30")
-	if err != nil {
-		return "", err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var timestamp int64
-		var download float64
-		if err := rows.Scan(&timestamp, &download); err != nil {
-			return "", err
-		}
-		data.Timestamps = append(data.Timestamps, timestamp)
-		data.Download = append(data.Download, download)
-	}
-	if err := rows.Err(); err != nil {
-		return "", err
-	}
-
-	for left, right := 0, len(data.Timestamps)-1; left < right; left, right = left+1, right-1 {
-		data.Timestamps[left], data.Timestamps[right] = data.Timestamps[right], data.Timestamps[left]
-		data.Download[left], data.Download[right] = data.Download[right], data.Download[left]
-	}
-
-	encoded, err := json.Marshal(data)
-	if err != nil {
-		return "", err
-	}
-	return string(encoded), nil
 }
 
 // Return a list of devices this person is assigned

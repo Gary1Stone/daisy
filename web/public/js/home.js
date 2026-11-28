@@ -121,9 +121,16 @@ function initializeSpeedChart() {
           width: 2,
           fill: "rgba(0, 102, 204, 0.1)",
           points: { show: true, size: 6, fill: "#0066cc" }
+        },
+        {
+          label: "Upload (Mbps)",
+          stroke: "#4eb948",
+          width: 2,
+          fill: "rgba(0, 102, 204, 0.1)",
+          points: { show: true, size: 6, fill: "#0066cc" }
         }
       ]
     };
 
-    new uPlot(opts, [chartData.timestamps, chartData.download], chartElement);
+    new uPlot(opts, [chartData.timestamps, chartData.download, chartData.upload], chartElement);
 }
