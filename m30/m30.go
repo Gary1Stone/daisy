@@ -51,7 +51,7 @@ func (m *M30msgs) SaveM30() error {
 	defer tx.Rollback()
 
 	//Prepare the insert statement
-	const Query = "INSERT OR IGNORE INTO m30status (src_id, report, title, severity, occurances, occurs, sample1, sample2, sample3) VALUES (?,?,?,?,?,?,?,?,?)"
+	const Query = "INSERT OR IGNORE INTO m30status (src_id, created, report, title, severity, occurances, occurs, sample1, sample2, sample3) VALUES (?,?,?,?,?,?,?,?,?,?)"
 	stmt, err := db.Conn.Prepare(Query)
 	if err != nil {
 		log.Printf("Error preparing M30 insert statement: %v", err)
@@ -59,7 +59,7 @@ func (m *M30msgs) SaveM30() error {
 	}
 
 	for _, r := range m.Records {
-		_, err = stmt.Exec(r.Id, r.Report, r.Title, r.Severity, r.Occurances, r.Occurs, r.Sample1, r.Sample2, r.Sample3)
+		_, err = stmt.Exec(r.Id, r.Created, r.Report, r.Title, r.Severity, r.Occurances, r.Occurs, r.Sample1, r.Sample2, r.Sample3)
 
 		if err != nil {
 			log.Printf("Error saving M30 record for %v: %v", r.Id, err)
